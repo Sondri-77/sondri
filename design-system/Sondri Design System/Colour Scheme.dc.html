@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:#0C1A1A; }
+</style>
+</helmet>
+<div style="font-family:'Space Mono',monospace; background:#0C1A1A; color:#C9DAD7; min-height:100vh; width:1280px; margin:0 auto; padding:70px 64px 90px;">
+
+  <!-- header -->
+  <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:40px; border-bottom:1px solid #263434; padding-bottom:34px;">
+    <div>
+      <div style="display:flex; align-items:center; gap:14px; margin-bottom:22px;">
+        <span style="width:30px; height:1px; background:#ffcc78;"></span>
+        <span style="font-size:11px; letter-spacing:4px; color:#ffcc78;">SONDRI &#x2014; COLOUR SCHEME</span>
+      </div>
+      <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:64px; line-height:0.98; letter-spacing:-1px; margin:0; color:#E6F2F0;">The Amber field guide.</h1>
+      <p style="font-size:13px; line-height:1.9; color:#86A19E; max-width:60ch; margin:22px 0 0;">A warm-gold accent on a deep teal-ink base, cooled with misty neutrals and a near-white display tone. High contrast, a little analog. Every value below is the exact hex used across the site.</p>
+    </div>
+    <div style="flex:0 0 auto; border:1px solid #334141; background:#152020; padding:18px 22px; min-width:210px;">
+      <div style="font-size:10px; letter-spacing:2px; color:#7D8A89;">TYPEFACES</div>
+      <div style="font-family:'Space Grotesk',sans-serif; font-size:22px; color:#E6F2F0; margin-top:12px;">Space Grotesk</div>
+      <div style="font-size:10px; letter-spacing:1px; color:#6C7978; margin-top:2px;">DISPLAY / HEADINGS</div>
+      <div style="font-family:'Space Mono',monospace; font-size:16px; color:#C9DAD7; margin-top:16px;">Space Mono</div>
+      <div style="font-size:10px; letter-spacing:1px; color:#6C7978; margin-top:2px;">LABELS / BODY</div>
+    </div>
+  </div>
+
+  <!-- accents -->
+  <div style="margin-top:56px;">
+    <div style="display:flex; align-items:center; gap:14px; margin-bottom:26px;">
+      <span style="font-size:11px; letter-spacing:3px; color:#ffcc78;">01 &nbsp;ACCENTS &amp; DISPLAY</span>
+      <span style="flex:1; height:1px; background:#263434;"></span>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:#263434; border:1px solid #263434;">
+      <sc-for list="{{ accents }}" as="s" hint-placeholder-count="3">
+        <div style="background:#0C1A1A;">
+          <div style="height:150px; background:{{ s.hex }}; display:flex; align-items:flex-end; padding:16px;">
+            <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:26px; color:{{ s.on }};">{{ s.name }}</span>
+          </div>
+          <div style="padding:20px 20px 26px;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <span style="font-size:13px; letter-spacing:1px; color:#C9DAD7;">{{ s.hex }}</span>
+              <span style="font-size:10px; letter-spacing:1.5px; color:#ffcc78;">{{ s.role }}</span>
+            </div>
+            <div style="font-size:11px; line-height:1.8; color:#86A19E; margin-top:12px;">{{ s.use }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- surfaces -->
+  <div style="margin-top:52px;">
+    <div style="display:flex; align-items:center; gap:14px; margin-bottom:26px;">
+      <span style="font-size:11px; letter-spacing:3px; color:#ffcc78;">02 &nbsp;SURFACES &amp; LINES</span>
+      <span style="flex:1; height:1px; background:#263434;"></span>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:#263434; border:1px solid #263434;">
+      <sc-for list="{{ surfaces }}" as="s" hint-placeholder-count="7">
+        <div style="background:#0C1A1A;">
+          <div style="height:96px; background:{{ s.hex }}; border-bottom:1px solid #263434;"></div>
+          <div style="padding:14px 14px 20px;">
+            <div style="font-size:11px; letter-spacing:1px; color:#E6F2F0;">{{ s.name }}</div>
+            <div style="font-size:10px; color:#7D8A89; margin-top:6px;">{{ s.hex }}</div>
+            <div style="font-size:10px; line-height:1.6; color:#86A19E; margin-top:6px;">{{ s.use }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- text -->
+  <div style="margin-top:52px;">
+    <div style="display:flex; align-items:center; gap:14px; margin-bottom:26px;">
+      <span style="font-size:11px; letter-spacing:3px; color:#ffcc78;">03 &nbsp;TEXT &amp; NEUTRALS</span>
+      <span style="flex:1; height:1px; background:#263434;"></span>
+    </div>
+    <div style="border:1px solid #263434;">
+      <sc-for list="{{ texts }}" as="t" hint-placeholder-count="6">
+        <div style="display:grid; grid-template-columns:56px 150px 130px 1fr; gap:24px; padding:20px 24px; border-bottom:1px solid #263434; align-items:center;">
+          <span style="width:32px; height:32px; background:{{ t.hex }}; border:1px solid #334141;"></span>
+          <span style="font-size:13px; color:{{ t.hex }};">{{ t.name }}</span>
+          <span style="font-size:11px; letter-spacing:1px; color:#7D8A89;">{{ t.hex }}</span>
+          <span style="font-size:11px; line-height:1.7; color:#86A19E;">{{ t.use }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- pairings -->
+  <div style="margin-top:52px;">
+    <div style="display:flex; align-items:center; gap:14px; margin-bottom:26px;">
+      <span style="font-size:11px; letter-spacing:3px; color:#ffcc78;">04 &nbsp;APPROVED PAIRINGS</span>
+      <span style="flex:1; height:1px; background:#263434;"></span>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px;">
+      <div style="background:#0C1A1A; border:1px solid #263434; padding:26px;">
+        <div style="font-family:'Space Grotesk',sans-serif; font-size:24px; color:#E6F2F0;">Bone on Ink</div>
+        <div style="font-size:11px; color:#86A19E; margin-top:10px;">Display &amp; body on base canvas.</div>
+      </div>
+      <div style="background:#0C1A1A; border:1px solid #263434; padding:26px;">
+        <div style="font-family:'Space Grotesk',sans-serif; font-size:24px; color:#ffcc78;">Gold on Ink</div>
+        <div style="font-size:11px; color:#86A19E; margin-top:10px;">Kickers, links, emphasis.</div>
+      </div>
+      <div style="background:#ffcc78; border:1px solid #ffcc78; padding:26px;">
+        <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:24px; color:#0C1A1A;">Ink on Gold</div>
+        <div style="font-size:11px; color:#22302F; margin-top:10px;">Primary buttons only.</div>
+      </div>
+      <div style="background:#F7C062; border:1px solid #F7C062; padding:26px;">
+        <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:24px; color:#22302F;">Ink on Tan</div>
+        <div style="font-size:11px; color:#22302F; margin-top:10px;">Artifact / terminal cards.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:48px; padding-top:24px; border-top:1px solid #263434; display:flex; align-items:center; justify-content:space-between;">
+    <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16px; letter-spacing:3px; color:#E6F2F0;">SONDRI</span>
+    <span style="font-size:10px; letter-spacing:2px; color:#566363;">COLOUR SCHEME &#x2014; AMBER &#x2014; 2026</span>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1180}}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      accents: [
+        { hex: '#ffcc78', name: 'Gold',      role: 'PRIMARY ACCENT',   on: '#0C1A1A', use: 'CTAs, kickers, links, active nav, highlight rules, and the dither accent rim.' },
+        { hex: '#F7C062', name: 'Amber Tan',  role: 'SECONDARY ACCENT', on: '#22302F', use: 'Artifact surfaces \u2014 terminal dialogs, cookie card, tan-on-ink components.' },
+        { hex: '#E6F2F0', name: 'Bone',       role: 'DISPLAY',          on: '#0C1A1A', use: 'Headlines and display type. The brightest text tone in the system.' },
+      ],
+      surfaces: [
+        { hex: '#0C1A1A', name: 'Ink',        use: 'Base canvas' },
+        { hex: '#081313', name: 'Ink Deep',   use: 'Recessed panels' },
+        { hex: '#152020', name: 'Raised',     use: 'Raised cards' },
+        { hex: '#263434', name: 'Border',     use: 'Hairlines / grid' },
+        { hex: '#334141', name: 'Border 2',   use: 'Ghost-button edge' },
+        { hex: '#455252', name: 'Border Dim', use: 'Dim rings' },
+        { hex: '#566363', name: 'Faint',      use: 'Fine print' },
+      ],
+      texts: [
+        { hex: '#86A19E', name: 'Clay',        use: 'Default body copy' },
+        { hex: '#B6CAC7', name: 'Clay Light',  use: 'List body, in-card copy' },
+        { hex: '#C9DAD7', name: 'Mist',        use: 'Bright body, ghost-button label' },
+        { hex: '#7D8A89', name: 'Muted',       use: 'Caption + numeral labels' },
+        { hex: '#6C7978', name: 'Muted 2',     use: 'Dim step numbers' },
+        { hex: '#22302F', name: 'Ink on Tan',  use: 'Text placed on amber artifact surfaces' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

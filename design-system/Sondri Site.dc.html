@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{ margin:0; background:#0C1A1A; }
+  ::selection{ background:#ffcc78; color:#0C1A1A; }
+  ::-webkit-scrollbar{ width:10px; }
+  ::-webkit-scrollbar-track{ background:#0C1A1A; }
+  ::-webkit-scrollbar-thumb{ background:#334141; border:2px solid #0C1A1A; }
+  @keyframes cue{ 0%,100%{ transform:translateY(0); opacity:.5 } 50%{ transform:translateY(7px); opacity:1 } }
+  @keyframes blink{ 0%,49%{ opacity:1 } 50%,100%{ opacity:0 } }
+  @keyframes flick{ 0%,100%{ opacity:.9 } 50%{ opacity:.55 } }
+  @keyframes neonpop{ 0%{ opacity:0; filter:brightness(2.2) } 8%{ opacity:1 } 16%{ opacity:.25 } 26%{ opacity:1 } 40%{ opacity:.55 } 55%{ opacity:1 } 100%{ opacity:1; filter:brightness(1) } }
+  @keyframes neonhum{ 0%,100%{ opacity:1 } 47%{ opacity:.93 } 50%{ opacity:.8 } 53%{ opacity:.96 } }
+  @keyframes climb{
+    0%{ left:10%; top:256px; opacity:0 } 5%{ opacity:1 } 16%{ left:10%; top:256px }
+    20%{ left:30%; top:192px } 36%{ left:30%; top:192px }
+    40%{ left:50%; top:128px } 56%{ left:50%; top:128px }
+    60%{ left:70%; top:64px } 76%{ left:70%; top:64px }
+    80%{ left:90%; top:0px } 95%{ left:90%; top:0px; opacity:1 } 100%{ left:90%; top:0px; opacity:0 }
+  }
+  @keyframes nodeping{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,204,120,0.5) } 50%{ box-shadow:0 0 0 5px rgba(255,204,120,0) } }
+  .reveal{ opacity:0; transform:translateY(22px); transition:opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in{ opacity:1; transform:none; }
+</style>
+</helmet>
+<div style="font-family:'Space Mono',monospace; color:#C9DAD7; background:#0C1A1A; min-height:100vh; overflow-x:hidden;">
+
+  <nav style="position:fixed; top:0; left:0; right:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:18px 40px; background:rgba(12,26,26,0.72); backdrop-filter:blur(10px); border-bottom:1px solid #263434;">
+    <button onClick="{{ goHome }}" style="all:unset; cursor:pointer; display:flex; align-items:baseline; gap:10px;">
+      <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:23px; letter-spacing:3px; color:#E6F2F0;">SONDRI</span>
+      <span style="font-size:9px; letter-spacing:3px; color:#7D8A89;">&#xB0; SYSTEM</span>
+    </button>
+    <div style="display:flex; align-items:center; gap:34px;">
+      <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="4">
+        <button onClick="{{ item.go }}" style="all:unset; cursor:pointer; font-size:11px; letter-spacing:2.5px; color:{{ item.color }}; padding:4px 0; position:relative;">
+          {{ item.label }}
+        </button>
+      </sc-for>
+      <button onClick="{{ goContact }}" style="all:unset; cursor:pointer; font-size:11px; letter-spacing:2px; color:#0C1A1A; background:#ffcc78; padding:9px 16px;">BOOK DISCOVERY</button>
+    </div>
+  </nav>
+
+  <!-- ================= HOME ================= -->
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <main data-screen-label="Home">
+    <!-- HERO -->
+    <section style="position:relative; min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:120px 40px 60px; overflow:hidden;">
+      <canvas ref="{{ setCanvas }}" data-dither="hero" data-hero="1" style="position:absolute; inset:0; width:100%; height:100%; opacity:0.5;"></canvas>
+      <div style="position:absolute; inset:0; background:linear-gradient(90deg,#0C1A1A 0%,rgba(12,26,26,0.55) 48%,rgba(12,26,26,0.15) 100%);"></div>
+      <!-- the waving robot speaks -->
+      <div style="position:absolute; z-index:4; top:19%; right:7%; width:270px; max-width:38vw; pointer-events:none; animation:neonhum 5.3s infinite;">
+        <div style="position:relative; border:1px solid #ffcc78; background:rgba(8,19,19,0.9); box-shadow:0 0 24px rgba(255,204,120,0.3), inset 0 0 22px rgba(255,204,120,0.06); padding:20px 18px 16px;">
+          <span style="position:absolute; top:6px; left:9px; font-size:8px; letter-spacing:2px; color:#7D8A89;">SONDRI.BOT</span>
+          <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(15px,1.5vw,20px); line-height:1.28; color:#ffe7b3; text-shadow:0 0 4px #ffcc78, 0 0 12px rgba(255,204,120,0.7), 0 0 22px rgba(255,204,120,0.45);">Hi, I&#x2019;m Sondri, your beautifully distinct AI.</div>
+          <div style="position:absolute; left:30px; bottom:-9px; width:15px; height:15px; background:rgba(8,19,19,0.9); border-left:1px solid #ffcc78; border-bottom:1px solid #ffcc78; transform:rotate(-45deg);"></div>
+        </div>
+      </div>
+      <div style="position:relative; max-width:1280px; margin:0 auto; width:100%;">
+        <div style="display:flex; align-items:center; gap:14px; margin-bottom:30px;">
+          <span style="width:30px; height:1px; background:#ffcc78;"></span>
+          <span style="font-size:11px; letter-spacing:4px; color:#ffcc78;">SONDRI &nbsp;&#x2014;&nbsp; AI WORKING MODELS</span>
+        </div>
+        <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(46px,8vw,116px); line-height:0.96; letter-spacing:-1px; margin:0; color:#E6F2F0; max-width:14ch;">
+          AI agents, FDE's deployed where the work <span style="font-style:italic; color:#ffcc78;">happens.</span>
+        </h1>
+        <p style="font-size:14px; line-height:2; letter-spacing:0.5px; color:#86A19E; max-width:52ch; margin:34px 0 0;">
+          Done-for-you AI for the industries that run the real economy &#x2014; retail, construction, logistics, trades. From zero to one. Then one to many.
+        </p>
+        <div style="display:flex; gap:18px; margin-top:42px; flex-wrap:wrap;">
+          <button onClick="{{ goContact }}" style="all:unset; cursor:pointer; font-size:12px; letter-spacing:2px; color:#0C1A1A; background:#ffcc78; padding:14px 26px;">START A DISCOVERY SPRINT &nbsp;&#x2192;</button>
+          <button onClick="{{ goHow }}" style="all:unset; cursor:pointer; font-size:12px; letter-spacing:2px; color:#C9DAD7; padding:14px 26px; border:1px solid #334141;">SEE HOW IT WORKS</button>
+        </div>
+      </div>
+      <div style="position:relative; max-width:1280px; margin:64px auto 0; width:100%; display:flex; align-items:center; gap:12px;">
+        <span style="display:inline-block; animation:cue 1.8s infinite; font-size:18px; color:#ffcc78;">&#x2193;</span>
+        <span style="font-size:10px; letter-spacing:3px; color:#7D8A89;">SCROLL &#x2014; THE PICTURE DEVELOPS</span>
+      </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div style="border-top:1px solid #263434; border-bottom:1px solid #263434; overflow:hidden; padding:16px 0; background:#081313;">
+      <div style="display:flex; gap:48px; white-space:nowrap; font-size:11px; letter-spacing:4px; color:#6C7978; animation:none;">
+        <sc-for list="{{ marquee }}" as="m" hint-placeholder-count="8">
+          <span>{{ m }}</span>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- PROBLEM -->
+    <section class="reveal" ref="{{ setReveal }}" style="max-width:1280px; margin:0 auto; padding:130px 40px 90px;">
+      <div style="display:grid; grid-template-columns:1fr; gap:8px; margin-bottom:64px;">
+        <span style="font-size:11px; letter-spacing:4px; color:#ffcc78;">01 &nbsp;/&nbsp; THE PROBLEM</span>
+        <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(34px,5vw,68px); line-height:1.04; letter-spacing:-0.5px; margin:14px 0 0; color:#E6F2F0; max-width:18ch;">
+          AI has skipped the industries that need it most.
+        </h2>
+        <p style="font-size:14px; line-height:2; color:#86A19E; max-width:62ch; margin:24px 0 0;">
+          Retail chains, construction firms, logistics operators and trades businesses run on spreadsheets, paper, and tribal knowledge. They can&#x2019;t hire data scientists. They can&#x2019;t afford six-figure consultancies. So they get nothing &#x2014; while tech-native rivals pull further ahead.
+        </p>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:#263434; border:1px solid #263434;">
+        <sc-for list="{{ problemStats }}" as="s" hint-placeholder-count="3">
+          <div style="background:#0C1A1A; padding:40px 30px;">
+            <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(44px,6vw,74px); line-height:1; color:#ffcc78;">{{ s.n }}</div>
+            <div style="font-size:12px; line-height:1.9; letter-spacing:1px; color:#86A19E; margin-top:18px;">{{ s.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- WHAT WE DO -->
+    <section class="reveal" ref="{{ setReveal }}" style="border-top:1px solid #263434; background:#081313;">
+      <div style="max-width:1280px; margin:0 auto; padding:130px 40px; display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center;">
+        <div>
+          <span style="font-size:11px; letter-spacing:4px; color:#ffcc78;">02 &nbsp;/&nbsp; WHAT WE DO</span>
+          <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(32px,4vw,58px); line-height:1.05; letter-spacing:-0.5px; margin:16px 0 0; color:#E6F2F0;">
+            We build a custom AI <span style="font-style:italic; color:#ffcc78;">working model</span> for each customer.
+          </h2>
+          <p style="font-size:14px; line-height:2; color:#86A19E; max-width:48ch; margin:24px 0 0;">
+            Done-for-you, end-to-end. No platform to learn, no login to adopt. Agents that fit into how you work today.
+          </p>
+          <div style="margin-top:38px; display:flex; flex-direction:column; gap:0;">
+            <sc-for list="{{ doSteps }}" as="d" hint-placeholder-count="4">
+              <div style="display:flex; gap:20px; padding:18px 0; border-top:1px solid #263434;">
+                <span style="font-family:'Space Grotesk',sans-serif; font-size:15px; color:#6C7978; min-width:26px;">{{ d.i }}</span>
+                <span style="font-size:13px; line-height:1.7; color:#B6CAC7;">{{ d.t }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="position:relative; aspect-ratio:4/5; border:1px solid #263434; overflow:hidden;">
+          <canvas ref="{{ setCanvas }}" data-dither="puppet" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>
+          <!-- neon sign, hung above the robot; phrase pops on each pull -->
+          <div style="position:absolute; top:6%; left:50%; transform:translateX(-50%); width:78%; z-index:3; display:flex; flex-direction:column; align-items:center; pointer-events:none;">
+            <div style="width:34%; height:1px; background:#3a4a4a;"></div>
+            <div style="position:relative; width:100%; margin-top:1px; border:1px solid #ffcc78; background:rgba(8,19,19,0.85); box-shadow:0 0 20px rgba(255,204,120,0.28), inset 0 0 22px rgba(255,204,120,0.07); padding:22px 18px 16px; min-height:70px; display:flex; align-items:center; justify-content:center; animation:neonhum 4.7s infinite;">
+              <span style="position:absolute; top:6px; left:9px; font-size:8px; letter-spacing:2px; color:#7D8A89;">PROPRIETARY WORKING MODEL</span>
+              {{ signNode }}
+            </div>
+            <div style="width:9px; height:9px; border:1px solid #ffcc78; background:#0C1A1A; margin-top:-1px;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 0 1 N -->
+    <section class="reveal" ref="{{ setReveal }}" style="max-width:1280px; margin:0 auto; padding:130px 40px;">
+      <div style="text-align:center; margin-bottom:70px;">
+        <span style="font-size:11px; letter-spacing:4px; color:#ffcc78;">THE DELIVERY ENGINE</span>
+        <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(40px,7vw,96px); line-height:1; letter-spacing:1px; margin:18px 0 0; color:#E6F2F0;">
+          0 &#x2192; 1 &#x2192; <span style="font-style:italic;">n</span>
+        </h2>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px;">
+        <sc-for list="{{ phases }}" as="p" hint-placeholder-count="3">
+          <div style="border:1px solid #263434; padding:36px 28px; background:#0C1A1A;">
+            <div style="display:flex; align-items:baseline; justify-content:space-between;">
+              <span style="font-family:'Space Grotesk',sans-serif; font-size:54px; color:#ffcc78;">{{ p.num }}</span>
+              <span style="font-size:10px; letter-spacing:2px; color:#6C7978;">{{ p.dur }}</span>
+            </div>
+            <div style="font-family:'Space Grotesk',sans-serif; font-size:24px; color:#E6F2F0; margin-top:20px;">{{ p.title }}</div>
+            <p style="font-size:12px; line-height:1.85; color:#86A19E; margin:12px 0 0;">{{ p.body }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- ENGAGEMENT LADDER -->
+    <section class="reveal" ref="{{ setReveal }}" style="border-top:1px solid #263434; background:#081313;">
+      <div style="max-width:1280px; margin:0 auto; padding:120px 40px;">
+        <div style="display:grid; grid-template-columns:1.25fr 1fr; gap:40px; align-items:end; margin-bottom:70px;">
+          <div>
+            <span style="font-size:11px; letter-spacing:4px; color:#ffcc78;">THE ENGAGEMENT LADDER</span>
+            <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(32px,4.4vw,60px); line-height:1.02; letter-spacing:-0.5px; margin:16px 0 0; color:#E6F2F0; max-width:16ch;">Start free. Climb only as far as the value carries you.</h2>
+          </div>
+          <p style="font-size:13px; line-height:2; color:#86A19E; max-width:44ch; margin:0;">Five rungs, from a free digital-first discovery to a standing advisory seat. You commit to each rung only once the one below it has paid for itself.</p>
+        </div>
+
+        <!-- ascending rungs -->
+        <div style="position:relative; display:grid; grid-template-columns:repeat(5,1fr); gap:16px; align-items:end; min-height:424px;">
+
+          <!-- 01 -->
+          <div style="position:relative; height:168px; border:1px solid #263434; border-top:2px solid #ffcc78; background:#0C1A1A; overflow:hidden;">
+            <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, rgba(255,204,120,0.055) 0 1px, transparent 1px 26px); pointer-events:none;"></div>
+            <div style="position:absolute; top:-5px; left:50%; transform:translateX(-50%); width:8px; height:8px; background:#ffcc78; animation:nodeping 3s infinite;"></div>
+            <div style="position:relative; height:100%; display:flex; flex-direction:column; padding:16px 15px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; letter-spacing:1px; color:#0C1A1A; background:#ffcc78; padding:1px 8px;">01</span>
+                <span style="font-size:8px; letter-spacing:2px; color:#ffcc78;">FREE &#xB7; DIGITAL</span>
+              </div>
+              <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(15px,1.25vw,18px); line-height:1.14; color:#E6F2F0; margin-top:14px;">Design Thinking &amp; Discovery</div>
+              <p style="font-size:11px; line-height:1.6; color:#86A19E; margin:8px 0 0;">A free, digital-first session that frames the problem and maps the highest-payback use cases.</p>
+              <span style="margin-top:auto; font-size:9px; letter-spacing:2px; color:#5c6b6a;">RUNG 01</span>
+            </div>
+          </div>
+
+          <!-- 02 -->
+          <div style="position:relative; height:232px; border:1px solid #263434; border-top:2px solid #ffcc78; background:#0C1A1A; overflow:hidden;">
+            <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, rgba(255,204,120,0.055) 0 1px, transparent 1px 26px); pointer-events:none;"></div>
+            <div style="position:absolute; top:-5px; left:50%; transform:translateX(-50%); width:8px; height:8px; background:#ffcc78; animation:nodeping 3s infinite;"></div>
+            <div style="position:relative; height:100%; display:flex; flex-direction:column; padding:16px 15px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; letter-spacing:1px; color:#0C1A1A; background:#ffcc78; padding:1px 8px;">02</span>
+                <span style="font-size:8px; letter-spacing:2px; color:#ffcc78;">PROOF</span>
+              </div>
+              <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(15px,1.25vw,18px); line-height:1.14; color:#E6F2F0; margin-top:14px;">Pilot &amp; Measure</div>
+              <p style="font-size:11px; line-height:1.6; color:#86A19E; margin:8px 0 0;">A scoped agent ships into one live workflow and is measured against a hard, agreed baseline.</p>
+              <span style="margin-top:auto; font-size:9px; letter-spacing:2px; color:#5c6b6a;">RUNG 02</span>
+            </div>
+          </div>
+
+          <!-- 03 -->
+          <div style="position:relative; height:296px; border:1px solid #263434; border-top:2px solid #ffcc78; background:#0C1A1A; overflow:hidden;">
+            <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, rgba(255,204,120,0.055) 0 1px, transparent 1px 26px); pointer-events:none;"></div>
+            <div style="position:absolute; top:-5px; left:50%; transform:translateX(-50%); width:8px; height:8px; background:#ffcc78; animation:nodeping 3s infinite;"></div>
+            <div style="position:relative; height:100%; display:flex; flex-direction:column; padding:16px 15px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; letter-spacing:1px; color:#0C1A1A; background:#ffcc78; padding:1px 8px;">03</span>
+                <span style="font-size:8px; letter-spacing:2px; color:#ffcc78;">PRODUCTION</span>
+              </div>
+              <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(15px,1.25vw,18px); line-height:1.14; color:#E6F2F0; margin-top:14px;">Deploy &amp; Scale</div>
+              <p style="font-size:11px; line-height:1.6; color:#86A19E; margin:8px 0 0;">One proven use case becomes many &#x2014; in production, on the stack you already run.</p>
+              <span style="margin-top:auto; font-size:9px; letter-spacing:2px; color:#5c6b6a;">RUNG 03</span>
+            </div>
+          </div>
+
+          <!-- 04 -->
+          <div style="position:relative; height:360px; border:1px solid #263434; border-top:2px solid #ffcc78; background:#0C1A1A; overflow:hidden;">
+            <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, rgba(255,204,120,0.055) 0 1px, transparent 1px 26px); pointer-events:none;"></div>
+            <div style="position:absolute; top:-5px; left:50%; transform:translateX(-50%); width:8px; height:8px; background:#ffcc78; animation:nodeping 3s infinite;"></div>
+            <div style="position:relative; height:100%; display:flex; flex-direction:column; padding:16px 15px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; letter-spacing:1px; color:#0C1A1A; background:#ffcc78; padding:1px 8px;">04</span>
+                <span style="font-size:8px; letter-spacing:2px; color:#ffcc78;">RETAINED</span>
+              </div>
+              <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(15px,1.25vw,18px); line-height:1.14; color:#E6F2F0; margin-top:14px;">Maintenance</div>
+              <p style="font-size:11px; line-height:1.6; color:#86A19E; margin:8px 0 0;">Continuous tuning, monitoring and governance keep every agent earning its keep.</p>
+              <span style="margin-top:auto; font-size:9px; letter-spacing:2px; color:#5c6b6a;">RUNG 04</span>
+            </div>
+          </div>
+
+          <!-- 05 -->
+          <div style="position:relative; height:424px; border:1px solid #F7C062; border-top:2px solid #ffcc78; background:#0f1f1c; overflow:hidden;">
+            <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, rgba(255,204,120,0.08) 0 1px, transparent 1px 26px); pointer-events:none;"></div>
+            <div style="position:absolute; top:-5px; left:50%; transform:translateX(-50%); width:8px; height:8px; background:#ffcc78; animation:nodeping 3s infinite;"></div>
+            <div style="position:relative; height:100%; display:flex; flex-direction:column; padding:16px 15px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; letter-spacing:1px; color:#0C1A1A; background:#ffcc78; padding:1px 8px;">05</span>
+                <span style="font-size:8px; letter-spacing:2px; color:#ffcc78;">PARTNER</span>
+              </div>
+              <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(15px,1.25vw,18px); line-height:1.14; color:#E6F2F0; margin-top:14px;">Advisor</div>
+              <p style="font-size:11px; line-height:1.6; color:#B6CAC7; margin:8px 0 0;">A standing seat at the table for whatever AI decision comes next.</p>
+              <span style="margin-top:auto; font-size:9px; letter-spacing:2px; color:#ffcc78;">STANDING &#x2192;</span>
+            </div>
+          </div>
+
+          <!-- climbing marker -->
+          <div style="position:absolute; width:12px; height:12px; background:#ffcc78; border:2px solid #081313; transform:translate(-50%,-50%); animation:climb 8s cubic-bezier(.55,0,.45,1) infinite; z-index:5; box-shadow:0 0 14px rgba(255,204,120,0.9);"></div>
+        </div>
+
+        <!-- bedrock -->
+        <div style="margin-top:46px;">
+          <div style="display:flex; align-items:center; gap:14px; margin-bottom:0;">
+            <span style="font-size:11px; letter-spacing:3px; color:#ffcc78;">THE BEDROCK &#x2014; TRUE AT EVERY RUNG</span>
+            <span style="flex:1; height:1px; background:#334141;"></span>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); border:1px solid #263434; border-top:none; margin-top:22px;">
+            <div style="padding:30px 28px;">
+              <span style="color:#ffcc78; font-size:12px;">&#x25C6;</span>
+              <div style="font-family:'Space Grotesk',sans-serif; font-size:21px; color:#E6F2F0; margin:14px 0 8px;">Mapping agents to your pain points</div>
+              <p style="font-size:12px; line-height:1.8; color:#86A19E; margin:0; max-width:34ch;">Every rung starts from a real bottleneck in your operation &#x2014; never a demo.</p>
+            </div>
+            <div style="padding:30px 28px; border-left:1px solid #263434;">
+              <span style="color:#ffcc78; font-size:12px;">&#x25C6;</span>
+              <div style="font-family:'Space Grotesk',sans-serif; font-size:21px; color:#E6F2F0; margin:14px 0 8px;">Compounding process improvement</div>
+              <p style="font-size:12px; line-height:1.8; color:#86A19E; margin:0; max-width:34ch;">Each deployment makes the next one faster, cheaper, and easier to trust.</p>
+            </div>
+            <div style="padding:30px 28px; border-left:1px solid #263434;">
+              <span style="color:#ffcc78; font-size:12px;">&#x25C6;</span>
+              <div style="font-family:'Space Grotesk',sans-serif; font-size:21px; color:#E6F2F0; margin:14px 0 8px;">Navigating the galaxies unheard of</div>
+              <p style="font-size:12px; line-height:1.8; color:#86A19E; margin:0; max-width:34ch;">We chart the AI frontier that is specific to your business &#x2014; and bring you along.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+  </sc-if>
+
+  <!-- ================= HOW IT WORKS ================= -->
+  <sc-if value="{{ isHow }}" hint-placeholder-val="{{ false }}">
+  <main data-screen-label="How it works" style="padding-top:96px;">
+    <section style="max-width:1280px; margin:0 auto; padding:40px 40px 70px; display:grid; grid-template-columns:1.1fr 1fr; gap:70px; align-items:end;">
+      <div>
+        <span style="font-size:11px; letter-spacing:4px; color:#ffcc78;">HOW IT WORKS</span>
+        <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(40px,6vw,86px); line-height:1; letter-spacing:-1px; margin:18px 0 0; color:#E6F2F0;">
+          A working AI model, deployed in <span style="font-style:italic; color:#ffcc78;">8 weeks.</span>
+        </h1>
+        <p style="font-size:14px; line-height:2; color:#86A19E; max-width:50ch; margin:26px 0 0;">
+          One delivery engine: a senior core team takes you from zero to one, a vetted contractor network takes one to many. You get outcomes, not a platform.
+        </p>
+      </div>
+      <div style="position:relative; aspect-ratio:1/1; border:1px solid #263434;">
+        <canvas ref="{{ setCanvas }}" data-dither="ridge" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>
+        <div style="position:absolute; left:14px; bottom:14px; font-size:10px; letter-spacing:2px; color:#ffcc78; background:rgba(8,19,19,0.7); padding:4px 8px;">FIG. 02 &#x2014; DELIVERY ENGINE</div>
+      </div>
+    </section>
+
+    <!-- timeline -->
+    <section class="reveal" ref="{{ setReveal }}" style="max-width:1280px; margin:0 auto; padding:50px 40px 90px;">
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:#263434; border:1px solid #263434;">
+        <sc-for list="{{ timeline }}" as="t" hint-placeholder-count="4">
+          <div style="background:#0C1A1A; padding:34px 24px; min-height:260px; display:flex; flex-direction:column;">
+            <span style="font-size:10px; letter-spacing:2px; color:#ffcc78;">{{ t.wk }}</span>
+            <span style="font-family:'Space Grotesk',sans-serif; font-size:30px; color:#E6F2F0; margin:14px 0 16px;">{{ t.title }}</span>
+            <p style="font-size:12px; line-height:1.85; color:#86A19E; margin:0;">{{ t.body }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- engine 0 1 n -->
+    <section class="reveal" ref="{{ setReveal }}" style="border-top:1px solid #263434; background:#081313;">
+      <div style="max-width:1280px; margin:0 auto; padding:110px 40px;">
+        <div style="text-align:center; margin-bottom:60px;">
+          <span style="font-size:11px; letter-spacing:4px; color:#ffcc78;">OPERATING MODEL</span>
+          <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(34px,5vw,64px); line-height:1; margin:16px 0 0; color:#E6F2F0;">0 &#x2192; 1 &#x2192; <span style="font-style:italic;">n</span> &nbsp;&#x2014;&nbsp; the engine</h2>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px;">
+          <sc-for list="{{ engine }}" as="e" hint-placeholder-count="3">
+            <div style="border:1px solid #263434; background:#0C1A1A; padding:32px 28px;">
+              <span style="display:inline-block; font-size:11px; letter-spacing:2px; color:#0C1A1A; background:#ffcc78; padding:5px 10px;">{{ e.tag }}</span>
+              <div style="font-family:'Space Grotesk',sans-serif; font-size:26px; color:#E6F2F0; margin:22px 0 18px;">{{ e.title }}</div>
+              <div style="display:flex; flex-direction:column;">
+                <sc-for list="{{ e.items }}" as="it" hint-placeholder-count="4">
+                  <div style="display:flex; gap:12px; padding:11px 0; border-top:1px solid #263434; font-size:12px; line-height:1.6; color:#B6CAC7;"><span style="color:#6C7978;">&#x2014;</span>{{ it }}</div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <!-- why now -->
+    <section class="reveal" ref="{{ setReveal }}" style="max-width:1280px; margin:0 auto; padding:110px 40px;">
+      <span style="font-size:11px; letter-spacing:4px; color:#ffcc78;">WHY NOW</span>
+      <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(30px,4vw,56px); line-height:1.05; margin:16px 0 56px; color:#E6F2F0; max-width:22ch;">Three shifts have unlocked this market in the last 18 months.</h2>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:46px;">
+        <sc-for list="{{ whyNow }}" as="w" hint-placeholder-count="3">
+          <div style="border-top:1px solid #ffcc78; padding-top:22px;">
+            <span style="font-family:'Space Grotesk',sans-serif; font-size:40px; color:#6C7978;">{{ w.i }}</span>
+            <div style="font-family:'Space Grotesk',sans-serif; font-size:24px; color:#E6F2F0; margin:14px 0 12px;">{{ w.t }}</div>
+            <p style="font-size:13px; line-height:1.9; color:#86A19E; margin:0;">{{ w.b }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </main>
+  </sc-if>
+
+  <!-- ================= FOR CUSTOMERS ================= -->
+  <sc-if value="{{ isCust }}" hint-placeholder-val="{{ false }}">
+  <main data-screen-label="For customers" style="padding-top:96px;">
+    <section style="max-width:1280px; margin:0 auto; padding:40px 40px 60px;">
+      <span style="font-size:11px; letter-spacing:4px; color:#ffcc78;">FOR CUSTOMERS</span>
+      <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(38px,5.5vw,80px); line-height:1.02; letter-spacing:-0.5px; margin:18px 0 0; color:#E6F2F0; max-width:20ch;">
+        If you run a retail chain, a construction firm, or a fleet&#x2026;
+      </h1>
+      <p style="font-size:14px; line-height:2; color:#86A19E; max-width:54ch; margin:26px 0 0;">You don&#x2019;t need another login. You need agents that fit into how you work today &#x2014; and someone to build, deploy, and run them for you.</p>
+    </section>
+
+    <section class="reveal" ref="{{ setReveal }}" style="max-width:1280px; margin:0 auto; padding:30px 40px 90px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1px; background:#263434; border:1px solid #263434;">
+        <sc-for list="{{ pains }}" as="p" hint-placeholder-count="4">
+          <div style="background:#0C1A1A; padding:40px 34px;">
+            <div style="font-family:'Space Grotesk',sans-serif; font-size:26px; color:#E6F2F0; line-height:1.15;">{{ p.t }}</div>
+            <p style="font-size:13px; line-height:1.9; color:#86A19E; margin:14px 0 0; max-width:42ch;">{{ p.b }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- what you get -->
+    <section class="reveal" ref="{{ setReveal }}" style="border-top:1px solid #263434; background:#081313;">
+      <div style="max-width:1280px; margin:0 auto; padding:110px 40px;">
+        <div style="display:flex; align-items:end; justify-content:space-between; gap:30px; flex-wrap:wrap; margin-bottom:54px;">
+          <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(30px,4vw,56px); line-height:1; margin:0; color:#E6F2F0;">What you get</h2>
+          <span style="font-size:11px; letter-spacing:3px; color:#ffcc78;">A WORKING MODEL, LIVE IN YOUR STACK</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:#263434; border:1px solid #263434;">
+          <sc-for list="{{ timeline }}" as="t" hint-placeholder-count="4">
+            <div style="background:#081313; padding:30px 22px; min-height:220px;">
+              <span style="font-size:10px; letter-spacing:2px; color:#ffcc78;">{{ t.wk }}</span>
+              <div style="font-family:'Space Grotesk',sans-serif; font-size:26px; color:#E6F2F0; margin:12px 0 14px;">{{ t.title }}</div>
+              <p style="font-size:12px; line-height:1.8; color:#86A19E; margin:0;">{{ t.body }}</p>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <!-- pricing -->
+    <section class="reveal" ref="{{ setReveal }}" style="max-width:1280px; margin:0 auto; padding:110px 40px 70px;">
+      <div style="text-align:center; margin-bottom:56px;">
+        <span style="font-size:11px; letter-spacing:4px; color:#ffcc78;">PRICING</span>
+        <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(30px,4vw,56px); line-height:1; margin:14px 0 0; color:#E6F2F0;">Three-part, outcome-aligned.</h2>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px;">
+        <sc-for list="{{ pricing }}" as="p" hint-placeholder-count="3">
+          <div style="border:1px solid {{ p.borderc }}; background:{{ p.bg }}; padding:38px 30px; display:flex; flex-direction:column;">
+            <span style="font-size:11px; letter-spacing:2px; color:{{ p.nc }};">{{ p.name }}</span>
+            <div style="display:flex; align-items:baseline; gap:8px; margin:20px 0 4px;">
+              <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:46px; color:{{ p.pricec }};">{{ p.price }}</span>
+              <span style="font-size:11px; letter-spacing:1px; color:#7D8A89;">/ {{ p.unit }}</span>
+            </div>
+            <p style="font-size:12px; line-height:1.85; color:{{ p.bodyc }}; margin:18px 0 0;">{{ p.body }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- unit economics -->
+    <section class="reveal" ref="{{ setReveal }}" style="border-top:1px solid #263434; background:#081313;">
+      <div style="max-width:1280px; margin:0 auto; padding:70px 40px; display:flex; align-items:center; justify-content:space-between; gap:40px; flex-wrap:wrap;">
+        <div style="font-family:'Space Grotesk',sans-serif; font-style:italic; font-size:24px; color:#B6CAC7; max-width:16ch;">Unit economics, year one.</div>
+        <div style="display:flex; gap:50px; flex-wrap:wrap;">
+          <sc-for list="{{ econ }}" as="e" hint-placeholder-count="4">
+            <div>
+              <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:40px; color:#E6F2F0; line-height:1;">{{ e.n }}</div>
+              <div style="font-size:10px; letter-spacing:1.5px; color:#7D8A89; margin-top:10px;">{{ e.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <!-- verticals -->
+    <section class="reveal" ref="{{ setReveal }}" style="max-width:1280px; margin:0 auto; padding:90px 40px 100px;">
+      <span style="font-size:11px; letter-spacing:4px; color:#ffcc78;">PILOT CUSTOMERS &#x2014; REPRESENTATIVE</span>
+      <div style="display:flex; flex-wrap:wrap; gap:14px; margin-top:28px;">
+        <sc-for list="{{ verticals }}" as="v" hint-placeholder-count="5">
+          <span style="border:1px solid #334141; padding:12px 20px; font-size:13px; letter-spacing:1px; color:#B6CAC7;">{{ v }}</span>
+        </sc-for>
+      </div>
+    </section>
+  </main>
+  </sc-if>
+
+  <!-- ================= INDUSTRIES ================= -->
+  <sc-if value="{{ isInd }}" hint-placeholder-val="{{ false }}">
+  <main data-screen-label="Industries" style="padding-top:96px;">
+    <!-- hero -->
+    <section style="position:relative; padding:50px 40px 70px; overflow:hidden;">
+      <canvas ref="{{ setCanvas }}" data-dither="ridge" style="position:absolute; right:-4%; top:0; width:44%; height:100%; opacity:0.4;"></canvas>
+      <div style="position:absolute; inset:0; background:linear-gradient(90deg,#0C1A1A 44%,rgba(12,26,26,0.2) 100%);"></div>
+      <div style="position:relative; max-width:1280px; margin:0 auto;">
+        <span style="font-size:11px; letter-spacing:4px; color:#ffcc78;">INDUSTRIES</span>
+        <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(40px,6vw,92px); line-height:0.98; letter-spacing:-1px; margin:20px 0 0; color:#E6F2F0; max-width:16ch;">
+          Deep expertise where data <span style="font-style:italic; color:#ffcc78;">is</span> the business.
+        </h1>
+        <p style="font-size:14px; line-height:2; color:#86A19E; max-width:56ch; margin:28px 0 0;">
+          We work with operationally complex, data-intensive businesses &#x2014; and the PE firms that own them &#x2014; turning fragmented systems into production platforms and governed AI.
+        </p>
+      </div>
+    </section>
+
+    <!-- industry grid -->
+    <section class="reveal" ref="{{ setReveal }}" style="max-width:1280px; margin:0 auto; padding:30px 40px 90px;">
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:#263434; border:1px solid #263434;">
+        <sc-for list="{{ industries }}" as="i" hint-placeholder-count="6">
+          <div style="background:#0C1A1A; padding:38px 32px; display:flex; flex-direction:column; min-height:280px;">
+            <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:24px; color:#E6F2F0; line-height:1.1;">{{ i.name }}</div>
+            <div style="font-size:11px; letter-spacing:2px; color:#ffcc78; margin:12px 0 0;">{{ i.tagline }}</div>
+            <p style="font-size:13px; line-height:1.85; color:#86A19E; margin:18px 0 0;">{{ i.body }}</p>
+            <div style="flex:1;"></div>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:26px; padding-top:18px; border-top:1px solid #263434;">
+              <span style="font-size:11px; letter-spacing:1.5px; color:#B6CAC7;">{{ i.stat }}</span>
+              <span style="font-size:14px; color:#ffcc78;">&#x2192;</span>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- sector intelligence -->
+    <section class="reveal" ref="{{ setReveal }}" style="border-top:1px solid #263434; background:#081313;">
+      <div style="max-width:1280px; margin:0 auto; padding:110px 40px;">
+        <div style="display:flex; align-items:end; justify-content:space-between; gap:30px; flex-wrap:wrap; margin-bottom:54px;">
+          <div>
+            <span style="font-size:11px; letter-spacing:4px; color:#ffcc78;">SECTOR INTELLIGENCE</span>
+            <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(30px,4vw,56px); line-height:1.02; margin:16px 0 0; color:#E6F2F0; max-width:18ch;">AI &amp; data optimization reports, by sector.</h2>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:#263434; border:1px solid #263434;">
+          <sc-for list="{{ reports }}" as="r" hint-placeholder-count="8">
+            <div style="background:#081313; padding:30px 24px; min-height:150px; display:flex; flex-direction:column;">
+              <div style="font-family:'Space Grotesk',sans-serif; font-size:20px; color:#E6F2F0; line-height:1.2;">{{ r }}</div>
+              <div style="flex:1;"></div>
+              <div style="display:flex; align-items:center; gap:8px; margin-top:22px;">
+                <span style="font-size:10px; letter-spacing:2px; color:#ffcc78;">PDF</span>
+                <span style="font-size:12px; color:#ffcc78;">&#x2192;</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="reveal" ref="{{ setReveal }}" style="max-width:1280px; margin:0 auto; padding:110px 40px 100px; text-align:center;">
+      <span style="font-size:11px; letter-spacing:4px; color:#ffcc78;">YOUR SECTOR, YOUR DATA</span>
+      <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(32px,5vw,72px); line-height:1.02; letter-spacing:-0.5px; margin:20px auto 0; color:#E6F2F0; max-width:20ch;">
+        Let&#x2019;s talk about where AI pays in <span style="font-style:italic; color:#ffcc78;">your</span> industry.
+      </h2>
+      <button onClick="{{ goContact }}" style="all:unset; cursor:pointer; margin-top:40px; font-size:12px; letter-spacing:2px; color:#0C1A1A; background:#ffcc78; padding:14px 26px;">BOOK A STRATEGY CALL &nbsp;&#x2192;</button>
+    </section>
+  </main>
+  </sc-if>
+
+  <!-- ================= ABOUT / CAREERS ================= -->
+  <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+  <main data-screen-label="About" style="padding-top:96px;">
+    <section style="position:relative; padding:50px 40px 80px; overflow:hidden;">
+      <canvas ref="{{ setCanvas }}" data-dither="orb" style="position:absolute; right:-5%; top:0; width:46%; height:100%; opacity:0.42;"></canvas>
+      <div style="position:absolute; inset:0; background:linear-gradient(90deg,#0C1A1A 40%,rgba(12,26,26,0.2) 100%);"></div>
+      <div style="position:relative; max-width:1280px; margin:0 auto;">
+        <span style="font-size:11px; letter-spacing:4px; color:#ffcc78;">VISION</span>
+        <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(40px,6vw,92px); line-height:0.98; letter-spacing:-1px; margin:20px 0 0; color:#E6F2F0; max-width:16ch;">
+          Built by operators who&#x2019;ve shipped AI into the <span style="font-style:italic; color:#ffcc78;">real world.</span>
+        </h1>
+        <p style="font-size:14px; line-height:2; color:#86A19E; max-width:54ch; margin:28px 0 0;">A small senior core team with a global contractor network. We bring AI to the industries that run the real economy &#x2014; and we&#x2019;re hiring the first ten people who will shape how.</p>
+      </div>
+    </section>
+
+    <!-- why join -->
+    <section class="reveal" ref="{{ setReveal }}" style="border-top:1px solid #263434; background:#081313;">
+      <div style="max-width:1280px; margin:0 auto; padding:110px 40px;">
+        <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(30px,4vw,56px); line-height:1; margin:0 0 54px; color:#E6F2F0;">Why join now <span style="font-size:0.4em; color:#7D8A89; letter-spacing:2px; font-family:'Space Mono',monospace;">&#x2014; FOR THE FIRST TEN</span></h2>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:46px;">
+          <sc-for list="{{ perks }}" as="p" hint-placeholder-count="4">
+            <div style="border-top:1px solid #ffcc78; padding-top:22px;">
+              <div style="font-family:'Space Grotesk',sans-serif; font-size:26px; color:#E6F2F0; margin-bottom:12px;">{{ p.t }}</div>
+              <p style="font-size:13px; line-height:1.9; color:#86A19E; margin:0; max-width:42ch;">{{ p.b }}</p>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  </sc-if>
+
+  <!-- ================= DESIGN SYSTEM ================= -->
+  <sc-if value="{{ isGuide }}" hint-placeholder-val="{{ false }}">
+  <main data-screen-label="Design system" style="padding-top:96px;">
+    <section style="max-width:1280px; margin:0 auto; padding:40px 40px 50px;">
+      <span style="font-size:11px; letter-spacing:4px; color:#ffcc78;">DESIGN SYSTEM &#x2014; v1.0</span>
+      <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(40px,6vw,86px); line-height:1; letter-spacing:-1px; margin:18px 0 0; color:#E6F2F0;">The Sondri <span style="font-style:italic; color:#ffcc78;">field guide.</span></h1>
+      <p style="font-size:14px; line-height:2; color:#86A19E; max-width:52ch; margin:24px 0 0;">A warm, high-contrast editorial system: clean grotesk display, monospace machinery, and images that develop out of dithered streaks. Confident, precise, a little analog.</p>
+    </section>
+
+    <!-- colour -->
+    <section class="reveal" ref="{{ setReveal }}" style="max-width:1280px; margin:0 auto; padding:50px 40px;">
+      <div style="display:flex; align-items:center; gap:14px; margin-bottom:30px;"><span style="font-size:11px; letter-spacing:3px; color:#ffcc78;">01 &nbsp;PALETTE</span><span style="flex:1; height:1px; background:#263434;"></span></div>
+      <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:1px; background:#263434; border:1px solid #263434;">
+        <sc-for list="{{ swatches }}" as="s" hint-placeholder-count="6">
+          <div style="background:#0C1A1A;">
+            <div style="height:120px; background:{{ s.hex }}; border-bottom:1px solid #263434;"></div>
+            <div style="padding:14px 14px 20px;">
+              <div style="font-size:11px; letter-spacing:1.5px; color:#E6F2F0;">{{ s.name }}</div>
+              <div style="font-size:10px; color:#7D8A89; margin-top:6px;">{{ s.hex }}</div>
+              <div style="font-size:10px; color:#86A19E; margin-top:4px;">{{ s.use }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- type -->
+    <section class="reveal" ref="{{ setReveal }}" style="max-width:1280px; margin:0 auto; padding:50px 40px;">
+      <div style="display:flex; align-items:center; gap:14px; margin-bottom:30px;"><span style="font-size:11px; letter-spacing:3px; color:#ffcc78;">02 &nbsp;TYPE</span><span style="flex:1; height:1px; background:#263434;"></span></div>
+      <div style="border:1px solid #263434;">
+        <sc-for list="{{ typeScale }}" as="t" hint-placeholder-count="4">
+          <div style="display:grid; grid-template-columns:160px 1fr 120px; gap:24px; padding:26px 30px; border-bottom:1px solid #263434; align-items:center;">
+            <span style="font-size:10px; letter-spacing:2px; color:#ffcc78;">{{ t.s }}</span>
+            <span style="font-family:{{ t.f }}; font-size:clamp(20px,3vw,40px); color:#E6F2F0; overflow:hidden;">{{ t.ex }}</span>
+            <span style="font-size:10px; letter-spacing:1px; color:#7D8A89; text-align:right;">{{ t.size }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- dither system -->
+    <section class="reveal" ref="{{ setReveal }}" style="max-width:1280px; margin:0 auto; padding:50px 40px;">
+      <div style="display:flex; align-items:center; gap:14px; margin-bottom:30px;"><span style="font-size:11px; letter-spacing:3px; color:#ffcc78;">03 &nbsp;IMAGE SYSTEM &#x2014; DITHERED STREAK</span><span style="flex:1; height:1px; background:#263434;"></span></div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px;">
+        <div style="position:relative; aspect-ratio:1/1; border:1px solid #263434;"><canvas ref="{{ setCanvas }}" data-dither="orb" style="position:absolute; inset:0; width:100%; height:100%;"></canvas><div style="position:absolute; left:12px; bottom:12px; font-size:9px; letter-spacing:2px; color:#ffcc78; background:rgba(8,19,19,0.7); padding:3px 7px;">ORB</div></div>
+        <div style="position:relative; aspect-ratio:1/1; border:1px solid #263434;"><canvas ref="{{ setCanvas }}" data-dither="ridge" style="position:absolute; inset:0; width:100%; height:100%;"></canvas><div style="position:absolute; left:12px; bottom:12px; font-size:9px; letter-spacing:2px; color:#ffcc78; background:rgba(8,19,19,0.7); padding:3px 7px;">RIDGE</div></div>
+        <div style="position:relative; aspect-ratio:1/1; border:1px solid #263434;"><canvas ref="{{ setCanvas }}" data-dither="gold" style="position:absolute; inset:0; width:100%; height:100%;"></canvas><div style="position:absolute; left:12px; bottom:12px; font-size:9px; letter-spacing:2px; color:#ffcc78; background:rgba(8,19,19,0.7); padding:3px 7px;">GOLD</div></div>
+      </div>
+      <p style="font-size:12px; line-height:1.9; color:#86A19E; max-width:60ch; margin:24px 0 0;">Imagery is rendered as a two-tone Bayer dither with vertical bleed. On scroll, the streaks lengthen and the picture &#x201C;develops&#x201D; &#x2014; the house motion of the brand.</p>
+    </section>
+
+    <!-- components -->
+    <section class="reveal" ref="{{ setReveal }}" style="max-width:1280px; margin:0 auto; padding:50px 40px 110px;">
+      <div style="display:flex; align-items:center; gap:14px; margin-bottom:30px;"><span style="font-size:11px; letter-spacing:3px; color:#ffcc78;">04 &nbsp;COMPONENTS</span><span style="flex:1; height:1px; background:#263434;"></span></div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;">
+        <div style="border:1px solid #263434; padding:34px;">
+          <div style="font-size:10px; letter-spacing:2px; color:#7D8A89; margin-bottom:22px;">BUTTONS &amp; LABELS</div>
+          <div style="display:flex; flex-wrap:wrap; gap:14px; align-items:center;">
+            <span style="font-size:12px; letter-spacing:2px; color:#0C1A1A; background:#ffcc78; padding:13px 24px;">PRIMARY &#x2192;</span>
+            <span style="font-size:12px; letter-spacing:2px; color:#C9DAD7; padding:13px 24px; border:1px solid #334141;">SECONDARY</span>
+            <span style="font-size:11px; letter-spacing:3px; color:#ffcc78;">&#x2014; KICKER LABEL</span>
+          </div>
+        </div>
+        <div style="border:1px solid #F7C062; background:#F7C062; box-shadow:6px 6px 0 rgba(0,0,0,0.35);">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; border-bottom:1px solid #0C1A1A;">
+            <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px; letter-spacing:1px; color:#0C1A1A;">SYSTEM ARTIFACT</span>
+            <span style="font-size:13px; color:#0C1A1A; border:1px solid #0C1A1A; padding:0 7px;">X</span>
+          </div>
+          <div style="padding:16px 12px; font-size:11px; line-height:1.7; letter-spacing:0.5px; color:#22302F;">RETRO TERMINAL DIALOGS CARRY UTILITY COPY &#x2014; CONSENT, STATUS, CONTACT. ALWAYS TAN ON INK.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+  </sc-if>
+
+  <!-- ================= FOOTER (shared) ================= -->
+  <footer style="border-top:1px solid #263434; background:#0C1A1A;">
+    <div style="max-width:1280px; margin:0 auto; padding:90px 40px 40px;">
+      <div style="display:grid; grid-template-columns:1.3fr 1fr; gap:60px; align-items:start;">
+        <div>
+          <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(30px,4vw,52px); line-height:1.05; color:#E6F2F0; max-width:18ch;">
+            Let&#x2019;s build the AI working model for the industries that run the real economy.
+          </div>
+          <button onClick="{{ goContact }}" style="all:unset; cursor:pointer; margin-top:30px; font-size:12px; letter-spacing:2px; color:#0C1A1A; background:#ffcc78; padding:14px 26px;">BOOK A DISCOVERY SPRINT &nbsp;&#x2192;</button>
+        </div>
+        <div style="border:1px solid #263434;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid #263434; background:#081313;">
+            <span style="font-size:10px; letter-spacing:2px; color:#86A19E;">CONTACT.SONDRI</span>
+            <span style="display:flex; gap:5px;"><span style="width:7px;height:7px;border:1px solid #6C7978;"></span><span style="width:7px;height:7px;border:1px solid #6C7978;"></span><span style="width:7px;height:7px;border:1px solid #ffcc78;background:#ffcc78;"></span></span>
+          </div>
+          <div style="padding:22px 16px; font-size:12px; line-height:2.1; color:#B6CAC7;">
+            <div style="color:#7D8A89;">&gt; founder@sondri.ai</div>
+            <div style="color:#7D8A89;">&gt; sondri.ai</div>
+            <div style="margin-top:14px; color:#86A19E;">Investor inquiries</div>
+            <div style="color:#86A19E;">Customer pilots</div>
+            <div style="color:#86A19E;">Founding-team applications<span style="animation:blink 1.1s step-end infinite; color:#ffcc78;">_</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:70px; padding-top:24px; border-top:1px solid #263434; flex-wrap:wrap; gap:16px;">
+        <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:18px; letter-spacing:3px; color:#E6F2F0;">SONDRI</span>
+        <div style="display:flex; gap:26px;">
+          <button onClick="{{ goHome }}" style="all:unset; cursor:pointer; font-size:10px; letter-spacing:2px; color:#7D8A89;">HOME</button>
+          <button onClick="{{ goHow }}" style="all:unset; cursor:pointer; font-size:10px; letter-spacing:2px; color:#7D8A89;">HOW IT WORKS</button>
+          <button onClick="{{ goInd }}" style="all:unset; cursor:pointer; font-size:10px; letter-spacing:2px; color:#7D8A89;">INDUSTRIES</button>
+          <button onClick="{{ goCust }}" style="all:unset; cursor:pointer; font-size:10px; letter-spacing:2px; color:#7D8A89;">FOR CUSTOMERS</button>
+          <button onClick="{{ goAbout }}" style="all:unset; cursor:pointer; font-size:10px; letter-spacing:2px; color:#7D8A89;">ABOUT</button>
+          <button onClick="{{ goGuide }}" style="all:unset; cursor:pointer; font-size:10px; letter-spacing:2px; color:#7D8A89;">DESIGN SYSTEM</button>
+        </div>
+        <span style="font-size:10px; letter-spacing:2px; color:#566363;">CONFIDENTIAL &#x2014; SONDRI 2026</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- COOKIE ARTIFACT -->
+  <sc-if value="{{ consent }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; left:24px; bottom:24px; z-index:60; width:300px; border:1px solid #F7C062; background:#F7C062; box-shadow:6px 6px 0 rgba(0,0,0,0.35);">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; border-bottom:1px solid #0C1A1A;">
+        <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px; letter-spacing:1px; color:#0C1A1A;">COOKIES</span>
+        <button onClick="{{ dismiss }}" style="all:unset; cursor:pointer; font-family:'Space Mono',monospace; font-size:13px; color:#0C1A1A; border:1px solid #0C1A1A; padding:0 7px; line-height:1.5;">X</button>
+      </div>
+      <div style="padding:14px 12px;">
+        <p style="font-size:11px; line-height:1.7; letter-spacing:0.5px; color:#22302F; margin:0;">BY CONTINUING TO USE THIS WEBSITE, YOU AGREE TO OUR PRIVACY POLICY.</p>
+        <button onClick="{{ dismiss }}" style="all:unset; cursor:pointer; margin-top:12px; font-size:12px; letter-spacing:2px; color:#0C1A1A; border-bottom:1px solid #0C1A1A;">OK</button>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { page: 'home', consent: true, signIdx: 0 };
+  _canvases = new Set();
+  ensureIO() {
+    if (!this._io && typeof IntersectionObserver !== 'undefined') {
+      this._io = new IntersectionObserver((es) => {
+        es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+      }, { threshold: 0.12 });
+    }
+    return this._io;
+  }
+
+  componentDidMount() {
+    this.ensureIO();
+    this._onScroll = () => { try { this.paintHero(); } catch (e) {} };
+    this._onResize = () => { try { this._canvases.forEach(c => this.paintCanvas(c, true)); } catch (e) {} };
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+    window.addEventListener('resize', this._onResize);
+    this._canvases.forEach(c => this.paintCanvas(c, false));
+
+    // animate the dither — pixels flow, wave and pulse (~30fps, visible canvases only)
+    this._t0 = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    const reduce = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduce) {
+      this._lastPaint = 0;
+      const loop = (now) => {
+        this._raf = requestAnimationFrame(loop);
+        if (now - this._lastPaint < 33) return;
+        this._lastPaint = now;
+        try { this.animateCanvases((now - this._t0) / 1000); } catch (e) {}
+      };
+      this._raf = requestAnimationFrame(loop);
+    } else {
+      // reduced motion: robot stays put, but keep the sign cycling phrases
+      this._signTimer = setInterval(() => {
+        if (this.state.page === 'home') this.setState(s => ({ signIdx: (s.signIdx + 1) % 5 }));
+      }, 3000);
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this._onScroll);
+    window.removeEventListener('resize', this._onResize);
+    if (this._raf) cancelAnimationFrame(this._raf);
+    if (this._signTimer) clearInterval(this._signTimer);
+    if (this._io) this._io.disconnect();
+  }
+
+  // repaint every dither canvas currently on screen with the live clock
+  animateCanvases(tm) {
+    // pull cycle (3s) drives the neon phrase — same clock keeps sign + robot in sync
+    if (this.state.page === 'home') {
+      const idx = Math.floor(tm / 3) % 5;
+      if (idx !== this._signIdx) { this._signIdx = idx; this.setState({ signIdx: idx }); }
+    }
+    const vh = window.innerHeight || 800;
+    this._canvases.forEach(c => {
+      const r = c.getBoundingClientRect();
+      if (r.width < 4 || r.bottom < -60 || r.top > vh + 60) return;
+      let t = 1;
+      if (c.dataset.hero) {
+        const sc = window.scrollY || 0;
+        t = 0.25 + 0.75 * Math.max(0, Math.min(1, 1 - sc / 700));
+      }
+      this.dither(c, c.getAttribute('data-dither'), t, tm);
+    });
+  }
+
+  // ref callback for every dither canvas — fires exactly when React mounts/unmounts the node
+  setCanvas = (el) => {
+    try {
+      if (!el) return;
+      this._canvases.add(el);
+      this.paintCanvas(el, false);
+    } catch (e) {}
+  };
+
+  // ref callback for reveal-on-scroll sections
+  setReveal = (el) => {
+    try {
+      if (!el) return;
+      const io = this.ensureIO();
+      if (io) io.observe(el);
+      setTimeout(() => {
+        if (!el.classList.contains('in')) {
+          const r = el.getBoundingClientRect();
+          if (r.top < window.innerHeight * 1.1) el.classList.add('in');
+        }
+      }, 1400);
+    } catch (e) {}
+  };
+
+  paintCanvas(el, force) {
+    let tries = 0;
+    const draw = () => {
+      const w = Math.round(el.getBoundingClientRect().width);
+      if (!w) { if (tries++ < 30) setTimeout(draw, 50); return; }
+      if (el.dataset.hero) { this.paintHero(); return; }
+      if (!force && el.dataset.dw === String(w)) return;
+      el.dataset.dw = String(w);
+      this.dither(el, el.getAttribute('data-dither'), 1);
+    };
+    draw();
+  }
+
+  paintHero() {
+    let c = null;
+    this._canvases.forEach(x => { if (x.dataset.hero) c = x; });
+    if (!c) return;
+    const w = Math.round(c.getBoundingClientRect().width);
+    if (!w) return;
+    const sc = window.scrollY || 0;
+    const t = Math.max(0, Math.min(1, 1 - sc / 700));
+    const key = w + ':' + Math.round(t * 36);
+    if (c.dataset.k !== key) { c.dataset.k = key; this.dither(c, 'hero', 0.25 + 0.75 * t); }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState && prevState.page !== this.state.page) {
+      try { window.scrollTo(0, 0); } catch (e) {}
+    }
+  }
+
+  dither(canvas, variant, t, tm = 0) {
+    const rect = canvas.getBoundingClientRect();
+    const W = Math.max(8, Math.round(rect.width));
+    const H = Math.max(8, Math.round(rect.height));
+    if (!W || !H) return;
+    const px = variant === 'hero' ? 6 : 5;
+    const w = Math.max(6, Math.floor(W / px));
+    const h = Math.max(6, Math.floor(H / px));
+    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+    const ctx = canvas.getContext('2d');
+    const img = ctx.createImageData(w, h);
+    const d = img.data;
+    const bayer = [[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
+    const ink = [12, 26, 26];
+    const sand = variant === 'gold' ? [255, 204, 120] : [191, 203, 201];
+    const gold = [255, 204, 120];
+    const eyeC = [230, 242, 240];
+    // ── walking robot behind the pixel curtain (hero only) ──
+    let robotArr = null, RB = null;
+    if (variant === 'hero') {
+      robotArr = new Float32Array(w * h);
+      const aspect = w / h;
+      const wave = 0.46 * Math.sin(tm * 4.6);             // hand waving back & forth
+      const bob = -0.012 * Math.cos(tm * 2.3);            // gentle idle bob
+      const sway = 0.014 * Math.sin(tm * 0.9);            // subtle weight shift
+      const cx = aspect * 0.66 + aspect * 0.02 * Math.sin(tm * 0.5);
+      const cy = 0.5 + bob;
+      RB = { mode: 'hero', cx, cy, wave, sway, aspect };
+    } else if (variant === 'puppet') {
+      robotArr = new Float32Array(w * h);
+      const aspect = w / h;
+      const local = ((tm % 3) + 3) % 3;                  // 3s pull cycle
+      let pull = 0;
+      if (local < 0.16) pull = local / 0.16;             // yank down, fast
+      else if (local < 0.46) pull = 1 - (local - 0.16) / 0.30; // release back up
+      pull = Math.max(0, Math.min(1, pull));
+      pull = pull * pull * (3 - 2 * pull);               // ease
+      const sway = 0.012 * Math.sin(tm * 0.9);
+      const cx = aspect * 0.5 - 0.005;                   // nudged right of centre
+      const cy = 0.70 + pull * 0.025;                    // slight crouch on the pull
+      const armLen = 0.30 - pull * 0.15;                 // arm shortens as it yanks the chain down
+      const handY = (cy - 0.115) - armLen;
+      RB = { mode: 'puppet', cx, cy, sway, aspect, handY, chx: cx + 0.055, chy: handY };
+    }
+    const FEAT = 0.012;
+    const cov = (dd) => dd >= 0 ? 0 : Math.min(1, -dd / FEAT);
+    const sbox = (px2, py2, bx, by, hw, hh) => Math.max(Math.abs(px2 - bx) - hw, Math.abs(py2 - by) - hh);
+    const slimb = (px2, py2, hx, hy, ang, len, hw) => {
+      const dx = px2 - hx, dy = py2 - hy, c = Math.cos(ang), s = Math.sin(ang);
+      const rx = dx * c + dy * s, ry = -dx * s + dy * c;
+      return Math.max(Math.abs(rx) - hw, Math.max(-ry, ry - len));
+    };
+    const robotAt = (ax, ay) => {
+      const cx = RB.cx, cy = RB.cy, W = RB.wave, S = RB.sway;
+      let rb = 0;
+      rb = Math.max(rb, cov(sbox(ax, ay, cx, cy - 0.205, 0.072, 0.070)));               // head
+      rb = Math.max(rb, cov(sbox(ax, ay, cx, cy - 0.305, 0.008, 0.030)));               // antenna
+      rb = Math.max(rb, cov(sbox(ax, ay, cx, cy - 0.005, 0.088, 0.120)));               // torso
+      rb = Math.max(rb, cov(sbox(ax, ay, cx, cy + 0.100, 0.072, 0.030)));               // hips
+      rb = Math.max(rb, cov(slimb(ax, ay, cx - 0.095, cy - 0.115, 0.20 + S, 0.205, 0.027)));   // arm L — rests at side
+      rb = Math.max(rb, cov(slimb(ax, ay, cx + 0.095, cy - 0.115, -2.35 + W, 0.215, 0.027)));  // arm R — raised, waving
+      rb = Math.max(rb, cov(slimb(ax, ay, cx - 0.045, cy + 0.105,  0.05 + S, 0.215, 0.034)));  // leg L — standing
+      rb = Math.max(rb, cov(slimb(ax, ay, cx + 0.045, cy + 0.105, -0.05 - S, 0.215, 0.034)));  // leg R — standing
+      return rb;
+    };
+    const robotAtP = (ax, ay) => {
+      const cx = RB.cx, cy = RB.cy, S = RB.sway;
+      const armLen = (cy - 0.115) - RB.handY;
+      let rb = 0;
+      rb = Math.max(rb, cov(sbox(ax, ay, cx, cy - 0.205, 0.070, 0.066)));                       // head
+      rb = Math.max(rb, cov(sbox(ax, ay, cx, cy - 0.300, 0.007, 0.028)));                       // antenna
+      rb = Math.max(rb, cov(sbox(ax, ay, cx, cy - 0.010, 0.086, 0.115)));                       // torso
+      rb = Math.max(rb, cov(sbox(ax, ay, cx, cy + 0.095, 0.070, 0.030)));                       // hips
+      rb = Math.max(rb, cov(slimb(ax, ay, cx + 0.055, cy - 0.115, Math.PI, armLen, 0.026)));    // right arm — raised, pulling
+      rb = Math.max(rb, cov(slimb(ax, ay, cx - 0.095, cy - 0.115, 0.16 + S, 0.200, 0.026)));    // left arm — at side
+      rb = Math.max(rb, cov(slimb(ax, ay, cx - 0.042, cy + 0.100, 0.05 + S, 0.210, 0.033)));    // leg L — standing
+      rb = Math.max(rb, cov(slimb(ax, ay, cx + 0.042, cy + 0.100, -0.05 - S, 0.210, 0.033)));   // leg R — standing
+      return rb;
+    };
+    const field = new Float32Array(w * h);
+    const hash = (x, y) => { const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return s - Math.floor(s); };
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const nx = x / w, ny = y / h;
+        let v = 0;
+        if (variant === 'hero') {
+          const dx = nx - 0.66, dy = ny - 0.46;
+          let r = Math.sqrt(dx*dx*0.9 + dy*dy*1.7);
+          v = 1.12 - r * 1.7;
+          const dx2 = nx - 0.4, dy2 = ny - 0.78;
+          v = Math.max(v, 0.95 - Math.sqrt(dx2*dx2*1.3 + dy2*dy2*2.2) * 2.1);
+          v += 0.14 * Math.sin(nx*9 + Math.sin(ny*5)*1.6);
+        } else if (variant === 'orb') {
+          const dx = nx - 0.5, dy = ny - 0.44;
+          let r = Math.sqrt(dx*dx*1.1 + dy*dy*1.5);
+          v = 1.1 - r * 2.0;
+          v *= 0.82 + 0.18 * Math.sin(ny * h * 0.5);
+        } else if (variant === 'puppet') {
+          const dx = nx - 0.5, dy = ny - 0.34;
+          v = 0.98 - Math.sqrt(dx*dx*1.0 + dy*dy*1.35) * 1.7;
+          v += 0.09 * Math.sin(ny * h * 0.42);
+        } else if (variant === 'ridge') {
+          v = 0.55 + 0.5 * Math.sin(nx*6.283*1.4 + Math.sin(ny*4.5)*1.6) * (1.15 - ny);
+        } else {
+          const dx = nx - 0.5, dy = ny - 0.5;
+          v = 1.0 - Math.sqrt(dx*dx + dy*dy) * 2.1;
+        }
+        // flowing + waving motion
+        v += 0.10 * Math.sin((nx*7.0 - ny*3.5) + tm*1.05)
+           + 0.07 * Math.sin((nx*4.0 + ny*6.0) - tm*0.85)
+           + 0.05 * Math.sin(ny*12.0 + tm*1.8);
+        v += 0.05 * Math.sin(tm*1.3);            // breathing pulse
+        v += (hash(x, y) - 0.5) * 0.08;
+        if (RB) {
+          const ax = nx * RB.aspect, ay = ny;
+          const rb = RB.mode === 'puppet' ? robotAtP(ax, ay) : robotAt(ax, ay);
+          let rcode = 0;
+          if (rb > 0) {
+            v -= rb * 0.95;                                  // carve a shadowed silhouette
+            rcode = 1;
+            if (rb > 0.12 && rb < 0.52) rcode = 4;           // glowing rim outline
+          }
+          const eyeDx = RB.mode === 'puppet' ? 0.024 : 0.026;
+          const eye = cov(sbox(ax, ay, RB.cx + eyeDx, RB.cy - 0.205, 0.018, 0.014));
+          const chest = cov(sbox(ax, ay, RB.cx, RB.cy - 0.010, 0.030, 0.045));
+          if (eye > 0.5) rcode = 2;
+          else if (chest > 0.5 && rb > 0.5) rcode = 3;
+          if (RB.mode === 'puppet') {                    // pull-chain: sign centre → (moved) hand
+            const x1 = RB.aspect * 0.5, y1 = 0.235, x2 = RB.chx, y2 = RB.chy + 0.01;
+            const ddx = x2 - x1, ddy = y2 - y1, l2 = ddx * ddx + ddy * ddy;
+            let tt = l2 > 0 ? ((ax - x1) * ddx + (ay - y1) * ddy) / l2 : 0;
+            tt = Math.max(0, Math.min(1, tt));
+            const qx = x1 + tt * ddx, qy = y1 + tt * ddy;
+            if (Math.hypot(ax - qx, ay - qy) < 0.007) rcode = 5;
+          }
+          robotArr[y*w + x] = rcode;
+        }
+        field[y*w + x] = v;
+      }
+    }
+    // vertical drip streaks (the signature "developing" bleed)
+    for (let x = 0; x < w; x++) {
+      const cn = hash(x, 7.3);
+      const decay = 0.9 + cn * 0.075;
+      let run = 0;
+      const puppet = RB && RB.mode === 'puppet';
+      for (let y = 0; y < h; y++) {
+        const i = y*w + x;
+        if (puppet && robotArr[i] > 0) {                 // robot/chain: block bleed, keep body carved
+          run = 0;
+          if (robotArr[i] === 1) field[i] = -1;
+          continue;
+        }
+        const base = field[i];
+        run = Math.max(base, run * decay - 0.01 - cn * 0.02);
+        const flowmod = 0.78 + 0.22 * Math.sin(y * 0.55 - tm * 3.0 + cn * 6.28); // bands drip downward
+        const drip = run * (0.35 + 0.65 * t) * flowmod;
+        field[i] = Math.max(base, drip * 0.96);
+      }
+    }
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const v = field[y*w + x];
+        const thr = (bayer[y & 3][x & 3] + 0.5) / 16;
+        let on = v > thr;
+        let c = on ? sand : ink;
+        if (robotArr) {
+          const rv = robotArr[y*w + x];
+          if (rv === 2) { c = eyeC; on = true; }        // glowing eye
+          else if (rv === 3) { c = gold; on = true; }   // chest core
+          else if (rv === 4) { c = gold; on = true; }   // glowing rim outline
+          else if (rv === 5) { c = gold; on = true; }   // pull-chain / string
+          // rv === 1 interior: carved dark — curtain shows through
+        }
+        const i = (y*w + x) * 4;
+        d[i] = c[0]; d[i+1] = c[1]; d[i+2] = c[2]; d[i+3] = on ? 255 : 0;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+    canvas.style.imageRendering = 'pixelated';
+  }
+
+  go(page) {
+    this.setState({ page }, () => { try { window.scrollTo(0, 0); } catch (e) {} });
+    try { window.scrollTo(0, 0); } catch (e) {}
+  }
+
+  renderVals() {
+    const go = (p) => () => this.go(p);
+    const page = this.state.page;
+    const navDef = [
+      { label: 'HOME', p: 'home' },
+      { label: 'HOW IT WORKS', p: 'how' },
+      { label: 'INDUSTRIES', p: 'industries' },
+      { label: 'FOR CUSTOMERS', p: 'customers' },
+      { label: 'ABOUT', p: 'about' },
+    ];
+    const phrases = [
+      'Setting up a shared second brain',
+      'AI agents that work with MCPs, skill packs \u0026 tools',
+      'Prototype to production \u2014 better runtime, optimal cost',
+      'Highly engineered token economics',
+      'Deploying with guaranteed productivity on day zero',
+    ];
+    const signIdx = this.state.signIdx || 0;
+    const signNode = React.createElement('div', {
+      key: signIdx,
+      style: {
+        animation: 'neonpop 0.6s cubic-bezier(.2,.7,.2,1) both',
+        fontFamily: "'Space Grotesk', sans-serif",
+        fontWeight: 700,
+        fontSize: 'clamp(13px,1.55vw,19px)',
+        lineHeight: 1.18,
+        letterSpacing: '0.4px',
+        textAlign: 'center',
+        color: '#ffe7b3',
+        textShadow: '0 0 4px #ffcc78, 0 0 12px rgba(255,204,120,0.85), 0 0 24px rgba(255,204,120,0.5)',
+      },
+    }, phrases[signIdx]);
+    return {
+      setCanvas: this.setCanvas,
+      setReveal: this.setReveal,
+      signNode,
+      isHome: page === 'home',
+      isHow: page === 'how',
+      isCust: page === 'customers',
+      isInd: page === 'industries',
+      isAbout: page === 'about',
+      isGuide: page === 'guide',
+      consent: this.state.consent,
+      dismiss: () => this.setState({ consent: false }),
+      goHome: go('home'), goHow: go('how'), goCust: go('customers'),
+      goInd: go('industries'),
+      goAbout: go('about'), goGuide: go('guide'), goContact: go('customers'),
+      navItems: navDef.map(n => ({ label: n.label, go: go(n.p), color: page === n.p ? '#E6F2F0' : '#86A19E' })),
+      marquee: ['RETAIL', '◆', 'CONSTRUCTION', '◆', 'LOGISTICS', '◆', 'TRADES', '◆', 'RETAIL', '◆', 'CONSTRUCTION', '◆', 'LOGISTICS', '◆', 'TRADES', '◆'],
+      industries: [
+        { name: 'Private Equity', tagline: 'PORTFOLIO-WIDE VALUE CREATION', body: 'Diligence support, EBITDA-linked AI roadmaps, and repeatable playbooks deployed across the book on hold-period timelines.', stat: '3 to 15 cos / program' },
+        { name: 'Financial Services', tagline: 'RISK AND DECISIONING AT SCALE', body: 'Governed ML, fraud detection, and real-time data for banks and asset managers, with the audit trail regulators expect.', stat: 'Real-time decisioning' },
+        { name: 'Fintech & Payments', tagline: 'PRODUCTION AI FOR MONEY MOVEMENT', body: 'Fraud, underwriting, and intelligent automation deployed into the transaction path with monitoring and guardrails.', stat: 'Fraud + underwriting' },
+        { name: 'Healthtech', tagline: 'CLAIMS, RCM, AND CLINICAL DATA', body: 'Fragmented health data, unified and governed. Models that clinicians and operators trust, with privacy built in.', stat: 'HIPAA-aware delivery' },
+        { name: 'CPG & Retail', tagline: 'DEMAND, PRICING, AND SUPPLY CHAIN', body: 'Forecasting, pricing intelligence, and supply chain optimization built on a single, trusted data foundation.', stat: 'Forecast + pricing' },
+        { name: 'Real Estate', tagline: 'VALUATION AND MARKET INTELLIGENCE', body: 'Automated valuation, underwriting, and market data unified into one decision-ready platform across markets.', stat: '60+ markets' },
+      ],
+      reports: ['Fintech & Payments', 'Healthcare IT & RCM', 'CPG, Food & Beverage', 'E-commerce & DTC', 'Investment Management', 'Pharma Services & CRO', 'Retail Tech & POS', 'Data Infrastructure & MLOps'],
+      problemStats: [
+        { n: '70%', label: 'of mid-market businesses in non-tech sectors have no AI strategy.' },
+        { n: '$250K+', label: 'minimum cost of a bespoke AI consulting engagement today.' },
+        { n: '9 mo.', label: 'average time-to-value for a traditional AI implementation.' },
+      ],
+      doSteps: [
+        { i: '01', t: 'We diagnose your workflow and pick three high-ROI use cases.' },
+        { i: '02', t: 'We design and build the agents, MCPs, tools, and integrations.' },
+        { i: '03', t: 'We deploy onto your existing stack \u2014 no platform lock-in.' },
+        { i: '04', t: 'We train your team and stay on for governance and tuning.' },
+      ],
+      phases: [
+        { num: '0', dur: '2 WEEKS', title: 'Discover', body: 'Workflow audit. We map every process and pick three use cases with clear ROI.' },
+        { num: '1', dur: '6 WEEKS', title: 'Build', body: 'First agents go live. Our core team blueprints; vetted contractors deliver.' },
+        { num: 'n', dur: 'ONGOING', title: 'Scale', body: 'New use cases land monthly. We stay on for tuning, governance, and the next wave.' },
+      ],
+      traction: [
+        { n: '7', label: 'PAYING PILOTS' },
+        { n: '$420K', label: 'ARR BOOKED' },
+        { n: '3', label: 'VERTICALS VALIDATED' },
+        { n: '94%', label: 'PILOT \u2192 EXPANSION' },
+      ],
+      timeline: [
+        { wk: 'WEEKS 1\u20132', title: 'Discovery', body: 'We sit with your team and map every workflow. Then we pick three use cases with clear, measurable ROI.' },
+        { wk: 'WEEKS 3\u20136', title: 'Build', body: 'Our core team designs the agents. Vetted contractors deliver against the blueprint, reviewed at every gate.' },
+        { wk: 'WEEKS 7\u20138', title: 'Deploy & Train', body: 'Agents go live in your environment. Your people learn how to operate, refine, and request more.' },
+        { wk: 'MONTH 3+', title: 'Scale', body: 'New use cases land monthly. Sondri stays on for tuning, governance, and the next wave.' },
+      ],
+      engine: [
+        { tag: '0 \u2192 1', title: 'Sondri Core Team', items: ['Senior solution architects', 'Customer discovery', 'Architecture & blueprint', 'Quality gate before scale'] },
+        { tag: '1 \u2192 n', title: 'Contractor Network', items: ['Vetted global contractors', 'Build agents & integrations', '20\u201330% of US consulting rates', 'Reviewed by core team'] },
+        { tag: 'OUTCOMES', title: 'Your Business', items: ['Retail \u00B7 construction', 'Logistics \u00B7 trades', 'Recurring agent service', 'Renewals + expansion'] },
+      ],
+      whyNow: [
+        { i: '01', t: 'Capable agents', b: 'Frontier models can now run end-to-end workflows \u2014 not just answer questions. Off-the-shelf tooling makes deployment weeks, not quarters.' },
+        { i: '02', t: 'Global talent', b: 'A new generation of skilled contractors in India, Eastern Europe, and Latin America can deliver at 20\u201330% of US consulting rates.' },
+        { i: '03', t: 'Buyer readiness', b: 'Non-tech executives have moved from skepticism to FOMO. Boards are asking the question. Sondri is the answer.' },
+      ],
+      pains: [
+        { t: 'You’re drowning in spreadsheets', b: 'Inventory, schedules, quotes, invoices \u2014 all in Excel, none of it talking to anything else.' },
+        { t: 'You can’t hire a data team', b: 'And the consultants you can afford give you slide decks, not systems that run.' },
+        { t: 'Competitors are pulling ahead', b: 'Tech-native rivals are quoting faster, stocking smarter, scheduling tighter.' },
+        { t: 'You don’t want a platform', b: 'You want results \u2014 agents that fit how you work today, not another login to manage.' },
+      ],
+      pricing: [
+        { name: 'Discovery Sprint', price: '$25K', unit: 'fixed fee', body: 'A two-week diagnostic. We map your workflows and scope three use cases. Converts to build.', borderc: '#263434', bg: '#0C1A1A', nc: '#ffcc78', pricec: '#E6F2F0', bodyc: '#86A19E' },
+        { name: 'Build Engagement', price: '$80\u2013250K', unit: 'per use case', body: 'Scoped at discovery, contractor-delivered against our blueprint, reviewed at every gate.', borderc: '#ffcc78', bg: '#152020', nc: '#ffcc78', pricec: '#E6F2F0', bodyc: '#B6CAC7' },
+        { name: 'Care & Scale', price: '$8\u201325K', unit: 'per month', body: 'Monthly recurring \u2014 tuning, governance, and a steady cadence of new use cases.', borderc: '#263434', bg: '#0C1A1A', nc: '#ffcc78', pricec: '#E6F2F0', bodyc: '#86A19E' },
+      ],
+      econ: [
+        { n: '$180K', label: 'AVG CONTRACT VALUE' },
+        { n: '62%', label: 'GROSS MARGIN' },
+        { n: '5 mo.', label: 'PAYBACK PERIOD' },
+        { n: '135%', label: 'NET REVENUE RETENTION' },
+      ],
+      verticals: ['Regional retail chain', 'Mid-size contractor', 'Logistics operator', 'Auto service group', 'Specialty trades'],
+      team: [
+        { mono: 'YN', role: 'Founder, CEO', name: '[Your name]', body: 'Led AI working-model rollouts at enterprise scale. 12+ years bridging enterprise and engineering.', ring: '#ffcc78' },
+        { mono: '?', role: 'Founder, CTO', name: '[Open seat]', body: 'Deep agent / MCP experience. Ships fast, hires faster. We’re hiring.', ring: '#455252' },
+        { mono: '?', role: 'Head of Delivery', name: '[Open seat]', body: 'Runs the global contractor network. Scales the 1 \u2192 n motion. We’re hiring.', ring: '#455252' },
+        { mono: '?', role: 'Head of GTM', name: '[Open seat]', body: 'Sells into the non-tech mid-market. Translates AI into business outcomes. We’re hiring.', ring: '#455252' },
+      ],
+      perks: [
+        { t: 'Meaningful equity', b: 'Top 1% of the cap table. We’re hiring the people who shape the company, not fill seats.' },
+        { t: 'Real customers from day one', b: 'No phantom roadmaps. You’ll ship into live, revenue-generating accounts in week one.' },
+        { t: 'A market that’s wide open', b: 'Non-tech sectors are an underexploited frontier. The first credible brand here wins big.' },
+        { t: 'Leverage, not headcount', b: 'A small core team with a global contractor network. You’ll punch ten times your weight.' },
+      ],
+      roadmap: [
+        { when: 'NOW \u2192 Q4 2026', metric: '$1M ARR \u00B7 15 customers', body: 'Lock in retail + construction. Prove a repeatable build motion.' },
+        { when: 'Q1 \u2192 Q3 2027', metric: '$5M ARR \u00B7 50 customers', body: 'Expand verticals into logistics and trades. 30+ contractors active.' },
+        { when: 'Q4 2027 \u2192', metric: '$15M ARR \u00B7 Series A', body: 'International expansion. Productise the core. Open the agent marketplace.' },
+      ],
+      swatches: [
+        { hex: '#0C1A1A', name: 'INK', use: 'Base canvas' },
+        { hex: '#081313', name: 'INK DEEP', use: 'Recessed panels' },
+        { hex: '#ffcc78', name: 'GOLD', use: 'Primary accent' },
+        { hex: '#F7C062', name: 'TAN', use: 'Artifact surfaces' },
+        { hex: '#E6F2F0', name: 'BONE', use: 'Display type' },
+        { hex: '#86A19E', name: 'CLAY', use: 'Body copy' },
+      ],
+      typeScale: [
+        { s: 'DISPLAY', f: "'Space Grotesk', sans-serif", size: '116px', ex: 'Aa' },
+        { s: 'HEADING', f: "'Space Grotesk', sans-serif", size: '58px', ex: 'Working model' },
+        { s: 'LABEL / UI', f: "'Space Mono', monospace", size: '11px', ex: 'AI WORKING MODELS' },
+        { s: 'BODY', f: "'Space Mono', monospace", size: '14px', ex: 'Done-for-you, end to end.' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

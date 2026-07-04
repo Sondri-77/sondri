@@ -1,0 +1,140 @@
+---
+import Base from '../layouts/Base.astro';
+import { timeline, engine, whyNow } from '../data';
+---
+
+<Base
+  title="How it works — Sondri"
+  description="A working AI model, deployed in 8 weeks. A senior core team takes you from zero to one; a vetted contractor network takes one to many."
+>
+  <div class="pagepad">
+    <!-- HERO -->
+    <section class="wrap two-col hero">
+      <div>
+        <span class="kicker">HOW IT WORKS</span>
+        <h1 class="display hero-title">A working AI model, deployed in <em>8 weeks.</em></h1>
+        <p class="lede hero-lede">
+          One delivery engine: a senior core team takes you from zero to one, a vetted contractor
+          network takes one to many. You get outcomes, not a platform.
+        </p>
+      </div>
+      <div class="dither-frame square">
+        <canvas data-dither="ridge" aria-hidden="true"></canvas>
+        <div class="fig-label">FIG. 02 &mdash; DELIVERY ENGINE</div>
+      </div>
+    </section>
+
+    <!-- TIMELINE -->
+    <section class="reveal wrap tl">
+      <div class="grid-lined g4">
+        {timeline.map((t) => (
+          <div class="cell">
+            <span class="wk">{t.wk}</span>
+            <span class="cell-title">{t.title}</span>
+            <p class="cell-body">{t.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ENGINE 0 → 1 → n -->
+    <section class="reveal engine-band">
+      <div class="wrap engine-inner">
+        <div class="engine-head">
+          <span class="kicker">OPERATING MODEL</span>
+          <h2 class="display engine-title">0 &rarr; 1 &rarr; <em class="plain">n</em> &nbsp;&mdash;&nbsp; the engine</h2>
+        </div>
+        <div class="engine-grid g3">
+          {engine.map((e) => (
+            <div class="engine-card">
+              <span class="tag">{e.tag}</span>
+              <div class="engine-name">{e.title}</div>
+              <div class="items">
+                {e.items.map((it) => (
+                  <div class="item"><span class="dash">&mdash;</span>{it}</div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY NOW -->
+    <section class="reveal wrap whynow">
+      <span class="kicker">WHY NOW</span>
+      <h2 class="display wn-title">Three shifts have unlocked this market in the last 18 months.</h2>
+      <div class="wn-grid g3">
+        {whyNow.map((w) => (
+          <div class="wn">
+            <span class="wn-i">{w.i}</span>
+            <div class="wn-t">{w.t}</div>
+            <p class="wn-b">{w.b}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .pagepad { padding-top: 96px; }
+  .hero {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 70px;
+    align-items: end;
+    padding: 40px var(--pad-x) 70px;
+  }
+  .hero-title { font-size: clamp(40px, 6vw, 86px); line-height: 1; letter-spacing: -1px; margin-top: 18px; }
+  .hero-lede { max-width: 50ch; margin-top: 26px; }
+  .square { aspect-ratio: 1 / 1; }
+
+  .tl { padding: 50px var(--pad-x) 90px; }
+  .cell { padding: 34px 24px; min-height: 260px; display: flex; flex-direction: column; }
+  .wk { font-size: 10px; letter-spacing: 2px; color: var(--gold); }
+  .cell-title { font-family: var(--font-display); font-size: 30px; color: var(--bone); margin: 14px 0 16px; }
+  .cell-body { font-size: 12px; line-height: 1.85; color: var(--clay); }
+
+  .engine-band { border-top: 1px solid var(--line); background: var(--ink-deep); }
+  .engine-inner { padding: 110px var(--pad-x); }
+  .engine-head { text-align: center; margin-bottom: 60px; }
+  .engine-title { font-size: clamp(34px, 5vw, 64px); line-height: 1; margin-top: 16px; }
+  .engine-title .plain { color: var(--bone); }
+  .engine-grid { display: grid; gap: 24px; }
+  .engine-card { border: 1px solid var(--line); background: var(--ink); padding: 32px 28px; }
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--ink);
+    background: var(--gold);
+    padding: 5px 10px;
+  }
+  .engine-name { font-family: var(--font-display); font-size: 26px; color: var(--bone); margin: 22px 0 18px; }
+  .items { display: flex; flex-direction: column; }
+  .item {
+    display: flex;
+    gap: 12px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--body-2);
+  }
+  .dash { color: var(--dim-2); }
+
+  .whynow { padding: 110px var(--pad-x); }
+  .wn-title { font-size: clamp(30px, 4vw, 56px); line-height: 1.05; margin: 16px 0 56px; max-width: 22ch; }
+  .wn-grid { display: grid; gap: 46px; }
+  .wn { border-top: 1px solid var(--gold); padding-top: 22px; }
+  .wn-i { font-family: var(--font-display); font-size: 40px; color: var(--dim-2); }
+  .wn-t { font-family: var(--font-display); font-size: 24px; color: var(--bone); margin: 14px 0 12px; }
+  .wn-b { font-size: 13px; line-height: 1.9; color: var(--clay); }
+
+  @media (max-width: 900px) {
+    .cell { min-height: 0; }
+    .engine-grid, .wn-grid { grid-template-columns: 1fr; }
+    .square { max-width: 480px; }
+  }
+</style>

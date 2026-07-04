@@ -1,0 +1,143 @@
+---
+import Base from '../layouts/Base.astro';
+import { swatches, typeScale } from '../data';
+---
+
+<Base
+  title="Design system — Sondri"
+  description="The Sondri field guide: a warm, high-contrast editorial system — clean grotesk display, monospace machinery, and images that develop out of dithered streaks."
+>
+  <div class="pagepad">
+    <section class="wrap head-sec">
+      <span class="kicker">DESIGN SYSTEM &mdash; v1.0</span>
+      <h1 class="display head-title">The Sondri <em>field guide.</em></h1>
+      <p class="lede head-lede">
+        A warm, high-contrast editorial system: clean grotesk display, monospace machinery, and
+        images that develop out of dithered streaks. Confident, precise, a little analog.
+      </p>
+    </section>
+
+    <!-- PALETTE -->
+    <section class="reveal wrap sys-sec">
+      <div class="sec-rule"><span class="kicker rule-kicker">01 &nbsp;PALETTE</span><span class="hr"></span></div>
+      <div class="grid-lined g6">
+        {swatches.map((s) => (
+          <div class="swatch">
+            <div class="swatch-chip" style={`background:${s.hex}`}></div>
+            <div class="swatch-meta">
+              <div class="swatch-name">{s.name}</div>
+              <div class="swatch-hex">{s.hex}</div>
+              <div class="swatch-use">{s.use}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- TYPE -->
+    <section class="reveal wrap sys-sec">
+      <div class="sec-rule"><span class="kicker rule-kicker">02 &nbsp;TYPE</span><span class="hr"></span></div>
+      <div class="type-table">
+        {typeScale.map((t) => (
+          <div class="type-row">
+            <span class="type-s">{t.s}</span>
+            <span class="type-ex" style={`font-family:${t.f}`}>{t.ex}</span>
+            <span class="type-size">{t.size}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- DITHER SYSTEM -->
+    <section class="reveal wrap sys-sec">
+      <div class="sec-rule">
+        <span class="kicker rule-kicker">03 &nbsp;IMAGE SYSTEM &mdash; DITHERED STREAK</span><span class="hr"></span>
+      </div>
+      <div class="dithers g3">
+        <div class="dither-frame square"><canvas data-dither="orb" aria-hidden="true"></canvas><div class="fig-label tile">ORB</div></div>
+        <div class="dither-frame square"><canvas data-dither="ridge" aria-hidden="true"></canvas><div class="fig-label tile">RIDGE</div></div>
+        <div class="dither-frame square"><canvas data-dither="gold" aria-hidden="true"></canvas><div class="fig-label tile">GOLD</div></div>
+      </div>
+      <p class="dither-note">
+        Imagery is rendered as a two-tone Bayer dither with vertical bleed. On scroll, the streaks
+        lengthen and the picture &ldquo;develops&rdquo; &mdash; the house motion of the brand.
+      </p>
+    </section>
+
+    <!-- COMPONENTS -->
+    <section class="reveal wrap sys-sec last">
+      <div class="sec-rule"><span class="kicker rule-kicker">04 &nbsp;COMPONENTS</span><span class="hr"></span></div>
+      <div class="comps g2">
+        <div class="comp-box">
+          <div class="comp-label">BUTTONS &amp; LABELS</div>
+          <div class="comp-row">
+            <span class="btn-primary demo">PRIMARY &rarr;</span>
+            <span class="btn-ghost demo">SECONDARY</span>
+            <span class="kicker demo-kicker">&mdash; KICKER LABEL</span>
+          </div>
+        </div>
+        <div class="artifact">
+          <div class="artifact-bar">
+            <span class="artifact-title">SYSTEM ARTIFACT</span>
+            <span class="artifact-x">X</span>
+          </div>
+          <div class="artifact-pad artifact-body">
+            RETRO TERMINAL DIALOGS CARRY UTILITY COPY &mdash; CONSENT, STATUS, CONTACT. ALWAYS TAN ON INK.
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .pagepad { padding-top: 96px; }
+  .head-sec { padding: 40px var(--pad-x) 50px; }
+  .head-title { font-size: clamp(40px, 6vw, 86px); line-height: 1; letter-spacing: -1px; margin-top: 18px; }
+  .head-lede { max-width: 52ch; margin-top: 24px; }
+
+  .sys-sec { padding: 50px var(--pad-x); }
+  .sys-sec.last { padding-bottom: 110px; }
+  .sec-rule { display: flex; align-items: center; gap: 14px; margin-bottom: 30px; }
+  .rule-kicker { letter-spacing: 3px; }
+  .hr { flex: 1; height: 1px; background: var(--line); }
+
+  .swatch-chip { height: 120px; border-bottom: 1px solid var(--line); }
+  .swatch-meta { padding: 14px 14px 20px; }
+  .swatch-name { font-size: 11px; letter-spacing: 1.5px; color: var(--bone); }
+  .swatch-hex { font-size: 10px; color: var(--dim); margin-top: 6px; }
+  .swatch-use { font-size: 10px; color: var(--clay); margin-top: 4px; }
+
+  .type-table { border: 1px solid var(--line); }
+  .type-row {
+    display: grid;
+    grid-template-columns: 160px 1fr 120px;
+    gap: 24px;
+    padding: 26px 30px;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
+  }
+  .type-row:last-child { border-bottom: none; }
+  .type-s { font-size: 10px; letter-spacing: 2px; color: var(--gold); }
+  .type-ex { font-size: clamp(20px, 3vw, 40px); color: var(--bone); overflow: hidden; }
+  .type-size { font-size: 10px; letter-spacing: 1px; color: var(--dim); text-align: right; }
+
+  .dithers { display: grid; gap: 24px; }
+  .square { aspect-ratio: 1 / 1; }
+  .fig-label.tile { left: 12px; bottom: 12px; font-size: 9px; padding: 3px 7px; }
+  .dither-note { font-size: 12px; line-height: 1.9; color: var(--clay); max-width: 60ch; margin-top: 24px; }
+
+  .comps { display: grid; gap: 24px; align-items: start; }
+  .comp-box { border: 1px solid var(--line); padding: 34px; }
+  .comp-label { font-size: 10px; letter-spacing: 2px; color: var(--dim); margin-bottom: 22px; }
+  .comp-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .demo { padding: 13px 24px; cursor: default; }
+  .demo-kicker { letter-spacing: 3px; }
+  .artifact-x { font-size: 13px; color: var(--ink); border: 1px solid var(--ink); padding: 0 7px; }
+  .artifact-pad { padding: 16px 12px; }
+
+  @media (max-width: 900px) {
+    .type-row { grid-template-columns: 90px 1fr 70px; gap: 14px; padding: 20px 16px; }
+    .dithers { grid-template-columns: 1fr; max-width: 480px; }
+  }
+</style>

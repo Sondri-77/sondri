@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; height:100%; background:#100D08; }
+</style>
+</helmet>
+<div style="position:fixed; inset:0; background:#100D08;">
+  <x-import component-from-global-scope="RocketHero" from="./animations.jsx ./rocket-scene.jsx" width="1920" height="1080" duration="18" hint-size="100%,100%"></x-import>
+</div>
+</x-dc>
+</body>
+</html>

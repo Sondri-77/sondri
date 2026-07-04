@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "sondri-preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["astro", "preview", "--port", "4321"],
+      "cwd": "C:\\Users\\I868004\\Desktop\\Sondri\\sondri-site",
+      "port": 4321
+    }
+  ]
+}

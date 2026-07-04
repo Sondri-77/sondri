@@ -1,0 +1,492 @@
+---
+import Base from '../layouts/Base.astro';
+import { marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases, BOOK_HREF } from '../data';
+---
+
+<Base
+  title="Sondri — AI agents, deployed where the work happens"
+  description="Done-for-you AI working models for the industries that run the real economy — retail, construction, logistics, trades. From zero to one. Then one to many."
+>
+  <!-- HERO -->
+  <section class="hero">
+    <canvas data-dither="hero" data-hero="1" aria-hidden="true"></canvas>
+    <div class="hero-fade" aria-hidden="true"></div>
+
+    <div class="bubble" aria-hidden="true">
+      <div class="bubble-box">
+        <span class="bubble-tag">SONDRI.BOT</span>
+        <div class="bubble-text">Hi, I&rsquo;m Sondri, your beautifully distinct AI.</div>
+        <div class="bubble-tail"></div>
+      </div>
+    </div>
+
+    <div class="wrap hero-inner">
+      <div class="hero-kicker">
+        <span class="rule"></span>
+        <span class="kicker">SONDRI &nbsp;&mdash;&nbsp; AI WORKING MODELS</span>
+      </div>
+      <h1 class="display">
+        AI agents, FDE's deployed where the work <em>happens.</em>
+      </h1>
+      <p class="lede">
+        Done-for-you AI for the industries that run the real economy &mdash; retail, construction,
+        logistics, trades. From zero to one. Then one to many.
+      </p>
+      <div class="hero-ctas">
+        <a class="btn-primary" href={BOOK_HREF}>START A DISCOVERY SPRINT &nbsp;&rarr;</a>
+        <a class="btn-ghost" href="/how-it-works/">SEE HOW IT WORKS</a>
+      </div>
+    </div>
+
+    <div class="wrap scroll-cue">
+      <span class="cue" aria-hidden="true">&darr;</span>
+      <span class="cue-label">SCROLL &mdash; THE PICTURE DEVELOPS</span>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-row">
+      {marquee.map((m) => <span>{m}</span>)}
+    </div>
+  </div>
+
+  <!-- PROBLEM -->
+  <section class="reveal wrap section problem">
+    <div class="prob-head">
+      <span class="kicker">01 &nbsp;/&nbsp; THE PROBLEM</span>
+      <h2 class="display prob-title">AI has skipped the industries that need it most.</h2>
+      <p class="lede prob-lede">
+        Retail chains, construction firms, logistics operators and trades businesses run on
+        spreadsheets, paper, and tribal knowledge. They can&rsquo;t hire data scientists. They
+        can&rsquo;t afford six-figure consultancies. So they get nothing &mdash; while tech-native
+        rivals pull further ahead.
+      </p>
+    </div>
+    <div class="grid-lined g3">
+      {problemStats.map((s) => (
+        <div class="stat">
+          <div class="stat-n">{s.n}</div>
+          <div class="stat-label">{s.label}</div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- WHAT WE DO -->
+  <section class="reveal whatwedo">
+    <div class="wrap two-col wwd-inner">
+      <div>
+        <span class="kicker">02 &nbsp;/&nbsp; WHAT WE DO</span>
+        <h2 class="display wwd-title">
+          We build a custom AI <em>working model</em> for each customer.
+        </h2>
+        <p class="lede wwd-lede">
+          Done-for-you, end-to-end. No platform to learn, no login to adopt. Agents that fit into
+          how you work today.
+        </p>
+        <div class="steps">
+          {doSteps.map((d) => (
+            <div class="step">
+              <span class="step-i">{d.i}</span>
+              <span class="step-t">{d.t}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="puppet dither-frame">
+        <canvas data-dither="puppet" aria-hidden="true"></canvas>
+        <!-- neon sign, hung above the robot; phrase pops on each pull -->
+        <div class="sign-rig" aria-hidden="true">
+          <div class="sign-wire"></div>
+          <div class="sign-box">
+            <span class="sign-tag">PROPRIETARY WORKING MODEL</span>
+            <div id="neon-sign" class="sign-text" data-phrases={JSON.stringify(neonPhrases)}>
+              {neonPhrases[0]}
+            </div>
+          </div>
+          <div class="sign-node"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 0 → 1 → n -->
+  <section class="reveal wrap section phases">
+    <div class="phase-head">
+      <span class="kicker">THE DELIVERY ENGINE</span>
+      <h2 class="display phase-title">0 &rarr; 1 &rarr; <em class="plain">n</em></h2>
+    </div>
+    <div class="phase-grid g3">
+      {phases.map((p) => (
+        <div class="phase">
+          <div class="phase-top">
+            <span class="phase-num">{p.num}</span>
+            <span class="phase-dur">{p.dur}</span>
+          </div>
+          <div class="phase-name">{p.title}</div>
+          <p class="phase-body">{p.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ENGAGEMENT LADDER -->
+  <section class="reveal ladder-band">
+    <div class="wrap ladder-inner">
+      <div class="ladder-head">
+        <div>
+          <span class="kicker">THE ENGAGEMENT LADDER</span>
+          <h2 class="display ladder-title">Start free. Climb only as far as the value carries you.</h2>
+        </div>
+        <p class="ladder-lede">
+          Five rungs, from a free digital-first discovery to a standing advisory seat. You commit to
+          each rung only once the one below it has paid for itself.
+        </p>
+      </div>
+
+      <div class="rungs">
+        {ladder.map((r) => (
+          <div class:list={['rung', { top: r.top }]} style={`--h:${r.h}px`}>
+            <div class="rung-lines" aria-hidden="true"></div>
+            <div class="rung-ping" aria-hidden="true"></div>
+            <div class="rung-body">
+              <div class="rung-top">
+                <span class="rung-n">{r.n}</span>
+                <span class="rung-tag">{r.tag}</span>
+              </div>
+              <div class="rung-title">{r.title}</div>
+              <p class="rung-copy">{r.body}</p>
+              <span class="rung-foot">{r.top ? 'STANDING →' : `RUNG ${r.n}`}</span>
+            </div>
+          </div>
+        ))}
+        <div class="climber" aria-hidden="true"></div>
+      </div>
+
+      <div class="bedrock">
+        <div class="bedrock-head">
+          <span class="kicker bedrock-kicker">THE BEDROCK &mdash; TRUE AT EVERY RUNG</span>
+          <span class="bedrock-rule"></span>
+        </div>
+        <div class="bedrock-grid">
+          {bedrock.map((b) => (
+            <div class="bed">
+              <span class="bed-diamond">&#x25C6;</span>
+              <div class="bed-title">{b.t}</div>
+              <p class="bed-copy">{b.b}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 120px var(--pad-x) 60px;
+    overflow: hidden;
+  }
+  .hero > canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.5; }
+  .hero-fade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #0C1A1A 0%, rgba(12,26,26,0.55) 48%, rgba(12,26,26,0.15) 100%);
+  }
+  .bubble {
+    position: absolute;
+    z-index: 4;
+    top: 19%;
+    right: 7%;
+    width: 270px;
+    max-width: 38vw;
+    pointer-events: none;
+    animation: neonhum 5.3s infinite;
+  }
+  .bubble-box {
+    position: relative;
+    border: 1px solid var(--gold);
+    background: rgba(8, 19, 19, 0.9);
+    box-shadow: 0 0 24px rgba(255,204,120,0.3), inset 0 0 22px rgba(255,204,120,0.06);
+    padding: 20px 18px 16px;
+  }
+  .bubble-tag { position: absolute; top: 6px; left: 9px; font-size: 8px; letter-spacing: 2px; color: var(--dim); }
+  .bubble-text {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(15px, 1.5vw, 20px);
+    line-height: 1.28;
+    color: var(--gold-soft);
+    text-shadow: 0 0 4px #ffcc78, 0 0 12px rgba(255,204,120,0.7), 0 0 22px rgba(255,204,120,0.45);
+  }
+  .bubble-tail {
+    position: absolute;
+    left: 30px;
+    bottom: -9px;
+    width: 15px;
+    height: 15px;
+    background: rgba(8, 19, 19, 0.9);
+    border-left: 1px solid var(--gold);
+    border-bottom: 1px solid var(--gold);
+    transform: rotate(-45deg);
+  }
+  .hero-inner { position: relative; width: 100%; }
+  .hero-kicker { display: flex; align-items: center; gap: 14px; margin-bottom: 30px; }
+  .rule { width: 30px; height: 1px; background: var(--gold); }
+  .hero h1 {
+    font-size: clamp(46px, 8vw, 116px);
+    line-height: 0.96;
+    letter-spacing: -1px;
+    max-width: 14ch;
+  }
+  .hero .lede { max-width: 52ch; margin-top: 34px; letter-spacing: 0.5px; }
+  .hero-ctas { display: flex; gap: 18px; margin-top: 42px; flex-wrap: wrap; }
+  .scroll-cue {
+    position: relative;
+    margin-top: 64px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .cue { display: inline-block; animation: cue 1.8s infinite; font-size: 18px; color: var(--gold); }
+  .cue-label { font-size: 10px; letter-spacing: 3px; color: var(--dim); }
+
+  /* MARQUEE */
+  .marquee {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+    padding: 16px 0;
+    background: var(--ink-deep);
+  }
+  .marquee-row {
+    display: flex;
+    gap: 48px;
+    white-space: nowrap;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--dim-2);
+  }
+
+  /* PROBLEM */
+  .prob-head { display: grid; gap: 8px; margin-bottom: 64px; }
+  .prob-title {
+    font-size: clamp(34px, 5vw, 68px);
+    line-height: 1.04;
+    letter-spacing: -0.5px;
+    margin-top: 14px;
+    max-width: 18ch;
+  }
+  .prob-lede { max-width: 62ch; margin-top: 24px; }
+  .stat { padding: 40px 30px; }
+  .stat-n {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(44px, 6vw, 74px);
+    line-height: 1;
+    color: var(--gold);
+  }
+  .stat-label { font-size: 12px; line-height: 1.9; letter-spacing: 1px; color: var(--clay); margin-top: 18px; }
+
+  /* WHAT WE DO */
+  .whatwedo { border-top: 1px solid var(--line); background: var(--ink-deep); }
+  .wwd-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    padding: 130px var(--pad-x);
+  }
+  .wwd-title { font-size: clamp(32px, 4vw, 58px); line-height: 1.05; letter-spacing: -0.5px; margin-top: 16px; }
+  .wwd-lede { max-width: 48ch; margin-top: 24px; }
+  .steps { margin-top: 38px; display: flex; flex-direction: column; }
+  .step { display: flex; gap: 20px; padding: 18px 0; border-top: 1px solid var(--line); }
+  .step-i { font-family: var(--font-display); font-size: 15px; color: var(--dim-2); min-width: 26px; }
+  .step-t { font-size: 13px; line-height: 1.7; color: var(--body-2); }
+
+  .puppet { aspect-ratio: 4 / 5; }
+  .sign-rig {
+    position: absolute;
+    top: 6%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 78%;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+  }
+  .sign-wire { width: 34%; height: 1px; background: #3a4a4a; }
+  .sign-box {
+    position: relative;
+    width: 100%;
+    margin-top: 1px;
+    border: 1px solid var(--gold);
+    background: rgba(8, 19, 19, 0.85);
+    box-shadow: 0 0 20px rgba(255,204,120,0.28), inset 0 0 22px rgba(255,204,120,0.07);
+    padding: 22px 18px 16px;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: neonhum 4.7s infinite;
+  }
+  .sign-tag { position: absolute; top: 6px; left: 9px; font-size: 8px; letter-spacing: 2px; color: var(--dim); }
+  .sign-text {
+    animation: neonpop 0.6s cubic-bezier(.2,.7,.2,1) both;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(13px, 1.55vw, 19px);
+    line-height: 1.18;
+    letter-spacing: 0.4px;
+    text-align: center;
+    color: var(--gold-soft);
+    text-shadow: 0 0 4px #ffcc78, 0 0 12px rgba(255,204,120,0.85), 0 0 24px rgba(255,204,120,0.5);
+  }
+  .sign-node { width: 9px; height: 9px; border: 1px solid var(--gold); background: var(--ink); margin-top: -1px; }
+
+  /* PHASES 0 → 1 → n */
+  .phase-head { text-align: center; margin-bottom: 70px; }
+  .phase-title { font-size: clamp(40px, 7vw, 96px); line-height: 1; letter-spacing: 1px; margin-top: 18px; }
+  .phase-title .plain { color: var(--bone); }
+  .phase-grid { display: grid; gap: 24px; background: none; border: none; }
+  .phase { border: 1px solid var(--line); padding: 36px 28px; background: var(--ink); }
+  .phase-top { display: flex; align-items: baseline; justify-content: space-between; }
+  .phase-num { font-family: var(--font-display); font-size: 54px; color: var(--gold); }
+  .phase-dur { font-size: 10px; letter-spacing: 2px; color: var(--dim-2); }
+  .phase-name { font-family: var(--font-display); font-size: 24px; color: var(--bone); margin-top: 20px; }
+  .phase-body { font-size: 12px; line-height: 1.85; color: var(--clay); margin-top: 12px; }
+
+  /* LADDER */
+  .ladder-band { border-top: 1px solid var(--line); background: var(--ink-deep); }
+  .ladder-inner { padding: 120px var(--pad-x); }
+  .ladder-head {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 40px;
+    align-items: end;
+    margin-bottom: 70px;
+  }
+  .ladder-title {
+    font-size: clamp(32px, 4.4vw, 60px);
+    line-height: 1.02;
+    letter-spacing: -0.5px;
+    margin-top: 16px;
+    max-width: 16ch;
+  }
+  .ladder-lede { font-size: 13px; line-height: 2; color: var(--clay); max-width: 44ch; }
+
+  .rungs {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    align-items: end;
+    min-height: 424px;
+  }
+  .rung {
+    position: relative;
+    height: var(--h);
+    border: 1px solid var(--line);
+    border-top: 2px solid var(--gold);
+    background: var(--ink);
+    overflow: hidden;
+  }
+  .rung.top { border-color: var(--tan); border-top-color: var(--gold); background: var(--raise-2); }
+  .rung-lines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(to bottom, rgba(255,204,120,0.055) 0 1px, transparent 1px 26px);
+    pointer-events: none;
+  }
+  .rung.top .rung-lines {
+    background: repeating-linear-gradient(to bottom, rgba(255,204,120,0.08) 0 1px, transparent 1px 26px);
+  }
+  .rung-ping {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    background: var(--gold);
+    animation: nodeping 3s infinite;
+  }
+  .rung-body { position: relative; height: 100%; display: flex; flex-direction: column; padding: 16px 15px; }
+  .rung-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .rung-n {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: var(--ink);
+    background: var(--gold);
+    padding: 1px 8px;
+  }
+  .rung-tag { font-size: 8px; letter-spacing: 2px; color: var(--gold); }
+  .rung-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(15px, 1.25vw, 18px);
+    line-height: 1.14;
+    color: var(--bone);
+    margin-top: 14px;
+  }
+  .rung-copy { font-size: 11px; line-height: 1.6; color: var(--clay); margin-top: 8px; }
+  .rung.top .rung-copy { color: var(--body-2); }
+  .rung-foot { margin-top: auto; font-size: 9px; letter-spacing: 2px; color: var(--dim-3); }
+  .rung.top .rung-foot { color: var(--gold); }
+  .climber {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--gold);
+    border: 2px solid var(--ink-deep);
+    transform: translate(-50%, -50%);
+    animation: climb 8s cubic-bezier(.55,0,.45,1) infinite;
+    z-index: 5;
+    box-shadow: 0 0 14px rgba(255,204,120,0.9);
+  }
+
+  /* BEDROCK */
+  .bedrock { margin-top: 46px; }
+  .bedrock-head { display: flex; align-items: center; gap: 14px; }
+  .bedrock-kicker { letter-spacing: 3px; }
+  .bedrock-rule { flex: 1; height: 1px; background: var(--line-strong); }
+  .bedrock-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--line);
+    border-top: none;
+    margin-top: 22px;
+  }
+  .bed { padding: 30px 28px; }
+  .bed + .bed { border-left: 1px solid var(--line); }
+  .bed-diamond { color: var(--gold); font-size: 12px; }
+  .bed-title { font-family: var(--font-display); font-size: 21px; color: var(--bone); margin: 14px 0 8px; }
+  .bed-copy { font-size: 12px; line-height: 1.8; color: var(--clay); max-width: 34ch; }
+
+  /* responsive */
+  @media (max-width: 900px) {
+    .ladder-head { grid-template-columns: 1fr; align-items: start; }
+    .rungs { grid-template-columns: 1fr; align-items: stretch; min-height: 0; }
+    .rung { height: auto; min-height: 150px; }
+    .climber { display: none; }
+    .bedrock-grid { grid-template-columns: 1fr; }
+    .bed + .bed { border-left: none; border-top: 1px solid var(--line); }
+    .puppet { max-width: 480px; margin: 0 auto; width: 100%; }
+  }
+  @media (max-width: 700px) {
+    .bubble { display: none; }
+  }
+</style>

@@ -1,0 +1,152 @@
+---
+import Base from '../layouts/Base.astro';
+import { industries, reports, mailto } from '../data';
+---
+
+<Base
+  title="Industries — Sondri"
+  description="Deep expertise where data is the business: private equity, financial services, fintech, healthtech, CPG & retail, real estate."
+>
+  <div class="pagepad">
+    <!-- HERO -->
+    <section class="hero">
+      <canvas data-dither="ridge" aria-hidden="true"></canvas>
+      <div class="hero-fade" aria-hidden="true"></div>
+      <div class="wrap hero-inner">
+        <span class="kicker">INDUSTRIES</span>
+        <h1 class="display hero-title">Deep expertise where data <em>is</em> the business.</h1>
+        <p class="lede hero-lede">
+          We work with operationally complex, data-intensive businesses &mdash; and the PE firms
+          that own them &mdash; turning fragmented systems into production platforms and governed AI.
+        </p>
+      </div>
+    </section>
+
+    <!-- INDUSTRY GRID -->
+    <section class="reveal wrap grid-sec">
+      <div class="grid-lined g3">
+        {industries.map((i) => (
+          <div class="card">
+            <div class="card-name">{i.name}</div>
+            <div class="card-tag">{i.tagline}</div>
+            <p class="card-body">{i.body}</p>
+            <div class="spacer"></div>
+            <div class="card-foot">
+              <span class="card-stat">{i.stat}</span>
+              <span class="arrow" aria-hidden="true">&rarr;</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- SECTOR INTELLIGENCE -->
+    <section class="reveal reports-band">
+      <div class="wrap reports-inner">
+        <div class="reports-head">
+          <div>
+            <span class="kicker">SECTOR INTELLIGENCE</span>
+            <h2 class="display reports-title">AI &amp; data optimization reports, by sector.</h2>
+          </div>
+        </div>
+        <div class="grid-lined g4">
+          {reports.map((r) => (
+            <a class="report" href={mailto(`Sector report request — ${r}`)}>
+              <div class="report-name">{r}</div>
+              <div class="spacer"></div>
+              <div class="report-foot">
+                <span class="pdf">PDF</span>
+                <span class="arrow" aria-hidden="true">&rarr;</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="reveal wrap cta-sec">
+      <span class="kicker">YOUR SECTOR, YOUR DATA</span>
+      <h2 class="display cta-title">
+        Let&rsquo;s talk about where AI pays in <em>your</em> industry.
+      </h2>
+      <a class="btn-primary cta-btn" href={mailto('Strategy call — Sondri')}>BOOK A STRATEGY CALL &nbsp;&rarr;</a>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .pagepad { padding-top: 96px; }
+  .hero { position: relative; padding: 50px var(--pad-x) 70px; overflow: hidden; }
+  .hero > canvas {
+    position: absolute;
+    right: -4%;
+    top: 0;
+    width: 44%;
+    height: 100%;
+    opacity: 0.4;
+  }
+  .hero-fade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #0C1A1A 44%, rgba(12,26,26,0.2) 100%);
+  }
+  .hero-inner { position: relative; }
+  .hero-title {
+    font-size: clamp(40px, 6vw, 92px);
+    line-height: 0.98;
+    letter-spacing: -1px;
+    margin-top: 20px;
+    max-width: 16ch;
+  }
+  .hero-lede { max-width: 56ch; margin-top: 28px; }
+
+  .grid-sec { padding: 30px var(--pad-x) 90px; }
+  .card { padding: 38px 32px; display: flex; flex-direction: column; min-height: 280px; }
+  .card-name { font-family: var(--font-display); font-weight: 700; font-size: 24px; color: var(--bone); line-height: 1.1; }
+  .card-tag { font-size: 11px; letter-spacing: 2px; color: var(--gold); margin-top: 12px; }
+  .card-body { font-size: 13px; line-height: 1.85; color: var(--clay); margin-top: 18px; }
+  .spacer { flex: 1; }
+  .card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+  .card-stat { font-size: 11px; letter-spacing: 1.5px; color: var(--body-2); }
+  .arrow { font-size: 14px; color: var(--gold); }
+
+  .reports-band { border-top: 1px solid var(--line); background: var(--ink-deep); }
+  .reports-inner { padding: 110px var(--pad-x); }
+  .reports-head { display: flex; align-items: end; justify-content: space-between; gap: 30px; flex-wrap: wrap; margin-bottom: 54px; }
+  .reports-title { font-size: clamp(30px, 4vw, 56px); line-height: 1.02; margin-top: 16px; max-width: 18ch; }
+  .report {
+    background: var(--ink-deep);
+    padding: 30px 24px;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+  }
+  .report:hover .report-name { color: var(--gold); }
+  .report-name { font-family: var(--font-display); font-size: 20px; color: var(--bone); line-height: 1.2; transition: color .2s; }
+  .report-foot { display: flex; align-items: center; gap: 8px; margin-top: 22px; }
+  .pdf { font-size: 10px; letter-spacing: 2px; color: var(--gold); }
+  .report .arrow { font-size: 12px; }
+
+  .cta-sec { padding: 110px var(--pad-x) 100px; text-align: center; }
+  .cta-title {
+    font-size: clamp(32px, 5vw, 72px);
+    line-height: 1.02;
+    letter-spacing: -0.5px;
+    margin: 20px auto 0;
+    max-width: 20ch;
+  }
+  .cta-btn { margin-top: 40px; }
+
+  @media (max-width: 900px) {
+    .hero > canvas { width: 70%; opacity: 0.25; }
+    .card { min-height: 0; }
+  }
+</style>

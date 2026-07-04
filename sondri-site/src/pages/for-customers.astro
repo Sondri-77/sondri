@@ -1,0 +1,175 @@
+---
+import Base from '../layouts/Base.astro';
+import { pains, timeline, pricing, econ, verticals } from '../data';
+---
+
+<Base
+  title="For customers — Sondri"
+  description="If you run a retail chain, a construction firm, or a fleet: agents that fit into how you work today — built, deployed, and run for you. Pricing from a $25K discovery sprint."
+>
+  <div class="pagepad">
+    <!-- HERO -->
+    <section class="wrap hero">
+      <span class="kicker">FOR CUSTOMERS</span>
+      <h1 class="display hero-title">
+        If you run a retail chain, a construction firm, or a fleet&hellip;
+      </h1>
+      <p class="lede hero-lede">
+        You don&rsquo;t need another login. You need agents that fit into how you work today &mdash;
+        and someone to build, deploy, and run them for you.
+      </p>
+    </section>
+
+    <!-- PAINS -->
+    <section class="reveal wrap pains-sec">
+      <div class="grid-lined g2">
+        {pains.map((p) => (
+          <div class="pain">
+            <div class="pain-t">{p.t}</div>
+            <p class="pain-b">{p.b}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- WHAT YOU GET -->
+    <section class="reveal get-band">
+      <div class="wrap get-inner">
+        <div class="get-head">
+          <h2 class="display get-title">What you get</h2>
+          <span class="kicker get-kicker">A WORKING MODEL, LIVE IN YOUR STACK</span>
+        </div>
+        <div class="grid-lined g4 deep">
+          {timeline.map((t) => (
+            <div class="cell">
+              <span class="wk">{t.wk}</span>
+              <div class="cell-title">{t.title}</div>
+              <p class="cell-body">{t.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section class="reveal wrap pricing-sec">
+      <div class="pricing-head">
+        <span class="kicker">PRICING</span>
+        <h2 class="display pricing-title">Three-part, outcome-aligned.</h2>
+      </div>
+      <div class="pricing-grid g3">
+        {pricing.map((p) => (
+          <div class:list={['price', { hot: p.hot }]}>
+            <span class="price-name">{p.name}</span>
+            <div class="price-row">
+              <span class="price-n">{p.price}</span>
+              <span class="price-unit">/ {p.unit}</span>
+            </div>
+            <p class="price-body">{p.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- UNIT ECONOMICS -->
+    <section class="reveal econ-band">
+      <div class="wrap econ-inner">
+        <div class="econ-lede">Unit economics, year one.</div>
+        <div class="econ-stats">
+          {econ.map((e) => (
+            <div>
+              <div class="econ-n">{e.n}</div>
+              <div class="econ-label">{e.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- VERTICALS -->
+    <section class="reveal wrap verticals-sec">
+      <span class="kicker">PILOT CUSTOMERS &mdash; REPRESENTATIVE</span>
+      <div class="chips">
+        {verticals.map((v) => <span class="chip">{v}</span>)}
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .pagepad { padding-top: 96px; }
+  .hero { padding: 40px var(--pad-x) 60px; }
+  .hero-title {
+    font-size: clamp(38px, 5.5vw, 80px);
+    line-height: 1.02;
+    letter-spacing: -0.5px;
+    margin-top: 18px;
+    max-width: 20ch;
+  }
+  .hero-lede { max-width: 54ch; margin-top: 26px; }
+
+  .pains-sec { padding: 30px var(--pad-x) 90px; }
+  .pain { padding: 40px 34px; }
+  .pain-t { font-family: var(--font-display); font-size: 26px; color: var(--bone); line-height: 1.15; }
+  .pain-b { font-size: 13px; line-height: 1.9; color: var(--clay); margin-top: 14px; max-width: 42ch; }
+
+  .get-band { border-top: 1px solid var(--line); background: var(--ink-deep); }
+  .get-inner { padding: 110px var(--pad-x); }
+  .get-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-bottom: 54px;
+  }
+  .get-title { font-size: clamp(30px, 4vw, 56px); line-height: 1; }
+  .get-kicker { letter-spacing: 3px; }
+  .deep > * { background: var(--ink-deep); }
+  .cell { padding: 30px 22px; min-height: 220px; }
+  .wk { font-size: 10px; letter-spacing: 2px; color: var(--gold); }
+  .cell-title { font-family: var(--font-display); font-size: 26px; color: var(--bone); margin: 12px 0 14px; }
+  .cell-body { font-size: 12px; line-height: 1.8; color: var(--clay); }
+
+  .pricing-sec { padding: 110px var(--pad-x) 70px; }
+  .pricing-head { text-align: center; margin-bottom: 56px; }
+  .pricing-title { font-size: clamp(30px, 4vw, 56px); line-height: 1; margin-top: 14px; }
+  .pricing-grid { display: grid; gap: 24px; }
+  .price {
+    border: 1px solid var(--line);
+    background: var(--ink);
+    padding: 38px 30px;
+    display: flex;
+    flex-direction: column;
+  }
+  .price.hot { border-color: var(--gold); background: var(--raise); }
+  .price-name { font-size: 11px; letter-spacing: 2px; color: var(--gold); }
+  .price-row { display: flex; align-items: baseline; gap: 8px; margin: 20px 0 4px; }
+  .price-n { font-family: var(--font-display); font-weight: 700; font-size: 46px; color: var(--bone); }
+  .price-unit { font-size: 11px; letter-spacing: 1px; color: var(--dim); }
+  .price-body { font-size: 12px; line-height: 1.85; color: var(--clay); margin-top: 18px; }
+  .price.hot .price-body { color: var(--body-2); }
+
+  .econ-band { border-top: 1px solid var(--line); background: var(--ink-deep); }
+  .econ-inner {
+    padding: 70px var(--pad-x);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .econ-lede { font-family: var(--font-display); font-style: italic; font-size: 24px; color: var(--body-2); max-width: 16ch; }
+  .econ-stats { display: flex; gap: 50px; flex-wrap: wrap; }
+  .econ-n { font-family: var(--font-display); font-weight: 700; font-size: 40px; color: var(--bone); line-height: 1; }
+  .econ-label { font-size: 10px; letter-spacing: 1.5px; color: var(--dim); margin-top: 10px; }
+
+  .verticals-sec { padding: 90px var(--pad-x) 100px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 28px; }
+  .chip { border: 1px solid var(--line-strong); padding: 12px 20px; font-size: 13px; letter-spacing: 1px; color: var(--body-2); }
+
+  @media (max-width: 900px) {
+    .cell { min-height: 0; }
+    .pricing-grid { grid-template-columns: 1fr; }
+  }
+</style>

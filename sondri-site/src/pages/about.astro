@@ -1,0 +1,92 @@
+---
+import Base from '../layouts/Base.astro';
+import { perks } from '../data';
+---
+
+<Base
+  title="About — Sondri"
+  description="Built by operators who've shipped AI into the real world. A small senior core team with a global contractor network — hiring the first ten people who will shape how."
+>
+  <div class="pagepad">
+    <!-- HERO -->
+    <section class="hero">
+      <canvas data-dither="orb" aria-hidden="true"></canvas>
+      <div class="hero-fade" aria-hidden="true"></div>
+      <div class="wrap hero-inner">
+        <span class="kicker">VISION</span>
+        <h1 class="display hero-title">
+          Built by operators who&rsquo;ve shipped AI into the <em>real world.</em>
+        </h1>
+        <p class="lede hero-lede">
+          A small senior core team with a global contractor network. We bring AI to the industries
+          that run the real economy &mdash; and we&rsquo;re hiring the first ten people who will
+          shape how.
+        </p>
+      </div>
+    </section>
+
+    <!-- WHY JOIN -->
+    <section class="reveal join-band">
+      <div class="wrap join-inner">
+        <h2 class="display join-title">
+          Why join now <span class="join-sub">&mdash; FOR THE FIRST TEN</span>
+        </h2>
+        <div class="perks g2">
+          {perks.map((p) => (
+            <div class="perk">
+              <div class="perk-t">{p.t}</div>
+              <p class="perk-b">{p.b}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .pagepad { padding-top: 96px; }
+  .hero { position: relative; padding: 50px var(--pad-x) 80px; overflow: hidden; }
+  .hero > canvas {
+    position: absolute;
+    right: -5%;
+    top: 0;
+    width: 46%;
+    height: 100%;
+    opacity: 0.42;
+  }
+  .hero-fade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #0C1A1A 40%, rgba(12,26,26,0.2) 100%);
+  }
+  .hero-inner { position: relative; }
+  .hero-title {
+    font-size: clamp(40px, 6vw, 92px);
+    line-height: 0.98;
+    letter-spacing: -1px;
+    margin-top: 20px;
+    max-width: 16ch;
+  }
+  .hero-lede { max-width: 54ch; margin-top: 28px; }
+
+  .join-band { border-top: 1px solid var(--line); background: var(--ink-deep); }
+  .join-inner { padding: 110px var(--pad-x); }
+  .join-title { font-size: clamp(30px, 4vw, 56px); line-height: 1; margin-bottom: 54px; }
+  .join-sub {
+    font-size: 0.4em;
+    color: var(--dim);
+    letter-spacing: 2px;
+    font-family: var(--font-mono);
+    font-weight: 400;
+  }
+  .perks { display: grid; gap: 46px; }
+  .perk { border-top: 1px solid var(--gold); padding-top: 22px; }
+  .perk-t { font-family: var(--font-display); font-size: 26px; color: var(--bone); margin-bottom: 12px; }
+  .perk-b { font-size: 13px; line-height: 1.9; color: var(--clay); max-width: 42ch; }
+
+  @media (max-width: 900px) {
+    .hero > canvas { width: 70%; opacity: 0.25; }
+    .perks { grid-template-columns: 1fr; }
+  }
+</style>

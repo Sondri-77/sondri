@@ -1,0 +1,24 @@
+# Secrets — the exposed PAT files, never commit
+Pushtogethub.txt
+push-to-github.ps1
+
+# Node / build artifacts
+node_modules/
+dist/
+.wrangler/
+.astro/
+*.log
+
+# Env
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Claude local settings
+.claude/settings.local.json
+
+# Redundant archive (design-system/ is already tracked)
+Sondri website design system.zip
