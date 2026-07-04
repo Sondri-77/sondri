@@ -28,7 +28,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: sondri-site/package-lock.json
 
@@ -43,5 +43,8 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           workingDirectory: sondri-site
+          # Use the project's own wrangler v4 (package.json), not the action's
+          # bundled v3 — v3 doesn't understand the static-assets config.
+          wranglerVersion: '4.26.0'
           # account_id is read from wrangler.jsonc; command deploys ./dist
           command: deploy
