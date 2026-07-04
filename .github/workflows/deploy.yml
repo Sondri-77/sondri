@@ -1,0 +1,47 @@
+name: Deploy to Cloudflare Workers
+
+# Auto-deploy the Astro site to Cloudflare Workers on every push to main
+# that touches the site. Manual runs are also allowed from the Actions tab.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'sondri-site/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+# Prevent overlapping deploys; a newer push cancels an in-flight one.
+concurrency:
+  group: deploy-cloudflare
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sondri-site
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: sondri-site/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: sondri-site
+          # account_id is read from wrangler.jsonc; command deploys ./dist
+          command: deploy
