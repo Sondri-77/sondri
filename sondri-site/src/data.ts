@@ -47,6 +47,15 @@ export const orbitBeats = [
   { from: 0.86, to: 0.97, side: 'left',   k: 'ENGRAVED', t: 'Accountability, etched in.', b: 'Sondri indices on every deployment: owner, baseline, payback, renewal.' },
 ] as const;
 
+/** How-it-works assembly beats. from/to are pin-progress windows (0–1). */
+export const forgeBeats = [
+  { from: 0.0,  to: 0.1,  side: 'left',   k: 'THE DELIVERY ENGINE',    t: 'Watch a working model take shape.', b: 'From scattered workflows to a production machine — in eight weeks. Scroll.' },
+  { from: 0.13, to: 0.26, side: 'right',  k: 'WEEKS 1–2 — DISCOVER',   t: 'Every part mapped.', b: 'We sit with your operators and blueprint the workflows that move money. Three use cases, board-ready ROI.' },
+  { from: 0.3,  to: 0.52, side: 'left',   k: 'WEEKS 3–6 — BUILD',      t: 'Assembled to spec.', b: 'Our architects blueprint. Vetted specialists deliver. Reviewed at every gate — nothing ships that hasn’t earned it.' },
+  { from: 0.56, to: 0.7,  side: 'right',  k: 'WEEKS 7–8 — DEPLOY',     t: 'Powered on. In production.', b: 'Live in your environment, inside your governance. Your team at the controls from day one.' },
+  { from: 0.76, to: 0.97, side: 'center', k: 'MONTH 3+ — SCALE',       t: 'One becomes many.', b: 'New use cases land monthly. The engine that built your first agent keeps delivering the next wave.' },
+] as const;
+
 export const problemStats = [
   { n: '88%', label: 'of enterprise AI pilots never make it into production.' },
   { n: '$2M+', label: 'typical systems-integrator engagement before any value lands.' },

@@ -53,11 +53,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <script>
       import { initDither } from '../scripts/dither';
       import { initOrbit } from '../scripts/orbit';
+      import { initForge } from '../scripts/orbit/forge';
       import {
         initReveals, initNeonSign, initConsent, initMobileNav,
         initWordReveals, initCountUps, initMagnetic,
       } from '../scripts/enhance';
       initOrbit(); // must run before initDither: it resolves the hero fallback
+      initForge();
       initReveals();
       initWordReveals();
       initCountUps();

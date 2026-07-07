@@ -1,12 +1,38 @@
 ---
 import Base from '../layouts/Base.astro';
-import { timeline, engine, whyNow } from '../data';
+import { timeline, engine, whyNow, forgeBeats } from '../data';
 ---
 
 <Base
   title="How it works — Sondri"
   description="A working AI model, deployed in 8 weeks. A senior core team takes you from zero to one; a vetted specialist network takes one to many."
 >
+  <!-- CINEMATIC ASSEMBLY — scroll builds the robot: discover → build → deploy → scale -->
+  <section id="forge-stage" class="orbit-stage forge-stage" aria-label="The delivery engine — cinematic sequence">
+    <div class="orbit-sticky">
+      <canvas id="forge-canvas" class="orbit-canvas" aria-hidden="true"></canvas>
+      <div class="orbit-vignette" aria-hidden="true"></div>
+
+      {forgeBeats.map((b) => (
+        <div class="beat" data-side={b.side} data-from={b.from} data-to={b.to}>
+          <span class="kicker beat-kicker">{b.k}</span>
+          <h2 class="display beat-title">{b.t}</h2>
+          <p class="beat-body">{b.b}</p>
+        </div>
+      ))}
+
+      <div class="orbit-hud" aria-hidden="true">
+        <span class="hud-rule"></span>
+        <span id="forge-readout" class="hud-readout">ENGINE 0 — DISCOVER</span>
+      </div>
+
+      <div id="forge-cue" class="orbit-cue" aria-hidden="true">
+        <span class="cue">&darr;</span>
+        <span class="cue-label">SCROLL &mdash; THE ENGINE ASSEMBLES</span>
+      </div>
+    </div>
+  </section>
+
   <div class="pagepad">
     <!-- HERO -->
     <section class="wrap two-col hero">

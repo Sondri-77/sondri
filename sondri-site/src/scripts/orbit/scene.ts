@@ -1,6 +1,8 @@
 // The Sondri turntable: a brushed-black-titanium robot in a black void,
 // sapphire visor, gold rim light, drifting gold dust — rendered through a
 // Bayer-dither post shader so the 3D scene reads as the brand's pixel art.
+// Shared pieces (robot rig, lights, dust, dither pipeline) are exported for
+// the how-it-works assembly sequence (./assembly.ts).
 
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
@@ -129,10 +131,159 @@ const DITHER_VERT = /* glsl */ `
   }
 `;
 
+/* ─── shared pipeline pieces ─────────────────────────────────────────── */
+
+export interface DitherPost {
+  render(scene: THREE.Scene, camera: THREE.Camera, time: number): void;
+  setSize(w: number, h: number): void;
+  dispose(): void;
+}
+
+/** Low-res render target + Bayer-dither fullscreen pass. */
+export function createDitherPost(renderer: THREE.WebGLRenderer, cell: number): DitherPost {
+  const rt = new THREE.WebGLRenderTarget(8, 8, {
+    minFilter: THREE.NearestFilter,
+    magFilter: THREE.NearestFilter,
+    depthBuffer: true,
+  });
+  const postScene = new THREE.Scene();
+  const postCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  const postMat = new THREE.ShaderMaterial({
+    vertexShader: DITHER_VERT,
+    fragmentShader: DITHER_FRAG,
+    uniforms: {
+      tSrc: { value: rt.texture },
+      uRes: { value: new THREE.Vector2(8, 8) },
+      uTime: { value: 0 },
+    },
+    depthTest: false,
+    depthWrite: false,
+  });
+  postScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), postMat));
+
+  return {
+    render(scene, camera, time) {
+      postMat.uniforms.uTime!.value = time;
+      renderer.setRenderTarget(rt);
+      renderer.render(scene, camera);
+      renderer.setRenderTarget(null);
+      renderer.render(postScene, postCam);
+    },
+    setSize(w, h) {
+      const rw = Math.max(8, Math.floor(w / cell));
+      const rh = Math.max(8, Math.floor(h / cell));
+      rt.setSize(rw, rh);
+      postMat.uniforms.tSrc!.value = rt.texture;
+      (postMat.uniforms.uRes!.value as THREE.Vector2).set(rw, rh);
+    },
+    dispose() {
+      rt.dispose();
+    },
+  };
+}
+
+/** Create renderer + environment with the house settings. */
+export function createRenderer(canvas: HTMLCanvasElement): {
+  renderer: THREE.WebGLRenderer;
+  applyEnvironment(scene: THREE.Scene): void;
+  dispose(): void;
+} {
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: false,
+    powerPreference: 'high-performance',
+    preserveDrawingBuffer: true,
+  });
+  renderer.setPixelRatio(1);
+  renderer.setClearColor(0x000000, 1);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.25;
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  return {
+    renderer,
+    applyEnvironment(scene) {
+      scene.environment = env;
+    },
+    dispose() {
+      pmrem.dispose();
+      renderer.dispose();
+    },
+  };
+}
+
+/** House lighting: dramatic gold rim, cool bone rim, low warm key. */
+export function addStudioLights(scene: THREE.Scene): void {
+  const rim = new THREE.DirectionalLight(0xffcc78, 9);
+  rim.position.set(-2.2, 1.5, -2.4);
+  scene.add(rim);
+  const rimCool = new THREE.DirectionalLight(0xbfd6d2, 3);
+  rimCool.position.set(2.6, 1.1, -1.8);
+  scene.add(rimCool);
+  const key = new THREE.DirectionalLight(0xffd9a0, 1.9);
+  key.position.set(2.2, 0.6, 2.6);
+  scene.add(key);
+  const fill = new THREE.DirectionalLight(0x4a6a76, 0.85);
+  fill.position.set(0, 1.6, 2.4);
+  scene.add(fill);
+  const glint = new THREE.PointLight(0xffcc78, 2.2, 3.2);
+  glint.position.set(0.3, 0.85, 1.1);
+  scene.add(glint);
+}
+
+/** Drifting gold dust. Returns an update function to call each frame. */
+export function addGoldDust(scene: THREE.Scene, count: number): (time: number, dt: number) => void {
+  const pGeo = new THREE.BufferGeometry();
+  const pos = new Float32Array(count * 3);
+  const speed = new Float32Array(count);
+  for (let i = 0; i < count; i++) {
+    pos[i * 3] = (Math.random() - 0.5) * 5.2;
+    pos[i * 3 + 1] = -1.6 + Math.random() * 3.8;
+    pos[i * 3 + 2] = (Math.random() - 0.5) * 4.4;
+    speed[i] = 0.02 + Math.random() * 0.05;
+  }
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  scene.add(
+    new THREE.Points(
+      pGeo,
+      new THREE.PointsMaterial({
+        size: 0.02,
+        color: 0xffcc78,
+        transparent: true,
+        opacity: 0.55,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        sizeAttenuation: true,
+      }),
+    ),
+  );
+  const arr = pGeo.getAttribute('position') as THREE.BufferAttribute;
+  return (time, dt) => {
+    for (let i = 0; i < count; i++) {
+      let y = arr.getY(i) + speed[i]! * dt;
+      if (y > 2.3) y = -1.6;
+      arr.setY(i, y);
+      arr.setX(i, arr.getX(i) + Math.sin(time * 0.4 + i) * 0.0004);
+    }
+    arr.needsUpdate = true;
+  };
+}
+
 /* ─── robot ──────────────────────────────────────────────────────────── */
 
-function buildRobot(): THREE.Group {
+export interface RobotRig {
+  group: THREE.Group;
+  /** Every mesh with its assembled "home" transform recorded in userData. */
+  parts: THREE.Mesh[];
+  /** Materials whose emissive can be ramped for the power-on moment. */
+  emissives: { core: THREE.MeshStandardMaterial; bezel: THREE.MeshStandardMaterial };
+  /** Eye meshes (popped on at power-up in the assembly sequence). */
+  eyes: THREE.Mesh[];
+}
+
+export function buildRobot(): RobotRig {
   const bot = new THREE.Group();
+  const parts: THREE.Mesh[] = [];
   const brushed = brushedTexture();
 
   const titanium = new THREE.MeshPhysicalMaterial({
@@ -176,31 +327,33 @@ function buildRobot(): THREE.Group {
   });
   const eyeMat = new THREE.MeshBasicMaterial({ color: 0xfff4dc });
 
+  const track = (mesh: THREE.Mesh): THREE.Mesh => {
+    bot.add(mesh);
+    parts.push(mesh);
+    return mesh;
+  };
   const rbox = (w: number, h: number, d: number, m: THREE.Material, x: number, y: number, z: number, r = 0.04) => {
     const mesh = new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 4, Math.min(r, Math.min(w, h, d) / 2.01)), m);
     mesh.position.set(x, y, z);
-    bot.add(mesh);
-    return mesh;
+    return track(mesh);
   };
   const sphere = (r: number, m: THREE.Material, x: number, y: number, z: number) => {
     const mesh = new THREE.Mesh(new THREE.SphereGeometry(r, 24, 16), m);
     mesh.position.set(x, y, z);
-    bot.add(mesh);
-    return mesh;
+    return track(mesh);
   };
   const capsule = (r: number, len: number, m: THREE.Material, x: number, y: number, z: number, rz = 0) => {
     const mesh = new THREE.Mesh(new THREE.CapsuleGeometry(r, len, 6, 16), m);
     mesh.position.set(x, y, z);
     mesh.rotation.z = rz;
-    bot.add(mesh);
-    return mesh;
+    return track(mesh);
   };
 
   // head + antenna
   rbox(0.44, 0.36, 0.36, titanium, 0, 0.66, 0, 0.06);
   const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.22, 12), titaniumDark);
   ant.position.set(0, 0.95, 0);
-  bot.add(ant);
+  track(ant);
   sphere(0.03, gold, 0, 1.07, 0);
 
   // sapphire visor — curved band across the face
@@ -210,16 +363,16 @@ function buildRobot(): THREE.Group {
   );
   visor.material.side = THREE.DoubleSide;
   visor.position.set(0, 0.68, 0.02);
-  bot.add(visor);
+  track(visor);
 
   // inner face + eyes behind the glass
   rbox(0.3, 0.18, 0.04, titaniumDark, 0, 0.68, 0.15, 0.02);
   const eyeL = new THREE.Mesh(new THREE.PlaneGeometry(0.05, 0.022), eyeMat);
   eyeL.position.set(-0.07, 0.69, 0.176);
-  bot.add(eyeL);
+  track(eyeL);
   const eyeR = eyeL.clone();
   eyeR.position.x = 0.07;
-  bot.add(eyeR);
+  track(eyeR);
 
   // engraved SONDRI indices bezel, just below the visor
   const band = new THREE.Mesh(
@@ -227,12 +380,12 @@ function buildRobot(): THREE.Group {
     bezel,
   );
   band.position.set(0, 0.545, 0.02);
-  bot.add(band);
+  track(band);
 
   // neck, torso, chest, core
   const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.1, 0.09, 20), titaniumDark);
   neck.position.set(0, 0.45, 0);
-  bot.add(neck);
+  track(neck);
   rbox(0.54, 0.6, 0.38, titanium, 0, 0.08, 0, 0.07);
   rbox(0.3, 0.34, 0.05, titaniumDark, 0, 0.12, 0.195, 0.02);
   rbox(0.1, 0.14, 0.02, gold, 0, 0.12, 0.225, 0.01);
@@ -256,10 +409,15 @@ function buildRobot(): THREE.Group {
   rbox(0.16, 0.08, 0.26, titaniumDark, -0.15, -1.0, 0.03, 0.03);
   rbox(0.16, 0.08, 0.26, titaniumDark, 0.15, -1.0, 0.03, 0.03);
 
-  return bot;
+  // record assembled "home" transforms for the assembly sequence
+  for (const p of parts) {
+    p.userData.home = { pos: p.position.clone(), rot: p.rotation.clone() };
+  }
+
+  return { group: bot, parts, emissives: { core: gold, bezel }, eyes: [eyeL, eyeR] };
 }
 
-/* ─── camera timeline ────────────────────────────────────────────────── */
+/* ─── camera timeline (homepage turntable + macros) ──────────────────── */
 
 const smooth = (t: number) => t * t * (3 - 2 * t);
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -300,96 +458,24 @@ function cameraAt(p: number, cam: THREE.PerspectiveCamera, look: THREE.Vector3):
   cam.lookAt(look);
 }
 
-/* ─── scene assembly ─────────────────────────────────────────────────── */
+/* ─── scene assembly (homepage hero) ─────────────────────────────────── */
 
 export function createScene(canvas: HTMLCanvasElement): OrbitScene {
   const small = (window.innerWidth || 1200) < 700;
   const CELL = small ? 4 : 3;
-  const PARTICLES = small ? 140 : 420;
 
-  const renderer = new THREE.WebGLRenderer({
-    canvas,
-    antialias: false,
-    powerPreference: 'high-performance',
-    preserveDrawingBuffer: true,
-  });
-  renderer.setPixelRatio(1);
-  renderer.setClearColor(0x000000, 1);
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.25;
-
+  const { renderer, applyEnvironment, dispose: disposeRenderer } = createRenderer(canvas);
   const scene = new THREE.Scene();
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  applyEnvironment(scene);
 
   const camera = new THREE.PerspectiveCamera(38, 1, 0.05, 30);
   const lookTarget = new THREE.Vector3(0, 0.12, 0);
 
-  // dramatic gold rim behind-left + cool bone rim behind-right + low warm key
-  const rim = new THREE.DirectionalLight(0xffcc78, 9);
-  rim.position.set(-2.2, 1.5, -2.4);
-  scene.add(rim);
-  const rimCool = new THREE.DirectionalLight(0xbfd6d2, 3);
-  rimCool.position.set(2.6, 1.1, -1.8);
-  scene.add(rimCool);
-  const key = new THREE.DirectionalLight(0xffd9a0, 1.9);
-  key.position.set(2.2, 0.6, 2.6);
-  scene.add(key);
-  const fill = new THREE.DirectionalLight(0x4a6a76, 0.85);
-  fill.position.set(0, 1.6, 2.4);
-  scene.add(fill);
-  const glint = new THREE.PointLight(0xffcc78, 2.2, 3.2);
-  glint.position.set(0.3, 0.85, 1.1);
-  scene.add(glint);
-
-  const robot = buildRobot();
+  addStudioLights(scene);
+  const robot = buildRobot().group;
   scene.add(robot);
-
-  // gold dust
-  const pGeo = new THREE.BufferGeometry();
-  const pos = new Float32Array(PARTICLES * 3);
-  const speed = new Float32Array(PARTICLES);
-  for (let i = 0; i < PARTICLES; i++) {
-    pos[i * 3] = (Math.random() - 0.5) * 5.2;
-    pos[i * 3 + 1] = -1.6 + Math.random() * 3.8;
-    pos[i * 3 + 2] = (Math.random() - 0.5) * 4.4;
-    speed[i] = 0.02 + Math.random() * 0.05;
-  }
-  pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  const dust = new THREE.Points(
-    pGeo,
-    new THREE.PointsMaterial({
-      size: 0.02,
-      color: 0xffcc78,
-      transparent: true,
-      opacity: 0.55,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-      sizeAttenuation: true,
-    }),
-  );
-  scene.add(dust);
-
-  // low-res render target + dither pass
-  let rt = new THREE.WebGLRenderTarget(8, 8, {
-    minFilter: THREE.NearestFilter,
-    magFilter: THREE.NearestFilter,
-    depthBuffer: true,
-  });
-  const postScene = new THREE.Scene();
-  const postCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-  const postMat = new THREE.ShaderMaterial({
-    vertexShader: DITHER_VERT,
-    fragmentShader: DITHER_FRAG,
-    uniforms: {
-      tSrc: { value: rt.texture },
-      uRes: { value: new THREE.Vector2(8, 8) },
-      uTime: { value: 0 },
-    },
-    depthTest: false,
-    depthWrite: false,
-  });
-  postScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), postMat));
+  const updateDust = addGoldDust(scene, small ? 140 : 420);
+  const post = createDitherPost(renderer, CELL);
 
   let lastT = 0;
 
@@ -397,11 +483,7 @@ export function createScene(canvas: HTMLCanvasElement): OrbitScene {
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    const rw = Math.max(8, Math.floor(w / CELL));
-    const rh = Math.max(8, Math.floor(h / CELL));
-    rt.setSize(rw, rh);
-    postMat.uniforms.tSrc!.value = rt.texture;
-    (postMat.uniforms.uRes!.value as THREE.Vector2).set(rw, rh);
+    post.setSize(w, h);
   }
 
   function render(progress: number, time: number): void {
@@ -410,29 +492,14 @@ export function createScene(canvas: HTMLCanvasElement): OrbitScene {
 
     robot.position.y = 0.025 * Math.sin(time * 0.8);
     robot.rotation.z = 0.008 * Math.sin(time * 0.6);
-
-    const arr = pGeo.getAttribute('position') as THREE.BufferAttribute;
-    for (let i = 0; i < PARTICLES; i++) {
-      let y = arr.getY(i) + speed[i]! * dt;
-      if (y > 2.3) y = -1.6;
-      arr.setY(i, y);
-      arr.setX(i, arr.getX(i) + Math.sin(time * 0.4 + i) * 0.0004);
-    }
-    arr.needsUpdate = true;
-
+    updateDust(time, dt);
     cameraAt(progress, camera, lookTarget);
-    postMat.uniforms.uTime!.value = time;
-
-    renderer.setRenderTarget(rt);
-    renderer.render(scene, camera);
-    renderer.setRenderTarget(null);
-    renderer.render(postScene, postCam);
+    post.render(scene, camera, time);
   }
 
   function dispose(): void {
-    rt.dispose();
-    pmrem.dispose();
-    renderer.dispose();
+    post.dispose();
+    disposeRenderer();
   }
 
   return { render, resize, dispose };
