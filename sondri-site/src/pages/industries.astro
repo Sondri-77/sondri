@@ -1,12 +1,43 @@
 ---
 import Base from '../layouts/Base.astro';
-import { industries, reports, mailto } from '../data';
+import { industries, reports, mailto, rankBeats, rankSectors } from '../data';
 ---
 
 <Base
   title="Industries — Sondri"
   description="Deep expertise where data is the business: private equity, financial services, fintech, healthtech, CPG & retail, real estate."
 >
+  <!-- CINEMATIC RANK — a lateral inspection line: one deployed unit per sector -->
+  <section
+    id="rank-stage"
+    class="orbit-stage rank-stage"
+    data-sectors={JSON.stringify(rankSectors)}
+    aria-label="Six sectors, one working model — cinematic sequence"
+  >
+    <div class="orbit-sticky">
+      <canvas id="rank-canvas" class="orbit-canvas" aria-hidden="true"></canvas>
+      <div class="orbit-vignette" aria-hidden="true"></div>
+
+      {rankBeats.map((b) => (
+        <div class="beat" data-side={b.side} data-from={b.from} data-to={b.to}>
+          <span class="kicker beat-kicker">{b.k}</span>
+          <h2 class="display beat-title">{b.t}</h2>
+          <p class="beat-body">{b.b}</p>
+        </div>
+      ))}
+
+      <div class="orbit-hud" aria-hidden="true">
+        <span class="hud-rule"></span>
+        <span id="rank-readout" class="hud-readout">RANK — SIX SECTORS</span>
+      </div>
+
+      <div id="rank-cue" class="orbit-cue" aria-hidden="true">
+        <span class="cue">&darr;</span>
+        <span class="cue-label">SCROLL &mdash; WALK THE LINE</span>
+      </div>
+    </div>
+  </section>
+
   <div class="pagepad">
     <!-- HERO -->
     <section class="hero">
