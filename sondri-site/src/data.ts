@@ -56,6 +56,23 @@ export const forgeBeats = [
   { from: 0.76, to: 0.97, side: 'center', k: 'MONTH 3+ — SCALE',       t: 'One becomes many.', b: 'New use cases land monthly. The engine that built your first agent keeps delivering the next wave.' },
 ] as const;
 
+/** Industries rank beats. Windows align with UNIT_XS in orbit/rank.ts. */
+export const rankBeats = [
+  { from: 0.0,  to: 0.07, side: 'left',   k: 'INDUSTRIES',                   t: 'Six sectors. One working model.', b: 'The same delivery engine, deployed where each industry moves its money. Scroll the line.' },
+  { from: 0.1,  to: 0.21, side: 'right',  k: 'UNIT 01 — PRIVATE EQUITY',     t: 'Portfolio-wide value creation.', b: 'Diligence support, EBITDA-linked roadmaps, and playbooks repeated across the book — 3 to 15 companies per program.' },
+  { from: 0.23, to: 0.34, side: 'left',   k: 'UNIT 02 — FINANCIAL SERVICES', t: 'Risk and decisioning at scale.', b: 'Governed ML, fraud detection, and real-time data — with the audit trail regulators expect.' },
+  { from: 0.36, to: 0.47, side: 'right',  k: 'UNIT 03 — FINTECH & PAYMENTS', t: 'Production AI for money movement.', b: 'Fraud, underwriting, and intelligent automation deployed into the transaction path, with guardrails.' },
+  { from: 0.49, to: 0.6,  side: 'left',   k: 'UNIT 04 — HEALTHTECH',         t: 'Claims, RCM, and clinical data.', b: 'Fragmented health data, unified and governed. HIPAA-aware delivery that clinicians and operators trust.' },
+  { from: 0.62, to: 0.73, side: 'right',  k: 'UNIT 05 — CPG & RETAIL',       t: 'Demand, pricing, and supply chain.', b: 'Forecasting and pricing intelligence built on a single, trusted data foundation.' },
+  { from: 0.75, to: 0.86, side: 'left',   k: 'UNIT 06 — REAL ESTATE',        t: 'Valuation and market intelligence.', b: 'Automated valuation, underwriting, and market data — decision-ready across 60+ markets.' },
+  { from: 0.9,  to: 1.0,  side: 'center', k: 'YOUR SECTOR',                  t: 'The next unit ships to you.', b: 'Two weeks to a board-ready roadmap for your industry. Start with the discovery sprint.' },
+] as const;
+
+export const rankSectors = [
+  'Private Equity', 'Financial Services', 'Fintech & Payments',
+  'Healthtech', 'CPG & Retail', 'Real Estate',
+];
+
 export const problemStats = [
   { n: '88%', label: 'of enterprise AI pilots never make it into production.' },
   { n: '$2M+', label: 'typical systems-integrator engagement before any value lands.' },
