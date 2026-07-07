@@ -1,17 +1,45 @@
 ---
 import Base from '../layouts/Base.astro';
-import { marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases, BOOK_HREF } from '../data';
+import {
+  marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases,
+  orbitBeats, BOOK_HREF, mailto,
+} from '../data';
 ---
 
 <Base
-  title="Sondri — AI agents, deployed where the work happens"
-  description="Done-for-you AI working models for the industries that run the real economy — retail, construction, logistics, trades. From zero to one. Then one to many."
+  title="Sondri — AI working models for the enterprise"
+  description="Done-for-you AI working models for private equity, financial services, fintech, healthtech, CPG, and real estate. From zero to one. Then one to many."
 >
-  <!-- HERO -->
-  <section class="hero">
+  <!-- CINEMATIC HERO — scroll-scrubbed 360° turntable + macro fly-through -->
+  <section id="orbit-stage" class="orbit-stage" aria-label="Sondri — cinematic introduction">
+    <div class="orbit-sticky">
+      <canvas id="orbit-canvas" aria-hidden="true"></canvas>
+      <div class="orbit-vignette" aria-hidden="true"></div>
+
+      {orbitBeats.map((b) => (
+        <div class="beat" data-side={b.side} data-from={b.from} data-to={b.to}>
+          <span class="kicker beat-kicker">{b.k}</span>
+          <h2 class="display beat-title">{b.t}</h2>
+          <p class="beat-body">{b.b}</p>
+        </div>
+      ))}
+
+      <div class="orbit-hud" aria-hidden="true">
+        <span class="hud-rule"></span>
+        <span id="orbit-readout" class="hud-readout">AZ 000°</span>
+      </div>
+
+      <div id="orbit-cue" class="orbit-cue" aria-hidden="true">
+        <span class="cue">&darr;</span>
+        <span class="cue-label">SCROLL &mdash; THE TURNTABLE TURNS</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FALLBACK HERO (no WebGL / reduced motion) — the classic 2D dither robot -->
+  <section id="hero-fallback" class="hero" hidden>
     <canvas data-dither="hero" data-hero="1" aria-hidden="true"></canvas>
     <div class="hero-fade" aria-hidden="true"></div>
-
     <div class="bubble" aria-hidden="true">
       <div class="bubble-box">
         <span class="bubble-tag">SONDRI.BOT</span>
@@ -19,28 +47,36 @@ import { marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases, B
         <div class="bubble-tail"></div>
       </div>
     </div>
-
     <div class="wrap hero-inner">
       <div class="hero-kicker">
         <span class="rule"></span>
         <span class="kicker">SONDRI &nbsp;&mdash;&nbsp; AI WORKING MODELS</span>
       </div>
-      <h1 class="display">
-        AI agents, FDE's deployed where the work <em>happens.</em>
-      </h1>
+      <div class="display fb-title">Meet the working model.</div>
       <p class="lede">
-        Done-for-you AI for the industries that run the real economy &mdash; retail, construction,
-        logistics, trades. From zero to one. Then one to many.
+        One machine-precision system of agents, engineered into the core of your enterprise.
+      </p>
+    </div>
+  </section>
+
+  <!-- HERO CLOSE — the pitch lands here after the pin releases -->
+  <section id="hero-close" class="reveal hero-close">
+    <div class="wrap">
+      <div class="hero-kicker">
+        <span class="rule"></span>
+        <span class="kicker">SONDRI &nbsp;&mdash;&nbsp; AI WORKING MODELS</span>
+      </div>
+      <h1 class="display hc-title" data-words>
+        AI working models, deployed where the money <em>moves.</em>
+      </h1>
+      <p class="lede hc-lede">
+        Done-for-you AI for private equity, financial services, fintech, healthtech, CPG, and
+        real estate. From zero to one. Then one to many.
       </p>
       <div class="hero-ctas">
         <a class="btn-primary" href={BOOK_HREF}>START A DISCOVERY SPRINT &nbsp;&rarr;</a>
         <a class="btn-ghost" href="/how-it-works/">SEE HOW IT WORKS</a>
       </div>
-    </div>
-
-    <div class="wrap scroll-cue">
-      <span class="cue" aria-hidden="true">&darr;</span>
-      <span class="cue-label">SCROLL &mdash; THE PICTURE DEVELOPS</span>
     </div>
   </section>
 
@@ -52,21 +88,20 @@ import { marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases, B
   </div>
 
   <!-- PROBLEM -->
-  <section class="reveal wrap section problem">
+  <section id="problem" class="reveal wrap section problem">
     <div class="prob-head">
       <span class="kicker">01 &nbsp;/&nbsp; THE PROBLEM</span>
-      <h2 class="display prob-title">AI has skipped the industries that need it most.</h2>
+      <h2 class="display prob-title" data-words>Enterprise AI stalls between the deck and the P&amp;L.</h2>
       <p class="lede prob-lede">
-        Retail chains, construction firms, logistics operators and trades businesses run on
-        spreadsheets, paper, and tribal knowledge. They can&rsquo;t hire data scientists. They
-        can&rsquo;t afford six-figure consultancies. So they get nothing &mdash; while tech-native
-        rivals pull further ahead.
+        Boards approve the budget. Pilots launch. Then the integration work, the governance
+        questions, and the talent gap arrive &mdash; and the value never ships. Meanwhile the
+        operators who move real money are still waiting for AI that shows up where they work.
       </p>
     </div>
     <div class="grid-lined g3">
       {problemStats.map((s) => (
         <div class="stat">
-          <div class="stat-n">{s.n}</div>
+          <div class="stat-n" data-count>{s.n}</div>
           <div class="stat-label">{s.label}</div>
         </div>
       ))}
@@ -74,16 +109,16 @@ import { marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases, B
   </section>
 
   <!-- WHAT WE DO -->
-  <section class="reveal whatwedo">
+  <section id="what-we-do" class="reveal whatwedo">
     <div class="wrap two-col wwd-inner">
       <div>
         <span class="kicker">02 &nbsp;/&nbsp; WHAT WE DO</span>
-        <h2 class="display wwd-title">
+        <h2 class="display wwd-title" data-words>
           We build a custom AI <em>working model</em> for each customer.
         </h2>
         <p class="lede wwd-lede">
-          Done-for-you, end-to-end. No platform to learn, no login to adopt. Agents that fit into
-          how you work today.
+          Done-for-you, end-to-end. No platform to adopt, no license to shelve. Agents engineered
+          into the systems your teams already run.
         </p>
         <div class="steps">
           {doSteps.map((d) => (
@@ -113,7 +148,7 @@ import { marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases, B
   </section>
 
   <!-- 0 → 1 → n -->
-  <section class="reveal wrap section phases">
+  <section id="phases" class="reveal wrap section phases">
     <div class="phase-head">
       <span class="kicker">THE DELIVERY ENGINE</span>
       <h2 class="display phase-title">0 &rarr; 1 &rarr; <em class="plain">n</em></h2>
@@ -133,12 +168,12 @@ import { marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases, B
   </section>
 
   <!-- ENGAGEMENT LADDER -->
-  <section class="reveal ladder-band">
+  <section id="ladder" class="reveal ladder-band">
     <div class="wrap ladder-inner">
       <div class="ladder-head">
         <div>
           <span class="kicker">THE ENGAGEMENT LADDER</span>
-          <h2 class="display ladder-title">Start free. Climb only as far as the value carries you.</h2>
+          <h2 class="display ladder-title" data-words>Start free. Climb only as far as the value carries you.</h2>
         </div>
         <p class="ladder-lede">
           Five rungs, from a free digital-first discovery to a standing advisory seat. You commit to
@@ -182,13 +217,130 @@ import { marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases, B
       </div>
     </div>
   </section>
+
+  <!-- FINAL CTA -->
+  <section id="cta" class="reveal cta-band">
+    <div class="wrap cta-inner">
+      <span class="kicker">NEXT STEP</span>
+      <h2 class="display cta-title" data-words>Put a working model inside your portfolio.</h2>
+      <p class="lede cta-lede">
+        Two weeks to a board-ready roadmap. Eight weeks to agents in production.
+      </p>
+      <div class="hero-ctas cta-ctas">
+        <a class="btn-primary" href={BOOK_HREF}>START A DISCOVERY SPRINT &nbsp;&rarr;</a>
+        <a class="btn-ghost" href={mailto('Talk to a founder — Sondri')}>TALK TO A FOUNDER</a>
+      </div>
+    </div>
+  </section>
 </Base>
 
 <style>
-  /* HERO */
+  /* ─── ORBIT STAGE (cinematic hero) ─────────────────────────────────── */
+  .orbit-stage { height: 680vh; position: relative; background: #050c0c; }
+  .orbit-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+  }
+  #orbit-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    image-rendering: pixelated;
+  }
+  .orbit-vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 120% 90% at 50% 45%, transparent 55%, rgba(3, 8, 8, 0.75) 100%),
+      linear-gradient(to bottom, rgba(5, 12, 12, 0.55), transparent 18%, transparent 84%, rgba(5, 12, 12, 0.8));
+  }
+
+  .beat {
+    position: absolute;
+    z-index: 3;
+    max-width: 440px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    will-change: opacity, transform;
+    padding: 24px 28px;
+    background: linear-gradient(rgba(5, 12, 12, 0.78), rgba(5, 12, 12, 0.6));
+    backdrop-filter: blur(1.5px);
+  }
+  .beat[data-side='left'] { left: var(--pad-x); top: 24%; border-left: 2px solid var(--gold); }
+  .beat[data-side='right'] { right: var(--pad-x); top: 26%; text-align: right; border-right: 2px solid var(--gold); }
+  .beat[data-side='center'] {
+    left: 50%;
+    margin-left: -220px;
+    bottom: 16%;
+    text-align: center;
+    border-bottom: 2px solid var(--gold);
+  }
+  .beat-kicker { display: block; }
+  .beat-title {
+    font-size: clamp(30px, 3.6vw, 52px);
+    line-height: 1.02;
+    letter-spacing: -0.5px;
+    margin-top: 14px;
+    text-shadow: 0 2px 30px rgba(3, 8, 8, 0.9);
+  }
+  .beat-body {
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--clay);
+    margin-top: 16px;
+    letter-spacing: 0.4px;
+    text-shadow: 0 1px 18px rgba(3, 8, 8, 0.9);
+  }
+
+  .orbit-hud {
+    position: absolute;
+    z-index: 3;
+    right: var(--pad-x);
+    bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    pointer-events: none;
+  }
+  .hud-rule { width: 44px; height: 1px; background: var(--gold); opacity: 0.6; }
+  .hud-readout { font-size: 10px; letter-spacing: 3px; color: var(--gold); }
+
+  .orbit-cue {
+    position: absolute;
+    z-index: 3;
+    left: var(--pad-x);
+    bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    pointer-events: none;
+  }
+  .cue { display: inline-block; animation: cue 1.8s infinite; font-size: 18px; color: var(--gold); }
+  .cue-label { font-size: 10px; letter-spacing: 3px; color: var(--dim); }
+
+  /* ─── HERO CLOSE ───────────────────────────────────────────────────── */
+  .hero-close { padding: 150px var(--pad-x) 110px; }
+  .hero-kicker { display: flex; align-items: center; gap: 14px; margin-bottom: 30px; }
+  .rule { width: 30px; height: 1px; background: var(--gold); }
+  .hc-title {
+    font-size: clamp(44px, 7vw, 104px);
+    line-height: 0.98;
+    letter-spacing: -1px;
+    max-width: 16ch;
+  }
+  .hc-lede { max-width: 56ch; margin-top: 32px; letter-spacing: 0.5px; }
+  .hero-ctas { display: flex; gap: 18px; margin-top: 42px; flex-wrap: wrap; }
+
+  /* ─── FALLBACK HERO (classic 2D dither) ────────────────────────────── */
   .hero {
     position: relative;
-    min-height: 100vh;
+    min-height: 92vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -201,6 +353,14 @@ import { marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases, B
     inset: 0;
     background: linear-gradient(90deg, #0C1A1A 0%, rgba(12,26,26,0.55) 48%, rgba(12,26,26,0.15) 100%);
   }
+  .fb-title {
+    font-size: clamp(40px, 6.5vw, 92px);
+    line-height: 0.98;
+    letter-spacing: -1px;
+    max-width: 14ch;
+  }
+  .hero .lede { max-width: 52ch; margin-top: 30px; letter-spacing: 0.5px; }
+  .hero-inner { position: relative; width: 100%; }
   .bubble {
     position: absolute;
     z-index: 4;
@@ -238,29 +398,8 @@ import { marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases, B
     border-bottom: 1px solid var(--gold);
     transform: rotate(-45deg);
   }
-  .hero-inner { position: relative; width: 100%; }
-  .hero-kicker { display: flex; align-items: center; gap: 14px; margin-bottom: 30px; }
-  .rule { width: 30px; height: 1px; background: var(--gold); }
-  .hero h1 {
-    font-size: clamp(46px, 8vw, 116px);
-    line-height: 0.96;
-    letter-spacing: -1px;
-    max-width: 14ch;
-  }
-  .hero .lede { max-width: 52ch; margin-top: 34px; letter-spacing: 0.5px; }
-  .hero-ctas { display: flex; gap: 18px; margin-top: 42px; flex-wrap: wrap; }
-  .scroll-cue {
-    position: relative;
-    margin-top: 64px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .cue { display: inline-block; animation: cue 1.8s infinite; font-size: 18px; color: var(--gold); }
-  .cue-label { font-size: 10px; letter-spacing: 3px; color: var(--dim); }
 
-  /* MARQUEE */
+  /* ─── MARQUEE (drifting) ───────────────────────────────────────────── */
   .marquee {
     border-top: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
@@ -268,16 +407,26 @@ import { marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases, B
     padding: 16px 0;
     background: var(--ink-deep);
   }
+  @keyframes marqueedrift {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
   .marquee-row {
     display: flex;
     gap: 48px;
     white-space: nowrap;
+    width: max-content;
     font-size: 11px;
     letter-spacing: 4px;
     color: var(--dim-2);
+    animation: marqueedrift 36s linear infinite;
+  }
+  .marquee-row span { padding-right: 0; }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-row { animation: none; }
   }
 
-  /* PROBLEM */
+  /* ─── PROBLEM ──────────────────────────────────────────────────────── */
   .prob-head { display: grid; gap: 8px; margin-bottom: 64px; }
   .prob-title {
     font-size: clamp(34px, 5vw, 68px);
@@ -294,10 +443,11 @@ import { marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases, B
     font-size: clamp(44px, 6vw, 74px);
     line-height: 1;
     color: var(--gold);
+    font-variant-numeric: tabular-nums;
   }
   .stat-label { font-size: 12px; line-height: 1.9; letter-spacing: 1px; color: var(--clay); margin-top: 18px; }
 
-  /* WHAT WE DO */
+  /* ─── WHAT WE DO ───────────────────────────────────────────────────── */
   .whatwedo { border-top: 1px solid var(--line); background: var(--ink-deep); }
   .wwd-inner {
     display: grid;
@@ -355,19 +505,25 @@ import { marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases, B
   }
   .sign-node { width: 9px; height: 9px; border: 1px solid var(--gold); background: var(--ink); margin-top: -1px; }
 
-  /* PHASES 0 → 1 → n */
+  /* ─── PHASES 0 → 1 → n ─────────────────────────────────────────────── */
   .phase-head { text-align: center; margin-bottom: 70px; }
   .phase-title { font-size: clamp(40px, 7vw, 96px); line-height: 1; letter-spacing: 1px; margin-top: 18px; }
   .phase-title .plain { color: var(--bone); }
   .phase-grid { display: grid; gap: 24px; background: none; border: none; }
-  .phase { border: 1px solid var(--line); padding: 36px 28px; background: var(--ink); }
+  .phase {
+    border: 1px solid var(--line);
+    padding: 36px 28px;
+    background: var(--ink);
+    transition: border-color 0.25s, transform 0.25s;
+  }
+  .phase:hover { border-color: var(--gold); transform: translateY(-4px); }
   .phase-top { display: flex; align-items: baseline; justify-content: space-between; }
   .phase-num { font-family: var(--font-display); font-size: 54px; color: var(--gold); }
   .phase-dur { font-size: 10px; letter-spacing: 2px; color: var(--dim-2); }
   .phase-name { font-family: var(--font-display); font-size: 24px; color: var(--bone); margin-top: 20px; }
   .phase-body { font-size: 12px; line-height: 1.85; color: var(--clay); margin-top: 12px; }
 
-  /* LADDER */
+  /* ─── LADDER ───────────────────────────────────────────────────────── */
   .ladder-band { border-top: 1px solid var(--line); background: var(--ink-deep); }
   .ladder-inner { padding: 120px var(--pad-x); }
   .ladder-head {
@@ -401,7 +557,9 @@ import { marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases, B
     border-top: 2px solid var(--gold);
     background: var(--ink);
     overflow: hidden;
+    transition: border-color 0.25s, transform 0.25s;
   }
+  .rung:hover { transform: translateY(-5px); border-color: var(--line-strong); }
   .rung.top { border-color: var(--tan); border-top-color: var(--gold); background: var(--raise-2); }
   .rung-lines {
     position: absolute;
@@ -458,7 +616,7 @@ import { marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases, B
     box-shadow: 0 0 14px rgba(255,204,120,0.9);
   }
 
-  /* BEDROCK */
+  /* ─── BEDROCK ──────────────────────────────────────────────────────── */
   .bedrock { margin-top: 46px; }
   .bedrock-head { display: flex; align-items: center; gap: 14px; }
   .bedrock-kicker { letter-spacing: 3px; }
@@ -476,8 +634,31 @@ import { marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases, B
   .bed-title { font-family: var(--font-display); font-size: 21px; color: var(--bone); margin: 14px 0 8px; }
   .bed-copy { font-size: 12px; line-height: 1.8; color: var(--clay); max-width: 34ch; }
 
-  /* responsive */
+  /* ─── FINAL CTA ────────────────────────────────────────────────────── */
+  .cta-band {
+    border-top: 1px solid var(--line);
+    background:
+      radial-gradient(ellipse 60% 90% at 50% 110%, rgba(255, 204, 120, 0.07), transparent 70%),
+      var(--ink);
+  }
+  .cta-inner { padding: 140px var(--pad-x) 150px; text-align: center; }
+  .cta-title {
+    font-size: clamp(34px, 5vw, 72px);
+    line-height: 1.02;
+    letter-spacing: -0.5px;
+    margin-top: 18px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 18ch;
+  }
+  .cta-lede { margin-top: 24px; }
+  .cta-ctas { justify-content: center; }
+
+  /* ─── responsive ───────────────────────────────────────────────────── */
   @media (max-width: 900px) {
+    .orbit-stage { height: 520vh; }
+    .beat { max-width: 320px; }
+    .beat[data-side='center'] { left: var(--pad-x); right: var(--pad-x); margin-left: 0; text-align: left; }
     .ladder-head { grid-template-columns: 1fr; align-items: start; }
     .rungs { grid-template-columns: 1fr; align-items: stretch; min-height: 0; }
     .rung { height: auto; min-height: 150px; }
@@ -488,5 +669,7 @@ import { marquee, problemStats, doSteps, phases, ladder, bedrock, neonPhrases, B
   }
   @media (max-width: 700px) {
     .bubble { display: none; }
+    .beat[data-side='right'] { right: auto; left: var(--pad-x); text-align: left; }
+    .orbit-hud { display: none; }
   }
 </style>

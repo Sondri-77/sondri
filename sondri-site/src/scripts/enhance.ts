@@ -82,6 +82,120 @@ export function initConsent(): void {
   );
 }
 
+const REDUCE = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+/**
+ * Masked word-level headline reveals. Elements marked [data-words] get each
+ * word wrapped in an overflow-hidden span; words slide up with a stagger when
+ * the element enters the viewport.
+ */
+export function initWordReveals(): void {
+  const els = Array.from(document.querySelectorAll<HTMLElement>('[data-words]'));
+  if (!els.length) return;
+  if (REDUCE() || typeof IntersectionObserver === 'undefined') return;
+
+  for (const el of els) {
+    let i = 0;
+    const walk = (node: Node): void => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const words = (node.textContent || '').split(/(\s+)/);
+        const frag = document.createDocumentFragment();
+        for (const w of words) {
+          if (!w) continue;
+          if (/^\s+$/.test(w)) {
+            frag.appendChild(document.createTextNode(w));
+            continue;
+          }
+          const outer = document.createElement('span');
+          outer.className = 'wm';
+          const inner = document.createElement('span');
+          inner.className = 'wi';
+          inner.style.transitionDelay = `${i * 55}ms`;
+          inner.textContent = w;
+          outer.appendChild(inner);
+          frag.appendChild(outer);
+          i++;
+        }
+        node.parentNode?.replaceChild(frag, node);
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        Array.from(node.childNodes).forEach(walk);
+      }
+    };
+    Array.from(el.childNodes).forEach(walk);
+    el.classList.add('words-ready');
+  }
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add('words-in');
+          io.unobserve(e.target);
+        }
+      }
+    },
+    { threshold: 0.35 },
+  );
+  els.forEach((el) => io.observe(el));
+}
+
+/**
+ * Count-up animation for stat numbers marked [data-count]. Parses the number
+ * out of the existing text (so no-JS shows the final value) and animates it.
+ */
+export function initCountUps(): void {
+  const els = Array.from(document.querySelectorAll<HTMLElement>('[data-count]'));
+  if (!els.length) return;
+  if (REDUCE() || typeof IntersectionObserver === 'undefined') return;
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        io.unobserve(e.target);
+        const el = e.target as HTMLElement;
+        const m = (el.textContent || '').match(/^([^0-9]*)([0-9]+(?:\.[0-9]+)?)([\s\S]*)$/);
+        if (!m) continue;
+        const [, pre, numStr, post] = m;
+        const target = parseFloat(numStr!);
+        const decimals = numStr!.includes('.') ? numStr!.split('.')[1]!.length : 0;
+        const dur = 1200;
+        const start = performance.now();
+        const tick = (now: number): void => {
+          const t = Math.min(1, (now - start) / dur);
+          const eased = 1 - Math.pow(1 - t, 3);
+          el.textContent = `${pre}${(target * eased).toFixed(decimals)}${post}`;
+          if (t < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }
+    },
+    { threshold: 0.6 },
+  );
+  els.forEach((el) => io.observe(el));
+}
+
+/** Subtle magnetic pull on primary/ghost buttons (fine pointers only). */
+export function initMagnetic(): void {
+  if (REDUCE() || !window.matchMedia?.('(pointer: fine)').matches) return;
+  const btns = Array.from(
+    document.querySelectorAll<HTMLElement>('.btn-primary, .btn-ghost'),
+  );
+  for (const btn of btns) {
+    btn.addEventListener('mousemove', (ev) => {
+      const r = btn.getBoundingClientRect();
+      const dx = (ev.clientX - (r.left + r.width / 2)) / (r.width / 2);
+      const dy = (ev.clientY - (r.top + r.height / 2)) / (r.height / 2);
+      btn.style.transform = `translate(${(dx * 5).toFixed(1)}px, ${(dy * 4).toFixed(1)}px)`;
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transform = '';
+    });
+  }
+}
+
 export function initMobileNav(): void {
   const toggle = document.getElementById('nav-toggle');
   const panel = document.getElementById('nav-panel');

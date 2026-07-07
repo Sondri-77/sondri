@@ -1,5 +1,6 @@
-// All site copy, ported verbatim from the design prototype
-// (design-system/Sondri Site.dc.html → renderVals()).
+// All site copy. Enterprise-first positioning (PE, financial services, fintech,
+// healthtech, CPG & retail, real estate) — see docs/superpowers/specs/
+// 2026-07-06-cinematic-redesign-design.md.
 
 export const CONTACT_EMAIL = 'founder@sondri.ai';
 export const mailto = (subject: string) =>
@@ -20,34 +21,48 @@ export const footerNav = [
 ];
 
 export const marquee = [
-  'RETAIL', '◆', 'CONSTRUCTION', '◆', 'LOGISTICS', '◆', 'TRADES', '◆',
-  'RETAIL', '◆', 'CONSTRUCTION', '◆', 'LOGISTICS', '◆', 'TRADES', '◆',
+  'PRIVATE EQUITY', '◆', 'FINANCIAL SERVICES', '◆', 'FINTECH & PAYMENTS', '◆',
+  'HEALTHTECH', '◆', 'CPG & RETAIL', '◆', 'REAL ESTATE', '◆',
+  'PRIVATE EQUITY', '◆', 'FINANCIAL SERVICES', '◆', 'FINTECH & PAYMENTS', '◆',
+  'HEALTHTECH', '◆', 'CPG & RETAIL', '◆', 'REAL ESTATE', '◆',
 ];
 
 export const neonPhrases = [
-  'Setting up a shared second brain',
-  'AI agents that work with MCPs, skill packs & tools',
-  'Prototype to production — better runtime, optimal cost',
-  'Highly engineered token economics',
-  'Deploying with guaranteed productivity on day zero',
+  'A shared second brain for your operating teams',
+  'Agents wired into your systems of record',
+  'Prototype to production in eight weeks',
+  'Unit economics engineered before anything scales',
+  'Governed from day zero. Productive on day one.',
 ];
 
+/** Scroll-scrubbed hero beats. from/to are pin-progress windows (0–1). */
+export const orbitBeats = [
+  { from: 0.0,  to: 0.13, side: 'left',   k: 'SONDRI — THE WORKING MODEL', t: 'Meet the working model.', b: 'One machine-precision system of agents, engineered into the core of your enterprise.' },
+  { from: 0.17, to: 0.28, side: 'right',  k: 'PRODUCTION GRADE',           t: 'Engineered. Not demoed.', b: 'Every agent ships production-first — monitored, governed, accountable to a baseline.' },
+  { from: 0.32, to: 0.43, side: 'left',   k: 'INTEGRATION',                t: 'Wired into your systems of record.', b: 'ERP, CRM, claims, payments — agents that act where your data already lives.' },
+  { from: 0.46, to: 0.55, side: 'center', k: 'GOVERNANCE',                 t: 'Governed from day zero.', b: 'Audit trails, approvals, and guardrails your regulators will recognize.' },
+  // — macro fly-through: the forge story —
+  { from: 0.58, to: 0.68, side: 'left',   k: 'FORGED',   t: 'Titanium discipline.', b: 'Workflows machined to tolerance. Nothing ships until it survives our quality gates.' },
+  { from: 0.72, to: 0.83, side: 'right',  k: 'SAPPHIRE', t: 'Clarity under pressure.', b: 'Decisions your board can look straight through — every metric visible, every outcome measured.' },
+  { from: 0.86, to: 0.97, side: 'left',   k: 'ENGRAVED', t: 'Accountability, etched in.', b: 'Sondri indices on every deployment: owner, baseline, payback, renewal.' },
+] as const;
+
 export const problemStats = [
-  { n: '70%', label: 'of mid-market businesses in non-tech sectors have no AI strategy.' },
-  { n: '$250K+', label: 'minimum cost of a bespoke AI consulting engagement today.' },
+  { n: '88%', label: 'of enterprise AI pilots never make it into production.' },
+  { n: '$2M+', label: 'typical systems-integrator engagement before any value lands.' },
   { n: '9 mo.', label: 'average time-to-value for a traditional AI implementation.' },
 ];
 
 export const doSteps = [
-  { i: '01', t: 'We diagnose your workflow and pick three high-ROI use cases.' },
-  { i: '02', t: 'We design and build the agents, MCPs, tools, and integrations.' },
-  { i: '03', t: 'We deploy onto your existing stack — no platform lock-in.' },
-  { i: '04', t: 'We train your team and stay on for governance and tuning.' },
+  { i: '01', t: 'We embed with your operators and map the workflows that move money.' },
+  { i: '02', t: 'We design and build the agents, integrations, and guardrails.' },
+  { i: '03', t: 'We deploy onto the stack you already run — no platform lock-in.' },
+  { i: '04', t: 'We train your teams and stay on for governance, tuning, and scale.' },
 ];
 
 export const phases = [
-  { num: '0', dur: '2 WEEKS', title: 'Discover', body: 'Workflow audit. We map every process and pick three use cases with clear ROI.' },
-  { num: '1', dur: '6 WEEKS', title: 'Build', body: 'First agents go live. Our core team blueprints; vetted contractors deliver.' },
+  { num: '0', dur: '2 WEEKS', title: 'Discover', body: 'Workflow audit with your operators. We scope three use cases with board-ready ROI.' },
+  { num: '1', dur: '6 WEEKS', title: 'Build', body: 'First agents reach production. Our architects blueprint; vetted specialists deliver.' },
   { num: 'n', dur: 'ONGOING', title: 'Scale', body: 'New use cases land monthly. We stay on for tuning, governance, and the next wave.' },
 ];
 
@@ -55,45 +70,45 @@ export const ladder = [
   { n: '01', tag: 'FREE · DIGITAL', title: 'Design Thinking & Discovery', body: 'A free, digital-first session that frames the problem and maps the highest-payback use cases.', h: 168, top: false },
   { n: '02', tag: 'PROOF', title: 'Pilot & Measure', body: 'A scoped agent ships into one live workflow and is measured against a hard, agreed baseline.', h: 232, top: false },
   { n: '03', tag: 'PRODUCTION', title: 'Deploy & Scale', body: 'One proven use case becomes many — in production, on the stack you already run.', h: 296, top: false },
-  { n: '04', tag: 'RETAINED', title: 'Maintenance', body: 'Continuous tuning, monitoring and governance keep every agent earning its keep.', h: 360, top: false },
-  { n: '05', tag: 'PARTNER', title: 'Advisor', body: 'A standing seat at the table for whatever AI decision comes next.', h: 424, top: true },
+  { n: '04', tag: 'RETAINED', title: 'Operate & Govern', body: 'Continuous tuning, monitoring, and governance keep every agent earning its keep.', h: 360, top: false },
+  { n: '05', tag: 'PARTNER', title: 'Standing Advisor', body: 'A permanent seat at the table for every AI decision your business faces next.', h: 424, top: true },
 ];
 
 export const bedrock = [
-  { t: 'Mapping agents to your pain points', b: 'Every rung starts from a real bottleneck in your operation — never a demo.' },
-  { t: 'Compounding process improvement', b: 'Each deployment makes the next one faster, cheaper, and easier to trust.' },
-  { t: 'Navigating the galaxies unheard of', b: 'We chart the AI frontier that is specific to your business — and bring you along.' },
+  { t: 'Mapped to the P&L', b: 'Every engagement starts from a line item — a cost to cut or revenue to unlock. Never a demo.' },
+  { t: 'Compounding by design', b: 'Each deployment makes the next one faster, cheaper, and easier to trust.' },
+  { t: 'Frontier, translated', b: 'We track the AI frontier so your board doesn’t have to — and bring back only the parts that pay.' },
 ];
 
 export const timeline = [
-  { wk: 'WEEKS 1–2', title: 'Discovery', body: 'We sit with your team and map every workflow. Then we pick three use cases with clear, measurable ROI.' },
-  { wk: 'WEEKS 3–6', title: 'Build', body: 'Our core team designs the agents. Vetted contractors deliver against the blueprint, reviewed at every gate.' },
-  { wk: 'WEEKS 7–8', title: 'Deploy & Train', body: 'Agents go live in your environment. Your people learn how to operate, refine, and request more.' },
+  { wk: 'WEEKS 1–2', title: 'Discovery', body: 'We sit with your operators and map every workflow. Then we scope three use cases with hard, measurable ROI.' },
+  { wk: 'WEEKS 3–6', title: 'Build', body: 'Our architects design the agents. Vetted specialists deliver against the blueprint, reviewed at every gate.' },
+  { wk: 'WEEKS 7–8', title: 'Deploy & Train', body: 'Agents go live in your environment, inside your governance. Your people learn to operate, refine, and request more.' },
   { wk: 'MONTH 3+', title: 'Scale', body: 'New use cases land monthly. Sondri stays on for tuning, governance, and the next wave.' },
 ];
 
 export const engine = [
-  { tag: '0 → 1', title: 'Sondri Core Team', items: ['Senior solution architects', 'Customer discovery', 'Architecture & blueprint', 'Quality gate before scale'] },
-  { tag: '1 → n', title: 'Contractor Network', items: ['Vetted global contractors', 'Build agents & integrations', '20–30% of US consulting rates', 'Reviewed by core team'] },
-  { tag: 'OUTCOMES', title: 'Your Business', items: ['Retail · construction', 'Logistics · trades', 'Recurring agent service', 'Renewals + expansion'] },
+  { tag: '0 → 1', title: 'Sondri Core Team', items: ['Senior solution architects', 'Executive discovery', 'Architecture & blueprint', 'Quality gate before scale'] },
+  { tag: '1 → n', title: 'Specialist Network', items: ['Vetted global specialists', 'Build agents & integrations', '20–30% of US consulting rates', 'Reviewed by core team'] },
+  { tag: 'OUTCOMES', title: 'Your Business', items: ['Private equity · banking', 'Fintech · healthtech', 'CPG · real estate', 'Renewals + expansion'] },
 ];
 
 export const whyNow = [
-  { i: '01', t: 'Capable agents', b: 'Frontier models can now run end-to-end workflows — not just answer questions. Off-the-shelf tooling makes deployment weeks, not quarters.' },
-  { i: '02', t: 'Global talent', b: 'A new generation of skilled contractors in India, Eastern Europe, and Latin America can deliver at 20–30% of US consulting rates.' },
-  { i: '03', t: 'Buyer readiness', b: 'Non-tech executives have moved from skepticism to FOMO. Boards are asking the question. Sondri is the answer.' },
+  { i: '01', t: 'Capable agents', b: 'Frontier models can now run end-to-end workflows — not just answer questions. Deployment is weeks, not quarters.' },
+  { i: '02', t: 'Global talent', b: 'A new generation of vetted specialists can deliver at 20–30% of US consulting rates, behind our quality gates.' },
+  { i: '03', t: 'Boards are asking', b: 'Every earnings call has an AI question. Operators need an answer that survives diligence. Sondri is that answer.' },
 ];
 
 export const pains = [
-  { t: 'You’re drowning in spreadsheets', b: 'Inventory, schedules, quotes, invoices — all in Excel, none of it talking to anything else.' },
-  { t: 'You can’t hire a data team', b: 'And the consultants you can afford give you slide decks, not systems that run.' },
-  { t: 'Competitors are pulling ahead', b: 'Tech-native rivals are quoting faster, stocking smarter, scheduling tighter.' },
-  { t: 'You don’t want a platform', b: 'You want results — agents that fit how you work today, not another login to manage.' },
+  { t: 'Your pilots die in the lab', b: 'Eighteen months of proofs-of-concept and nothing in production. The deck was great; the P&L never moved.' },
+  { t: 'Your data team is a bottleneck', b: 'Every AI idea queues behind the same ten engineers. The backlog is where momentum goes to die.' },
+  { t: 'The board wants an answer', b: 'Every quarter the AI question gets sharper. “We’re evaluating” stopped working a year ago.' },
+  { t: 'You don’t want another platform', b: 'You want outcomes — agents that fit the systems you already run, not another license to shelve.' },
 ];
 
 export const pricing = [
-  { name: 'Discovery Sprint', price: '$25K', unit: 'fixed fee', body: 'A two-week diagnostic. We map your workflows and scope three use cases. Converts to build.', hot: false },
-  { name: 'Build Engagement', price: '$80–250K', unit: 'per use case', body: 'Scoped at discovery, contractor-delivered against our blueprint, reviewed at every gate.', hot: true },
+  { name: 'Discovery Sprint', price: '$25K', unit: 'fixed fee', body: 'A two-week diagnostic. We map your workflows and scope three use cases with board-ready ROI. Converts to build.', hot: false },
+  { name: 'Build Engagement', price: '$80–250K', unit: 'per use case', body: 'Scoped at discovery, delivered against our blueprint by vetted specialists, reviewed at every gate.', hot: true },
   { name: 'Care & Scale', price: '$8–25K', unit: 'per month', body: 'Monthly recurring — tuning, governance, and a steady cadence of new use cases.', hot: false },
 ];
 
@@ -104,7 +119,7 @@ export const econ = [
   { n: '135%', label: 'NET REVENUE RETENTION' },
 ];
 
-export const verticals = ['Regional retail chain', 'Mid-size contractor', 'Logistics operator', 'Auto service group', 'Specialty trades'];
+export const verticals = ['PE portfolio company', 'Regional banking group', 'Payments platform', 'Healthcare operator', 'National retail chain'];
 
 export const industries = [
   { name: 'Private Equity', tagline: 'PORTFOLIO-WIDE VALUE CREATION', body: 'Diligence support, EBITDA-linked AI roadmaps, and repeatable playbooks deployed across the book on hold-period timelines.', stat: '3 to 15 cos / program' },
@@ -123,8 +138,8 @@ export const reports = [
 export const perks = [
   { t: 'Meaningful equity', b: 'Top 1% of the cap table. We’re hiring the people who shape the company, not fill seats.' },
   { t: 'Real customers from day one', b: 'No phantom roadmaps. You’ll ship into live, revenue-generating accounts in week one.' },
-  { t: 'A market that’s wide open', b: 'Non-tech sectors are an underexploited frontier. The first credible brand here wins big.' },
-  { t: 'Leverage, not headcount', b: 'A small core team with a global contractor network. You’ll punch ten times your weight.' },
+  { t: 'A market that’s wide open', b: 'Enterprise AI delivery is an underexploited frontier. The first credible brand here wins big.' },
+  { t: 'Leverage, not headcount', b: 'A small core team with a global specialist network. You’ll punch ten times your weight.' },
 ];
 
 export const swatches = [
@@ -132,6 +147,7 @@ export const swatches = [
   { hex: '#081313', name: 'INK DEEP', use: 'Recessed panels' },
   { hex: '#ffcc78', name: 'GOLD', use: 'Primary accent' },
   { hex: '#F7C062', name: 'TAN', use: 'Artifact surfaces' },
+  { hex: '#16324F', name: 'SAPPHIRE', use: 'Visor glass' },
   { hex: '#E6F2F0', name: 'BONE', use: 'Display type' },
   { hex: '#86A19E', name: 'CLAY', use: 'Body copy' },
 ];

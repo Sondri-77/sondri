@@ -1,22 +1,23 @@
 ---
 import Base from '../layouts/Base.astro';
-import { pains, timeline, pricing, econ, verticals } from '../data';
+import { pains, timeline, pricing, econ, verticals, BOOK_HREF } from '../data';
 ---
 
 <Base
   title="For customers — Sondri"
-  description="If you run a retail chain, a construction firm, or a fleet: agents that fit into how you work today — built, deployed, and run for you. Pricing from a $25K discovery sprint."
+  description="If you run a portfolio, a bank, or a platform where money moves: agents built, deployed, and run for you inside your governance. Pricing from a $25K discovery sprint."
 >
   <div class="pagepad">
     <!-- HERO -->
     <section class="wrap hero">
       <span class="kicker">FOR CUSTOMERS</span>
-      <h1 class="display hero-title">
-        If you run a retail chain, a construction firm, or a fleet&hellip;
+      <h1 class="display hero-title" data-words>
+        If you run a portfolio, a bank, or a platform where money moves&hellip;
       </h1>
       <p class="lede hero-lede">
-        You don&rsquo;t need another login. You need agents that fit into how you work today &mdash;
-        and someone to build, deploy, and run them for you.
+        You don&rsquo;t need another platform. You need agents engineered into the systems you
+        already run &mdash; built, deployed, and governed for you, measured against a baseline
+        your board will accept.
       </p>
     </section>
 
@@ -78,7 +79,7 @@ import { pains, timeline, pricing, econ, verticals } from '../data';
         <div class="econ-stats">
           {econ.map((e) => (
             <div>
-              <div class="econ-n">{e.n}</div>
+              <div class="econ-n" data-count>{e.n}</div>
               <div class="econ-label">{e.label}</div>
             </div>
           ))}
@@ -91,6 +92,14 @@ import { pains, timeline, pricing, econ, verticals } from '../data';
       <span class="kicker">PILOT CUSTOMERS &mdash; REPRESENTATIVE</span>
       <div class="chips">
         {verticals.map((v) => <span class="chip">{v}</span>)}
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="reveal cta-close">
+      <div class="wrap cta-close-inner">
+        <h2 class="display cta-close-title" data-words>The first rung is free. The second pays for itself.</h2>
+        <a class="btn-primary" href={BOOK_HREF}>START A DISCOVERY SPRINT &nbsp;&rarr;</a>
       </div>
     </section>
   </div>
@@ -167,6 +176,16 @@ import { pains, timeline, pricing, econ, verticals } from '../data';
   .verticals-sec { padding: 90px var(--pad-x) 100px; }
   .chips { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 28px; }
   .chip { border: 1px solid var(--line-strong); padding: 12px 20px; font-size: 13px; letter-spacing: 1px; color: var(--body-2); }
+
+  .cta-close { border-top: 1px solid var(--line); background: var(--ink-deep); }
+  .cta-close-inner {
+    padding: 110px var(--pad-x) 120px;
+    text-align: center;
+    display: grid;
+    gap: 40px;
+    justify-items: center;
+  }
+  .cta-close-title { font-size: clamp(30px, 4vw, 56px); line-height: 1.05; max-width: 22ch; }
 
   @media (max-width: 900px) {
     .cell { min-height: 0; }
