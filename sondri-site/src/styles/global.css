@@ -106,6 +106,7 @@ body::after {
 .orbit-stage { height: 680vh; position: relative; background: #050c0c; }
 .forge-stage { height: 560vh; }
 .rank-stage { height: 640vh; }
+.ascent-stage { height: 700vh; }
 .orbit-sticky {
   position: sticky;
   top: 0;
@@ -197,6 +198,7 @@ body::after {
   .orbit-stage { height: 520vh; }
   .forge-stage { height: 440vh; }
   .rank-stage { height: 500vh; }
+  .ascent-stage { height: 560vh; }
   .beat { max-width: 320px; }
   .beat[data-side='center'] { left: var(--pad-x); right: var(--pad-x); margin-left: 0; text-align: left; }
 }

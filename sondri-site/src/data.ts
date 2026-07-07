@@ -73,6 +73,19 @@ export const rankSectors = [
   'Healthtech', 'CPG & Retail', 'Real Estate',
 ];
 
+/** For-customers ascent beats: chaos → order → the engagement-ladder climb. */
+export const ascentBeats = [
+  { from: 0.0,  to: 0.08, side: 'left',   k: 'FOR CUSTOMERS',                  t: 'It starts in the mess.', b: 'Stalled pilots, spreadsheets everywhere, a board that wants answers. Scroll.' },
+  { from: 0.1,  to: 0.17, side: 'right',  k: 'THE PAIN',                       t: 'Your pilots die in the lab.', b: 'Eighteen months of proofs-of-concept and nothing in production. The P&L never moved.' },
+  { from: 0.19, to: 0.3,  side: 'left',   k: 'THE TURN',                       t: 'We turn the mess into a working model.', b: 'Agents engineered into the systems you already run — governed, measured, accountable.' },
+  { from: 0.34, to: 0.43, side: 'right',  k: 'RUNG 01 — FREE · DIGITAL',       t: 'Design Thinking & Discovery.', b: 'A free session that frames the problem and maps the highest-payback use cases. No commitment.' },
+  { from: 0.46, to: 0.55, side: 'left',   k: 'RUNG 02 — PROOF · $25K SPRINT',  t: 'Pilot & Measure.', b: 'A scoped agent ships into one live workflow and is measured against a hard, agreed baseline.' },
+  { from: 0.58, to: 0.67, side: 'right',  k: 'RUNG 03 — PRODUCTION · $80–250K', t: 'Deploy & Scale.', b: 'One proven use case becomes many — in production, on the stack you already run.' },
+  { from: 0.7,  to: 0.79, side: 'left',   k: 'RUNG 04 — RETAINED · $8–25K/MO', t: 'Operate & Govern.', b: 'Continuous tuning, monitoring, and governance keep every agent earning its keep.' },
+  { from: 0.81, to: 0.89, side: 'right',  k: 'RUNG 05 — PARTNER',              t: 'Standing Advisor.', b: 'A permanent seat at the table for every AI decision your business faces next.' },
+  { from: 0.92, to: 1.0,  side: 'center', k: 'THE CLIMB',                      t: 'Climb only as far as the value carries you.', b: 'Each rung pays for the next. The first one is free — start today.' },
+] as const;
+
 export const problemStats = [
   { n: '88%', label: 'of enterprise AI pilots never make it into production.' },
   { n: '$2M+', label: 'typical systems-integrator engagement before any value lands.' },

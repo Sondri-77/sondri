@@ -55,6 +55,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       import { initOrbit } from '../scripts/orbit';
       import { initForge } from '../scripts/orbit/forge';
       import { initPatrol } from '../scripts/orbit/patrol';
+      import { initClimb } from '../scripts/orbit/climb';
       import {
         initReveals, initNeonSign, initConsent, initMobileNav,
         initWordReveals, initCountUps, initMagnetic,
@@ -62,6 +63,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       initOrbit(); // must run before initDither: it resolves the hero fallback
       initForge();
       initPatrol();
+      initClimb();
       initReveals();
       initWordReveals();
       initCountUps();
