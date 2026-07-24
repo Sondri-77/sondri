@@ -8,7 +8,7 @@ Sondri is an AI-driven platform built for forward-deployed engineering, business
 
 ## 🌐 Live Application
 
-* **Live Marketing Site:** [https://sondri.sondri.workers.dev](https://sondri.sondri.workers.dev) (and [https://sondri.ai](https://sondri.ai))
+* **Live Marketing Site:** [https://sondri.ai](https://sondri.ai) *(Fallback: [https://sondri.sondri.workers.dev](https://sondri.sondri.workers.dev))*
 * **Cloudflare Dashboard:** [Account Overview](https://dash.cloudflare.com/ce4bcc9130b13b4acc8c5e597ba93f3a/domains/overview)
 
 ---
