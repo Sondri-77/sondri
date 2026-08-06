@@ -96,6 +96,11 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
       cancel_url: cancelUrl,
       invoice_creation: {
         enabled: true,
+        invoice_data: {
+          metadata: {
+            is_checkout_invoice: 'true',
+          },
+        },
       },
       metadata: {
         source: 'website_checkout',
