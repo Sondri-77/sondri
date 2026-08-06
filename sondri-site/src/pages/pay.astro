@@ -1,0 +1,267 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Payments & Deposits — Sondri"
+  description="Submit an agreed invoice deposit or custom payment for Sondri AI automation services."
+>
+  <div class="pagepad">
+    <!-- HERO -->
+    <section class="wrap pay-hero">
+      <span class="kicker">SONDRI PAYMENTS</span>
+      <h1 class="display hero-title" data-words>
+        Secure Client Payment &amp; Deposit Portal
+      </h1>
+      <p class="lede hero-lede">
+        Submit an agreed project deposit, retainer payment, or invoice. All transactions are processed through 256-bit encrypted Stripe Checkout with instant receipt generation.
+      </p>
+    </section>
+
+    <!-- CUSTOM DEPOSIT CARD -->
+    <section class="wrap pay-section">
+      <div class="custom-wrapper">
+        <div class="custom-card">
+          <span class="plan-code">CLIENT PAYMENT PORTAL</span>
+          <h2 class="display custom-title">PAY AN INVOICE OR DEPOSIT</h2>
+          <p class="custom-b">
+            Enter your billing email, the custom amount agreed with the Sondri engineering team, and your project reference.
+          </p>
+
+          <form id="formCustomPay" class="custom-form">
+            <div class="form-group">
+              <label for="cEmail" class="form-label">BILLING EMAIL ADDRESS *</label>
+              <input type="email" id="cEmail" class="form-input" placeholder="billing@company.com" required />
+            </div>
+
+            <div class="form-group">
+              <label for="cAmount" class="form-label">PAYMENT AMOUNT ($ USD) *</label>
+              <input type="number" step="0.01" min="10" id="cAmount" class="form-input" placeholder="2500.00" required />
+            </div>
+
+            <div class="form-group">
+              <label for="cDesc" class="form-label">INVOICE REFERENCE / PROJECT DESCRIPTION *</label>
+              <input type="text" id="cDesc" class="form-input" placeholder="Deposit for AI Workflow Sprint" required />
+            </div>
+
+            <button type="submit" id="btnSubmit" class="btn-action btn-gold btn-full">
+              PROCEED TO SECURE CHECKOUT &rarr;
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECURITY FOOTER -->
+    <section class="wrap security-note">
+      <div class="sec-box">
+        <span class="sec-dot"></span>
+        <span class="sec-text">256-BIT ENCRYPTED &bull; AUTOMATIC PDF TAX RECEIPTS &bull; POWERED BY STRIPE</span>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const WORKER_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:8787'
+      : 'https://billing.sondri.ai';
+
+    // Handle Custom Payment Form Submission
+    document.getElementById('formCustomPay')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmit') as HTMLButtonElement;
+      if (btn) btn.innerText = 'GENERATING CHECKOUT...';
+
+      const client_email = (document.getElementById('cEmail') as HTMLInputElement).value;
+      const custom_amount = parseFloat((document.getElementById('cAmount') as HTMLInputElement).value);
+      const description = (document.getElementById('cDesc') as HTMLInputElement).value;
+
+      try {
+        const res = await fetch(`${WORKER_BASE}/create-checkout-session`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'custom',
+            client_email,
+            custom_amount,
+            description,
+          }),
+        });
+
+        const json = await res.json();
+
+        if (json.success && json.data?.checkout_url) {
+          window.location.href = json.data.checkout_url;
+        } else {
+          alert(`Checkout Error: ${json.error?.message || 'Unable to generate checkout session'}`);
+          if (btn) btn.innerText = 'PROCEED TO SECURE CHECKOUT →';
+        }
+      } catch (err: any) {
+        alert(`Connection Error: ${err.message || 'Unable to reach payment gateway'}`);
+        if (btn) btn.innerText = 'PROCEED TO SECURE CHECKOUT →';
+      }
+    });
+  </script>
+
+  <style>
+    .pagepad {
+      padding-top: 140px;
+      padding-bottom: 100px;
+    }
+    .wrap {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 var(--pad-x);
+    }
+
+    .kicker {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    .display {
+      font-family: var(--font-display);
+      font-weight: 700;
+      color: var(--bone);
+    }
+
+    .hero-title {
+      font-size: clamp(32px, 5vw, 54px);
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      margin-bottom: 20px;
+    }
+
+    .lede {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--clay);
+      max-width: 720px;
+      margin-bottom: 40px;
+    }
+
+    /* Custom Form Card */
+    .custom-wrapper {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .custom-card {
+      background: var(--ink-deep);
+      border: 1px solid var(--line-strong);
+      padding: 44px;
+    }
+
+    .plan-code {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--dim);
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .custom-title {
+      font-size: 24px;
+      margin-top: 4px;
+      margin-bottom: 12px;
+    }
+
+    .custom-b {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--clay);
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .custom-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--dim);
+    }
+
+    .form-input {
+      background: var(--ink);
+      border: 1px solid var(--line-strong);
+      color: var(--bone);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 14px 16px;
+    }
+
+    .form-input:focus {
+      outline: 1px solid var(--gold);
+      border-color: var(--gold);
+    }
+
+    .btn-action {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      padding: 16px 20px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .btn-gold:hover {
+      background: var(--gold-soft);
+    }
+
+    .btn-full {
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    /* Security Note */
+    .security-note {
+      margin-top: 60px;
+    }
+
+    .sec-box {
+      border-top: 1px solid var(--line);
+      padding-top: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--dim);
+    }
+
+    .sec-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+    }
+  </style>
+</Base>

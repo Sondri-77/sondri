@@ -1,0 +1,12 @@
+# Stripe Test API Secret Key (starts with sk_test_)
+STRIPE_SECRET_KEY=sk_test_51...
+
+# Stripe Webhook Signing Secret (starts with whsec_)
+# Obtained when running `stripe listen --forward-to localhost:8787/webhooks/stripe`
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# Shared Secret Key for authorizing Worker API calls from curl/admin script
+API_KEY=sondri_dev_secret_key_123
+
+# Optional: Discord Webhook URL for payment alerts
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...

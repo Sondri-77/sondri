@@ -1,0 +1,13 @@
+name = "sondri-billing-worker"
+main = "src/index.ts"
+compatibility_date = "2026-02-01"
+compatibility_flags = ["nodejs_compat"]
+account_id = "ce4bcc9130b13b4acc8c5e597ba93f3a"
+
+# Routes and Domains
+routes = [
+  { pattern = "billing.sondri.ai", custom_domain = true }
+]
+
+[observability]
+enabled = true

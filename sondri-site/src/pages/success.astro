@@ -1,0 +1,182 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Payment Confirmed — Sondri"
+  description="Thank you for your payment to Sondri."
+>
+  <div class="pagepad">
+    <section class="wrap success-section">
+      <div class="success-card">
+        <div class="status-badge">
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>PAYMENT CONFIRMED</span>
+        </div>
+
+        <h1 class="display success-title">Thank You for Your Payment</h1>
+        
+        <p class="success-lede">
+          Your payment has been successfully processed by Stripe. A confirmation email with your tax invoice and receipt has been dispatched to your email address.
+        </p>
+
+        <div id="downloadsContainer" class="action-wrapper" style="display: none;">
+          <a id="btnReceipt" href="#" target="_blank" rel="noopener" class="btn-action btn-gold btn-full">
+            VIEW OFFICIAL RECEIPT &amp; INVOICE &rarr;
+          </a>
+        </div>
+
+        <div class="home-link-wrapper">
+          <a href="/" class="link-home">&larr; Return to Sondri Homepage</a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const WORKER_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:8787'
+      : 'https://billing.sondri.ai';
+
+    async function loadTransactionDocs() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionId = urlParams.get('session_id');
+
+      if (!sessionId) return;
+
+      try {
+        const res = await fetch(`${WORKER_BASE}/checkout-session/${sessionId}`);
+        const json = await res.json();
+
+        if (json.success && json.data) {
+          const { receipt_url, invoice_url, invoice_pdf } = json.data;
+          const container = document.getElementById('downloadsContainer');
+          const btnReceipt = document.getElementById('btnReceipt') as HTMLAnchorElement;
+
+          const targetUrl = receipt_url || invoice_url || invoice_pdf;
+
+          if (targetUrl && btnReceipt && container) {
+            btnReceipt.href = targetUrl;
+            container.style.display = 'block';
+          }
+        }
+      } catch (err) {
+        console.warn('Unable to load receipt link:', err);
+      }
+    }
+
+    loadTransactionDocs();
+  </script>
+
+  <style>
+    .pagepad {
+      padding-top: 140px;
+      padding-bottom: 100px;
+    }
+
+    .wrap {
+      max-width: var(--max-w, 1200px);
+      margin: 0 auto;
+      padding: 0 var(--pad-x, 24px);
+    }
+
+    .success-section {
+      max-width: 580px;
+    }
+
+    .success-card {
+      background: var(--ink-deep, #081313);
+      border: 1px solid var(--line-strong, rgba(255, 204, 120, 0.25));
+      padding: 48px;
+      text-align: center;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(255, 204, 120, 0.1);
+      border: 1px solid var(--gold, #ffcc78);
+      color: var(--gold, #ffcc78);
+      font-family: var(--font-mono, monospace);
+      font-size: 11px;
+      letter-spacing: 2px;
+      margin-bottom: 24px;
+    }
+
+    .check-icon {
+      width: 14px;
+      height: 14px;
+    }
+
+    .display {
+      font-family: var(--font-display, 'Space Grotesk', sans-serif);
+      font-weight: 700;
+      color: var(--bone, #f8fafc);
+    }
+
+    .success-title {
+      font-size: clamp(24px, 4vw, 32px);
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .success-lede {
+      font-family: var(--font-mono, monospace);
+      font-size: 13px;
+      color: var(--clay, #94a3b8);
+      line-height: 1.6;
+      margin-bottom: 36px;
+    }
+
+    .action-wrapper {
+      margin-bottom: 28px;
+    }
+
+    .btn-action {
+      display: block;
+      font-family: var(--font-mono, monospace);
+      font-size: 11px;
+      letter-spacing: 2px;
+      padding: 16px 20px;
+      text-decoration: none;
+      text-align: center;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-gold {
+      background: var(--gold, #ffcc78);
+      color: var(--ink, #0c1a1a);
+      font-weight: 700;
+    }
+
+    .btn-gold:hover {
+      background: var(--gold-soft, #ffd99b);
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .home-link-wrapper {
+      margin-top: 20px;
+    }
+
+    .link-home {
+      font-family: var(--font-mono, monospace);
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: var(--dim, #64748b);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .link-home:hover {
+      color: var(--gold, #ffcc78);
+    }
+  </style>
+</Base>
