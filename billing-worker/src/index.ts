@@ -4,7 +4,7 @@ import { handleCreateSubscription } from './routes/subscriptions';
 import { handleCreateCharge } from './routes/charges';
 import { handleCreateInvoice, handleListInvoices } from './routes/invoices';
 import { handleStripeWebhook } from './routes/webhooks';
-import { handleCreateCheckoutSession } from './routes/checkout';
+import { handleCreateCheckoutSession, handleGetCheckoutSession } from './routes/checkout';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -46,6 +46,13 @@ export default {
     // 2. Public Website Checkout Route (No X-API-Key required)
     if (path === '/create-checkout-session' && method === 'POST') {
       const resp = await handleCreateCheckoutSession(request, env);
+      return withCors(resp);
+    }
+
+    // 3. Public GET Checkout Session Route (No X-API-Key required)
+    if (path.startsWith('/checkout-session/') && method === 'GET') {
+      const sessionId = path.replace('/checkout-session/', '');
+      const resp = await handleGetCheckoutSession(request, env, sessionId);
       return withCors(resp);
     }
 

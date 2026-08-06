@@ -16,15 +16,70 @@ import Base from '../layouts/Base.astro';
           Your payment has been successfully processed by Stripe. A detailed receipt and tax invoice have been sent to your email.
         </p>
 
-        <div class="info-box">
-          <p><strong>What Happens Next?</strong></p>
-          <p>Our team has received your payment notification. We will be in touch shortly to kick off your automation sprint or confirm retainer onboarding.</p>
+        <div id="downloadsContainer" class="downloads-box" style="display: none;">
+          <p class="downloads-title">YOUR TRANSACTION DOCUMENTS</p>
+          <div class="downloads-actions">
+            <a id="btnReceipt" href="#" target="_blank" rel="noopener" class="btn-dl btn-dl-gold" style="display: none;">
+              📥 DOWNLOAD PDF RECEIPT
+            </a>
+            <a id="btnInvoice" href="#" target="_blank" rel="noopener" class="btn-dl btn-dl-outline" style="display: none;">
+              📄 VIEW INVOICE PDF
+            </a>
+          </div>
         </div>
 
         <a href="/" class="btn-home">Return to Home Page</a>
       </div>
     </div>
   </section>
+
+  <script>
+    const WORKER_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:8787'
+      : 'https://billing.sondri.ai';
+
+    async function loadTransactionDocs() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionId = urlParams.get('session_id');
+
+      if (!sessionId) return;
+
+      try {
+        const res = await fetch(`${WORKER_BASE}/checkout-session/${sessionId}`);
+        const json = await res.json();
+
+        if (json.success && json.data) {
+          const { receipt_url, invoice_url, invoice_pdf } = json.data;
+          const container = document.getElementById('downloadsContainer');
+          const btnReceipt = document.getElementById('btnReceipt') as HTMLAnchorElement;
+          const btnInvoice = document.getElementById('btnInvoice') as HTMLAnchorElement;
+
+          let showContainer = false;
+
+          if (receipt_url && btnReceipt) {
+            btnReceipt.href = receipt_url;
+            btnReceipt.style.display = 'inline-flex';
+            showContainer = true;
+          }
+
+          const finalInvoiceLink = invoice_pdf || invoice_url;
+          if (finalInvoiceLink && btnInvoice) {
+            btnInvoice.href = finalInvoiceLink;
+            btnInvoice.style.display = 'inline-flex';
+            showContainer = true;
+          }
+
+          if (showContainer && container) {
+            container.style.display = 'block';
+          }
+        }
+      } catch (err) {
+        console.warn('Unable to load receipt/invoice links:', err);
+      }
+    }
+
+    loadTransactionDocs();
+  </script>
 
   <style>
     .success-hero {
@@ -112,10 +167,67 @@ import Base from '../layouts/Base.astro';
       border-radius: 8px;
       text-decoration: none;
       transition: transform 0.1s;
+      margin-top: 12px;
     }
 
     .btn-home:hover {
       background: #facc15;
+    }
+
+    .downloads-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 204, 120, 0.25);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .downloads-title {
+      font-family: var(--font-mono, monospace);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--gold, #ffcc78);
+      margin-bottom: 14px;
+    }
+
+    .downloads-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-dl {
+      font-family: var(--font-mono, monospace);
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      padding: 12px 18px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: all 0.2s ease;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-dl-gold {
+      background: var(--gold, #ffcc78);
+      color: #0c1a1a;
+    }
+
+    .btn-dl-gold:hover {
+      background: #ffd99b;
+    }
+
+    .btn-dl-outline {
+      background: transparent;
+      border: 1px solid var(--gold, #ffcc78);
+      color: var(--gold, #ffcc78);
+    }
+
+    .btn-dl-outline:hover {
+      background: rgba(255, 204, 120, 0.15);
     }
   </style>
 </Base>

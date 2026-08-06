@@ -39,20 +39,43 @@ export async function handleStripeWebhook(request: Request, env: Env): Promise<R
   try {
     switch (event.type) {
       case 'checkout.session.completed': {
-        const session = event.data.object as Stripe.Checkout.Session;
-        const amount = session.amount_total ? (session.amount_total / 100).toFixed(2) : '0.00';
-        const currency = (session.currency || 'usd').toUpperCase();
-        const customerName = session.customer_details?.name || session.customer_email || 'Website Client';
-        const clientEmail = session.customer_details?.email || session.customer_email || 'N/A';
-        const description = session.metadata?.description || 'Website Deposit / Custom Payment';
+        const sessionPayload = event.data.object as Stripe.Checkout.Session;
+        const stripe = getStripe(env);
 
-        console.log(`[Checkout Completed] Session ${session.id} paid by ${customerName} ($${amount} ${currency})`);
+        let invoiceUrl = '';
+        let receiptUrl = '';
+
+        try {
+          const expandedSession = await stripe.checkout.sessions.retrieve(sessionPayload.id, {
+            expand: ['invoice', 'payment_intent.latest_charge'],
+          });
+          const invoiceObj = typeof expandedSession.invoice === 'object' && expandedSession.invoice ? (expandedSession.invoice as Stripe.Invoice) : null;
+          const paymentIntentObj = typeof expandedSession.payment_intent === 'object' && expandedSession.payment_intent ? (expandedSession.payment_intent as Stripe.PaymentIntent) : null;
+          const latestChargeObj = paymentIntentObj && typeof paymentIntentObj.latest_charge === 'object' ? (paymentIntentObj.latest_charge as Stripe.Charge) : null;
+
+          if (invoiceObj?.hosted_invoice_url) invoiceUrl = invoiceObj.hosted_invoice_url;
+          if (latestChargeObj?.receipt_url) receiptUrl = latestChargeObj.receipt_url;
+        } catch (e: any) {
+          console.warn(`[Webhook Session Expand Warning] ${e.message}`);
+        }
+
+        const amount = sessionPayload.amount_total ? (sessionPayload.amount_total / 100).toFixed(2) : '0.00';
+        const currency = (sessionPayload.currency || 'usd').toUpperCase();
+        const customerName = sessionPayload.customer_details?.name || sessionPayload.customer_email || 'Website Client';
+        const clientEmail = sessionPayload.customer_details?.email || sessionPayload.customer_email || 'N/A';
+        const description = sessionPayload.metadata?.description || 'Website Deposit / Custom Payment';
+
+        let discordMsg = `**Customer:** ${customerName}\n**Email:** ${clientEmail}\n**Amount:** $${amount} ${currency}\n**Reference:** ${description}\n**Session ID:** \`${sessionPayload.id}\``;
+        if (receiptUrl) discordMsg += `\n**Receipt:** [View Receipt](${receiptUrl})`;
+        if (invoiceUrl) discordMsg += `\n**Invoice:** [View Invoice](${invoiceUrl})`;
+
+        console.log(`[Checkout Completed] Session ${sessionPayload.id} paid by ${customerName} ($${amount} ${currency})`);
 
         // 1. Send Discord Notification
         await sendDiscordNotification(
           env,
           '💰 Website Payment Received!',
-          `**Customer:** ${customerName}\n**Email:** ${clientEmail}\n**Amount:** $${amount} ${currency}\n**Reference:** ${description}\n**Session ID:** \`${session.id}\``,
+          discordMsg,
           0x10b981 // Green
         );
 
@@ -63,7 +86,7 @@ export async function handleStripeWebhook(request: Request, env: Env): Promise<R
           customerName: customerName,
           amount: amount,
           currency: currency,
-          invoiceNumber: session.id.substring(0, 14),
+          invoiceNumber: sessionPayload.id.substring(0, 14),
           description: description,
           status: 'PAID (Checkout)',
         });

@@ -1,5 +1,6 @@
 import { getStripe } from '../lib/stripe';
 import { Env } from '../types';
+import Stripe from 'stripe';
 
 export interface CreateCheckoutSessionDTO {
   type: 'fixed' | 'custom';
@@ -93,6 +94,9 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
       mode: mode,
       success_url: successUrl,
       cancel_url: cancelUrl,
+      invoice_creation: {
+        enabled: true,
+      },
       metadata: {
         description: body.description || 'Custom Sondri AI Payment / Deposit',
       },
@@ -112,6 +116,37 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
       data: {
         checkout_url: session.url,
         session_id: session.id,
+      },
+    });
+  } catch (err: any) {
+    return Response.json(
+      { success: false, error: { code: err.code || 'STRIPE_ERROR', message: err.message } },
+      { status: err.statusCode || 500 }
+    );
+  }
+}
+
+export async function handleGetCheckoutSession(request: Request, env: Env, sessionId: string): Promise<Response> {
+  try {
+    const stripe = getStripe(env);
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ['invoice', 'payment_intent.latest_charge'],
+    });
+
+    const invoiceObj = typeof session.invoice === 'object' && session.invoice ? (session.invoice as Stripe.Invoice) : null;
+    const paymentIntentObj = typeof session.payment_intent === 'object' && session.payment_intent ? (session.payment_intent as Stripe.PaymentIntent) : null;
+    const latestChargeObj = paymentIntentObj && typeof paymentIntentObj.latest_charge === 'object' ? (paymentIntentObj.latest_charge as Stripe.Charge) : null;
+
+    return Response.json({
+      success: true,
+      data: {
+        id: session.id,
+        customer_email: session.customer_details?.email || session.customer_email,
+        amount_total: session.amount_total,
+        currency: session.currency,
+        invoice_url: invoiceObj?.hosted_invoice_url || null,
+        invoice_pdf: invoiceObj?.invoice_pdf || null,
+        receipt_url: latestChargeObj?.receipt_url || null,
       },
     });
   } catch (err: any) {
