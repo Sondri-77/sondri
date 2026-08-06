@@ -1,12 +1,12 @@
 {
-  "name": "sondri-monorepo",
+  "name": "sondri-workspace",
   "version": "1.0.0",
   "private": true,
-  "description": "Sondri - AI agent, Business & Coding Expert platform and marketing site",
   "scripts": {
-    "dev": "npm --prefix sondri-site run dev",
-    "build": "npm --prefix sondri-site run build",
-    "check": "npm --prefix sondri-site run check",
-    "preview": "npm --prefix sondri-site run preview"
+    "dev": "concurrently -n \"SITE,WORKER\" -c \"cyan,yellow\" \"npm run dev --prefix sondri-site\" \"npm run dev --prefix billing-worker\"",
+    "build": "npm run build --prefix sondri-site && npm run typecheck --prefix billing-worker"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }

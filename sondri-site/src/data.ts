@@ -12,6 +12,7 @@ export const nav = [
   { label: 'HOW IT WORKS', href: '/how-it-works/' },
   { label: 'INDUSTRIES', href: '/industries/' },
   { label: 'FOR CUSTOMERS', href: '/for-customers/' },
+  { label: 'PAYMENTS', href: '/pay/' },
   { label: 'ABOUT', href: '/about/' },
 ];
 
