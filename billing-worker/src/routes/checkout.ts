@@ -98,6 +98,7 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
         enabled: true,
       },
       metadata: {
+        source: 'website_checkout',
         description: body.description || 'Custom Sondri AI Payment / Deposit',
       },
     };
