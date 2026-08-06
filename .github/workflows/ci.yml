@@ -1,0 +1,43 @@
+name: Sondri Billing & Platform CI
+
+on:
+  push:
+    branches: [ main, master, stripe_integration ]
+  pull_request:
+    branches: [ main, master, stripe_integration ]
+
+jobs:
+  test-and-build:
+    name: Run Tests, Typechecks & Production Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Root Dependencies
+        run: npm install
+
+      - name: Install Billing Worker Dependencies
+        run: npm --prefix billing-worker install
+
+      - name: Install Website Dependencies
+        run: npm --prefix sondri-site install
+
+      - name: Run Billing Worker Typecheck
+        run: npm --prefix billing-worker run typecheck
+
+      - name: Run Billing Worker Unit Tests
+        run: npm --prefix billing-worker run test
+
+      - name: Run Astro Website Typecheck & Diagnostics
+        run: npx --prefix sondri-site astro check
+
+      - name: Verify Production Website Build
+        run: npm --prefix sondri-site run build
