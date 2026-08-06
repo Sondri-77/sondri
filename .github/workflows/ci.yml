@@ -2,9 +2,7 @@ name: Sondri Billing & Platform CI
 
 on:
   push:
-    branches: [ main, master, stripe_integration ]
   pull_request:
-    branches: [ main, master, stripe_integration ]
 
 jobs:
   test-and-build:
