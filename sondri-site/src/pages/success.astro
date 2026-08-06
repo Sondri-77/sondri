@@ -3,35 +3,37 @@ import Base from '../layouts/Base.astro';
 ---
 
 <Base
-  title="Payment Confirmed | Sondri.ai"
-  description="Thank you for your payment to Sondri.ai."
+  title="Payment Confirmed — Sondri"
+  description="Thank you for your payment to Sondri."
 >
-  <section class="success-hero">
-    <div class="container">
+  <div class="pagepad">
+    <section class="wrap success-section">
       <div class="success-card">
-        <div class="icon-circle">✓</div>
-        <span class="badge">Payment Confirmed</span>
-        <h1>Thank You for Your Payment!</h1>
-        <p class="subtitle">
-          Your payment has been successfully processed by Stripe. A detailed receipt and tax invoice have been sent to your email.
-        </p>
-
-        <div id="downloadsContainer" class="downloads-box" style="display: none;">
-          <p class="downloads-title">YOUR TRANSACTION DOCUMENTS</p>
-          <div class="downloads-actions">
-            <a id="btnReceipt" href="#" target="_blank" rel="noopener" class="btn-dl btn-dl-gold" style="display: none;">
-              📥 DOWNLOAD PDF RECEIPT
-            </a>
-            <a id="btnInvoice" href="#" target="_blank" rel="noopener" class="btn-dl btn-dl-outline" style="display: none;">
-              📄 VIEW INVOICE PDF
-            </a>
-          </div>
+        <div class="status-badge">
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>PAYMENT CONFIRMED</span>
         </div>
 
-        <a href="/" class="btn-home">Return to Home Page</a>
+        <h1 class="display success-title">Thank You for Your Payment</h1>
+        
+        <p class="success-lede">
+          Your payment has been successfully processed by Stripe. A confirmation email with your tax invoice and receipt has been dispatched to your email address.
+        </p>
+
+        <div id="downloadsContainer" class="action-wrapper" style="display: none;">
+          <a id="btnReceipt" href="#" target="_blank" rel="noopener" class="btn-action btn-gold btn-full">
+            VIEW OFFICIAL RECEIPT &amp; INVOICE &rarr;
+          </a>
+        </div>
+
+        <div class="home-link-wrapper">
+          <a href="/" class="link-home">&larr; Return to Sondri Homepage</a>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <script>
     const WORKER_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
@@ -52,29 +54,16 @@ import Base from '../layouts/Base.astro';
           const { receipt_url, invoice_url, invoice_pdf } = json.data;
           const container = document.getElementById('downloadsContainer');
           const btnReceipt = document.getElementById('btnReceipt') as HTMLAnchorElement;
-          const btnInvoice = document.getElementById('btnInvoice') as HTMLAnchorElement;
 
-          let showContainer = false;
+          const targetUrl = receipt_url || invoice_url || invoice_pdf;
 
-          if (receipt_url && btnReceipt) {
-            btnReceipt.href = receipt_url;
-            btnReceipt.style.display = 'inline-flex';
-            showContainer = true;
-          }
-
-          const finalInvoiceLink = invoice_pdf || invoice_url;
-          if (finalInvoiceLink && btnInvoice) {
-            btnInvoice.href = finalInvoiceLink;
-            btnInvoice.style.display = 'inline-flex';
-            showContainer = true;
-          }
-
-          if (showContainer && container) {
+          if (targetUrl && btnReceipt && container) {
+            btnReceipt.href = targetUrl;
             container.style.display = 'block';
           }
         }
       } catch (err) {
-        console.warn('Unable to load receipt/invoice links:', err);
+        console.warn('Unable to load receipt link:', err);
       }
     }
 
@@ -82,152 +71,112 @@ import Base from '../layouts/Base.astro';
   </script>
 
   <style>
-    .success-hero {
-      padding: 140px 0 100px;
-      background: var(--bg, #0c1a1a);
-      color: var(--ink, #e2e8f0);
-      min-height: 85vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Space Grotesk', sans-serif;
+    .pagepad {
+      padding-top: 140px;
+      padding-bottom: 100px;
+    }
+
+    .wrap {
+      max-width: var(--max-w, 1200px);
+      margin: 0 auto;
+      padding: 0 var(--pad-x, 24px);
+    }
+
+    .success-section {
+      max-width: 580px;
     }
 
     .success-card {
-      max-width: 540px;
-      margin: 0 auto;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(234, 179, 8, 0.3);
-      border-radius: 20px;
+      background: var(--ink-deep, #081313);
+      border: 1px solid var(--line-strong, rgba(255, 204, 120, 0.25));
       padding: 48px;
       text-align: center;
     }
 
-    .icon-circle {
-      width: 64px;
-      height: 64px;
-      background: rgba(16, 185, 129, 0.15);
-      border: 2px solid #10b981;
-      color: #10b981;
-      border-radius: 50%;
-      display: flex;
+    .status-badge {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      font-weight: 700;
-      margin: 0 auto 20px;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 12px;
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid #10b981;
-      color: #10b981;
-      border-radius: 9999px;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(255, 204, 120, 0.1);
+      border: 1px solid var(--gold, #ffcc78);
+      color: var(--gold, #ffcc78);
+      font-family: var(--font-mono, monospace);
       font-size: 11px;
       letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 16px;
-    }
-
-    .success-card h1 {
-      font-size: 26px;
-      margin-bottom: 12px;
-    }
-
-    .subtitle {
-      color: #94a3b8;
-      font-size: 14px;
-      line-height: 1.6;
       margin-bottom: 24px;
     }
 
-    .info-box {
-      background: rgba(0, 0, 0, 0.3);
-      border-left: 3px solid var(--gold, #eab308);
-      padding: 16px;
-      border-radius: 0 8px 8px 0;
-      text-align: left;
-      font-size: 13px;
-      color: #cbd5e1;
-      margin-bottom: 32px;
+    .check-icon {
+      width: 14px;
+      height: 14px;
     }
 
-    .info-box p {
-      margin-bottom: 4px;
-    }
-
-    .btn-home {
-      display: inline-block;
-      background: var(--gold, #eab308);
-      color: #0c1a1a;
+    .display {
+      font-family: var(--font-display, 'Space Grotesk', sans-serif);
       font-weight: 700;
-      padding: 12px 28px;
-      border-radius: 8px;
-      text-decoration: none;
-      transition: transform 0.1s;
-      margin-top: 12px;
+      color: var(--bone, #f8fafc);
     }
 
-    .btn-home:hover {
-      background: #facc15;
+    .success-title {
+      font-size: clamp(24px, 4vw, 32px);
+      margin-bottom: 16px;
+      line-height: 1.2;
     }
 
-    .downloads-box {
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(255, 204, 120, 0.25);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 24px;
-      text-align: center;
-    }
-
-    .downloads-title {
+    .success-lede {
       font-family: var(--font-mono, monospace);
-      font-size: 10px;
+      font-size: 13px;
+      color: var(--clay, #94a3b8);
+      line-height: 1.6;
+      margin-bottom: 36px;
+    }
+
+    .action-wrapper {
+      margin-bottom: 28px;
+    }
+
+    .btn-action {
+      display: block;
+      font-family: var(--font-mono, monospace);
+      font-size: 11px;
       letter-spacing: 2px;
-      color: var(--gold, #ffcc78);
-      margin-bottom: 14px;
+      padding: 16px 20px;
+      text-decoration: none;
+      text-align: center;
+      transition: all 0.2s ease;
+      border: none;
     }
 
-    .downloads-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
+    .btn-gold {
+      background: var(--gold, #ffcc78);
+      color: var(--ink, #0c1a1a);
+      font-weight: 700;
     }
 
-    .btn-dl {
+    .btn-gold:hover {
+      background: var(--gold-soft, #ffd99b);
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .home-link-wrapper {
+      margin-top: 20px;
+    }
+
+    .link-home {
       font-family: var(--font-mono, monospace);
       font-size: 11px;
       letter-spacing: 1.5px;
-      padding: 12px 18px;
-      border-radius: 6px;
+      color: var(--dim, #64748b);
       text-decoration: none;
-      font-weight: 700;
-      transition: all 0.2s ease;
-      align-items: center;
-      gap: 6px;
+      transition: color 0.2s ease;
     }
 
-    .btn-dl-gold {
-      background: var(--gold, #ffcc78);
-      color: #0c1a1a;
-    }
-
-    .btn-dl-gold:hover {
-      background: #ffd99b;
-    }
-
-    .btn-dl-outline {
-      background: transparent;
-      border: 1px solid var(--gold, #ffcc78);
+    .link-home:hover {
       color: var(--gold, #ffcc78);
-    }
-
-    .btn-dl-outline:hover {
-      background: rgba(255, 204, 120, 0.15);
     }
   </style>
 </Base>
