@@ -89,6 +89,8 @@ export async function handleStripeWebhook(request: Request, env: Env): Promise<R
           invoiceNumber: sessionPayload.id.substring(0, 14),
           description: description,
           status: 'PAID (Checkout)',
+          receiptUrl: receiptUrl || undefined,
+          invoiceUrl: invoiceUrl || undefined,
         });
         break;
       }
@@ -132,6 +134,8 @@ export async function handleStripeWebhook(request: Request, env: Env): Promise<R
           invoiceNumber: invoice.number || invoice.id,
           description: invoice.description || 'Sondri Retainer / Invoice',
           status: 'PAID (Invoice)',
+          receiptUrl: invoice.hosted_invoice_url || undefined,
+          invoiceUrl: invoice.invoice_pdf || invoice.hosted_invoice_url || undefined,
         });
         break;
       }

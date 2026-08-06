@@ -9,6 +9,8 @@ export interface PaymentRecord {
   invoiceNumber: string;
   description: string;
   status: string;
+  receiptUrl?: string;
+  invoiceUrl?: string;
 }
 
 export async function appendToGoogleSheet(env: Env, record: PaymentRecord): Promise<void> {
