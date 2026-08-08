@@ -24,7 +24,10 @@ derek.dev  ──(merge/push)──►  derek.test  ──(PR)──►  dev  �
    git merge derek.dev
    git push origin derek.test
    ```
-3. **Open a PR from `derek.test` → `dev`.** That PR is the handoff point.
+3. **Open a PR from `derek.test` → `dev`, assigned to `zeeshan1112`.** That PR is the handoff point.
+   ```bash
+   gh pr create --base dev --head derek.test --assignee zeeshan1112
+   ```
 4. **The team owns everything after the PR.** They review, merge to `dev`, and handle `dev` → `main`.
 
 ### Rules for agents working in this repo
@@ -32,6 +35,7 @@ derek.dev  ──(merge/push)──►  derek.test  ──(PR)──►  dev  �
 - Never commit to `dev`, `main`, or `derek.test` directly. Code changes land on `derek.dev` only.
 - `derek.test` is updated exclusively by merging `derek.dev` into it — no cherry-picked edits, no fixups.
 - Never open a PR into `main`. PRs always target `dev`, always from `derek.test`.
+- Every PR into `dev` must be assigned to **`zeeshan1112`** (Zeeshan). No unassigned PRs.
 - Never merge a PR into `dev` — that is the team's call.
 - If you're on the wrong branch, stop and switch to `derek.dev` before making changes.
 - Keep `derek.dev` current with the team by rebasing/merging `origin/dev` into it, not the other way around.
