@@ -1,0 +1,84 @@
+---
+import { navV2, TAGLINE, CONTACT_EMAIL, mailto } from '../../data';
+
+const year = new Date().getFullYear();
+---
+
+<footer>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <img class="f-logo" src="/brand/wordmark-bone.png" alt="Sondri" width="152" height="36" />
+        <p class="f-tag">{TAGLINE}</p>
+      </div>
+      <div class="cols">
+        <div>
+          <p class="col-h">Company</p>
+          {navV2.filter((i) => i.href !== '/').map((i) => <a href={i.href}>{i.label}</a>)}
+        </div>
+        <div>
+          <p class="col-h">Contact</p>
+          <a href={mailto('Hello Sondri')}>{CONTACT_EMAIL}</a>
+          <a href={mailto('Investor inquiry')}>Investor inquiries</a>
+          <a href={mailto('Customer pilot')}>Customer pilots</a>
+          <a href={mailto('Founding-team application')}>Join the first ten</a>
+        </div>
+      </div>
+    </div>
+    <div class="bottom">
+      <span>© Sondri {year}</span>
+      <a class="ds" href="/pay/">Pay an invoice</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  footer {
+    background: var(--deep);
+    color: var(--pale);
+    padding: 72px 0 36px;
+    font-size: 15px;
+  }
+
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 48px;
+    flex-wrap: wrap;
+    margin-bottom: 56px;
+  }
+
+  .f-logo { display: block; }
+  .f-tag { margin-top: 10px; color: var(--steel); }
+
+  .cols { display: flex; gap: 72px; flex-wrap: wrap; }
+  .col-h {
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .cols a {
+    display: block;
+    color: var(--pale);
+    text-decoration: none;
+    padding: 4.5px 0;
+    transition: color var(--dur-micro) var(--ease);
+  }
+  .cols a:hover { color: #fff; }
+
+  .bottom {
+    border-top: 1px solid var(--line-ink);
+    padding-top: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--steel);
+    font-size: 13.5px;
+  }
+  .ds { color: var(--steel); text-decoration: none; }
+  .ds:hover { color: var(--pale); }
+</style>

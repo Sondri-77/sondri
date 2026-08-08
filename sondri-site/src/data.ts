@@ -6,15 +6,12 @@ export const mailto = (subject: string) =>
   `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}`;
 export const BOOK_HREF = mailto('Discovery call — Sondri');
 
-export const nav = [
-  { label: 'HOME', href: '/' },
-  { label: 'HOW IT WORKS', href: '/how-it-works/' },
-  { label: 'GET IN TOUCH', href: '/get-in-touch/' },
-];
+export const TAGLINE = 'Enterprise AI Made Simple';
 
-export const footerNav = [
-  ...nav,
-  { label: 'PAY AN INVOICE', href: '/pay/' },
+export const navV2 = [
+  { label: 'Home', href: '/' },
+  { label: 'How it works', href: '/how-it-works/' },
+  { label: 'Get in touch', href: '/get-in-touch/' },
 ];
 
 export const problemStats = [

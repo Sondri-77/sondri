@@ -1,67 +1,74 @@
 ---
-import Base from '../layouts/Base.astro';
+import BaseV2 from '../layouts/BaseV2.astro';
+import PageHero from '../components/v2/PageHero.astro';
 import { contactSteps, BOOK_HREF, CONTACT_EMAIL, mailto } from '../data';
 ---
 
-<Base
+<BaseV2
   title="Get in touch — Sondri"
   description="Talk to a Sondri founder. Thirty minutes, straight answers, and a free discovery session if there's a case."
 >
-  <div class="pagepad">
-    <section class="wrap head">
-      <span class="kicker" data-reveal>GET IN TOUCH</span>
-      <h1 class="display head-title" data-reveal>Talk to a founder.</h1>
-      <p class="lede head-lede" data-reveal>
-        No SDRs, no qualification form. You'll talk to the people who build the agents,
-        and you'll get a straight answer about whether there's a case.
-      </p>
-      <div class="ctas" data-reveal>
-        <a class="btn-primary" href={BOOK_HREF}>BOOK A DISCOVERY CALL &nbsp;&rarr;</a>
-        <a class="btn-ghost" href={mailto('Hello Sondri')}>{CONTACT_EMAIL.toUpperCase()}</a>
-      </div>
-    </section>
+  <PageHero kicker="Get in touch">
+    <Fragment slot="title">Talk to a founder<span class="gdot hero-dot">.</span></Fragment>
+    <Fragment slot="lede">
+      No SDRs, no qualification form. You'll talk to the people who build the systems,
+      and you'll get a straight answer about whether there's a case.
+    </Fragment>
+  </PageHero>
 
-    <section class="wrap section steps-section">
-      <div class="steps-head" data-reveal>
-        <span class="kicker">WHAT HAPPENS NEXT</span>
-        <h2 class="display steps-title">Three steps. The first two are free.</h2>
+  <!-- ── Contact actions ──────────────────────────────── -->
+  <section class="reach">
+    <div class="wrap">
+      <div class="ctas" data-reveal>
+        <a class="btn btn-gold" href={BOOK_HREF}>Book a discovery call <span class="arr">→</span></a>
+        <a class="btn btn-ghost" href={mailto('Hello Sondri')}>{CONTACT_EMAIL}</a>
       </div>
-      <div class="grid-lined g3" data-reveal>
+    </div>
+  </section>
+
+  <!-- ── What happens next ────────────────────────────── -->
+  <section class="steps">
+    <div class="wrap">
+      <div data-reveal>
+        <p class="kicker">What happens next</p>
+        <h2 class="h2">Three steps. The first two are free<span class="gdot">.</span></h2>
+      </div>
+      <div class="step-grid" data-reveal data-reveal-group>
         {contactSteps.map((s) => (
-          <div class="cstep">
-            <span class="cstep-i">{s.i}</span>
-            <div class="cstep-t">{s.t}</div>
-            <p class="cstep-b">{s.b}</p>
+          <div class="card cstep">
+            <span class="cstep-i h-serif">{s.i}</span>
+            <h3>{s.t}</h3>
+            <p class="body-s">{s.b}</p>
           </div>
         ))}
       </div>
       <p class="pay-note" data-reveal>
-        Existing customer settling an invoice? <a class="pay-link" href="/pay/">Pay an invoice &rarr;</a>
+        Existing customer settling an invoice? <a href="/pay/">Pay an invoice →</a>
       </p>
-    </section>
-  </div>
-</Base>
+    </div>
+  </section>
+</BaseV2>
 
 <style>
-  .pagepad { padding-top: 110px; }
-  .head { padding: 80px var(--pad-x) 40px; }
-  .head-title { font-size: clamp(42px, 6vw, 88px); line-height: 1.02; letter-spacing: -1px; margin-top: 16px; }
-  .head-lede { max-width: 52ch; margin-top: 26px; }
-  .ctas { display: flex; gap: 18px; margin-top: 40px; flex-wrap: wrap; }
+  .reach { padding: 64px 0 20px; }
 
-  .steps-head { margin-bottom: 56px; }
-  .steps-title { font-size: clamp(28px, 3.8vw, 52px); line-height: 1.05; letter-spacing: -0.5px; margin-top: 14px; }
-  .cstep { padding: 34px 28px; }
-  .cstep-i { font-family: var(--font-display); font-weight: 700; font-size: 15px; color: var(--dim-2); }
-  .cstep-t { font-family: var(--font-display); font-weight: 700; font-size: 21px; color: var(--bone); margin-top: 14px; }
-  .cstep-b { font-size: 12px; line-height: 1.85; color: var(--clay); margin-top: 12px; }
+  .steps { padding: 80px 0 110px; }
+  .steps .kicker { margin-bottom: 16px; }
+  .steps .h2 { margin-bottom: 44px; }
+  .step-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .cstep { padding: 32px 28px; }
+  .cstep-i { display: block; font-size: 34px; color: var(--gold-2); margin-bottom: 18px; }
+  .cstep h3 { margin-bottom: 8px; }
 
-  .pay-note { font-size: 12px; letter-spacing: 0.5px; color: var(--dim); margin-top: 34px; }
-  .pay-link { color: var(--gold); }
-  .pay-link:hover { color: var(--gold-soft); }
+  .pay-note { color: var(--steel); font-size: 14.5px; margin-top: 34px; }
+  .pay-note a { color: var(--ink); font-weight: 600; text-decoration: none; }
+  .pay-note a:hover { color: var(--slate); }
 
   @media (max-width: 900px) {
-    .pagepad { padding-top: 90px; }
-    .head { padding: 60px var(--pad-x) 30px; }
+    .step-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .reach { padding-top: 44px; }
+    .steps { padding-block: 64px 80px; }
   }
 </style>

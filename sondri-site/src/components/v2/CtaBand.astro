@@ -1,0 +1,15 @@
+---
+interface Props {
+  kicker?: string;
+}
+const { kicker } = Astro.props;
+---
+
+<section class="cta-band">
+  <div class="wrap" data-reveal>
+    {kicker && <p class="kicker">{kicker}</p>}
+    <h2 class="h2 cta-title"><slot name="title" /></h2>
+    {Astro.slots.has('lede') && <p class="lede cta-lede"><slot name="lede" /></p>}
+    <div class="ctas"><slot name="actions" /></div>
+  </div>
+</section>

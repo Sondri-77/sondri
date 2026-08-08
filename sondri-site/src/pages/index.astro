@@ -1,201 +1,245 @@
 ---
-import Base from '../layouts/Base.astro';
-import { problemStats, framework, industries, BOOK_HREF } from '../data';
+import BaseV2 from '../layouts/BaseV2.astro';
+import CtaBand from '../components/v2/CtaBand.astro';
+import { BOOK_HREF, problemStats, framework, industries } from '../data';
 ---
 
-<Base
-  title="Sondri — AI agents that run inside your business"
-  description="Sondri designs, builds, and operates AI agents for private equity, financial services, fintech, healthtech, CPG, and real estate. Live in production in eight weeks."
+<BaseV2
+  title="Sondri — Complex problems. Compressed timelines."
+  description="Sondri solves your hardest operational problems with AI, inside the systems you already run. Live in production in eight weeks, measured against your P&L."
 >
-  <!-- HERO -->
-  <section class="hero">
-    <div class="wrap">
-      <div class="hero-kicker" data-reveal>
-        <span class="rule"></span>
-        <span class="kicker">SONDRI</span>
-      </div>
-      <h1 class="display hero-title" data-reveal>
-        We build AI agents that run inside your business.
+  <!-- ── Hero ─────────────────────────────────────────── -->
+  <section id="hero" class="hero hero-ink" aria-label="Introduction">
+    <canvas class="glyph-field" data-variant="full" aria-hidden="true"></canvas>
+    <div class="hero-scrim" aria-hidden="true"></div>
+    <div class="wrap" id="content">
+      <p class="kicker anim a1">Sondri <span class="k-dot">·</span> Enterprise AI made simple</p>
+      <h1 class="display anim a2">
+        Complex problems. Compressed <span class="nb"><em>timelines</em><span class="gdot hero-dot">.</span></span>
       </h1>
-      <p class="lede hero-lede" data-reveal>
-        Sondri designs, builds, and operates AI for private equity, financial services, fintech,
-        healthtech, CPG, and real estate. Live in production in eight weeks. Measured against
-        your P&amp;L.
+      <p class="lede anim a3">
+        We solve your hardest operational problems with AI, inside the systems you already run.
       </p>
-      <div class="hero-ctas" data-reveal>
-        <a class="btn-primary" href={BOOK_HREF}>BOOK A DISCOVERY CALL &nbsp;&rarr;</a>
-        <a class="btn-ghost" href="/how-it-works/">HOW IT WORKS</a>
+      <div class="ctas anim a4">
+        <a class="btn btn-gold" href={BOOK_HREF}>Book a discovery call <span class="arr">→</span></a>
+        <a class="btn btn-ghost-dark" href="/how-it-works/">How it works</a>
       </div>
     </div>
   </section>
 
-  <!-- PROBLEM -->
-  <section class="band">
-    <div class="wrap section">
-      <div class="prob-head" data-reveal>
-        <span class="kicker">THE PROBLEM</span>
-        <h2 class="display prob-title">Most enterprise AI never ships.</h2>
+  <!-- ── Sector strip ─────────────────────────────────── -->
+  <div class="sectors" aria-label="Industries served">
+    <div class="wrap sect-in">
+      {industries.map((i) => <span>{i.name}</span>)}
+    </div>
+  </div>
+
+  <!-- ── The problem ──────────────────────────────────── -->
+  <section class="problem">
+    <div class="wrap">
+      <div data-reveal>
+        <p class="kicker">01 <span class="k-dot">·</span> The problem</p>
+        <h2 class="h2">Most enterprise AI never ships<span class="gdot">.</span></h2>
         <p class="lede prob-lede">
           Pilots launch, decks get approved, and the value never reaches production.
         </p>
       </div>
-      <div class="grid-lined g3" data-reveal>
+      <div class="stats" data-reveal data-reveal-group>
         {problemStats.map((s) => (
           <div class="stat">
-            <div class="stat-n" data-count>{s.n}</div>
-            <div class="stat-label">{s.label}</div>
+            <b data-count>{s.n}</b>
+            <i class="tick" aria-hidden="true"></i>
+            <span>{s.label}</span>
           </div>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- THE FRAMEWORK: 0 → 1 → n -->
-  <section class="wrap section">
-    <div class="fw-head" data-reveal>
-      <span class="kicker">INTRODUCING</span>
-      <h2 class="display fw-title">0 &rarr; 1 &rarr; <em class="fw-n">n</em></h2>
-      <p class="lede fw-lede">
-        Every engagement follows the same arc: prove it, put it in production, then multiply it.
-        Zero to one in eight weeks. One to many every month after.
-      </p>
-    </div>
-    <div class="fw-grid" data-reveal>
-      {framework.map((p) => (
-        <div class="fw-card">
-          <div class="fw-top">
-            <span class="fw-num">{p.num}</span>
-            <span class="fw-when">{p.when}</span>
+  <!-- ── The framework: 0 → 1 → n ─────────────────────── -->
+  <section class="framework">
+    <div class="wrap">
+      <div data-reveal>
+        <p class="kicker">02 <span class="k-dot">·</span> Introducing</p>
+        <h2 class="h2 fw-mark h-serif">0 → 1 → <em>n</em><span class="gdot">.</span></h2>
+        <p class="lede fw-lede">
+          Every engagement follows the same arc: prove it, put it in production, then multiply it.
+          Zero to one in eight weeks. One to many every month after.
+        </p>
+      </div>
+      <div class="fw-grid" data-reveal data-reveal-group>
+        {framework.map((p) => (
+          <div class:list={['card', 'fw', { hot: p.num === '1' }]}>
+            <div class="fw-top">
+              <span class="fw-n h-serif">{p.num}</span>
+              <span class="fw-when">{p.when.toLowerCase()}</span>
+            </div>
+            <h3>{p.name}</h3>
+            <p class="body-s">{p.does}</p>
+            <div class="fw-gets">
+              <span class="fw-gets-label">You walk away with</span>
+              <p class="body-s">{p.gets}</p>
+            </div>
+            <span class="fw-price">{p.price.toLowerCase()}</span>
           </div>
-          <div class="fw-name">{p.name}</div>
-          <p class="fw-does">{p.does}</p>
-          <div class="fw-gets">
-            <span class="fw-gets-label">YOU WALK AWAY WITH</span>
-            <p>{p.gets}</p>
-          </div>
-          <span class="fw-price">{p.price}</span>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   </section>
 
-  <!-- INDUSTRIES -->
-  <section class="band">
-    <div class="wrap section">
-      <div class="ind-head" data-reveal>
-        <span class="kicker">WHO IT'S FOR</span>
-        <h2 class="display ind-title">Six industries. One delivery engine.</h2>
+  <!-- ── Industries ───────────────────────────────────── -->
+  <section class="industries">
+    <div class="wrap">
+      <div data-reveal>
+        <p class="kicker">03 <span class="k-dot">·</span> Who it's for</p>
+        <h2 class="h2">Six industries. One delivery engine<span class="gdot">.</span></h2>
       </div>
-      <div class="grid-lined g3 ind-grid" data-reveal>
-        {industries.map((ind) => (
+      <div class="ind-grid" data-reveal data-reveal-group>
+        {industries.map((i) => (
           <div class="ind">
-            <div class="ind-name">{ind.name}</div>
-            <p class="ind-line">{ind.line}</p>
+            <h3>{i.name}</h3>
+            <p class="body-s">{i.line}</p>
           </div>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- CTA -->
-  <section class="cta-band">
-    <div class="wrap cta-inner" data-reveal>
-      <span class="kicker">NEXT STEP</span>
-      <h2 class="display cta-title">Two weeks to a roadmap. Eight weeks to production.</h2>
-      <div class="hero-ctas cta-ctas">
-        <a class="btn-primary" href={BOOK_HREF}>BOOK A DISCOVERY CALL &nbsp;&rarr;</a>
-        <a class="btn-ghost" href="/get-in-touch/">GET IN TOUCH</a>
-      </div>
-    </div>
-  </section>
-</Base>
+  <!-- ── CTA band ─────────────────────────────────────── -->
+  <CtaBand kicker="Next step">
+    <Fragment slot="title">Two weeks to a roadmap. Eight weeks to production<span class="gdot">.</span></Fragment>
+    <Fragment slot="lede">The first conversation is free — and you keep the roadmap either way.</Fragment>
+    <Fragment slot="actions">
+      <a class="btn btn-gold" href={BOOK_HREF}>Book a discovery call <span class="arr">→</span></a>
+      <a class="btn btn-ghost-dark" href="/get-in-touch/">Get in touch</a>
+    </Fragment>
+  </CtaBand>
+</BaseV2>
 
 <style>
-  /* ─── HERO ─────────────────────────────────────────────────────────── */
-  .hero { padding: 190px var(--pad-x) 120px; }
-  .hero-kicker { display: flex; align-items: center; gap: 14px; margin-bottom: 30px; }
-  .rule { width: 30px; height: 1px; background: var(--gold); }
-  .hero-title {
-    font-size: clamp(42px, 6.2vw, 92px);
-    line-height: 1.02;
-    letter-spacing: -1px;
-    max-width: 18ch;
+  /* ── Hero (ink opening) ── */
+  .hero {
+    position: relative;
+    background: var(--ink);
+    color: #fff;
+    padding: 120px 0 104px;
+    overflow: hidden;
   }
-  .hero-lede { max-width: 58ch; margin-top: 30px; letter-spacing: 0.5px; }
-  .hero-ctas { display: flex; gap: 18px; margin-top: 42px; flex-wrap: wrap; }
+  .hero h1 { color: #fff; max-width: 900px; margin-bottom: 26px; }
+  .hero .lede { color: var(--pale); max-width: 620px; margin-bottom: 38px; }
 
-  /* ─── PROBLEM ──────────────────────────────────────────────────────── */
-  .band { border-top: 1px solid var(--line); background: var(--ink-deep); }
-  .prob-head { margin-bottom: 56px; }
-  .prob-title { font-size: clamp(32px, 4.4vw, 60px); line-height: 1.04; letter-spacing: -0.5px; margin-top: 14px; }
-  .prob-lede { max-width: 56ch; margin-top: 18px; }
-  .stat { padding: 40px 30px; }
-  .stat-n {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: clamp(44px, 6vw, 74px);
+  /* ── Sector strip ── */
+  .sectors { background: var(--deep); padding: 18px 0; }
+  .sect-in { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+  .sect-in span {
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--pale);
+    transition: color 0.6s var(--ease);
+  }
+  .sect-in span.lit { color: var(--gold); }
+
+  /* ── Problem ── */
+  .problem { padding: 110px 0 100px; }
+  .problem .kicker { margin-bottom: 18px; }
+  .problem .h2 { max-width: 720px; margin-bottom: 18px; }
+  .prob-lede { max-width: 680px; margin-bottom: 56px; }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+  .stat {
+    background: var(--bone);
+    border-radius: var(--r-card);
+    padding: 34px 32px;
+  }
+  .stat b {
+    display: block;
+    font-family: var(--serif);
+    font-weight: 560;
+    font-size: 52px;
     line-height: 1;
-    color: var(--gold);
     font-variant-numeric: tabular-nums;
   }
-  .stat-label { font-size: 12px; line-height: 1.9; letter-spacing: 1px; color: var(--clay); margin-top: 18px; }
-  .band .grid-lined > * { background: var(--ink-deep); }
+  .stat .tick {
+    display: block;
+    width: 44px;
+    height: 2px;
+    margin: 12px 0;
+    background: var(--gold-2);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .stat span { color: var(--steel); font-size: 15px; line-height: 1.5; display: block; }
 
-  /* ─── FRAMEWORK ────────────────────────────────────────────────────── */
-  .fw-head { text-align: center; margin-bottom: 64px; }
-  .fw-title { font-size: clamp(44px, 7vw, 100px); line-height: 1; letter-spacing: 1px; margin-top: 18px; }
-  .fw-n { font-style: italic; color: var(--gold); }
-  .fw-lede { max-width: 58ch; margin: 22px auto 0; }
-  .fw-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-  .fw-card {
+  /* ── Framework ── */
+  .framework { padding: 20px 0 110px; }
+  .framework .kicker { margin-bottom: 14px; }
+  .fw-mark { margin-bottom: 18px; }
+  .fw-lede { max-width: 680px; margin-bottom: 48px; }
+  .fw-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; align-items: stretch; }
+  .fw { display: flex; flex-direction: column; padding: 34px 30px; }
+  .fw:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(13, 26, 26, 0.07); }
+  .fw-top {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 48px;
+  }
+  .fw-n { font-size: 44px; }
+  .fw-when {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--steel);
+  }
+  .fw h3 { margin-bottom: 10px; }
+  .fw.hot { border-color: var(--gold-2); box-shadow: 0 12px 32px rgba(13, 26, 26, 0.06); }
+  .fw-gets { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .fw-gets-label {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold-2);
+    margin-bottom: 6px;
+  }
+  .fw-price {
+    margin-top: auto;
+    padding-top: 22px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--steel);
+  }
+
+  /* ── Industries ── */
+  .industries { background: var(--bone); padding: 100px 0 110px; }
+  .industries .kicker { margin-bottom: 16px; }
+  .industries .h2 { margin-bottom: 44px; }
+  .ind-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .ind {
+    background: #fff;
     border: 1px solid var(--line);
-    border-top: 2px solid var(--gold);
-    background: var(--ink);
-    padding: 34px 28px;
-    transition: border-color 0.25s, transform 0.25s;
+    border-radius: var(--r-card);
+    padding: 28px 26px;
   }
-  .fw-card:hover { border-color: var(--gold); transform: translateY(-4px); }
-  .fw-top { display: flex; align-items: baseline; justify-content: space-between; }
-  .fw-num { font-family: var(--font-display); font-weight: 700; font-size: 54px; color: var(--gold); }
-  .fw-when { font-size: 10px; letter-spacing: 2px; color: var(--dim-2); }
-  .fw-name { font-family: var(--font-display); font-weight: 700; font-size: 24px; color: var(--bone); margin-top: 18px; }
-  .fw-does { font-size: 12px; line-height: 1.85; color: var(--clay); margin-top: 12px; }
-  .fw-gets { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
-  .fw-gets-label { font-size: 9px; letter-spacing: 2px; color: var(--gold); }
-  .fw-gets p { font-size: 12px; line-height: 1.8; color: var(--body-2); margin-top: 8px; }
-  .fw-price { margin-top: auto; padding-top: 24px; font-size: 10px; letter-spacing: 2px; color: var(--dim); }
+  .ind h3 { font-size: 18px; margin-bottom: 8px; }
 
-  /* ─── INDUSTRIES ───────────────────────────────────────────────────── */
-  .ind-head { margin-bottom: 56px; }
-  .ind-title { font-size: clamp(30px, 4vw, 54px); line-height: 1.05; letter-spacing: -0.5px; margin-top: 14px; }
-  .ind { padding: 30px 28px; }
-  .ind-name { font-family: var(--font-display); font-weight: 700; font-size: 19px; color: var(--bone); }
-  .ind-line { font-size: 12px; line-height: 1.8; color: var(--clay); margin-top: 10px; }
-
-  /* ─── CTA ──────────────────────────────────────────────────────────── */
-  .cta-band {
-    border-top: 1px solid var(--line);
-    background:
-      radial-gradient(ellipse 60% 90% at 50% 110%, rgba(255, 204, 120, 0.07), transparent 70%),
-      var(--ink);
-  }
-  .cta-inner { padding: 130px var(--pad-x) 140px; text-align: center; }
-  .cta-title {
-    font-size: clamp(30px, 4.6vw, 64px);
-    line-height: 1.04;
-    letter-spacing: -0.5px;
-    margin-top: 18px;
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 22ch;
-  }
-  .cta-ctas { justify-content: center; margin-top: 38px; }
-
-  /* ─── responsive ───────────────────────────────────────────────────── */
+  /* ── Responsive ── */
   @media (max-width: 900px) {
-    .hero { padding: 150px var(--pad-x) 90px; }
-    .fw-grid { grid-template-columns: 1fr; }
+    .hero { padding: 84px 0 72px; }
+    .stats, .fw-grid, .ind-grid { grid-template-columns: 1fr; }
+    .sect-in { justify-content: flex-start; row-gap: 8px; }
+  }
+  @media (max-width: 640px) {
+    .problem, .framework, .industries { padding-block: 72px; }
+    .framework { padding-top: 0; }
   }
 </style>

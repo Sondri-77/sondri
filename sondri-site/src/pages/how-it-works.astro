@@ -1,180 +1,204 @@
 ---
-import Base from '../layouts/Base.astro';
+import BaseV2 from '../layouts/BaseV2.astro';
+import PageHero from '../components/v2/PageHero.astro';
+import CtaBand from '../components/v2/CtaBand.astro';
 import { timeline, teamModel, framework, faq, BOOK_HREF } from '../data';
 ---
 
-<Base
+<BaseV2
   title="How it works — Sondri"
-  description="Two weeks to a board-ready roadmap. Eight weeks to an agent in production. How Sondri takes enterprise AI from zero to one to many."
+  description="Two weeks to a board-ready roadmap. Eight weeks to production. How Sondri takes enterprise AI from zero to one to many."
 >
-  <div class="pagepad">
-    <!-- HEADER -->
-    <section class="wrap head">
-      <span class="kicker" data-reveal>HOW IT WORKS</span>
-      <h1 class="display head-title" data-reveal>From kickoff to production in eight weeks.</h1>
-      <p class="lede head-lede" data-reveal>
-        A senior core team designs the system. A vetted specialist network builds it.
-        You get agents running in the systems you already own — not a platform.
-      </p>
-    </section>
+  <PageHero kicker="How it works">
+    <Fragment slot="title">From kickoff to production in eight weeks<span class="gdot hero-dot">.</span></Fragment>
+    <Fragment slot="lede">
+      A senior core team designs the system. A vetted specialist network builds it.
+      You get results in the systems you already own — not a platform.
+    </Fragment>
+  </PageHero>
 
-    <!-- TIMELINE -->
-    <section class="wrap tl">
-      <div class="grid-lined g4" data-reveal>
+  <!-- ── Timeline ─────────────────────────────────────── -->
+  <section class="tl">
+    <div class="wrap">
+      <div class="tl-grid" data-reveal data-reveal-group>
         {timeline.map((t) => (
-          <div class="cell">
-            <span class="wk">{t.wk}</span>
-            <span class="cell-title">{t.title}</span>
-            <p class="cell-body">{t.body}</p>
+          <div class="card tcell">
+            <span class="wk">{t.wk.toLowerCase()}</span>
+            <h3>{t.title}</h3>
+            <p class="body-s">{t.body}</p>
           </div>
         ))}
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- TEAM MODEL -->
-    <section class="wrap section">
-      <div class="tm-head" data-reveal>
-        <span class="kicker">WHO DOES THE WORK</span>
-        <h2 class="display tm-title">Senior architects. Vetted builders. Your operators.</h2>
+  <!-- ── Team model ───────────────────────────────────── -->
+  <section class="team">
+    <div class="wrap">
+      <div data-reveal>
+        <p class="kicker">01 <span class="k-dot">·</span> Who does the work</p>
+        <h2 class="h2">Senior architects. Vetted builders. Your operators<span class="gdot">.</span></h2>
       </div>
-      <div class="grid-lined g3" data-reveal>
+      <div class="tm-grid" data-reveal data-reveal-group>
         {teamModel.map((m) => (
           <div class="tm">
-            <span class="tm-tag">{m.tag}</span>
-            <div class="tm-name">{m.title}</div>
-            <p class="tm-body">{m.body}</p>
+            <span class="tm-tag">{m.tag.toLowerCase()}</span>
+            <h3>{m.title}</h3>
+            <p class="body-s">{m.body}</p>
           </div>
         ))}
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- PRICING -->
-    <section class="band">
-      <div class="wrap section">
-        <div class="pr-head" data-reveal>
-          <span class="kicker">PRICING</span>
-          <h2 class="display pr-title">Priced by phase. You commit one rung at a time.</h2>
-        </div>
-        <div class="pr-grid" data-reveal>
-          {framework.map((p) => (
-            <div class="pr-card">
-              <div class="pr-top">
-                <span class="pr-num">{p.num}</span>
-                <span class="pr-price">{p.price}</span>
-              </div>
-              <div class="pr-name">{p.name} <span class="pr-when">· {p.when}</span></div>
-              <p class="pr-body">{p.does}</p>
-              <p class="pr-gets">{p.gets}</p>
-            </div>
-          ))}
-        </div>
-        <p class="pr-note" data-reveal>
-          Long-term customers can add a standing advisory seat — a permanent partner for every
-          AI decision the business faces next. Scoped individually.
-        </p>
+  <!-- ── Pricing ──────────────────────────────────────── -->
+  <section class="pricing">
+    <div class="wrap">
+      <div data-reveal>
+        <p class="kicker">02 <span class="k-dot">·</span> Pricing</p>
+        <h2 class="h2">Priced by phase. You commit one rung at a time<span class="gdot">.</span></h2>
       </div>
-    </section>
+      <div class="pr-grid" data-reveal data-reveal-group>
+        {framework.map((p) => (
+          <div class:list={['card', 'pr', { hot: p.num === '1' }]}>
+            <div class="pr-top">
+              <span class="pr-n h-serif">{p.num}</span>
+              <span class="pr-price">{p.price.toLowerCase()}</span>
+            </div>
+            <h3>{p.name} <span class="pr-when">· {p.when.toLowerCase()}</span></h3>
+            <p class="body-s">{p.does}</p>
+            <p class="body-s pr-gets">{p.gets}</p>
+          </div>
+        ))}
+      </div>
+      <p class="pr-note" data-reveal>
+        Long-term customers can add a standing advisory seat — a permanent partner for every AI
+        decision the business faces next. Scoped individually.
+      </p>
+    </div>
+  </section>
 
-    <!-- FAQ -->
-    <section class="wrap section faq-section">
-      <div class="faq-head" data-reveal>
-        <span class="kicker">QUESTIONS</span>
-        <h2 class="display faq-title">Asked on almost every intro call.</h2>
+  <!-- ── FAQ ──────────────────────────────────────────── -->
+  <section class="faqs">
+    <div class="wrap">
+      <div data-reveal>
+        <p class="kicker">03 <span class="k-dot">·</span> Questions</p>
+        <h2 class="h2">Asked on almost every intro call<span class="gdot">.</span></h2>
       </div>
       <div class="faq-list" data-reveal>
         {faq.map((f) => (
           <details class="faq">
-            <summary class="faq-q">{f.q}<span class="faq-mark" aria-hidden="true">+</span></summary>
-            <p class="faq-a">{f.a}</p>
+            <summary>{f.q}<span class="faq-mark" aria-hidden="true">+</span></summary>
+            <p>{f.a}</p>
           </details>
         ))}
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- CTA -->
-    <section class="cta-band">
-      <div class="wrap cta-inner" data-reveal>
-        <span class="kicker">NEXT STEP</span>
-        <h2 class="display cta-title">The first conversation is free.</h2>
-        <div class="ctas">
-          <a class="btn-primary" href={BOOK_HREF}>BOOK A DISCOVERY CALL &nbsp;&rarr;</a>
-          <a class="btn-ghost" href="/get-in-touch/">GET IN TOUCH</a>
-        </div>
-      </div>
-    </section>
-  </div>
-</Base>
+  <!-- ── CTA band ─────────────────────────────────────── -->
+  <CtaBand kicker="Next step">
+    <Fragment slot="title">The first conversation is free<span class="gdot">.</span></Fragment>
+    <Fragment slot="actions">
+      <a class="btn btn-gold" href={BOOK_HREF}>Book a discovery call <span class="arr">→</span></a>
+      <a class="btn btn-ghost-dark" href="/get-in-touch/">Get in touch</a>
+    </Fragment>
+  </CtaBand>
+</BaseV2>
 
 <style>
-  .pagepad { padding-top: 110px; }
-  .head { padding: 80px var(--pad-x) 70px; }
-  .head-title { font-size: clamp(38px, 5.4vw, 76px); line-height: 1.02; letter-spacing: -1px; margin-top: 16px; max-width: 18ch; }
-  .head-lede { max-width: 56ch; margin-top: 26px; }
+  /* ── Timeline ── */
+  .tl { padding: 84px 0 30px; }
+  .tl-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .tcell { padding: 30px 26px; }
+  .wk {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold-2);
+    margin-bottom: 14px;
+  }
+  .tcell h3 { margin-bottom: 8px; }
 
-  .tl { padding: 0 var(--pad-x); }
-  .cell { padding: 30px 26px; }
-  .wk { font-size: 10px; letter-spacing: 2px; color: var(--gold); }
-  .cell-title { display: block; font-family: var(--font-display); font-weight: 700; font-size: 22px; color: var(--bone); margin-top: 14px; }
-  .cell-body { font-size: 12px; line-height: 1.85; color: var(--clay); margin-top: 10px; }
+  /* ── Team ── */
+  .team { padding: 80px 0 100px; }
+  .team .kicker { margin-bottom: 16px; }
+  .team .h2 { max-width: 720px; margin-bottom: 44px; }
+  .tm-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  .tm-tag {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold-2);
+    margin-bottom: 10px;
+  }
+  .tm h3 { margin-bottom: 8px; }
 
-  .tm-head { margin-bottom: 56px; }
-  .tm-title { font-size: clamp(28px, 3.8vw, 52px); line-height: 1.05; letter-spacing: -0.5px; margin-top: 14px; max-width: 24ch; }
-  .tm { padding: 34px 28px; }
-  .tm-tag { font-size: 9px; letter-spacing: 2px; color: var(--gold); }
-  .tm-name { font-family: var(--font-display); font-weight: 700; font-size: 21px; color: var(--bone); margin-top: 14px; }
-  .tm-body { font-size: 12px; line-height: 1.85; color: var(--clay); margin-top: 12px; }
+  /* ── Pricing ── */
+  .pricing { background: var(--bone); padding: 100px 0; }
+  .pricing .kicker { margin-bottom: 16px; }
+  .pricing .h2 { max-width: 720px; margin-bottom: 44px; }
+  .pr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; align-items: stretch; }
+  .pr { display: flex; flex-direction: column; padding: 32px 28px; }
+  .pr.hot { border-color: var(--gold-2); box-shadow: 0 12px 32px rgba(13, 26, 26, 0.06); }
+  .pr-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 34px; }
+  .pr-n { font-size: 38px; }
+  .pr-price {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .pr h3 { margin-bottom: 10px; }
+  .pr-when { font-family: var(--sans); font-size: 13px; font-weight: 600; color: var(--steel); }
+  .pr-gets { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .pr-note { color: var(--steel); font-size: 14.5px; max-width: 640px; margin-top: 28px; }
 
-  .band { border-top: 1px solid var(--line); background: var(--ink-deep); }
-  .band .grid-lined > * { background: var(--ink-deep); }
-  .pr-head { margin-bottom: 56px; }
-  .pr-title { font-size: clamp(28px, 3.8vw, 52px); line-height: 1.05; letter-spacing: -0.5px; margin-top: 14px; max-width: 24ch; }
-  .pr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-  .pr-card { border: 1px solid var(--line); border-top: 2px solid var(--gold); background: var(--ink); padding: 30px 26px; }
-  .pr-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-  .pr-num { font-family: var(--font-display); font-weight: 700; font-size: 40px; color: var(--gold); }
-  .pr-price { font-size: 10px; letter-spacing: 2px; color: var(--bone); text-align: right; }
-  .pr-name { font-family: var(--font-display); font-weight: 700; font-size: 20px; color: var(--bone); margin-top: 12px; }
-  .pr-when { font-family: var(--font-mono); font-weight: 400; font-size: 10px; letter-spacing: 2px; color: var(--dim-2); }
-  .pr-body { font-size: 12px; line-height: 1.8; color: var(--clay); margin-top: 12px; }
-  .pr-gets { font-size: 12px; line-height: 1.8; color: var(--body-2); margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
-  .pr-note { font-size: 12px; line-height: 1.9; color: var(--dim); margin-top: 28px; max-width: 62ch; }
-
-  .faq-head { margin-bottom: 44px; }
-  .faq-title { font-size: clamp(28px, 3.8vw, 52px); line-height: 1.05; letter-spacing: -0.5px; margin-top: 14px; }
-  .faq-list { border-top: 1px solid var(--line); max-width: 780px; }
+  /* ── FAQ ── */
+  .faqs { padding: 100px 0 110px; }
+  .faqs .kicker { margin-bottom: 16px; }
+  .faqs .h2 { margin-bottom: 40px; }
+  .faq-list { max-width: 780px; border-top: 1px solid var(--line); }
   .faq { border-bottom: 1px solid var(--line); }
-  .faq-q {
+  .faq summary {
     display: flex;
-    align-items: baseline;
     justify-content: space-between;
+    align-items: baseline;
     gap: 20px;
     cursor: pointer;
     list-style: none;
-    padding: 22px 4px;
-    font-family: var(--font-display);
+    padding: 22px 2px;
     font-weight: 700;
-    font-size: 17px;
-    color: var(--bone);
+    font-size: 17.5px;
+    color: var(--ink);
   }
-  .faq-q::-webkit-details-marker { display: none; }
-  .faq-q:hover { color: var(--gold-soft); }
-  .faq-mark { color: var(--gold); font-family: var(--font-mono); font-size: 15px; transition: transform 0.2s; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary:hover { color: var(--slate); }
+  .faq-mark {
+    color: var(--gold-2);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1;
+    transition: transform var(--dur-micro) var(--ease);
+  }
   .faq[open] .faq-mark { transform: rotate(45deg); }
-  .faq-a { font-size: 13px; line-height: 1.95; color: var(--clay); padding: 0 4px 24px; max-width: 64ch; }
+  .faq p { color: var(--slate); font-size: 15.5px; padding: 0 2px 24px; max-width: 640px; }
 
-  .cta-band {
-    border-top: 1px solid var(--line);
-    background:
-      radial-gradient(ellipse 60% 90% at 50% 110%, rgba(255, 204, 120, 0.07), transparent 70%),
-      var(--ink);
+  /* ── Responsive ── */
+  @media (max-width: 1024px) {
+    .tl-grid { grid-template-columns: repeat(2, 1fr); }
   }
-  .cta-inner { padding: 110px var(--pad-x) 130px; text-align: center; }
-  .cta-title { font-size: clamp(30px, 4.6vw, 64px); line-height: 1.04; letter-spacing: -0.5px; margin-top: 18px; }
-  .ctas { display: flex; gap: 18px; margin-top: 38px; justify-content: center; flex-wrap: wrap; }
-
   @media (max-width: 900px) {
-    .pagepad { padding-top: 90px; }
-    .head { padding: 60px var(--pad-x) 50px; }
-    .pr-grid { grid-template-columns: 1fr; }
+    .tm-grid, .pr-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .tl-grid { grid-template-columns: 1fr; }
+    .tl { padding-top: 56px; }
+    .team, .pricing, .faqs { padding-block: 72px; }
   }
 </style>
