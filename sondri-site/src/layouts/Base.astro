@@ -51,27 +51,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <CookieArtifact />
 
     <script>
-      import { initDither } from '../scripts/dither';
-      import { initOrbit } from '../scripts/orbit';
-      import { initForge } from '../scripts/orbit/forge';
-      import { initPatrol } from '../scripts/orbit/patrol';
-      import { initClimb } from '../scripts/orbit/climb';
-      import {
-        initReveals, initNeonSign, initConsent, initMobileNav,
-        initWordReveals, initCountUps, initMagnetic,
-      } from '../scripts/enhance';
-      initOrbit(); // must run before initDither: it resolves the hero fallback
-      initForge();
-      initPatrol();
-      initClimb();
-      initReveals();
-      initWordReveals();
-      initCountUps();
-      initMagnetic();
-      initNeonSign();
+      import { initConsent, initMobileNav } from '../scripts/enhance';
+      import { initMotion } from '../scripts/motion';
       initConsent();
       initMobileNav();
-      initDither();
+      initMotion();
     </script>
 
     <style>

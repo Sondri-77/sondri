@@ -1,58 +1,26 @@
 ---
 import Base from '../layouts/Base.astro';
-import { timeline, engine, whyNow, forgeBeats } from '../data';
+import { timeline, teamModel, framework, faq, BOOK_HREF } from '../data';
 ---
 
 <Base
   title="How it works — Sondri"
-  description="A working AI model, deployed in 8 weeks. A senior core team takes you from zero to one; a vetted specialist network takes one to many."
+  description="Two weeks to a board-ready roadmap. Eight weeks to an agent in production. How Sondri takes enterprise AI from zero to one to many."
 >
-  <!-- CINEMATIC ASSEMBLY — scroll builds the robot: discover → build → deploy → scale -->
-  <section id="forge-stage" class="orbit-stage forge-stage" aria-label="The delivery engine — cinematic sequence">
-    <div class="orbit-sticky">
-      <canvas id="forge-canvas" class="orbit-canvas" aria-hidden="true"></canvas>
-      <div class="orbit-vignette" aria-hidden="true"></div>
-
-      {forgeBeats.map((b) => (
-        <div class="beat" data-side={b.side} data-from={b.from} data-to={b.to}>
-          <span class="kicker beat-kicker">{b.k}</span>
-          <h2 class="display beat-title">{b.t}</h2>
-          <p class="beat-body">{b.b}</p>
-        </div>
-      ))}
-
-      <div class="orbit-hud" aria-hidden="true">
-        <span class="hud-rule"></span>
-        <span id="forge-readout" class="hud-readout">ENGINE 0 — DISCOVER</span>
-      </div>
-
-      <div id="forge-cue" class="orbit-cue" aria-hidden="true">
-        <span class="cue">&darr;</span>
-        <span class="cue-label">SCROLL &mdash; THE ENGINE ASSEMBLES</span>
-      </div>
-    </div>
-  </section>
-
   <div class="pagepad">
-    <!-- HERO -->
-    <section class="wrap two-col hero">
-      <div>
-        <span class="kicker">HOW IT WORKS</span>
-        <h1 class="display hero-title" data-words>A working AI model, deployed in <em>8 weeks.</em></h1>
-        <p class="lede hero-lede">
-          One delivery engine: a senior core team takes you from zero to one, a vetted specialist
-          network takes one to many. You get outcomes, not a platform.
-        </p>
-      </div>
-      <div class="dither-frame square">
-        <canvas data-dither="ridge" aria-hidden="true"></canvas>
-        <div class="fig-label">FIG. 02 &mdash; DELIVERY ENGINE</div>
-      </div>
+    <!-- HEADER -->
+    <section class="wrap head">
+      <span class="kicker" data-reveal>HOW IT WORKS</span>
+      <h1 class="display head-title" data-reveal>From kickoff to production in eight weeks.</h1>
+      <p class="lede head-lede" data-reveal>
+        A senior core team designs the system. A vetted specialist network builds it.
+        You get agents running in the systems you already own — not a platform.
+      </p>
     </section>
 
     <!-- TIMELINE -->
-    <section class="reveal wrap tl">
-      <div class="grid-lined g4">
+    <section class="wrap tl">
+      <div class="grid-lined g4" data-reveal>
         {timeline.map((t) => (
           <div class="cell">
             <span class="wk">{t.wk}</span>
@@ -63,104 +31,150 @@ import { timeline, engine, whyNow, forgeBeats } from '../data';
       </div>
     </section>
 
-    <!-- ENGINE 0 → 1 → n -->
-    <section class="reveal engine-band">
-      <div class="wrap engine-inner">
-        <div class="engine-head">
-          <span class="kicker">OPERATING MODEL</span>
-          <h2 class="display engine-title">0 &rarr; 1 &rarr; <em class="plain">n</em> &nbsp;&mdash;&nbsp; the engine</h2>
-        </div>
-        <div class="engine-grid g3">
-          {engine.map((e) => (
-            <div class="engine-card">
-              <span class="tag">{e.tag}</span>
-              <div class="engine-name">{e.title}</div>
-              <div class="items">
-                {e.items.map((it) => (
-                  <div class="item"><span class="dash">&mdash;</span>{it}</div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+    <!-- TEAM MODEL -->
+    <section class="wrap section">
+      <div class="tm-head" data-reveal>
+        <span class="kicker">WHO DOES THE WORK</span>
+        <h2 class="display tm-title">Senior architects. Vetted builders. Your operators.</h2>
+      </div>
+      <div class="grid-lined g3" data-reveal>
+        {teamModel.map((m) => (
+          <div class="tm">
+            <span class="tm-tag">{m.tag}</span>
+            <div class="tm-name">{m.title}</div>
+            <p class="tm-body">{m.body}</p>
+          </div>
+        ))}
       </div>
     </section>
 
-    <!-- WHY NOW -->
-    <section class="reveal wrap whynow">
-      <span class="kicker">WHY NOW</span>
-      <h2 class="display wn-title" data-words>Three shifts have unlocked this market in the last 18 months.</h2>
-      <div class="wn-grid g3">
-        {whyNow.map((w) => (
-          <div class="wn">
-            <span class="wn-i">{w.i}</span>
-            <div class="wn-t">{w.t}</div>
-            <p class="wn-b">{w.b}</p>
-          </div>
+    <!-- PRICING -->
+    <section class="band">
+      <div class="wrap section">
+        <div class="pr-head" data-reveal>
+          <span class="kicker">PRICING</span>
+          <h2 class="display pr-title">Priced by phase. You commit one rung at a time.</h2>
+        </div>
+        <div class="pr-grid" data-reveal>
+          {framework.map((p) => (
+            <div class="pr-card">
+              <div class="pr-top">
+                <span class="pr-num">{p.num}</span>
+                <span class="pr-price">{p.price}</span>
+              </div>
+              <div class="pr-name">{p.name} <span class="pr-when">· {p.when}</span></div>
+              <p class="pr-body">{p.does}</p>
+              <p class="pr-gets">{p.gets}</p>
+            </div>
+          ))}
+        </div>
+        <p class="pr-note" data-reveal>
+          Long-term customers can add a standing advisory seat — a permanent partner for every
+          AI decision the business faces next. Scoped individually.
+        </p>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="wrap section faq-section">
+      <div class="faq-head" data-reveal>
+        <span class="kicker">QUESTIONS</span>
+        <h2 class="display faq-title">Asked on almost every intro call.</h2>
+      </div>
+      <div class="faq-list" data-reveal>
+        {faq.map((f) => (
+          <details class="faq">
+            <summary class="faq-q">{f.q}<span class="faq-mark" aria-hidden="true">+</span></summary>
+            <p class="faq-a">{f.a}</p>
+          </details>
         ))}
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-band">
+      <div class="wrap cta-inner" data-reveal>
+        <span class="kicker">NEXT STEP</span>
+        <h2 class="display cta-title">The first conversation is free.</h2>
+        <div class="ctas">
+          <a class="btn-primary" href={BOOK_HREF}>BOOK A DISCOVERY CALL &nbsp;&rarr;</a>
+          <a class="btn-ghost" href="/get-in-touch/">GET IN TOUCH</a>
+        </div>
       </div>
     </section>
   </div>
 </Base>
 
 <style>
-  .pagepad { padding-top: 96px; }
-  .hero {
-    display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    gap: 70px;
-    align-items: end;
-    padding: 40px var(--pad-x) 70px;
-  }
-  .hero-title { font-size: clamp(40px, 6vw, 86px); line-height: 1; letter-spacing: -1px; margin-top: 18px; }
-  .hero-lede { max-width: 50ch; margin-top: 26px; }
-  .square { aspect-ratio: 1 / 1; }
+  .pagepad { padding-top: 110px; }
+  .head { padding: 80px var(--pad-x) 70px; }
+  .head-title { font-size: clamp(38px, 5.4vw, 76px); line-height: 1.02; letter-spacing: -1px; margin-top: 16px; max-width: 18ch; }
+  .head-lede { max-width: 56ch; margin-top: 26px; }
 
-  .tl { padding: 50px var(--pad-x) 90px; }
-  .cell { padding: 34px 24px; min-height: 260px; display: flex; flex-direction: column; }
+  .tl { padding: 0 var(--pad-x); }
+  .cell { padding: 30px 26px; }
   .wk { font-size: 10px; letter-spacing: 2px; color: var(--gold); }
-  .cell-title { font-family: var(--font-display); font-size: 30px; color: var(--bone); margin: 14px 0 16px; }
-  .cell-body { font-size: 12px; line-height: 1.85; color: var(--clay); }
+  .cell-title { display: block; font-family: var(--font-display); font-weight: 700; font-size: 22px; color: var(--bone); margin-top: 14px; }
+  .cell-body { font-size: 12px; line-height: 1.85; color: var(--clay); margin-top: 10px; }
 
-  .engine-band { border-top: 1px solid var(--line); background: var(--ink-deep); }
-  .engine-inner { padding: 110px var(--pad-x); }
-  .engine-head { text-align: center; margin-bottom: 60px; }
-  .engine-title { font-size: clamp(34px, 5vw, 64px); line-height: 1; margin-top: 16px; }
-  .engine-title .plain { color: var(--bone); }
-  .engine-grid { display: grid; gap: 24px; }
-  .engine-card { border: 1px solid var(--line); background: var(--ink); padding: 32px 28px; }
-  .tag {
-    display: inline-block;
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--ink);
-    background: var(--gold);
-    padding: 5px 10px;
-  }
-  .engine-name { font-family: var(--font-display); font-size: 26px; color: var(--bone); margin: 22px 0 18px; }
-  .items { display: flex; flex-direction: column; }
-  .item {
+  .tm-head { margin-bottom: 56px; }
+  .tm-title { font-size: clamp(28px, 3.8vw, 52px); line-height: 1.05; letter-spacing: -0.5px; margin-top: 14px; max-width: 24ch; }
+  .tm { padding: 34px 28px; }
+  .tm-tag { font-size: 9px; letter-spacing: 2px; color: var(--gold); }
+  .tm-name { font-family: var(--font-display); font-weight: 700; font-size: 21px; color: var(--bone); margin-top: 14px; }
+  .tm-body { font-size: 12px; line-height: 1.85; color: var(--clay); margin-top: 12px; }
+
+  .band { border-top: 1px solid var(--line); background: var(--ink-deep); }
+  .band .grid-lined > * { background: var(--ink-deep); }
+  .pr-head { margin-bottom: 56px; }
+  .pr-title { font-size: clamp(28px, 3.8vw, 52px); line-height: 1.05; letter-spacing: -0.5px; margin-top: 14px; max-width: 24ch; }
+  .pr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .pr-card { border: 1px solid var(--line); border-top: 2px solid var(--gold); background: var(--ink); padding: 30px 26px; }
+  .pr-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .pr-num { font-family: var(--font-display); font-weight: 700; font-size: 40px; color: var(--gold); }
+  .pr-price { font-size: 10px; letter-spacing: 2px; color: var(--bone); text-align: right; }
+  .pr-name { font-family: var(--font-display); font-weight: 700; font-size: 20px; color: var(--bone); margin-top: 12px; }
+  .pr-when { font-family: var(--font-mono); font-weight: 400; font-size: 10px; letter-spacing: 2px; color: var(--dim-2); }
+  .pr-body { font-size: 12px; line-height: 1.8; color: var(--clay); margin-top: 12px; }
+  .pr-gets { font-size: 12px; line-height: 1.8; color: var(--body-2); margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .pr-note { font-size: 12px; line-height: 1.9; color: var(--dim); margin-top: 28px; max-width: 62ch; }
+
+  .faq-head { margin-bottom: 44px; }
+  .faq-title { font-size: clamp(28px, 3.8vw, 52px); line-height: 1.05; letter-spacing: -0.5px; margin-top: 14px; }
+  .faq-list { border-top: 1px solid var(--line); max-width: 780px; }
+  .faq { border-bottom: 1px solid var(--line); }
+  .faq-q {
     display: flex;
-    gap: 12px;
-    padding: 11px 0;
-    border-top: 1px solid var(--line);
-    font-size: 12px;
-    line-height: 1.6;
-    color: var(--body-2);
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+    cursor: pointer;
+    list-style: none;
+    padding: 22px 4px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--bone);
   }
-  .dash { color: var(--dim-2); }
+  .faq-q::-webkit-details-marker { display: none; }
+  .faq-q:hover { color: var(--gold-soft); }
+  .faq-mark { color: var(--gold); font-family: var(--font-mono); font-size: 15px; transition: transform 0.2s; }
+  .faq[open] .faq-mark { transform: rotate(45deg); }
+  .faq-a { font-size: 13px; line-height: 1.95; color: var(--clay); padding: 0 4px 24px; max-width: 64ch; }
 
-  .whynow { padding: 110px var(--pad-x); }
-  .wn-title { font-size: clamp(30px, 4vw, 56px); line-height: 1.05; margin: 16px 0 56px; max-width: 22ch; }
-  .wn-grid { display: grid; gap: 46px; }
-  .wn { border-top: 1px solid var(--gold); padding-top: 22px; }
-  .wn-i { font-family: var(--font-display); font-size: 40px; color: var(--dim-2); }
-  .wn-t { font-family: var(--font-display); font-size: 24px; color: var(--bone); margin: 14px 0 12px; }
-  .wn-b { font-size: 13px; line-height: 1.9; color: var(--clay); }
+  .cta-band {
+    border-top: 1px solid var(--line);
+    background:
+      radial-gradient(ellipse 60% 90% at 50% 110%, rgba(255, 204, 120, 0.07), transparent 70%),
+      var(--ink);
+  }
+  .cta-inner { padding: 110px var(--pad-x) 130px; text-align: center; }
+  .cta-title { font-size: clamp(30px, 4.6vw, 64px); line-height: 1.04; letter-spacing: -0.5px; margin-top: 18px; }
+  .ctas { display: flex; gap: 18px; margin-top: 38px; justify-content: center; flex-wrap: wrap; }
 
   @media (max-width: 900px) {
-    .cell { min-height: 0; }
-    .engine-grid, .wn-grid { grid-template-columns: 1fr; }
-    .square { max-width: 480px; }
+    .pagepad { padding-top: 90px; }
+    .head { padding: 60px var(--pad-x) 50px; }
+    .pr-grid { grid-template-columns: 1fr; }
   }
 </style>
