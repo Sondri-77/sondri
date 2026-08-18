@@ -10,7 +10,17 @@ export default defineConfig({
   site: SITE,
   output: 'static',
   trailingSlash: 'ignore',
-  integrations: [sitemap()],
+  // Old pages removed in the restructure; keep indexed URLs alive.
+  redirects: {
+    '/for-customers/': '/how-it-works/',
+    '/design-system/': '/',
+  },
+  integrations: [
+    sitemap({
+      // Confirmation page — not a destination worth indexing.
+      filter: (page) => !page.includes('/success/'),
+    }),
+  ],
   build: {
     format: 'directory',
     inlineStylesheets: 'auto',
