@@ -1,0 +1,90 @@
+---
+import { CAL_LINK } from '../../data';
+---
+
+<script is:inline define:vars={{ calLink: CAL_LINK }}>
+  (function (C, A, L) {
+    let p = function (a, ar) {
+      a.q.push(ar);
+    };
+    let d = C.document;
+    C.Cal =
+      C.Cal ||
+      function () {
+        let cal = C.Cal;
+        let ar = arguments;
+        if (!cal.loaded) {
+          cal.ns = {};
+          cal.q = cal.q || [];
+          d.head.appendChild(d.createElement('script')).src = A;
+          cal.loaded = true;
+        }
+        if (ar[0] === L) {
+          const api = function () {
+            p(api, arguments);
+          };
+          const namespace = ar[1];
+          api.q = api.q || [];
+          if (typeof namespace === 'string') {
+            cal.ns[namespace] = cal.ns[namespace] || api;
+            p(cal.ns[namespace], ar);
+            p(cal, ['initNamespace', namespace]);
+          } else p(cal, ar);
+          return;
+        }
+        p(cal, ar);
+      };
+  })(window, 'https://app.cal.com/embed/embed.js', 'init');
+
+  Cal('init', 'discovery', { origin: 'https://cal.com' });
+
+  const sondriThemeConfig = {
+    theme: 'dark',
+    styles: {
+      branding: {
+        brandColor: '#fdb343',
+      },
+    },
+    cssVarsPerTheme: {
+      dark: {
+        'cal-bg': '#081f1f',
+        'cal-bg-muted': '#0c2b29',
+        'cal-bg-subtle': '#051818',
+        'cal-bg-emphasis': '#133a36',
+        'cal-border': 'rgba(230, 242, 240, 0.14)',
+        'cal-border-subtle': 'rgba(230, 242, 240, 0.08)',
+        'cal-border-emphasis': 'rgba(230, 242, 240, 0.22)',
+        'cal-text': '#edf5f4',
+        'cal-text-muted': '#aac2c2',
+        'cal-text-subtle': '#6a8988',
+        'cal-text-emphasis': '#ffffff',
+        'cal-brand': '#fdb343',
+        'cal-brand-emphasis': '#f5a71e',
+        'cal-brand-text': '#081f1f',
+        '--cal-bg': '#081f1f',
+        '--cal-bg-muted': '#0c2b29',
+        '--cal-border': 'rgba(230, 242, 240, 0.14)',
+        '--cal-text': '#edf5f4',
+        '--cal-brand': '#fdb343',
+      },
+    },
+    hideEventTypeDetails: false,
+    layout: 'month_view',
+  };
+
+  Cal.ns.discovery('ui', sondriThemeConfig);
+
+  function bindCalButtons() {
+    if (!calLink) return;
+    const links = document.querySelectorAll(`a[href*="cal.com/${calLink}"], a[data-cal-link]`);
+    links.forEach((link) => {
+      link.setAttribute('data-cal-link', calLink);
+      link.setAttribute('data-cal-namespace', 'discovery');
+      link.setAttribute('data-cal-config', JSON.stringify(sondriThemeConfig));
+    });
+  }
+
+  // Bind on initial page load and every client-side page navigation in Astro
+  document.addEventListener('DOMContentLoaded', bindCalButtons);
+  document.addEventListener('astro:page-load', bindCalButtons);
+</script>

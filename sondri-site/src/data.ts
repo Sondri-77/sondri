@@ -4,11 +4,19 @@
 export const CONTACT_EMAIL = 'sales@sondri.ai';
 export const mailto = (subject: string) =>
   `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}`;
-export const BOOK_HREF = mailto('Discovery call — Sondri');
+
+/**
+ * Scheduling link.
+ * - For Cal.com: Set CAL_LINK to your username/event (e.g. 'sondri/discovery').
+ *   This opens the embedded dark-mode modal on the site.
+ * - For Google Calendar Appointment Schedule or other URLs: Set BOOK_HREF directly to the full URL.
+ */
+export const CAL_LINK = 'sondri/discovery';
+export const BOOK_HREF = `https://cal.com/${CAL_LINK}`;
 
 export const TAGLINE = 'Software & automation, made simple';
 
-/** One offer, one label, everywhere. Swap BOOK_HREF for cal.com when live. */
+/** One offer, one label, everywhere. */
 export const CTA_PRIMARY = 'Book a Free Discovery';
 export const RISK_REVERSAL = 'Free. No commitment.';
 
