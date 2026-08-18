@@ -1,39 +1,38 @@
 ---
-import Base from '../layouts/Base.astro';
+import BaseV2 from '../layouts/BaseV2.astro';
 ---
 
-<Base
-  title="Payment Confirmed — Sondri"
+<BaseV2
+  title="Payment confirmed — Sondri"
   description="Thank you for your payment to Sondri."
 >
-  <div class="pagepad">
-    <section class="wrap success-section">
-      <div class="success-card">
+  <section class="success-section">
+    <div class="wrap">
+      <div class="card success-card">
         <div class="status-badge">
           <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
-          <span>PAYMENT CONFIRMED</span>
+          <span>Payment confirmed</span>
         </div>
 
-        <h1 class="display success-title">Thank You for Your Payment</h1>
-        
-        <p class="success-lede">
-          Your payment has been successfully processed by Stripe. A confirmation email with your tax invoice and receipt has been dispatched to your email address.
+        <h1 class="success-title">Thank you for your payment<span class="gdot">.</span></h1>
+
+        <p class="body-s success-lede">
+          Your payment has been successfully processed by Stripe. A confirmation email with your
+          tax invoice and receipt has been dispatched to your email address.
         </p>
 
         <div id="downloadsContainer" class="action-wrapper" style="display: none;">
-          <a id="btnReceipt" href="#" target="_blank" rel="noopener" class="btn-action btn-gold btn-full">
-            VIEW OFFICIAL RECEIPT &amp; INVOICE &rarr;
+          <a id="btnReceipt" href="#" target="_blank" rel="noopener" class="btn btn-gold btn-full">
+            View Official Receipt &amp; Invoice <span class="arr">→</span>
           </a>
         </div>
 
-        <div class="home-link-wrapper">
-          <a href="/" class="link-home">&larr; Return to Sondri Homepage</a>
-        </div>
+        <a href="/" class="link-home">← Return to the Sondri homepage</a>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 
   <script>
     const WORKER_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
@@ -71,24 +70,11 @@ import Base from '../layouts/Base.astro';
   </script>
 
   <style>
-    .pagepad {
-      padding-top: 140px;
-      padding-bottom: 100px;
-    }
-
-    .wrap {
-      max-width: var(--max-w, 1200px);
-      margin: 0 auto;
-      padding: 0 var(--pad-x, 24px);
-    }
-
-    .success-section {
-      max-width: 580px;
-    }
+    .success-section { padding: 130px 0 110px; }
 
     .success-card {
-      background: var(--ink-deep, #081313);
-      border: 1px solid var(--line-strong, rgba(255, 204, 120, 0.25));
+      max-width: 580px;
+      margin: 0 auto;
       padding: 48px;
       text-align: center;
     }
@@ -97,86 +83,37 @@ import Base from '../layouts/Base.astro';
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 6px 14px;
-      background: rgba(255, 204, 120, 0.1);
-      border: 1px solid var(--gold, #ffcc78);
-      color: var(--gold, #ffcc78);
-      font-family: var(--font-mono, monospace);
-      font-size: 11px;
-      letter-spacing: 2px;
+      padding: 7px 16px;
+      background: rgba(253, 179, 67, 0.14);
+      border: 1px solid var(--gold-2);
+      border-radius: var(--r-pill);
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
       margin-bottom: 24px;
     }
+    .check-icon { width: 14px; height: 14px; color: var(--gold-2); }
 
-    .check-icon {
-      width: 14px;
-      height: 14px;
-    }
+    .success-title { font-size: clamp(26px, 4vw, 34px); line-height: 1.2; margin-bottom: 14px; }
+    .success-lede { margin-bottom: 32px; }
 
-    .display {
-      font-family: var(--font-display, 'Space Grotesk', sans-serif);
-      font-weight: 700;
-      color: var(--bone, #f8fafc);
-    }
-
-    .success-title {
-      font-size: clamp(24px, 4vw, 32px);
-      margin-bottom: 16px;
-      line-height: 1.2;
-    }
-
-    .success-lede {
-      font-family: var(--font-mono, monospace);
-      font-size: 13px;
-      color: var(--clay, #94a3b8);
-      line-height: 1.6;
-      margin-bottom: 36px;
-    }
-
-    .action-wrapper {
-      margin-bottom: 28px;
-    }
-
-    .btn-action {
-      display: block;
-      font-family: var(--font-mono, monospace);
-      font-size: 11px;
-      letter-spacing: 2px;
-      padding: 16px 20px;
-      text-decoration: none;
-      text-align: center;
-      transition: all 0.2s ease;
-      border: none;
-    }
-
-    .btn-gold {
-      background: var(--gold, #ffcc78);
-      color: var(--ink, #0c1a1a);
-      font-weight: 700;
-    }
-
-    .btn-gold:hover {
-      background: var(--gold-soft, #ffd99b);
-    }
-
-    .btn-full {
-      width: 100%;
-    }
-
-    .home-link-wrapper {
-      margin-top: 20px;
-    }
+    .action-wrapper { margin-bottom: 24px; }
+    .btn-full { width: 100%; justify-content: center; }
 
     .link-home {
-      font-family: var(--font-mono, monospace);
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      color: var(--dim, #64748b);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--steel);
       text-decoration: none;
-      transition: color 0.2s ease;
+      transition: color var(--dur-micro) var(--ease);
     }
+    .link-home:hover { color: #fff; }
 
-    .link-home:hover {
-      color: var(--gold, #ffcc78);
+    @media (max-width: 640px) {
+      .success-section { padding: 88px 0 72px; }
+      .success-card { padding: 32px 22px; }
     }
   </style>
-</Base>
+</BaseV2>

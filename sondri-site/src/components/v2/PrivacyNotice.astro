@@ -1,0 +1,72 @@
+<div id="privacy-notice" class="pn card" hidden>
+  <p class="pn-body">By continuing to use this website, you agree to our privacy policy.</p>
+  <button class="pn-ok" data-dismiss>Got It</button>
+</div>
+
+<style>
+  .pn {
+    position: fixed;
+    left: 24px;
+    bottom: 24px;
+    z-index: 60;
+    width: 300px;
+    max-width: calc(100vw - 48px);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 16px;
+    background: var(--moss);
+    border: 1px solid var(--line-ink);
+    border-radius: var(--r-card);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  }
+  .pn-body {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--pale);
+  }
+  .pn-ok {
+    cursor: pointer;
+    flex-shrink: 0;
+    font-family: var(--sans);
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #fff;
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid var(--gold-2);
+    padding: 0 0 2px;
+    transition: color var(--dur-micro) var(--ease);
+  }
+  .pn-ok:hover { color: var(--pale); }
+  @media (max-width: 640px) {
+    .pn { left: 16px; bottom: 16px; max-width: calc(100vw - 32px); }
+  }
+</style>
+
+<script>
+  const KEY = 'sondri-privacy-ack';
+  document.addEventListener('astro:page-load', init);
+  function init() {
+  const el = document.getElementById('privacy-notice');
+  if (el) {
+    let acked = false;
+    try {
+      acked = localStorage.getItem(KEY) === '1';
+    } catch {
+      /* storage unavailable — show the notice */
+    }
+    if (!acked) el.hidden = false;
+    el.querySelector('[data-dismiss]')?.addEventListener('click', () => {
+      el.hidden = true;
+      try {
+        localStorage.setItem(KEY, '1');
+      } catch {
+        /* ignore */
+      }
+    });
+  }
+  }
+</script>

@@ -1,0 +1,255 @@
+/* Sondri theme — dark editorial system per Brand Guidelines v2.0 (Aug 2026).
+   Deep green is the field, bone the text, gold the single signal. */
+
+:root {
+  /* Brand v2 palette (Brand Guidelines v2.0, Aug 2026) */
+  --ink: #081f1f;
+  --deep: #031919;
+  --pine: #0c2b29;
+  --moss: #133a36;
+  --bone: #e6f2f0;
+  --gold: #fdb343;
+  --gold-2: #f5a71e;
+  --slate: #174040;
+  --steel: #6a8988; /* spec's AA-passing lift of #668484 */
+  --pale: #aac2c2;
+  --text-hi: #edf5f4;
+
+  /* Derived surfaces (dark theme: green ramp deep < ink < pine < moss) */
+  --canvas: #081f1f;
+  --card-glass: rgba(255, 255, 255, 0.045);
+  --line: rgba(230, 242, 240, 0.14);
+  --line-ink: rgba(230, 242, 240, 0.18);
+
+  --serif: 'Fraunces Variable', Georgia, serif;
+  --sans: 'Hanken Grotesk Variable', system-ui, sans-serif;
+
+  --wrap: 1160px;
+  --pad-x: 40px;
+
+  --r-card: 14px;
+  --r-pill: 999px;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-micro: 0.2s;
+  --dur-reveal: 0.55s;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+body {
+  background: var(--canvas);
+  color: var(--pale);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--gold); color: var(--ink); }
+
+.wrap { max-width: var(--wrap); margin: 0 auto; padding-inline: var(--pad-x); }
+
+/* ── Type ───────────────────────────────────────────── */
+
+h1, h2, .h-serif {
+  font-family: var(--serif);
+  font-weight: 560;
+  letter-spacing: -0.015em;
+  font-variation-settings: 'opsz' 100;
+}
+h1 em, h2 em { font-style: italic; font-weight: 400; }
+
+.display { font-size: clamp(42px, 5.6vw, 76px); line-height: 1.04; }
+.h2 { font-size: clamp(30px, 3.6vw, 46px); line-height: 1.12; }
+h3 { font-size: 21px; font-weight: 700; line-height: 1.3; }
+
+h1, h2, h3, .h2 { color: var(--text-hi); }
+
+.lede { font-size: 19px; line-height: 1.6; color: var(--pale); }
+.body-s { font-size: 15.5px; color: var(--pale); }
+
+.kicker {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.kicker .k-dot { color: var(--gold-2); }
+
+/* The brand signal: one gold period per headline. */
+.gdot { color: var(--gold-2); }
+.nb { white-space: nowrap; }
+
+/* ── Buttons ────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: var(--r-pill);
+  padding: 14px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--dur-micro) var(--ease), border-color var(--dur-micro) var(--ease),
+    color var(--dur-micro) var(--ease), transform var(--dur-micro) var(--ease);
+}
+.btn .arr { transition: transform var(--dur-micro) var(--ease); }
+.btn:hover .arr { transform: translateX(3px); }
+.btn:active { transform: scale(0.98); }
+
+.btn-ink { background: var(--ink); color: #fff; }
+.btn-ink:hover { background: var(--deep); }
+
+.btn-gold { background: var(--gold-2); color: var(--ink); position: relative; overflow: hidden; }
+.btn-gold:hover { background: var(--gold); }
+.btn-gold::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-130%) skewX(-18deg);
+  background: linear-gradient(105deg, transparent 42%, rgba(255, 255, 255, 0.5) 50%, transparent 58%);
+  pointer-events: none;
+}
+.btn-gold:hover::after {
+  transform: translateX(130%);
+  transition: transform 0.65s var(--ease);
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-gold::after { display: none; }
+}
+
+.btn-ghost { background: transparent; color: #fff; border: 1px solid rgba(230, 242, 240, 0.4); }
+.btn-ghost:hover { border-color: var(--pale); }
+
+.btn-ghost-dark { background: transparent; color: #fff; border: 1px solid rgba(230, 242, 240, 0.4); }
+.btn-ghost-dark:hover { border-color: var(--pale); }
+
+/* ── Shared bits ────────────────────────────────────── */
+
+.card {
+  background: var(--card-glass);
+  border: 1px solid var(--line-ink);
+  border-radius: var(--r-card);
+  transition: transform var(--dur-micro) var(--ease), box-shadow var(--dur-micro) var(--ease);
+}
+
+a:focus-visible, button:focus-visible, .btn:focus-visible {
+  outline: 2px solid var(--gold-2);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.btn:focus-visible { border-radius: var(--r-pill); }
+
+.skip {
+  position: fixed;
+  top: -60px;
+  left: 16px;
+  z-index: 100;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--gold);
+  padding: 12px 18px;
+  border-radius: 8px;
+  transition: top 0.2s;
+}
+.skip:focus { top: 10px; }
+
+/* ── Navy hero (shared) ─────────────────────────────── */
+
+.hero-ink {
+  position: relative;
+  background: var(--ink);
+  color: #fff;
+  overflow: hidden;
+}
+.hero-ink .kicker { color: var(--gold); margin-bottom: 22px; }
+.hero-ink h1 { color: #fff; margin-bottom: 24px; }
+.hero-ink .lede { color: var(--pale); max-width: 640px; }
+.hero-ink .wrap { position: relative; }
+
+.page-hero { padding: 96px 0 76px; }
+.display-sm { font-size: clamp(36px, 4.4vw, 64px); line-height: 1.06; max-width: 860px; }
+
+.glyph-field { position: absolute; inset: 0; pointer-events: none; }
+.hero-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    var(--ink) 30%,
+    rgba(8, 31, 31, 0.72) 52%,
+    rgba(8, 31, 31, 0.18) 78%,
+    rgba(8, 31, 31, 0) 100%
+  );
+}
+
+/* Hero entrance — pure CSS so it needs no JS. */
+@media (prefers-reduced-motion: no-preference) {
+  .anim { animation: rise 0.7s var(--ease) both; }
+  .a1 { animation-delay: 0.05s; }
+  .a2 { animation-delay: 0.16s; }
+  .a3 { animation-delay: 0.3s; }
+  .a4 { animation-delay: 0.44s; }
+  .hero-dot {
+    display: inline-block;
+    animation: dot-land 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.95s both;
+  }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(26px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes dot-land {
+  from { opacity: 0; transform: scale(0) translateY(-14px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── CTA band (shared) ──────────────────────────────── */
+
+.ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+
+.cta-band {
+  background: var(--ink);
+  color: #fff;
+  padding: 110px 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-band .kicker { color: var(--gold); }
+.cta-band .cta-title { color: #fff; max-width: 820px; margin: 18px auto 16px; }
+.cta-band .cta-lede { color: var(--pale); font-size: 18px; margin-bottom: 40px; }
+.cta-band .ctas { justify-content: center; }
+
+/* ── Chips ──────────────────────────────────────────── */
+
+.chip {
+  display: inline-block;
+  border: 1px solid var(--line-ink);
+  border-radius: var(--r-pill);
+  padding: 9px 18px;
+  font-size: 14px;
+  color: var(--pale);
+}
+
+@media (max-width: 900px) {
+  :root { --pad-x: 24px; }
+}
+@media (max-width: 640px) {
+  :root { --pad-x: 18px; }
+  .lede { font-size: 17px; }
+  .page-hero { padding: 72px 0 56px; }
+  .cta-band { padding: 72px 0; }
+}
