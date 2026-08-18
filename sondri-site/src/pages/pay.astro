@@ -7,8 +7,8 @@ import PageHero from '../components/v2/PageHero.astro';
   title="Payments & deposits — Sondri"
   description="Submit an agreed invoice deposit or custom payment for Sondri AI automation services."
 >
-  <PageHero kicker="Sondri payments">
-    <Fragment slot="title">Secure client payment portal<span class="gdot hero-dot">.</span></Fragment>
+  <PageHero>
+    <Fragment slot="title">Secure client payment <span class="nb">portal<span class="gdot hero-dot">.</span></span></Fragment>
     <Fragment slot="lede">
       Submit an agreed project deposit, retainer payment, or invoice. All transactions run
       through encrypted Stripe Checkout with instant receipt generation.
@@ -19,7 +19,6 @@ import PageHero from '../components/v2/PageHero.astro';
   <section class="pay-section">
     <div class="wrap">
       <div class="card pay-card" data-reveal>
-        <p class="plan-code">Client payment portal</p>
         <h2 class="pay-title">Pay an invoice or deposit</h2>
         <p class="body-s pay-b">
           Enter your billing email, the custom amount agreed with the Sondri engineering team,
@@ -43,7 +42,7 @@ import PageHero from '../components/v2/PageHero.astro';
           </div>
 
           <button type="submit" id="btnSubmit" class="btn btn-gold btn-full">
-            Proceed to secure checkout <span class="arr">→</span>
+            Proceed to Secure Checkout <span class="arr">→</span>
           </button>
         </form>
       </div>
@@ -79,6 +78,7 @@ import PageHero from '../components/v2/PageHero.astro';
             client_email,
             custom_amount,
             description,
+            cancel_url: `${window.location.origin}/pay/`,
           }),
         });
 
@@ -88,27 +88,19 @@ import PageHero from '../components/v2/PageHero.astro';
           window.location.href = json.data.checkout_url;
         } else {
           alert(`Checkout Error: ${json.error?.message || 'Unable to generate checkout session'}`);
-          if (btn) btn.innerText = 'Proceed to secure checkout →';
+          if (btn) btn.innerText = 'Proceed to Secure Checkout →';
         }
       } catch (err: any) {
         alert(`Connection Error: ${err.message || 'Unable to reach payment gateway'}`);
-        if (btn) btn.innerText = 'Proceed to secure checkout →';
+        if (btn) btn.innerText = 'Proceed to Secure Checkout →';
       }
     });
   </script>
 
   <style>
-    .pay-section { padding: 72px 0 100px; }
+    .pay-section { background: var(--pine); padding: 72px 0 100px; }
 
     .pay-card { max-width: 640px; margin: 0 auto; padding: 44px; }
-    .plan-code {
-      font-size: 11.5px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--gold-2);
-      margin-bottom: 12px;
-    }
     .pay-title { font-size: 26px; margin-bottom: 10px; }
     .pay-b { margin-bottom: 30px; }
 

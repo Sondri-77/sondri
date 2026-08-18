@@ -10,14 +10,17 @@ export default defineConfig({
   site: SITE,
   output: 'static',
   trailingSlash: 'ignore',
-  // Old pages removed in the 3-page restructure; keep indexed URLs alive.
+  // Old pages removed in the restructure; keep indexed URLs alive.
   redirects: {
-    '/industries/': '/',
     '/for-customers/': '/how-it-works/',
-    '/about/': '/get-in-touch/',
     '/design-system/': '/',
   },
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      // Confirmation page — not a destination worth indexing.
+      filter: (page) => !page.includes('/success/'),
+    }),
+  ],
   build: {
     format: 'directory',
     inlineStylesheets: 'auto',

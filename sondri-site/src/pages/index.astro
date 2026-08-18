@@ -1,36 +1,45 @@
 ---
 import BaseV2 from '../layouts/BaseV2.astro';
 import CtaBand from '../components/v2/CtaBand.astro';
-import { BOOK_HREF, problemStats, framework, industries } from '../data';
+import {
+  BOOK_HREF,
+  CTA_PRIMARY,
+  RISK_REVERSAL,
+  mailto,
+  problemStats,
+  framework,
+  capabilities,
+  feelSteps,
+} from '../data';
 ---
 
 <BaseV2
-  title="Sondri — Complex problems. Compressed timelines."
-  description="Sondri solves your hardest operational problems with AI, inside the systems you already run. Live in production in eight weeks, measured against your P&L."
+  title="Sondri — Simple solutions to not-so-simple problems"
+  description="The technology you need built — live within your business, fast. Software and automation for small and midsize companies, delivered simply."
 >
   <!-- ── Hero ─────────────────────────────────────────── -->
   <section id="hero" class="hero hero-ink" aria-label="Introduction">
     <canvas class="glyph-field" data-variant="full" aria-hidden="true"></canvas>
     <div class="hero-scrim" aria-hidden="true"></div>
     <div class="wrap" id="content">
-      <p class="kicker anim a1">Sondri <span class="k-dot">·</span> Enterprise AI made simple</p>
       <h1 class="display anim a2">
-        Complex problems. Compressed <span class="nb"><em>timelines</em><span class="gdot hero-dot">.</span></span>
+        Simple solutions to <em>not-so-simple</em> <span class="nb">problems<span class="gdot hero-dot">.</span></span>
       </h1>
       <p class="lede anim a3">
-        We solve your hardest operational problems with AI, inside the systems you already run.
+        The technology you need built — live within your business, fast.
       </p>
       <div class="ctas anim a4">
-        <a class="btn btn-gold" href={BOOK_HREF}>Book a discovery call <span class="arr">→</span></a>
-        <a class="btn btn-ghost-dark" href="/how-it-works/">How it works</a>
+        <a class="btn btn-gold" href={BOOK_HREF}>{CTA_PRIMARY} <span class="arr">→</span></a>
+        <a class="btn btn-ghost-dark" href="/how-it-works/">See How It Works</a>
       </div>
+      <p class="hero-note anim a4">{RISK_REVERSAL}</p>
     </div>
   </section>
 
-  <!-- ── Sector strip ─────────────────────────────────── -->
-  <div class="sectors" aria-label="Industries served">
+  <!-- ── Capability strip ─────────────────────────────── -->
+  <div class="sectors" aria-label="What we do">
     <div class="wrap sect-in">
-      {industries.map((i) => <span>{i.name}</span>)}
+      {capabilities.map((c) => <span>{c}</span>)}
     </div>
   </div>
 
@@ -38,8 +47,7 @@ import { BOOK_HREF, problemStats, framework, industries } from '../data';
   <section class="problem">
     <div class="wrap">
       <div data-reveal>
-        <p class="kicker">01 <span class="k-dot">·</span> The problem</p>
-        <h2 class="h2">Most enterprise AI never ships<span class="gdot">.</span></h2>
+        <h2 class="h2">Everyone has an AI initiative. Almost nobody has one in production<span class="gdot">.</span></h2>
         <p class="lede prob-lede">
           Pilots launch, decks get approved, and the value never reaches production.
         </p>
@@ -60,19 +68,17 @@ import { BOOK_HREF, problemStats, framework, industries } from '../data';
   <section class="framework">
     <div class="wrap">
       <div data-reveal>
-        <p class="kicker">02 <span class="k-dot">·</span> Introducing</p>
         <h2 class="h2 fw-mark h-serif">0 → 1 → <em>n</em><span class="gdot">.</span></h2>
         <p class="lede fw-lede">
-          Every engagement follows the same arc: prove it, put it in production, then multiply it.
-          Zero to one in eight weeks. One to many every month after.
+          Prove it, ship it, multiply it — and you commit one rung at a time,
+          at the pace your business sets.
         </p>
       </div>
       <div class="fw-grid" data-reveal data-reveal-group>
         {framework.map((p) => (
-          <div class:list={['card', 'fw', { hot: p.num === '1' }]}>
+          <div class="card fw">
             <div class="fw-top">
               <span class="fw-n h-serif">{p.num}</span>
-              <span class="fw-when">{p.when.toLowerCase()}</span>
             </div>
             <h3>{p.name}</h3>
             <p class="body-s">{p.does}</p>
@@ -80,38 +86,57 @@ import { BOOK_HREF, problemStats, framework, industries } from '../data';
               <span class="fw-gets-label">You walk away with</span>
               <p class="body-s">{p.gets}</p>
             </div>
-            <span class="fw-price">{p.price.toLowerCase()}</span>
+          </div>
+        ))}
+      </div>
+      <p class="fw-note" data-reveal>
+        Long-term customers can add a standing advisory seat — a permanent partner for every
+        technology decision ahead.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── What it feels like ───────────────────────────── -->
+  <section class="feels">
+    <div class="wrap">
+      <div data-reveal>
+        <h2 class="h2">You never have to become an AI company<span class="gdot">.</span></h2>
+        <p class="lede feels-lede">
+          Most teams don't need to understand AI. They need it to work. Here's the whole experience:
+        </p>
+      </div>
+      <div class="feel-grid" data-reveal data-reveal-group>
+        {feelSteps.map((s) => (
+          <div class="card feel">
+            <span class="feel-i h-serif">{s.i}</span>
+            <h3>{s.t}</h3>
+            <p class="body-s">{s.b}</p>
           </div>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- ── Industries ───────────────────────────────────── -->
-  <section class="industries">
+  <!-- ── Founder note ─────────────────────────────────── -->
+  <section class="note">
     <div class="wrap">
-      <div data-reveal>
-        <p class="kicker">03 <span class="k-dot">·</span> Who it's for</p>
-        <h2 class="h2">Six industries. One delivery engine<span class="gdot">.</span></h2>
-      </div>
-      <div class="ind-grid" data-reveal data-reveal-group>
-        {industries.map((i) => (
-          <div class="ind">
-            <h3>{i.name}</h3>
-            <p class="body-s">{i.line}</p>
-          </div>
-        ))}
+      <div class="card note-card" data-reveal>
+        <p class="note-body">
+          "We started Sondri because we kept watching the same movie: a capable team, a real
+          problem, and eighteen months of AI pilots that never shipped. The technology was never
+          the issue — the overwhelm was. So we built the company we wished existed: it shows up,
+          solves the problem simply, and proves it on a number you already track."
+        </p>
+        <a class="note-link" href="/get-in-touch/">Get in Touch →</a>
       </div>
     </div>
   </section>
 
   <!-- ── CTA band ─────────────────────────────────────── -->
-  <CtaBand kicker="Next step">
-    <Fragment slot="title">Two weeks to a roadmap. Eight weeks to production<span class="gdot">.</span></Fragment>
-    <Fragment slot="lede">The first conversation is free — and you keep the roadmap either way.</Fragment>
+  <CtaBand note="">
+    <Fragment slot="title">The first conversation is free. The roadmap is yours either way<span class="gdot">.</span></Fragment>
     <Fragment slot="actions">
-      <a class="btn btn-gold" href={BOOK_HREF}>Book a discovery call <span class="arr">→</span></a>
-      <a class="btn btn-ghost-dark" href="/get-in-touch/">Get in touch</a>
+      <a class="btn btn-gold" href={BOOK_HREF}>{CTA_PRIMARY} <span class="arr">→</span></a>
     </Fragment>
   </CtaBand>
 </BaseV2>
@@ -126,25 +151,33 @@ import { BOOK_HREF, problemStats, framework, industries } from '../data';
     overflow: hidden;
   }
   .hero h1 { color: #fff; max-width: 900px; margin-bottom: 26px; }
+  .hero h1 em { white-space: nowrap; }
   .hero .lede { color: var(--pale); max-width: 620px; margin-bottom: 38px; }
+  .hero-note { color: var(--pale); font-size: 14px; margin-top: 16px; }
 
   /* ── Sector strip ── */
   .sectors { background: var(--deep); padding: 18px 0; }
   .sect-in { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
   .sect-in span {
+    display: inline-block;
     font-size: 12.5px;
     font-weight: 600;
     letter-spacing: 0.13em;
     text-transform: uppercase;
     color: var(--pale);
-    transition: color 0.6s var(--ease);
+    transition: color 0.6s var(--ease), transform var(--dur-micro) var(--ease);
   }
   .sect-in span.lit { color: var(--gold); }
+  .sect-in span:hover {
+    color: var(--gold);
+    transform: translateY(-2px) scale(1.06);
+    transition: color var(--dur-micro) var(--ease), transform var(--dur-micro) var(--ease);
+  }
 
   /* ── Problem ── */
-  .problem { padding: 110px 0 100px; }
+  .problem { background: var(--pine); padding: 110px 0 100px; }
   .problem .kicker { margin-bottom: 18px; }
-  .problem .h2 { max-width: 720px; margin-bottom: 18px; }
+  .problem .h2 { max-width: 860px; margin-bottom: 18px; }
   .prob-lede { max-width: 680px; margin-bottom: 56px; }
   .stats {
     display: grid;
@@ -152,10 +185,12 @@ import { BOOK_HREF, problemStats, framework, industries } from '../data';
     gap: 22px;
   }
   .stat {
-    background: var(--bone);
+    background: var(--card-glass);
+    border: 1px solid var(--line-ink);
     border-radius: var(--r-card);
     padding: 34px 32px;
   }
+  .stat b { color: var(--text-hi); }
   .stat b {
     display: block;
     font-family: var(--serif);
@@ -173,23 +208,37 @@ import { BOOK_HREF, problemStats, framework, industries } from '../data';
     transform: scaleX(0);
     transform-origin: left;
   }
-  .stat span { color: var(--steel); font-size: 15px; line-height: 1.5; display: block; }
+  .stat span { color: var(--pale); font-size: 15px; line-height: 1.5; display: block; }
 
-  /* ── Framework ── */
-  .framework { padding: 20px 0 110px; }
-  .framework .kicker { margin-bottom: 14px; }
+  /* ── Framework (dark anchor) ── */
+  .framework { background: var(--deep); padding: 100px 0 110px; }
+  .framework .h2 { color: #fff; }
   .fw-mark { margin-bottom: 18px; }
-  .fw-lede { max-width: 680px; margin-bottom: 48px; }
+  .fw-mark em { color: var(--gold); }
+  .fw-lede { color: var(--pale); max-width: 680px; margin-bottom: 48px; }
   .fw-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; align-items: stretch; }
-  .fw { display: flex; flex-direction: column; padding: 34px 30px; }
-  .fw:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(13, 26, 26, 0.07); }
+  .fw {
+    display: flex;
+    flex-direction: column;
+    padding: 34px 30px;
+    background: rgba(255, 255, 255, 0.045);
+    border-color: var(--line-ink);
+  }
+  .fw h3 { color: #fff; }
+  .fw .body-s { color: var(--pale); }
+  .fw { transition: transform var(--dur-micro) var(--ease), box-shadow var(--dur-micro) var(--ease), border-color var(--dur-micro) var(--ease); }
+  .fw:hover {
+    transform: translateY(-2px);
+    border-color: var(--gold-2);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+  }
   .fw-top {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    margin-bottom: 48px;
+    margin-bottom: 36px;
   }
-  .fw-n { font-size: 44px; }
+  .fw-n { font-size: 44px; color: var(--gold); }
   .fw-when {
     font-size: 12px;
     font-weight: 600;
@@ -198,8 +247,8 @@ import { BOOK_HREF, problemStats, framework, industries } from '../data';
     color: var(--steel);
   }
   .fw h3 { margin-bottom: 10px; }
-  .fw.hot { border-color: var(--gold-2); box-shadow: 0 12px 32px rgba(13, 26, 26, 0.06); }
-  .fw-gets { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .fw > .body-s { margin-bottom: 20px; }
+  .fw-gets { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line-ink); }
   .fw-gets-label {
     display: block;
     font-size: 11.5px;
@@ -209,37 +258,60 @@ import { BOOK_HREF, problemStats, framework, industries } from '../data';
     color: var(--gold-2);
     margin-bottom: 6px;
   }
-  .fw-price {
-    margin-top: auto;
-    padding-top: 22px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--steel);
+  .fw-note { color: var(--steel); font-size: 14.5px; max-width: 640px; margin-top: 28px; }
+
+  /* ── What it feels like ── */
+  .feels { padding: 100px 0 110px; }
+  .feels .kicker { margin-bottom: 16px; }
+  .feels .h2 { max-width: 720px; margin-bottom: 18px; }
+  .feels-lede { max-width: 640px; margin-bottom: 48px; }
+  .feel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; align-items: stretch; }
+  .feel {
+    position: relative;
+    padding: 32px 28px;
+    transition: transform var(--dur-micro) var(--ease), box-shadow var(--dur-micro) var(--ease), border-color var(--dur-micro) var(--ease);
+  }
+  .feel:hover {
+    transform: translateY(-2px);
+    border-color: var(--gold-2);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+  }
+  .feel-i { display: block; font-size: 30px; color: var(--gold); margin-bottom: 24px; }
+  .feel h3 { margin-bottom: 8px; }
+  .feel:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    top: 38px;
+    right: -30px;
+    color: var(--gold-2);
+    font-size: 19px;
+    pointer-events: none;
   }
 
-  /* ── Industries ── */
-  .industries { background: var(--bone); padding: 100px 0 110px; }
-  .industries .kicker { margin-bottom: 16px; }
-  .industries .h2 { margin-bottom: 44px; }
-  .ind-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-  .ind {
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: var(--r-card);
-    padding: 28px 26px;
+  /* ── Founder note ── */
+  .note { background: var(--moss); padding: 100px 0 110px; }
+  .note-card { max-width: 820px; margin: 0 auto; padding: 48px; }
+  .note .kicker { margin-bottom: 20px; }
+  .note-body {
+    font-family: var(--serif);
+    font-weight: 460;
+    font-size: 21px;
+    line-height: 1.55;
+    color: var(--text-hi);
+    margin-bottom: 26px;
   }
-  .ind h3 { font-size: 18px; margin-bottom: 8px; }
+  .note-link { font-weight: 600; color: #fff; text-decoration: none; }
+  .note-link:hover { color: var(--pale); }
 
   /* ── Responsive ── */
   @media (max-width: 900px) {
     .hero { padding: 84px 0 72px; }
-    .stats, .fw-grid, .ind-grid { grid-template-columns: 1fr; }
+    .stats, .fw-grid, .feel-grid { grid-template-columns: 1fr; }
+    .feel:not(:last-child)::after { content: '↓'; top: auto; bottom: -32px; right: 50%; }
     .sect-in { justify-content: flex-start; row-gap: 8px; }
+    .note-card { padding: 32px 24px; }
   }
   @media (max-width: 640px) {
-    .problem, .framework, .industries { padding-block: 72px; }
-    .framework { padding-top: 0; }
+    .problem, .framework, .feels, .note { padding-block: 72px; }
   }
 </style>

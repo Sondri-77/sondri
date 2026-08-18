@@ -8,7 +8,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 <nav aria-label="Primary">
   <div class="nav-in wrap">
     <a class="logo" href="/" aria-label="Sondri — home">
-      <img src="/brand/wordmark-bone.png" alt="Sondri" width="135" height="32" />
+      <img src="/brand/lockup-wordmark.png" alt="Sondri" width="111" height="42" />
     </a>
 
     <div class="links" id="nav-links">
@@ -40,31 +40,34 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 </nav>
 
 <script>
-  const toggle = document.getElementById('nav-toggle')!;
-  const panel = document.getElementById('nav-panel')!;
-  const nav = toggle.closest('nav')!;
+  document.addEventListener('astro:page-load', () => {
+    const toggle = document.getElementById('nav-toggle');
+    const panel = document.getElementById('nav-panel');
+    const nav = toggle?.closest('nav');
+    if (!toggle || !panel || !nav) return;
 
-  const setOpen = (open: boolean) => {
-    nav.classList.toggle('open', open);
-    toggle.setAttribute('aria-expanded', String(open));
-    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-    document.documentElement.style.overflow = open ? 'hidden' : '';
-    if (!open) toggle.focus();
-  };
+    const setOpen = (open: boolean) => {
+      nav.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      document.documentElement.style.overflow = open ? 'hidden' : '';
+      if (!open) toggle.focus();
+    };
 
-  toggle.addEventListener('click', () => setOpen(!nav.classList.contains('open')));
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && nav.classList.contains('open')) setOpen(false);
+    toggle.addEventListener('click', () => setOpen(!nav.classList.contains('open')));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && nav.classList.contains('open')) setOpen(false);
+    });
+    document.addEventListener('click', (e) => {
+      if (nav.classList.contains('open') && !nav.contains(e.target as Node)) setOpen(false);
+    });
+    panel.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+
+    /* Hairline shadow once the page scrolls under the nav. */
+    const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
   });
-  document.addEventListener('click', (e) => {
-    if (nav.classList.contains('open') && !nav.contains(e.target as Node)) setOpen(false);
-  });
-  panel.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
-
-  /* Hairline shadow once the page scrolls under the nav. */
-  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
 </script>
 
 <style>
@@ -72,7 +75,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     position: sticky;
     top: 0;
     z-index: 50;
-    background: rgba(13, 26, 26, 0.9);
+    background: rgba(8, 31, 31, 0.9);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     transition: box-shadow 0.25s var(--ease);
@@ -85,7 +88,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     justify-content: space-between;
     gap: 24px;
     padding-block: 16px;
-    max-width: 1280px;
+    max-width: var(--wrap);
   }
 
   .logo { display: flex; align-items: center; }
@@ -93,17 +96,34 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 
   .links { display: flex; gap: 32px; }
   .nav-link {
+    position: relative;
     color: var(--pale);
-    font-size: 15px;
-    font-weight: 500;
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     text-decoration: none;
     padding: 10px 0;
     transition: color var(--dur-micro) var(--ease);
   }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 4px;
+    height: 2px;
+    background: var(--gold-2);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s var(--ease);
+  }
   .nav-link:hover { color: #fff; }
-  .nav-link.active { color: #fff; box-shadow: 0 2px 0 var(--gold-2); }
+  .nav-link:hover::after { transform: scaleX(1); }
+  .nav-link.active { color: #fff; }
+  .nav-link.active::after { transform: scaleX(1); }
 
-  .book { padding: 11px 22px; font-size: 14px; }
+  .book { padding: 11px 22px; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; }
 
   #nav-toggle {
     display: none;
@@ -137,12 +157,15 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
   }
   .panel-link {
     color: var(--pale);
-    font-size: 18px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     text-decoration: none;
     padding: 13px 0;
     border-bottom: 1px solid var(--line-ink);
   }
+  .panel-book { letter-spacing: 0.08em; text-transform: uppercase; }
   .panel-link.active { color: #fff; }
   .panel-book { align-self: flex-start; margin-top: 20px; }
 

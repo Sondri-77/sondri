@@ -1,18 +1,20 @@
 ---
-interface Props {
-  kicker: string;
-}
-const { kicker } = Astro.props;
 ---
 
 <section class="hero-ink page-hero" aria-label="Introduction">
   <canvas class="glyph-field" data-variant="calm" aria-hidden="true"></canvas>
   <div class="hero-scrim" aria-hidden="true"></div>
   <div class="wrap">
-    <p class="kicker anim a1">{kicker}</p>
     <h1 class="display-sm anim a2"><slot name="title" /></h1>
     {Astro.slots.has('lede') && (
       <p class="lede anim a3"><slot name="lede" /></p>
     )}
+    {Astro.slots.has('actions') && (
+      <div class="ctas anim a4"><slot name="actions" /></div>
+    )}
   </div>
 </section>
+
+<style>
+  .ctas { margin-top: 34px; }
+</style>

@@ -1,0 +1,59 @@
+---
+import BaseV2 from '../layouts/BaseV2.astro';
+import PageHero from '../components/v2/PageHero.astro';
+import { mailto, BOOK_HREF } from '../data';
+---
+
+<BaseV2
+  title="About — Sondri"
+  description="Built by operators who've shipped AI into the real world. A small senior core team with a global specialist network, building the AI working model for the enterprises that move real money."
+>
+  <PageHero>
+    <Fragment slot="title">
+      Built by operators who've shipped AI into the <em>real</em> <span class="nb">world<span class="gdot hero-dot">.</span></span>
+    </Fragment>
+    <Fragment slot="lede">
+      A small senior core team with a global specialist network. We put working AI inside the
+      enterprises that move real money — and we're hiring the first ten people who will shape how.
+    </Fragment>
+    <Fragment slot="actions">
+      <a class="btn btn-gold" href={BOOK_HREF}>Book a Discovery Sprint <span class="arr">→</span></a>
+    </Fragment>
+  </PageHero>
+
+  <!-- ── Our mission ──────────────────────────────────── -->
+  <section class="mission">
+    <div class="wrap">
+      <div data-reveal>
+        <h2 class="h2">Our mission<span class="gdot">.</span></h2>
+        <p class="mission-body">
+          Great software shouldn't require an enterprise budget. Our mission is to give small
+          and midsize businesses the technology muscle the giants take for granted — built into
+          the systems they already run, proven on the numbers they already track.
+        </p>
+        <p class="mission-hiring">
+          We're hiring the first ten people who will shape how.
+          <a href={mailto('Founding-team application')}>Careers →</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseV2>
+
+<style>
+  .mission { background: var(--pine); padding: 84px 0 110px; }
+  .mission .h2 { margin-bottom: 28px; }
+  .mission-body {
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--pale);
+    max-width: 820px;
+  }
+  .mission-hiring { color: var(--steel); font-size: 15.5px; margin-top: 36px; }
+  .mission-hiring a { color: #fff; font-weight: 600; text-decoration: none; }
+  .mission-hiring a:hover { color: var(--pale); }
+
+  @media (max-width: 640px) {
+    .mission { padding-block: 64px 80px; }
+  }
+</style>

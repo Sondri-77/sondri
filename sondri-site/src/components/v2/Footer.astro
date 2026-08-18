@@ -1,5 +1,5 @@
 ---
-import { navV2, TAGLINE, CONTACT_EMAIL, mailto } from '../../data';
+import { navV2, TAGLINE, mailto } from '../../data';
 
 const year = new Date().getFullYear();
 ---
@@ -8,7 +8,7 @@ const year = new Date().getFullYear();
   <div class="wrap">
     <div class="top">
       <div>
-        <img class="f-logo" src="/brand/wordmark-bone.png" alt="Sondri" width="152" height="36" />
+        <img class="f-logo" src="/brand/lockup.png" alt="Sondri" width="152" height="45" />
         <p class="f-tag">{TAGLINE}</p>
       </div>
       <div class="cols">
@@ -18,16 +18,16 @@ const year = new Date().getFullYear();
         </div>
         <div>
           <p class="col-h">Contact</p>
-          <a href={mailto('Hello Sondri')}>{CONTACT_EMAIL}</a>
-          <a href={mailto('Investor inquiry')}>Investor inquiries</a>
-          <a href={mailto('Customer pilot')}>Customer pilots</a>
-          <a href={mailto('Founding-team application')}>Join the first ten</a>
+          <a href="/get-in-touch/">Get in Touch</a>
+          <a href={mailto('Investor inquiry')}>Investor Inquiries</a>
+          <a href={mailto('Customer pilot')}>Customer Pilots</a>
+          <a href={mailto('Founding-team application')}>Careers</a>
         </div>
       </div>
     </div>
     <div class="bottom">
       <span>© Sondri {year}</span>
-      <a class="ds" href="/pay/">Pay an invoice</a>
+      <a class="ds" href="/pay/">Pay an Invoice</a>
     </div>
   </div>
 </footer>

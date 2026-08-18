@@ -5,7 +5,7 @@
    Static single frame under reduced motion; pauses off-screen and on
    hidden tabs. */
 
-const STOPS = ['#2A5050', '#6F9292', '#AECCCC', '#E6F2F0', '#FFCC78', '#F7C062'];
+const STOPS = ['#174040', '#6A8988', '#AAC2C2', '#E6F2F0', '#FDB343', '#F5A71E'];
 const COLORS = 40; // interpolated palette size
 const GLYPHS = ['·', '/', '–', '\\', '|', '=', '+'];
 const CELL = 14; // px per grid cell

@@ -1,8 +1,12 @@
 ---
+import { RISK_REVERSAL } from '../../data';
+
 interface Props {
   kicker?: string;
+  /** Small line under the buttons. Defaults to the risk-reversal; pass '' to hide. */
+  note?: string;
 }
-const { kicker } = Astro.props;
+const { kicker, note = RISK_REVERSAL } = Astro.props;
 ---
 
 <section class="cta-band">
@@ -11,5 +15,10 @@ const { kicker } = Astro.props;
     <h2 class="h2 cta-title"><slot name="title" /></h2>
     {Astro.slots.has('lede') && <p class="lede cta-lede"><slot name="lede" /></p>}
     <div class="ctas"><slot name="actions" /></div>
+    {note && <p class="cta-note">{note}</p>}
   </div>
 </section>
+
+<style>
+  .cta-note { color: var(--pale); font-size: 14px; margin-top: 18px; }
+</style>
