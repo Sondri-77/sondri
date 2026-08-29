@@ -22,6 +22,9 @@
   --line-ink: rgba(230, 242, 240, 0.18);
 
   --serif: 'Fraunces Variable', Georgia, serif;
+  /* Display face for the wordmark and H1s. Swap candidates live in
+     pixel-fonts.css; try them live at /styleguide. */
+  --font-display: var(--serif);
   --sans: 'Hanken Grotesk Variable', system-ui, sans-serif;
 
   --wrap: 1160px;
@@ -58,7 +61,7 @@ body {
 /* ── Type ───────────────────────────────────────────── */
 
 h1, h2, .h-serif {
-  font-family: var(--serif);
+  font-family: var(--font-display);
   font-weight: 560;
   letter-spacing: -0.015em;
   font-variation-settings: 'opsz' 100;
