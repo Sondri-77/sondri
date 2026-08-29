@@ -384,9 +384,13 @@ const scale = [
     .sg-toggle input { accent-color: var(--gold-2); width: 15px; height: 15px; cursor: pointer; }
     .sg-grid {
       display: grid;
-      /* Tiles widen with the type so long names never wrap mid-wordmark. */
-      grid-template-columns: repeat(auto-fill, minmax(max(258px, calc(var(--grid-size, 34px) * 6.2)), 1fr));
-      gap: 16px;
+      /* Tiles are only as wide as the wordmark needs, so raising the size costs
+         columns as slowly as possible. 4.5em ≈ "Sondri." across these faces. */
+      grid-template-columns: repeat(auto-fill, minmax(max(150px, calc(var(--grid-size, 34px) * 4.5)), 1fr));
+      gap: 8px;
+      /* Break out of the 1160px text measure — the grid wants every pixel. */
+      width: min(1600px, calc(100vw - 2 * var(--pad-x)));
+      margin-inline: calc((100% - min(1600px, 100vw - 2 * var(--pad-x))) / 2);
     }
     .sg-tile {
       position: relative;
@@ -396,6 +400,9 @@ const scale = [
       border: 1px solid var(--line-ink);
       border-radius: var(--r-card);
       overflow: hidden;
+      /* Lets the wordmark size itself against the tile, so it never overflows
+         however wide a given face runs. */
+      container-type: inline-size;
       transition: border-color var(--dur-micro) var(--ease), transform var(--dur-micro) var(--ease);
     }
     .sg-tile:hover { border-color: var(--steel); transform: translateY(-2px); }
@@ -405,22 +412,22 @@ const scale = [
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: calc(var(--grid-size, 34px) * 2.6 + 26px);
-      padding: 26px 20px;
-      font-size: var(--grid-size, 34px);
-      line-height: 1.15;
+      min-height: calc(var(--grid-size, 34px) * 1.5 + 16px);
+      padding: 8px 10px;
+      font-size: min(var(--grid-size, 34px), 20cqw);
+      line-height: 1.1;
       color: var(--text-hi);
       text-align: center;
       text-transform: var(--grid-case, none);
-      word-break: break-word;
+      white-space: nowrap;
       transition: font-size var(--dur-micro) var(--ease);
     }
     .sg-tile figcaption {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      padding: 11px 14px;
+      gap: 8px;
+      padding: 6px 10px;
       border-top: 1px solid var(--line);
       background: rgba(255, 255, 255, 0.025);
     }
@@ -429,7 +436,7 @@ const scale = [
       border: 0;
       padding: 0;
       font: inherit;
-      font-size: 13.5px;
+      font-size: 12px;
       color: var(--pale);
       cursor: pointer;
       text-align: left;
@@ -445,13 +452,13 @@ const scale = [
     }
     .sg-star {
       position: absolute;
-      top: 9px;
-      right: 9px;
+      top: 5px;
+      right: 5px;
       z-index: 2;
       display: grid;
       place-items: center;
-      width: 30px;
-      height: 30px;
+      width: 24px;
+      height: 24px;
       border: 0;
       border-radius: 50%;
       background: rgba(3, 25, 25, 0.6);
