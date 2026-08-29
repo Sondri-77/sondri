@@ -108,6 +108,20 @@ const scale = [
       </p>
 
       <div class="sg-grid-bar">
+        <label class="sg-field sg-field-slider">
+          <span class="sg-field-label">Size <em id="grid-size-val">34</em>px</span>
+          <input id="grid-size" type="range" min="14" max="96" step="1" value="34" />
+        </label>
+
+        <label class="sg-field">
+          <span class="sg-field-label">Case</span>
+          <select id="grid-case" aria-label="Letter case for the wordmark grid">
+            <option value="none">As written</option>
+            <option value="uppercase">UPPERCASE</option>
+            <option value="lowercase">lowercase</option>
+          </select>
+        </label>
+
         <label class="sg-toggle">
           <input type="checkbox" id="fav-only" />
           <span>Starred only</span>
@@ -370,7 +384,8 @@ const scale = [
     .sg-toggle input { accent-color: var(--gold-2); width: 15px; height: 15px; cursor: pointer; }
     .sg-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(258px, 1fr));
+      /* Tiles widen with the type so long names never wrap mid-wordmark. */
+      grid-template-columns: repeat(auto-fill, minmax(max(258px, calc(var(--grid-size, 34px) * 6.2)), 1fr));
       gap: 16px;
     }
     .sg-tile {
@@ -390,13 +405,15 @@ const scale = [
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 132px;
+      min-height: calc(var(--grid-size, 34px) * 2.6 + 26px);
       padding: 26px 20px;
-      font-size: 34px;
+      font-size: var(--grid-size, 34px);
       line-height: 1.15;
       color: var(--text-hi);
       text-align: center;
+      text-transform: var(--grid-case, none);
       word-break: break-word;
+      transition: font-size var(--dur-micro) var(--ease);
     }
     .sg-tile figcaption {
       display: flex;
@@ -610,6 +627,36 @@ const scale = [
           document.getElementById('sg-bar')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       });
+
+      // Grid size + case, independent of the switcher above.
+      const GRID_KEY = 'sondri-styleguide-grid';
+      const gridSize = document.getElementById('grid-size') as HTMLInputElement | null;
+      const gridCase = document.getElementById('grid-case') as HTMLSelectElement | null;
+      const gridSizeVal = document.getElementById('grid-size-val');
+
+      const applyGrid = () => {
+        if (!grid || !gridSize || !gridCase) return;
+        grid.style.setProperty('--grid-size', `${gridSize.value}px`);
+        grid.style.setProperty('--grid-case', gridCase.value);
+        if (gridSizeVal) gridSizeVal.textContent = gridSize.value;
+        try {
+          localStorage.setItem(GRID_KEY, JSON.stringify({ size: gridSize.value, casing: gridCase.value }));
+        } catch {
+          /* private browsing — grid settings just won't persist */
+        }
+      };
+
+      try {
+        const savedGrid = JSON.parse(localStorage.getItem(GRID_KEY) || '{}');
+        if (savedGrid.size && gridSize) gridSize.value = savedGrid.size;
+        if (savedGrid.casing && gridCase) gridCase.value = savedGrid.casing;
+      } catch {
+        /* ignore malformed state */
+      }
+
+      gridSize?.addEventListener('input', applyGrid);
+      gridCase?.addEventListener('change', applyGrid);
+      applyGrid();
 
       favOnly?.addEventListener('change', paintFavs);
       favClear?.addEventListener('click', () => {

@@ -4,6 +4,10 @@
 </div>
 
 <style>
+  /* `display: flex` below outranks the browser's [hidden] rule, so without this
+     the notice ignores both the initial hidden state and the dismiss click. */
+  .pn[hidden] { display: none; }
+
   .pn {
     position: fixed;
     left: 24px;
@@ -58,7 +62,8 @@
     } catch {
       /* storage unavailable — show the notice */
     }
-    if (!acked) el.hidden = false;
+    el.hidden = acked;
+    // `once` keeps client-side navigation from stacking a listener per page view.
     el.querySelector('[data-dismiss]')?.addEventListener('click', () => {
       el.hidden = true;
       try {
@@ -66,7 +71,7 @@
       } catch {
         /* ignore */
       }
-    });
+    }, { once: true });
   }
   }
 </script>
