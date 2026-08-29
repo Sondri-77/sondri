@@ -42,3 +42,20 @@ below ~20px, and several have partial punctuation and no italics.
 vendor licence covers **web embedding** at our expected traffic — desktop-only
 licences are common and do not permit `@font-face` use. Per-family readme and
 licence files are inside each folder where the vendor supplied one.
+
+## Installing them on your Mac
+
+`rename-for-desktop.py` stages desktop copies with every family renamed to a
+`Sondri ` prefix — `Sondri Pixel Quest`, `Sondri Orpix`, and so on. Typing
+"Sondri" in any app's font search then surfaces the whole library at once, which
+is the only filter that works everywhere (Adobe apps ignore Font Book
+collections entirely).
+
+```bash
+python3 -m venv /tmp/ft && /tmp/ft/bin/pip install fonttools
+/tmp/ft/bin/python rename-for-desktop.py /tmp/sondri-fonts
+cp /tmp/sondri-fonts/*.otf ~/Library/Fonts/
+```
+
+The renaming touches only these desktop copies. Vendor originals in this folder
+and the web build in `public/fonts` keep their real family names.

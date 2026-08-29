@@ -99,6 +99,50 @@ const scale = [
       </div>
     </section>
 
+    <!-- ── Wordmark grid ───────────────────────────── -->
+    <section class="sg-sec" id="grid">
+      <h2 class="sg-sec-title">Every face at once</h2>
+      <p class="body-s sg-note">
+        The wordmark in all {displayFonts.length} candidates. Star the ones worth a second look —
+        your picks are remembered. Click any name to load that face into the switcher above.
+      </p>
+
+      <div class="sg-grid-bar">
+        <label class="sg-toggle">
+          <input type="checkbox" id="fav-only" />
+          <span>Starred only</span>
+        </label>
+        <span class="body-s" id="fav-count">0 starred</span>
+        <button class="sg-reset" id="fav-clear" type="button">Clear stars</button>
+      </div>
+
+      <div class="sg-grid" id="wordmark-grid">
+        {displayFonts.map((f) => (
+          <figure class="sg-tile" data-family={f.family}>
+            <button
+              class="sg-star"
+              type="button"
+              data-star={f.family}
+              aria-pressed="false"
+              aria-label={`Star ${f.name}`}
+            >
+              <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+                <path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.58 1.1 6.47L12 17.44 6.2 20.5l1.1-6.47L2.6 9.45l6.5-.95z" />
+              </svg>
+            </button>
+            <div class="sg-tile-mark" style={`font-family:'${f.family}'`}>
+              Sondri<span class="gdot">.</span>
+            </div>
+            <figcaption>
+              <button class="sg-tile-name" type="button" data-load={f.family}>{f.name}</button>
+              <span class="sg-tile-group">{f.group === 'pixel' ? 'Pixel' : 'Display'}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+      <p class="body-s sg-empty" id="fav-empty" hidden>Nothing starred yet.</p>
+    </section>
+
     <!-- ── Type scale ──────────────────────────────── -->
     <section class="sg-sec">
       <h2 class="sg-sec-title">Type scale</h2>
@@ -320,6 +364,88 @@ const scale = [
     .sg-mark { font-size: 54px; line-height: 1; color: var(--text-hi); font-weight: 560; }
     .sg-mark-sm { font-size: 26px; }
 
+    /* ── Wordmark grid ─────────────────────────────── */
+    .sg-grid-bar { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 22px; }
+    .sg-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+    .sg-toggle input { accent-color: var(--gold-2); width: 15px; height: 15px; cursor: pointer; }
+    .sg-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(258px, 1fr));
+      gap: 16px;
+    }
+    .sg-tile {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      background: var(--ink);
+      border: 1px solid var(--line-ink);
+      border-radius: var(--r-card);
+      overflow: hidden;
+      transition: border-color var(--dur-micro) var(--ease), transform var(--dur-micro) var(--ease);
+    }
+    .sg-tile:hover { border-color: var(--steel); transform: translateY(-2px); }
+    .sg-tile.is-fav { border-color: var(--gold-2); }
+    .sg-tile[hidden] { display: none; }
+    .sg-tile-mark {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 132px;
+      padding: 26px 20px;
+      font-size: 34px;
+      line-height: 1.15;
+      color: var(--text-hi);
+      text-align: center;
+      word-break: break-word;
+    }
+    .sg-tile figcaption {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 11px 14px;
+      border-top: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.025);
+    }
+    .sg-tile-name {
+      background: none;
+      border: 0;
+      padding: 0;
+      font: inherit;
+      font-size: 13.5px;
+      color: var(--pale);
+      cursor: pointer;
+      text-align: left;
+      transition: color var(--dur-micro) var(--ease);
+    }
+    .sg-tile-name:hover { color: var(--gold); }
+    .sg-tile-group {
+      font-size: 10.5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--steel);
+      flex-shrink: 0;
+    }
+    .sg-star {
+      position: absolute;
+      top: 9px;
+      right: 9px;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(3, 25, 25, 0.6);
+      cursor: pointer;
+      transition: background var(--dur-micro) var(--ease);
+    }
+    .sg-star svg { fill: none; stroke: var(--steel); stroke-width: 1.6; transition: fill var(--dur-micro) var(--ease), stroke var(--dur-micro) var(--ease); }
+    .sg-star:hover svg { stroke: var(--pale); }
+    .sg-star[aria-pressed='true'] svg { fill: var(--gold-2); stroke: var(--gold-2); }
+    .sg-empty { margin-top: 26px; }
+
     /* ── Type rows ─────────────────────────────────── */
     .sg-rows { display: flex; flex-direction: column; }
     .sg-row {
@@ -432,6 +558,65 @@ const scale = [
       } catch {
         /* ignore malformed state */
       }
+
+      // ── Wordmark grid: starring + filtering ──────────
+      const FAV_KEY = 'sondri-styleguide-favs';
+      const grid = document.getElementById('wordmark-grid');
+      const favOnly = document.getElementById('fav-only') as HTMLInputElement | null;
+      const favCount = document.getElementById('fav-count');
+      const favClear = document.getElementById('fav-clear');
+      const favEmpty = document.getElementById('fav-empty');
+
+      let favs = new Set<string>();
+      try {
+        favs = new Set(JSON.parse(localStorage.getItem(FAV_KEY) || '[]'));
+      } catch {
+        /* ignore malformed state */
+      }
+
+      const paintFavs = () => {
+        let shown = 0;
+        grid?.querySelectorAll<HTMLElement>('.sg-tile').forEach((tile) => {
+          const family = tile.dataset.family || '';
+          const on = favs.has(family);
+          tile.classList.toggle('is-fav', on);
+          tile.querySelector('.sg-star')?.setAttribute('aria-pressed', String(on));
+          const hide = Boolean(favOnly?.checked) && !on;
+          tile.hidden = hide;
+          if (!hide) shown++;
+        });
+        if (favCount) favCount.textContent = `${favs.size} starred`;
+        if (favEmpty) favEmpty.hidden = shown > 0;
+        try {
+          localStorage.setItem(FAV_KEY, JSON.stringify([...favs]));
+        } catch {
+          /* private browsing — stars just won't persist */
+        }
+      };
+
+      grid?.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const star = target.closest<HTMLElement>('[data-star]');
+        if (star) {
+          const family = star.dataset.star!;
+          favs.has(family) ? favs.delete(family) : favs.add(family);
+          paintFavs();
+          return;
+        }
+        const load = target.closest<HTMLElement>('[data-load]');
+        if (load) {
+          select.value = load.dataset.load!;
+          apply();
+          document.getElementById('sg-bar')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+
+      favOnly?.addEventListener('change', paintFavs);
+      favClear?.addEventListener('click', () => {
+        favs.clear();
+        paintFavs();
+      });
+      paintFavs();
 
       select.addEventListener('change', apply);
       track.addEventListener('input', apply);
