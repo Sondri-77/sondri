@@ -28,3 +28,6 @@ _run_logs/
 _run_logs.zip
 .agents/
 skills-lock.json
+
+# local preview clones
+sondri-site-premium-preview/

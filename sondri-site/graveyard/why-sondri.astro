@@ -1,0 +1,169 @@
+---
+import BaseV2 from '../layouts/BaseV2.astro';
+import PageHero from '../components/v2/PageHero.astro';
+import CtaBand from '../components/v2/CtaBand.astro';
+import { whyNow, bedrock, BOOK_HREF, mailto } from '../data';
+---
+
+<BaseV2
+  title="Why Sondri — Enterprise AI made simple"
+  description="Most teams don't need to understand AI. They need it to work. Why Sondri exists, why now, and the principles every engagement runs on."
+>
+  <PageHero kicker="Why Sondri">
+    <Fragment slot="title">You don't need to understand AI. You need it to <span class="nb">work<span class="gdot hero-dot">.</span></span></Fragment>
+    <Fragment slot="lede">
+      Powerful solutions don't have to feel powerful. The best ones feel obvious.
+    </Fragment>
+  </PageHero>
+
+  <!-- ── The philosophy ───────────────────────────────── -->
+  <section class="phil">
+    <div class="wrap phil-grid">
+      <div data-reveal>
+        <p class="kicker">01 <span class="k-dot">·</span> Our philosophy</p>
+        <h2 class="h2">Simple is a discipline, not a shortcut<span class="gdot">.</span></h2>
+      </div>
+      <div class="phil-body" data-reveal data-reveal-group>
+        <p>
+          Enterprise AI has an overwhelm problem. Platforms to evaluate, models to compare,
+          consultants speaking a language your operators don't. Somewhere in that noise, the
+          actual problem — the slow workflow, the leaking margin, the backlog — goes unsolved.
+        </p>
+        <p>
+          We work the other way around. We start from the problem, build the solution into the
+          systems you already run, and keep every complex decision on our side of the table.
+          You never evaluate a model. You never adopt a platform. You see a workflow that used
+          to be slow, running fast — and a number on the P&amp;L that moved.
+        </p>
+        <p class="phil-punch">The complexity is real. It's just ours to carry, not yours.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Why now ──────────────────────────────────────── -->
+  <section class="now">
+    <div class="wrap">
+      <div data-reveal>
+        <p class="kicker">02 <span class="k-dot">·</span> Why now</p>
+        <h2 class="h2">Three things changed. Together they changed everything<span class="gdot">.</span></h2>
+      </div>
+      <div class="now-grid" data-reveal data-reveal-group>
+        {whyNow.map((w, i) => (
+          <div class="card now-card">
+            <span class="now-i h-serif">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{w.t}</h3>
+            <p class="body-s">{w.b}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Principles ───────────────────────────────────── -->
+  <section class="principles">
+    <div class="wrap">
+      <div data-reveal>
+        <p class="kicker">03 <span class="k-dot">·</span> How we operate</p>
+        <h2 class="h2">True on every engagement, at every size<span class="gdot">.</span></h2>
+      </div>
+      <div class="pr-grid" data-reveal data-reveal-group>
+        {bedrock.map((b) => (
+          <div class="prin">
+            <span class="prin-dot" aria-hidden="true"></span>
+            <h3>{b.t}</h3>
+            <p class="body-s">{b.b}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Founder note ─────────────────────────────────── -->
+  <section class="note">
+    <div class="wrap">
+      <div class="card note-card" data-reveal>
+        <p class="kicker">A note from the founders</p>
+        <p class="note-body">
+          "We started Sondri because we kept watching the same movie: a capable team, a real
+          problem, and eighteen months of AI pilots that never shipped. The technology was never
+          the issue — the overwhelm was. So we built the company we wished existed: one that
+          shows up, solves the problem simply, and proves it on the number you already track.
+          If that's the kind of partner you've been looking for, we'd love to talk."
+        </p>
+        <a class="note-link" href={mailto('Talk to a founder — Sondri')}>Talk to a founder →</a>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand kicker="Next step">
+    <Fragment slot="title">See what simple looks like on your problem<span class="gdot">.</span></Fragment>
+    <Fragment slot="lede">The first conversation is free — and you keep the roadmap either way.</Fragment>
+    <Fragment slot="actions">
+      <a class="btn btn-gold" href={BOOK_HREF}>Book a discovery call <span class="arr">→</span></a>
+      <a class="btn btn-ghost-dark" href="/get-in-touch/">Get in touch</a>
+    </Fragment>
+  </CtaBand>
+</BaseV2>
+
+<style>
+  /* ── Philosophy ── */
+  .phil { padding: 96px 0; }
+  .phil-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 64px; align-items: start; }
+  .phil .kicker { margin-bottom: 16px; }
+  .phil-body p { color: var(--slate); font-size: 17px; line-height: 1.7; margin-bottom: 22px; }
+  .phil-punch {
+    font-family: var(--serif);
+    font-weight: 560;
+    font-size: 24px;
+    line-height: 1.35;
+    color: var(--ink) !important;
+    padding-top: 6px;
+  }
+
+  /* ── Why now ── */
+  .now { background: var(--bone); padding: 96px 0; }
+  .now .kicker { margin-bottom: 16px; }
+  .now .h2 { max-width: 760px; margin-bottom: 44px; }
+  .now-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .now-card { padding: 32px 28px; }
+  .now-i { display: block; font-size: 30px; color: var(--gold-2); margin-bottom: 40px; }
+  .now-card h3 { margin-bottom: 8px; }
+
+  /* ── Principles ── */
+  .principles { padding: 96px 0; }
+  .principles .kicker { margin-bottom: 16px; }
+  .principles .h2 { margin-bottom: 44px; }
+  .pr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  .prin-dot {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gold-2);
+    margin-bottom: 14px;
+  }
+  .prin h3 { margin-bottom: 8px; }
+
+  /* ── Founder note ── */
+  .note { padding: 0 0 110px; }
+  .note-card { max-width: 820px; margin: 0 auto; padding: 48px; }
+  .note .kicker { margin-bottom: 20px; }
+  .note-body {
+    font-family: var(--serif);
+    font-weight: 460;
+    font-size: 21px;
+    line-height: 1.55;
+    color: var(--ink);
+    margin-bottom: 26px;
+  }
+  .note-link { font-weight: 600; color: var(--ink); text-decoration: none; }
+  .note-link:hover { color: var(--slate); }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .phil-grid { grid-template-columns: 1fr; gap: 32px; }
+    .now-grid, .pr-grid { grid-template-columns: 1fr; }
+    .phil, .now, .principles { padding-block: 64px; }
+    .note-card { padding: 32px 24px; }
+  }
+</style>

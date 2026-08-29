@@ -1,0 +1,78 @@
+---
+import BaseV2 from '../layouts/BaseV2.astro';
+import PageHero from '../components/v2/PageHero.astro';
+import { contactSteps, BOOK_HREF, CTA_PRIMARY, RISK_REVERSAL } from '../data';
+---
+
+<BaseV2
+  title="Get in Touch — Sondri"
+  description="Talk to a Sondri founder. Thirty minutes, straight answers, and a free discovery session if there's a case."
+>
+  <PageHero>
+    <Fragment slot="title">Talk to a <span class="nb">founder<span class="gdot hero-dot">.</span></span></Fragment>
+    <Fragment slot="lede">
+      No sales team, no qualification form. You'll talk to the people who build the software,
+      and you'll get a straight answer about whether there's a case.
+    </Fragment>
+  </PageHero>
+
+  <!-- ── What happens next ────────────────────────────── -->
+  <section class="steps">
+    <div class="wrap">
+      <div data-reveal>
+        <h2 class="h2">Three steps. The first two are free<span class="gdot">.</span></h2>
+      </div>
+      <div class="step-grid" data-reveal data-reveal-group>
+        {contactSteps.map((s) => (
+          <div class="card cstep">
+            <span class="cstep-i h-serif">{s.i}</span>
+            <h3>{s.t}</h3>
+            <p class="body-s">{s.b}</p>
+          </div>
+        ))}
+      </div>
+      <div class="ctas steps-cta" data-reveal>
+        <a class="btn btn-gold" href={BOOK_HREF}>{CTA_PRIMARY} <span class="arr">→</span></a>
+      </div>
+      <p class="steps-note" data-reveal>{RISK_REVERSAL}</p>
+      <p class="pay-note" data-reveal>
+        Existing customer settling an invoice? <a href="/pay/">Pay an Invoice →</a>
+      </p>
+    </div>
+  </section>
+</BaseV2>
+
+<style>
+  /* ── Steps (dark anchor) ── */
+  .steps { background: var(--deep); padding: 80px 0 110px; }
+  .steps .h2 { color: #fff; margin-bottom: 44px; }
+  .step-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; align-items: stretch; }
+  .cstep {
+    padding: 32px 28px;
+    background: rgba(255, 255, 255, 0.045);
+    border-color: var(--line-ink);
+    transition: transform var(--dur-micro) var(--ease), box-shadow var(--dur-micro) var(--ease), border-color var(--dur-micro) var(--ease);
+  }
+  .cstep:hover {
+    transform: translateY(-2px);
+    border-color: var(--gold-2);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+  }
+  .cstep-i { display: block; font-size: 34px; color: var(--gold); margin-bottom: 18px; }
+  .cstep h3 { color: #fff; margin-bottom: 8px; }
+  .cstep .body-s { color: var(--pale); }
+
+  .steps-cta { margin-top: 44px; }
+  .steps-note { color: var(--pale); font-size: 14px; margin-top: 16px; }
+
+  .pay-note { color: var(--steel); font-size: 14.5px; margin-top: 34px; }
+  .pay-note a { color: var(--pale); font-weight: 600; text-decoration: none; }
+  .pay-note a:hover { color: #fff; }
+
+  @media (max-width: 900px) {
+    .step-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .steps { padding-block: 64px 80px; }
+  }
+</style>

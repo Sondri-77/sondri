@@ -1,92 +1,59 @@
 ---
-import Base from '../layouts/Base.astro';
-import { perks } from '../data';
+import BaseV2 from '../layouts/BaseV2.astro';
+import PageHero from '../components/v2/PageHero.astro';
+import { mailto, BOOK_HREF } from '../data';
 ---
 
-<Base
+<BaseV2
   title="About — Sondri"
-  description="Built by operators who've shipped AI into the real world. A small senior core team with a global specialist network — hiring the first ten people who will shape how."
+  description="Built by operators who've shipped AI into the real world. A small senior core team with a global specialist network, building the AI working model for the enterprises that move real money."
 >
-  <div class="pagepad">
-    <!-- HERO -->
-    <section class="hero">
-      <canvas data-dither="orb" aria-hidden="true"></canvas>
-      <div class="hero-fade" aria-hidden="true"></div>
-      <div class="wrap hero-inner">
-        <span class="kicker">VISION</span>
-        <h1 class="display hero-title" data-words>
-          Built by operators who&rsquo;ve shipped AI into the <em>real world.</em>
-        </h1>
-        <p class="lede hero-lede">
-          A small senior core team with a global specialist network. We put working AI inside
-          the enterprises that move real money &mdash; and we&rsquo;re hiring the first ten
-          people who will shape how.
+  <PageHero>
+    <Fragment slot="title">
+      Built by operators who've shipped AI into the <em>real</em> <span class="nb">world<span class="gdot hero-dot">.</span></span>
+    </Fragment>
+    <Fragment slot="lede">
+      A small senior core team with a global specialist network. We put working AI inside the
+      enterprises that move real money — and we're hiring the first ten people who will shape how.
+    </Fragment>
+    <Fragment slot="actions">
+      <a class="btn btn-gold" href={BOOK_HREF}>Book a Discovery Sprint <span class="arr">→</span></a>
+    </Fragment>
+  </PageHero>
+
+  <!-- ── Our mission ──────────────────────────────────── -->
+  <section class="mission">
+    <div class="wrap">
+      <div data-reveal>
+        <h2 class="h2">Our mission<span class="gdot">.</span></h2>
+        <p class="mission-body">
+          Great software shouldn't require an enterprise budget. Our mission is to give small
+          and midsize businesses the technology muscle the giants take for granted — built into
+          the systems they already run, proven on the numbers they already track.
+        </p>
+        <p class="mission-hiring">
+          We're hiring the first ten people who will shape how.
+          <a href={mailto('Founding-team application')}>Careers →</a>
         </p>
       </div>
-    </section>
-
-    <!-- WHY JOIN -->
-    <section class="reveal join-band">
-      <div class="wrap join-inner">
-        <h2 class="display join-title">
-          Why join now <span class="join-sub">&mdash; FOR THE FIRST TEN</span>
-        </h2>
-        <div class="perks g2">
-          {perks.map((p) => (
-            <div class="perk">
-              <div class="perk-t">{p.t}</div>
-              <p class="perk-b">{p.b}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  </div>
-</Base>
+    </div>
+  </section>
+</BaseV2>
 
 <style>
-  .pagepad { padding-top: 96px; }
-  .hero { position: relative; padding: 50px var(--pad-x) 80px; overflow: hidden; }
-  .hero > canvas {
-    position: absolute;
-    right: -5%;
-    top: 0;
-    width: 46%;
-    height: 100%;
-    opacity: 0.42;
+  .mission { background: var(--pine); padding: 84px 0 110px; }
+  .mission .h2 { margin-bottom: 28px; }
+  .mission-body {
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--pale);
+    max-width: 820px;
   }
-  .hero-fade {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, #0C1A1A 40%, rgba(12,26,26,0.2) 100%);
-  }
-  .hero-inner { position: relative; }
-  .hero-title {
-    font-size: clamp(40px, 6vw, 92px);
-    line-height: 0.98;
-    letter-spacing: -1px;
-    margin-top: 20px;
-    max-width: 16ch;
-  }
-  .hero-lede { max-width: 54ch; margin-top: 28px; }
+  .mission-hiring { color: var(--steel); font-size: 15.5px; margin-top: 36px; }
+  .mission-hiring a { color: #fff; font-weight: 600; text-decoration: none; }
+  .mission-hiring a:hover { color: var(--pale); }
 
-  .join-band { border-top: 1px solid var(--line); background: var(--ink-deep); }
-  .join-inner { padding: 110px var(--pad-x); }
-  .join-title { font-size: clamp(30px, 4vw, 56px); line-height: 1; margin-bottom: 54px; }
-  .join-sub {
-    font-size: 0.4em;
-    color: var(--dim);
-    letter-spacing: 2px;
-    font-family: var(--font-mono);
-    font-weight: 400;
-  }
-  .perks { display: grid; gap: 46px; }
-  .perk { border-top: 1px solid var(--gold); padding-top: 22px; }
-  .perk-t { font-family: var(--font-display); font-size: 26px; color: var(--bone); margin-bottom: 12px; }
-  .perk-b { font-size: 13px; line-height: 1.9; color: var(--clay); max-width: 42ch; }
-
-  @media (max-width: 900px) {
-    .hero > canvas { width: 70%; opacity: 0.25; }
-    .perks { grid-template-columns: 1fr; }
+  @media (max-width: 640px) {
+    .mission { padding-block: 64px 80px; }
   }
 </style>

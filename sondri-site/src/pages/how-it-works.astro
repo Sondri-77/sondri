@@ -1,166 +1,175 @@
 ---
-import Base from '../layouts/Base.astro';
-import { timeline, engine, whyNow, forgeBeats } from '../data';
+import BaseV2 from '../layouts/BaseV2.astro';
+import PageHero from '../components/v2/PageHero.astro';
+import CtaBand from '../components/v2/CtaBand.astro';
+import { timeline, teamModel, faq, BOOK_HREF, CTA_PRIMARY } from '../data';
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
 ---
 
-<Base
-  title="How it works — Sondri"
-  description="A working AI model, deployed in 8 weeks. A senior core team takes you from zero to one; a vetted specialist network takes one to many."
+<BaseV2
+  title="How It Works — Sondri"
+  description="A board-ready roadmap first, then working software in production — proven on your workflows, measured on your P&L. How Sondri takes a business from zero to one to many."
 >
-  <!-- CINEMATIC ASSEMBLY — scroll builds the robot: discover → build → deploy → scale -->
-  <section id="forge-stage" class="orbit-stage forge-stage" aria-label="The delivery engine — cinematic sequence">
-    <div class="orbit-sticky">
-      <canvas id="forge-canvas" class="orbit-canvas" aria-hidden="true"></canvas>
-      <div class="orbit-vignette" aria-hidden="true"></div>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 
-      {forgeBeats.map((b) => (
-        <div class="beat" data-side={b.side} data-from={b.from} data-to={b.to}>
-          <span class="kicker beat-kicker">{b.k}</span>
-          <h2 class="display beat-title">{b.t}</h2>
-          <p class="beat-body">{b.b}</p>
-        </div>
-      ))}
+  <PageHero>
+    <Fragment slot="title">From kickoff to production, without the <span class="nb">drag<span class="gdot hero-dot">.</span></span></Fragment>
+    <Fragment slot="lede">
+      A senior core team designs the solution. A vetted specialist network builds it.
+      You get results in the systems you already own — not another platform.
+    </Fragment>
+  </PageHero>
 
-      <div class="orbit-hud" aria-hidden="true">
-        <span class="hud-rule"></span>
-        <span id="forge-readout" class="hud-readout">ENGINE 0 — DISCOVER</span>
-      </div>
-
-      <div id="forge-cue" class="orbit-cue" aria-hidden="true">
-        <span class="cue">&darr;</span>
-        <span class="cue-label">SCROLL &mdash; THE ENGINE ASSEMBLES</span>
+  <!-- ── Timeline ─────────────────────────────────────── -->
+  <section class="tl">
+    <div class="wrap">
+      <div class="tl-grid" data-reveal data-reveal-group>
+        {timeline.map((t) => (
+          <div class="card tcell">
+            <span class="wk">{t.wk.toLowerCase()}</span>
+            <h3>{t.title}</h3>
+            <p class="body-s">{t.body}</p>
+          </div>
+        ))}
       </div>
     </div>
   </section>
 
-  <div class="pagepad">
-    <!-- HERO -->
-    <section class="wrap two-col hero">
-      <div>
-        <span class="kicker">HOW IT WORKS</span>
-        <h1 class="display hero-title" data-words>A working AI model, deployed in <em>8 weeks.</em></h1>
-        <p class="lede hero-lede">
-          One delivery engine: a senior core team takes you from zero to one, a vetted specialist
-          network takes one to many. You get outcomes, not a platform.
-        </p>
+  <!-- ── Team model ───────────────────────────────────── -->
+  <section class="team">
+    <div class="wrap">
+      <div data-reveal>
+        <h2 class="h2">Senior architects. Vetted builders. Your operators<span class="gdot">.</span></h2>
       </div>
-      <div class="dither-frame square">
-        <canvas data-dither="ridge" aria-hidden="true"></canvas>
-        <div class="fig-label">FIG. 02 &mdash; DELIVERY ENGINE</div>
-      </div>
-    </section>
-
-    <!-- TIMELINE -->
-    <section class="reveal wrap tl">
-      <div class="grid-lined g4">
-        {timeline.map((t) => (
-          <div class="cell">
-            <span class="wk">{t.wk}</span>
-            <span class="cell-title">{t.title}</span>
-            <p class="cell-body">{t.body}</p>
+      <div class="tm-grid" data-reveal data-reveal-group>
+        {teamModel.map((m) => (
+          <div class="tm">
+            <h3>{m.title}</h3>
+            <p class="body-s">{m.body}</p>
           </div>
         ))}
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ENGINE 0 → 1 → n -->
-    <section class="reveal engine-band">
-      <div class="wrap engine-inner">
-        <div class="engine-head">
-          <span class="kicker">OPERATING MODEL</span>
-          <h2 class="display engine-title">0 &rarr; 1 &rarr; <em class="plain">n</em> &nbsp;&mdash;&nbsp; the engine</h2>
-        </div>
-        <div class="engine-grid g3">
-          {engine.map((e) => (
-            <div class="engine-card">
-              <span class="tag">{e.tag}</span>
-              <div class="engine-name">{e.title}</div>
-              <div class="items">
-                {e.items.map((it) => (
-                  <div class="item"><span class="dash">&mdash;</span>{it}</div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+  <!-- ── FAQ ──────────────────────────────────────────── -->
+  <section class="faqs">
+    <div class="wrap">
+      <div data-reveal>
+        <h2 class="h2">Asked on almost every intro call<span class="gdot">.</span></h2>
       </div>
-    </section>
-
-    <!-- WHY NOW -->
-    <section class="reveal wrap whynow">
-      <span class="kicker">WHY NOW</span>
-      <h2 class="display wn-title" data-words>Three shifts have unlocked this market in the last 18 months.</h2>
-      <div class="wn-grid g3">
-        {whyNow.map((w) => (
-          <div class="wn">
-            <span class="wn-i">{w.i}</span>
-            <div class="wn-t">{w.t}</div>
-            <p class="wn-b">{w.b}</p>
-          </div>
+      <div class="faq-list" data-reveal>
+        {faq.map((f) => (
+          <details class="faq">
+            <summary>{f.q}<span class="faq-mark" aria-hidden="true">+</span></summary>
+            <p>{f.a}</p>
+          </details>
         ))}
       </div>
-    </section>
-  </div>
-</Base>
+    </div>
+  </section>
+
+  <!-- ── CTA band ─────────────────────────────────────── -->
+  <CtaBand>
+    <Fragment slot="title">Proven on your workflows. Measured on your P&L<span class="gdot">.</span></Fragment>
+    <Fragment slot="actions">
+      <a class="btn btn-gold" href={BOOK_HREF}>{CTA_PRIMARY} <span class="arr">→</span></a>
+      <a class="btn btn-ghost-dark" href="/get-in-touch/">Get in Touch</a>
+    </Fragment>
+  </CtaBand>
+</BaseV2>
 
 <style>
-  .pagepad { padding-top: 96px; }
-  .hero {
-    display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    gap: 70px;
-    align-items: end;
-    padding: 40px var(--pad-x) 70px;
+  /* ── Timeline (dark anchor) ── */
+  .tl { background: var(--deep); padding: 84px 0 100px; }
+  .tl-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; align-items: stretch; }
+  .tcell {
+    padding: 30px 26px;
+    background: rgba(255, 255, 255, 0.045);
+    border-color: var(--line-ink);
+    transition: transform var(--dur-micro) var(--ease), box-shadow var(--dur-micro) var(--ease), border-color var(--dur-micro) var(--ease);
   }
-  .hero-title { font-size: clamp(40px, 6vw, 86px); line-height: 1; letter-spacing: -1px; margin-top: 18px; }
-  .hero-lede { max-width: 50ch; margin-top: 26px; }
-  .square { aspect-ratio: 1 / 1; }
-
-  .tl { padding: 50px var(--pad-x) 90px; }
-  .cell { padding: 34px 24px; min-height: 260px; display: flex; flex-direction: column; }
-  .wk { font-size: 10px; letter-spacing: 2px; color: var(--gold); }
-  .cell-title { font-family: var(--font-display); font-size: 30px; color: var(--bone); margin: 14px 0 16px; }
-  .cell-body { font-size: 12px; line-height: 1.85; color: var(--clay); }
-
-  .engine-band { border-top: 1px solid var(--line); background: var(--ink-deep); }
-  .engine-inner { padding: 110px var(--pad-x); }
-  .engine-head { text-align: center; margin-bottom: 60px; }
-  .engine-title { font-size: clamp(34px, 5vw, 64px); line-height: 1; margin-top: 16px; }
-  .engine-title .plain { color: var(--bone); }
-  .engine-grid { display: grid; gap: 24px; }
-  .engine-card { border: 1px solid var(--line); background: var(--ink); padding: 32px 28px; }
-  .tag {
-    display: inline-block;
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--ink);
-    background: var(--gold);
-    padding: 5px 10px;
+  .tcell:hover {
+    transform: translateY(-2px);
+    border-color: var(--gold-2);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
   }
-  .engine-name { font-family: var(--font-display); font-size: 26px; color: var(--bone); margin: 22px 0 18px; }
-  .items { display: flex; flex-direction: column; }
-  .item {
+  .wk {
+    display: block;
+    font-family: var(--serif);
+    font-weight: 560;
+    font-size: 30px;
+    line-height: 1;
+    color: var(--gold);
+    margin-bottom: 24px;
+  }
+  .tcell h3 { color: #fff; margin-bottom: 8px; }
+  .tcell .body-s { color: var(--pale); }
+
+  /* ── Team ── */
+  .team { background: var(--pine); padding: 80px 0 100px; }
+  .team .kicker { margin-bottom: 16px; }
+  .team .h2 { max-width: 720px; margin-bottom: 44px; }
+  .tm-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  .tm h3 { margin-bottom: 8px; }
+
+  /* ── FAQ ── */
+  .faqs { background: var(--moss); padding: 100px 0 110px; }
+  .faqs .kicker { margin-bottom: 16px; }
+  .faqs .h2 { margin-bottom: 40px; }
+  .faq-list { max-width: 780px; border-top: 1px solid var(--line); }
+  .faq { border-bottom: 1px solid var(--line); }
+  .faq summary {
     display: flex;
-    gap: 12px;
-    padding: 11px 0;
-    border-top: 1px solid var(--line);
-    font-size: 12px;
-    line-height: 1.6;
-    color: var(--body-2);
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 20px;
+    cursor: pointer;
+    list-style: none;
+    padding: 22px 2px;
+    font-weight: 700;
+    font-size: 17.5px;
+    color: var(--text-hi);
   }
-  .dash { color: var(--dim-2); }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary:hover { color: var(--pale); }
+  .faq-mark {
+    color: var(--gold-2);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1;
+    transition: transform var(--dur-micro) var(--ease);
+  }
+  .faq[open] .faq-mark { transform: rotate(45deg); }
+  .faq p { color: var(--pale); font-size: 15.5px; padding: 0 2px 24px; max-width: 640px; }
+  .faq[open] p { animation: faq-in 0.35s var(--ease); }
+  @keyframes faq-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .faq[open] p { animation: none; }
+  }
 
-  .whynow { padding: 110px var(--pad-x); }
-  .wn-title { font-size: clamp(30px, 4vw, 56px); line-height: 1.05; margin: 16px 0 56px; max-width: 22ch; }
-  .wn-grid { display: grid; gap: 46px; }
-  .wn { border-top: 1px solid var(--gold); padding-top: 22px; }
-  .wn-i { font-family: var(--font-display); font-size: 40px; color: var(--dim-2); }
-  .wn-t { font-family: var(--font-display); font-size: 24px; color: var(--bone); margin: 14px 0 12px; }
-  .wn-b { font-size: 13px; line-height: 1.9; color: var(--clay); }
-
+  /* ── Responsive ── */
+  @media (max-width: 1024px) {
+    .tl-grid { grid-template-columns: repeat(2, 1fr); }
+  }
   @media (max-width: 900px) {
-    .cell { min-height: 0; }
-    .engine-grid, .wn-grid { grid-template-columns: 1fr; }
-    .square { max-width: 480px; }
+    .tm-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .tl-grid { grid-template-columns: 1fr; }
+    .tl { padding-block: 56px 72px; }
+    .team, .faqs { padding-block: 72px; }
   }
 </style>

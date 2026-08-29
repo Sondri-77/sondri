@@ -1,52 +1,26 @@
 ---
-import Base from '../layouts/Base.astro';
+import BaseV2 from '../layouts/BaseV2.astro';
 ---
 
-<Base
+<BaseV2
   title="404 — Sondri"
   description="Signal lost. The page you requested does not exist."
 >
-  <section class="lost">
-    <div class="artifact panel">
-      <div class="artifact-bar">
-        <span class="artifact-title">SIGNAL LOST</span>
-        <span class="x">404</span>
-      </div>
-      <div class="body">
-        <p class="artifact-body">
-          THE PAGE YOU REQUESTED DOES NOT EXIST, OR HAS BEEN MOVED. THE PICTURE NEVER DEVELOPED.
-        </p>
-        <a class="back" href="/">&larr; RETURN HOME</a>
+  <section class="lost hero-ink">
+    <canvas class="glyph-field" data-variant="calm" aria-hidden="true"></canvas>
+    <div class="hero-scrim" aria-hidden="true"></div>
+    <div class="wrap">
+      <h1 class="anim a2">404<span class="gdot hero-dot">.</span></h1>
+      <p class="lede anim a3">The page you requested does not exist, or has been moved.</p>
+      <div class="anim a4">
+        <a class="btn btn-gold" href="/">← Return Home</a>
       </div>
     </div>
   </section>
-</Base>
+</BaseV2>
 
 <style>
-  .lost {
-    min-height: 80vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 140px var(--pad-x) 80px;
-  }
-  .panel { width: 420px; max-width: 100%; }
-  .x {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 15px;
-    color: var(--ink);
-    border: 1px solid var(--ink);
-    padding: 0 7px;
-  }
-  .body { padding: 16px 12px 18px; }
-  .body p { margin: 0; }
-  .back {
-    display: inline-block;
-    margin-top: 14px;
-    font-size: 12px;
-    letter-spacing: 2px;
-    color: var(--ink);
-    border-bottom: 1px solid var(--ink);
-  }
+  .lost { padding: 140px 0 160px; min-height: 60vh; }
+  .lost h1 { font-size: clamp(80px, 12vw, 160px); line-height: 1; margin-bottom: 12px; }
+  .lost .lede { margin-bottom: 36px; }
 </style>

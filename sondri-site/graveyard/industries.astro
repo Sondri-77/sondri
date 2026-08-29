@@ -1,0 +1,123 @@
+---
+import BaseV2 from '../layouts/BaseV2.astro';
+import PageHero from '../components/v2/PageHero.astro';
+import CtaBand from '../components/v2/CtaBand.astro';
+import { industriesDetail, BOOK_HREF } from '../data';
+---
+
+<BaseV2
+  title="Industries — Sondri"
+  description="Where Sondri deploys: private equity, financial services, fintech, healthtech, CPG & retail, and real estate. Specific problems, working solutions."
+>
+  <PageHero kicker="Industries">
+    <Fragment slot="title">Six industries. Specific problems. Working <span class="nb">solutions<span class="gdot hero-dot">.</span></span></Fragment>
+    <Fragment slot="lede">
+      We don't sell "AI transformation." We solve the two or three problems that actually slow
+      your operation — in your systems, in your language.
+    </Fragment>
+  </PageHero>
+
+  <!-- Jump nav -->
+  <div class="jump" aria-label="Jump to industry">
+    <div class="wrap jump-in">
+      {industriesDetail.map((d) => <a href={`#${d.id}`}>{d.name}</a>)}
+    </div>
+  </div>
+
+  {industriesDetail.map((d, i) => (
+    <section id={d.id} class:list={['vertical', { alt: i % 2 === 1 }]}>
+      <div class="wrap">
+        <div data-reveal>
+          <p class="kicker">{String(i + 1).padStart(2, '0')} <span class="k-dot">·</span> {d.name}</p>
+          <h2 class="h2">{d.tagline.replace(/\.$/, '')}<span class="gdot">.</span></h2>
+          <p class="lede v-intro">{d.intro}</p>
+        </div>
+        <div class="v-grid" data-reveal data-reveal-group>
+          <div class="v-col">
+            <p class="v-h">What slows you down</p>
+            <ul>
+              {d.problems.map((p) => <li>{p}</li>)}
+            </ul>
+          </div>
+          <div class="v-col">
+            <p class="v-h build">What we build</p>
+            <ul class="build">
+              {d.builds.map((b) => <li>{b}</li>)}
+            </ul>
+          </div>
+        </div>
+        <p class="v-stat" data-reveal><span class="chip">{d.stat}</span></p>
+      </div>
+    </section>
+  ))}
+
+  <CtaBand kicker="Your sector">
+    <Fragment slot="title">The next solution ships to you<span class="gdot">.</span></Fragment>
+    <Fragment slot="lede">Two weeks to a board-ready roadmap for your industry. The first conversation is free.</Fragment>
+    <Fragment slot="actions">
+      <a class="btn btn-gold" href={BOOK_HREF}>Book a discovery call <span class="arr">→</span></a>
+      <a class="btn btn-ghost-dark" href="/how-it-works/">How it works</a>
+    </Fragment>
+  </CtaBand>
+</BaseV2>
+
+<style>
+  .jump {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(251, 253, 252, 0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .jump-in { display: flex; gap: 26px; overflow-x: auto; padding-block: 14px; }
+  .jump-in a {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--steel);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .jump-in a:hover { color: var(--ink); }
+
+  .vertical { padding: 90px 0; scroll-margin-top: 60px; }
+  .vertical.alt { background: var(--bone); }
+  .vertical .kicker { margin-bottom: 16px; }
+  .vertical .h2 { max-width: 760px; margin-bottom: 16px; }
+  .v-intro { max-width: 680px; margin-bottom: 44px; }
+
+  .v-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 980px; }
+  .v-h {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--steel);
+    margin-bottom: 14px;
+  }
+  .v-h.build { color: var(--gold-2); }
+  .v-col ul { list-style: none; margin: 0; padding: 0; }
+  .v-col li {
+    position: relative;
+    padding: 10px 0 10px 22px;
+    color: var(--slate);
+    font-size: 15.5px;
+    line-height: 1.5;
+    border-bottom: 1px solid var(--line);
+  }
+  .v-col li::before {
+    content: '·';
+    position: absolute;
+    left: 4px;
+    color: var(--steel);
+    font-weight: 700;
+  }
+  .v-col ul.build li::before { content: '→'; color: var(--gold-2); font-size: 12px; top: 13px; }
+
+  .v-stat { margin-top: 32px; }
+
+  @media (max-width: 900px) {
+    .vertical { padding: 64px 0; }
+    .v-grid { grid-template-columns: 1fr; gap: 28px; }
+  }
+</style>
