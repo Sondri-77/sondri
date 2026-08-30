@@ -16,6 +16,8 @@ export interface DisplayFont {
   /** Label shown in the styleguide switcher */
   name: string;
   group: FontGroupId;
+  /** On the current shortlist — the faces still in contention for the wordmark. */
+  shortlist?: boolean;
 }
 
 export const fontGroups: { id: FontGroupId; label: string }[] = [
@@ -25,11 +27,11 @@ export const fontGroups: { id: FontGroupId; label: string }[] = [
 
 export const displayFonts: DisplayFont[] = [
   { family: 'Bit Game', name: 'Bit Game', group: 'pixel' },
-  { family: 'Bitram', name: 'Bitram', group: 'pixel' },
+  { shortlist: true, family: 'Bitram', name: 'Bitram', group: 'pixel' },
   { family: 'Clexon Pixel', name: 'Clexon Pixel', group: 'pixel' },
   { family: 'CS Foster', name: 'CS Foster', group: 'pixel' },
-  { family: 'Florexa', name: 'Florexa (pixel serif)', group: 'pixel' },
-  { family: 'Matrixel', name: 'Matrixel', group: 'pixel' },
+  { shortlist: true, family: 'Florexa', name: 'Florexa (pixel serif)', group: 'pixel' },
+  { shortlist: true, family: 'Matrixel', name: 'Matrixel', group: 'pixel' },
   { family: 'Orpix', name: 'Orpix', group: 'pixel' },
   { family: 'Pixel Bots', name: 'Pixel Bots', group: 'pixel' },
   { family: 'Pixel Machine', name: 'Pixel Machine', group: 'pixel' },
@@ -51,3 +53,6 @@ export const displayFonts: DisplayFont[] = [
   { family: 'Neuroxa', name: 'Neuroxa', group: 'tech' },
   { family: 'Universa', name: 'Universa', group: 'tech' },
 ];
+
+/** The faces still in contention. Everything else is kept for reference. */
+export const shortlist = displayFonts.filter((f) => f.shortlist);

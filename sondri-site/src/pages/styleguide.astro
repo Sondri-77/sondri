@@ -1,6 +1,18 @@
 ---
 import BaseV2 from '../layouts/BaseV2.astro';
-import { displayFonts, fontGroups } from '../display-fonts';
+import { displayFonts, fontGroups, shortlist } from '../display-fonts';
+
+// Exported lockups. Bitram is shortlisted but has no artwork yet.
+const lockupFonts = [
+  { slug: 'florexa', name: 'Florexa', family: 'Florexa' },
+  { slug: 'matrixel', name: 'Matrixel', family: 'Matrixel' },
+];
+const lockupVariants = [
+  { slug: 'white-gold', label: 'White + gold', ground: 'ink' },
+  { slug: 'white', label: 'White', ground: 'ink' },
+  { slug: 'green-gold', label: 'Green + gold', ground: 'bone' },
+  { slug: 'black', label: 'Black', ground: 'bone' },
+];
 
 const swatches = [
   { name: 'Ink', token: '--ink', hex: '#081f1f', note: 'Hero + CTA field' },
@@ -38,6 +50,9 @@ const scale = [
         <span class="sg-field-label">Display font</span>
         <select id="font-select" aria-label="Display font for headings and wordmark">
           <option value="">Fraunces (current)</option>
+          <optgroup label="Shortlist">
+            {shortlist.map((f) => <option value={f.family}>{f.name}</option>)}
+          </optgroup>
           {fontGroups.map((group) => (
             <optgroup label={group.label}>
               {displayFonts
@@ -99,12 +114,50 @@ const scale = [
       </div>
     </section>
 
+    <!-- ── Shortlist lockups ───────────────────────── -->
+    <section class="sg-sec" id="lockups">
+      <h2 class="sg-sec-title">Shortlist — drawn lockups</h2>
+      <p class="body-s sg-note">
+        Exported artwork for the two faces in front. SVG is what ships; PNG at 1× and 3× sits
+        alongside for decks and email. Bitram is still on the shortlist but has no lockup drawn yet.
+      </p>
+
+      {lockupFonts.map((font) => (
+        <div class="sg-lockup-set">
+          <div class="sg-lockup-head">
+            <h3 class="sg-lockup-name" style={`font-family:'${font.family}'`}>{font.name}</h3>
+            <button class="sg-tile-name" type="button" data-load={font.family}>Load in switcher</button>
+          </div>
+          <div class="sg-lockup-grid">
+            {lockupVariants.map((v) => (
+              <figure class:list={['sg-lockup-cell', `on-${v.ground}`]}>
+                <img
+                  src={`/brand/wordmarks/${font.slug}-${v.slug}.svg`}
+                  alt={`Sondri wordmark in ${font.name}, ${v.label.toLowerCase()}`}
+                  loading="lazy"
+                />
+                <figcaption>
+                  <span>{v.label}</span>
+                  <span class="sg-lockup-files">
+                    <a href={`/brand/wordmarks/${font.slug}-${v.slug}.svg`} target="_blank">SVG</a>
+                    <a href={`/brand/wordmarks/png/${font.slug}-${v.slug}.png`} target="_blank">1×</a>
+                    <a href={`/brand/wordmarks/png/${font.slug}-${v.slug}@3x.png`} target="_blank">3×</a>
+                  </span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
+
     <!-- ── Wordmark grid ───────────────────────────── -->
     <section class="sg-sec" id="grid">
       <h2 class="sg-sec-title">Every face at once</h2>
       <p class="body-s sg-note">
-        The wordmark in all {displayFonts.length} candidates. Star the ones worth a second look —
-        your picks are remembered. Click any name to load that face into the switcher above.
+        Showing the {shortlist.length}-face shortlist by default. Switch to <em>All</em> to see the
+        full {displayFonts.length} again, or <em>Starred</em> for your own picks. Click any name to
+        load that face into the switcher above.
       </p>
 
       <div class="sg-grid-bar">
@@ -122,9 +175,13 @@ const scale = [
           </select>
         </label>
 
-        <label class="sg-toggle">
-          <input type="checkbox" id="fav-only" />
-          <span>Starred only</span>
+        <label class="sg-field">
+          <span class="sg-field-label">Show</span>
+          <select id="grid-filter" aria-label="Which faces to show">
+            <option value="shortlist">Shortlist</option>
+            <option value="starred">Starred</option>
+            <option value="all">All</option>
+          </select>
         </label>
         <span class="body-s" id="fav-count">0 starred</span>
         <button class="sg-reset" id="fav-clear" type="button">Clear stars</button>
@@ -132,7 +189,11 @@ const scale = [
 
       <div class="sg-grid" id="wordmark-grid">
         {displayFonts.map((f) => (
-          <figure class="sg-tile" data-family={f.family}>
+          <figure
+            class:list={['sg-tile', { 'is-short': f.shortlist }]}
+            data-family={f.family}
+            data-shortlist={f.shortlist ? 'true' : 'false'}
+          >
             <button
               class="sg-star"
               type="button"
@@ -378,6 +439,53 @@ const scale = [
     .sg-mark { font-size: 54px; line-height: 1; color: var(--text-hi); font-weight: 560; }
     .sg-mark-sm { font-size: 26px; }
 
+    /* ── Shortlist lockups ─────────────────────────── */
+    .sg-lockup-set + .sg-lockup-set { margin-top: 40px; }
+    .sg-lockup-head {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .sg-lockup-name { font-size: 26px; color: var(--text-hi); font-weight: 400; }
+    .sg-lockup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+    .sg-lockup-cell {
+      border: 1px solid var(--line-ink);
+      border-radius: var(--r-card);
+      overflow: hidden;
+    }
+    .sg-lockup-cell img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 150px;
+      object-fit: contain;
+      padding: 30px 34px;
+    }
+    .sg-lockup-cell.on-ink img { background: var(--ink); }
+    .sg-lockup-cell.on-bone img { background: var(--bone); }
+    .sg-lockup-cell figcaption {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      border-top: 1px solid var(--line);
+      font-size: 13px;
+      color: var(--pale);
+    }
+    .sg-lockup-files { display: flex; gap: 10px; }
+    .sg-lockup-files a {
+      color: var(--steel);
+      font-size: 11.5px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: color var(--dur-micro) var(--ease);
+    }
+    .sg-lockup-files a:hover { color: var(--gold); }
+
     /* ── Wordmark grid ─────────────────────────────── */
     .sg-grid-bar { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 22px; }
     .sg-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
@@ -407,6 +515,7 @@ const scale = [
     }
     .sg-tile:hover { border-color: var(--steel); transform: translateY(-2px); }
     .sg-tile.is-fav { border-color: var(--gold-2); }
+    .sg-tile.is-short .sg-tile-group { color: var(--gold); }
     .sg-tile[hidden] { display: none; }
     .sg-tile-mark {
       display: flex;
@@ -586,10 +695,18 @@ const scale = [
       // ── Wordmark grid: starring + filtering ──────────
       const FAV_KEY = 'sondri-styleguide-favs';
       const grid = document.getElementById('wordmark-grid');
-      const favOnly = document.getElementById('fav-only') as HTMLInputElement | null;
+      const gridFilter = document.getElementById('grid-filter') as HTMLSelectElement | null;
       const favCount = document.getElementById('fav-count');
       const favClear = document.getElementById('fav-clear');
       const favEmpty = document.getElementById('fav-empty');
+
+      const FILTER_KEY = 'sondri-styleguide-filter';
+      try {
+        const savedFilter = localStorage.getItem(FILTER_KEY);
+        if (savedFilter && gridFilter) gridFilter.value = savedFilter;
+      } catch {
+        /* ignore */
+      }
 
       let favs = new Set<string>();
       try {
@@ -600,17 +717,23 @@ const scale = [
 
       const paintFavs = () => {
         let shown = 0;
+        const mode = gridFilter?.value || 'shortlist';
         grid?.querySelectorAll<HTMLElement>('.sg-tile').forEach((tile) => {
           const family = tile.dataset.family || '';
           const on = favs.has(family);
           tile.classList.toggle('is-fav', on);
           tile.querySelector('.sg-star')?.setAttribute('aria-pressed', String(on));
-          const hide = Boolean(favOnly?.checked) && !on;
+          const short = tile.dataset.shortlist === 'true';
+          const hide = mode === 'starred' ? !on : mode === 'shortlist' ? !short : false;
           tile.hidden = hide;
           if (!hide) shown++;
         });
         if (favCount) favCount.textContent = `${favs.size} starred`;
-        if (favEmpty) favEmpty.hidden = shown > 0;
+        if (favEmpty) {
+          favEmpty.hidden = shown > 0;
+          favEmpty.textContent =
+            mode === 'starred' ? 'Nothing starred yet.' : 'Nothing to show.';
+        }
         try {
           localStorage.setItem(FAV_KEY, JSON.stringify([...favs]));
         } catch {
@@ -665,7 +788,14 @@ const scale = [
       gridCase?.addEventListener('change', applyGrid);
       applyGrid();
 
-      favOnly?.addEventListener('change', paintFavs);
+      gridFilter?.addEventListener('change', () => {
+        paintFavs();
+        try {
+          localStorage.setItem(FILTER_KEY, gridFilter.value);
+        } catch {
+          /* private browsing — the filter just won't persist */
+        }
+      });
       favClear?.addEventListener('click', () => {
         favs.clear();
         paintFavs();
