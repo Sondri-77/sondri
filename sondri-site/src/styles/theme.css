@@ -17,21 +17,26 @@
 
   /* Derived surfaces (dark theme: green ramp deep < ink < pine < moss) */
   --canvas: #081f1f;
-  --card-glass: rgba(255, 255, 255, 0.045);
-  --line: rgba(230, 242, 240, 0.14);
-  --line-ink: rgba(230, 242, 240, 0.18);
+  --card-glass: rgba(255, 255, 255, 0.035);
+  /* Solid hairlines read crisper than translucent ones at 1px. */
+  --line: #16332f;
+  --line-ink: #1e433f;
+  --nav-glass: rgba(8, 31, 31, 0.72);
 
   --serif: 'Fraunces Variable', Georgia, serif;
   /* Display face for the wordmark and H1s. Swap candidates live in
-     pixel-fonts.css; try them live at /styleguide. */
-  --font-display: var(--serif);
-  --sans: 'Hanken Grotesk Variable', system-ui, sans-serif;
+     pixel-fonts.css; the switcher swaps this and the nav lockup together. */
+  --font-display: 'Florexa', var(--serif);
+  --sans: 'IBM Plex Sans', system-ui, sans-serif;
+  /* Accent only: section labels, kickers, captions. Always uppercase. */
+  --mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
 
   --wrap: 1160px;
   --pad-x: 40px;
 
-  --r-card: 14px;
-  --r-pill: 999px;
+  /* Sharp and angular, per the pre-v2 design — no rounded corners anywhere. */
+  --r-card: 0;
+  --r-pill: 0;
 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --dur-micro: 0.2s;
@@ -77,13 +82,16 @@ h1, h2, h3, .h2 { color: var(--text-hi); }
 .lede { font-size: 19px; line-height: 1.6; color: var(--pale); }
 .body-s { font-size: 15.5px; color: var(--pale); }
 
-.kicker {
-  font-size: 12.5px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+.kicker,
+.mono-label {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--gold);
 }
+.mono-label { color: var(--steel); }
 .kicker .k-dot { color: var(--gold-2); }
 
 /* The brand signal: one gold period per headline. */
@@ -149,9 +157,8 @@ h1, h2, h3, .h2 { color: var(--text-hi); }
 a:focus-visible, button:focus-visible, .btn:focus-visible {
   outline: 2px solid var(--gold-2);
   outline-offset: 3px;
-  border-radius: 4px;
+  border-radius: 0;
 }
-.btn:focus-visible { border-radius: var(--r-pill); }
 
 .skip {
   position: fixed;
@@ -163,7 +170,6 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   color: var(--ink);
   background: var(--gold);
   padding: 12px 18px;
-  border-radius: 8px;
   transition: top 0.2s;
 }
 .skip:focus { top: 10px; }

@@ -1,5 +1,10 @@
 ---
-import '@fontsource-variable/hanken-grotesk';
+import '@fontsource/ibm-plex-sans/400.css';
+import '@fontsource/ibm-plex-sans/500.css';
+import '@fontsource/ibm-plex-sans/600.css';
+import '@fontsource/ibm-plex-sans/700.css';
+import '@fontsource/ibm-plex-sans/400-italic.css';
+import '@fontsource-variable/jetbrains-mono';
 import '@fontsource-variable/fraunces';
 import '@fontsource-variable/fraunces/wght-italic.css';
 import '../styles/theme.css';
@@ -8,6 +13,7 @@ import Nav from '../components/v2/Nav.astro';
 import Footer from '../components/v2/Footer.astro';
 import { ClientRouter } from 'astro:transitions';
 import PrivacyNotice from '../components/v2/PrivacyNotice.astro';
+import FontSwitcher from '../components/v2/FontSwitcher.astro';
 import CalModal from '../components/v2/CalModal.astro';
 import { CONTACT_EMAIL } from '../data';
 
@@ -57,6 +63,22 @@ const orgSchema = {
 
     <script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
     <ClientRouter />
+
+    {/* Set the trialled face before first paint — otherwise the nav flashes
+        the default lockup on every load. */}
+    <script is:inline>
+      (function () {
+        try {
+          var f = localStorage.getItem('sondri-display-font');
+          if (f && f !== '__serif') {
+            document.documentElement.style.setProperty('--font-display', "'" + f + "'");
+            document.documentElement.dataset.displayFont = f;
+          } else if (f === '__serif') {
+            document.documentElement.style.setProperty('--font-display', 'var(--serif)');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
@@ -66,6 +88,7 @@ const orgSchema = {
     </main>
     <Footer />
     <PrivacyNotice />
+    <FontSwitcher />
     <CalModal />
 
     <script>

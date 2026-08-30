@@ -8,7 +8,15 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 <nav aria-label="Primary">
   <div class="nav-in wrap">
     <a class="logo" href="/" aria-label="Sondri — home">
-      <img src="/brand/lockup-wordmark.png" alt="Sondri" width="111" height="42" />
+      <img
+        data-lockup-img
+        data-lockup-default="/brand/lockup-wordmark.png"
+        src="/brand/wordmarks/florexa-white-gold.svg"
+        alt="Sondri"
+        width="111"
+        height="42"
+      />
+      <span class="logo-text" data-lockup-text hidden>Sondri<span class="gdot">.</span></span>
     </a>
 
     <div class="links" id="nav-links">
@@ -71,16 +79,18 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 </script>
 
 <style>
+  /* Frosted glass over a hairline, carried over from the pre-v2 design. */
   nav {
     position: sticky;
     top: 0;
     z-index: 50;
-    background: rgba(8, 31, 31, 0.9);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    transition: box-shadow 0.25s var(--ease);
+    background: var(--nav-glass);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border-bottom: 1px solid var(--line);
+    transition: border-color 0.25s var(--ease);
   }
-  nav.scrolled { box-shadow: 0 1px 0 var(--line-ink), 0 8px 24px rgba(8, 18, 38, 0.25); }
+  nav.scrolled { border-bottom-color: var(--line-ink); }
 
   .nav-in {
     display: flex;
@@ -91,8 +101,16 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     max-width: var(--wrap);
   }
 
-  .logo { display: flex; align-items: center; }
-  .logo img { display: block; }
+  .logo { display: flex; align-items: center; min-height: 42px; }
+  .logo img { display: block; height: 34px; width: auto; }
+  .logo img[hidden], .logo-text[hidden] { display: none; }
+  .logo-text {
+    font-family: var(--font-display);
+    font-size: 26px;
+    line-height: 1;
+    color: var(--text-hi);
+    white-space: nowrap;
+  }
 
   .links { display: flex; gap: 32px; }
   .nav-link {
@@ -141,7 +159,6 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     width: 22px;
     height: 2px;
     background: #fff;
-    border-radius: 2px;
     transition: transform 0.25s var(--ease);
   }
   nav.open #nav-toggle .bar:first-child { transform: translateY(4.5px) rotate(45deg); }

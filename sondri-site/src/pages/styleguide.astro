@@ -372,7 +372,6 @@ const scale = [
         no-repeat right 12px center / 11px;
       color: var(--text-hi);
       border: 1px solid var(--line-ink);
-      border-radius: 8px;
       padding: 9px 34px 9px 12px;
       font: inherit;
       font-size: 14px;
@@ -635,7 +634,6 @@ const scale = [
     .sg-code {
       background: var(--deep);
       border: 1px solid var(--line-ink);
-      border-radius: 10px;
       padding: 18px 22px;
       overflow-x: auto;
     }
@@ -649,6 +647,8 @@ const scale = [
   </style>
 
   <script>
+    import { applyDisplayFont } from '../scripts/display-font';
+
     const KEY = 'sondri-styleguide-display';
 
     document.addEventListener('astro:page-load', () => {
@@ -666,7 +666,8 @@ const scale = [
       const apply = () => {
         const family = select.value;
         const value = family ? `'${family}'` : 'var(--serif)';
-        root.style.setProperty('--font-display', value);
+        // Shared helper so the nav lockup follows the heading face.
+        applyDisplayFont(family);
         // Pixel faces have their own built-in sidebearings; the brand's -0.015em
         // tightening is wrong for them, so tracking is driven explicitly here.
         root.style.setProperty('--sg-track', `${track.value}px`);
