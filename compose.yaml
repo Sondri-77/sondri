@@ -1,0 +1,74 @@
+# Every design version, running side by side in OrbStack.
+#
+#   docker compose up -d          start them all
+#   docker compose logs -f new    tail one
+#   docker compose restart new    after a dependency change
+#   docker compose down           stop everything
+#
+# Source is bind-mounted, so edits on the host reload in the browser. Each
+# service keeps node_modules in its own named volume: the host's copies stay
+# untouched, and installs survive restarts.
+#
+# OrbStack gives every container a hostname as well as the published port —
+# https://sondri-synthesis.orb.local is the same server as localhost:4321.
+
+x-astro: &astro
+  image: oven/bun:1-alpine
+  working_dir: /app
+  # `bun install` is a no-op once the volume is warm.
+  command: sh -c "bun install --silent && bun run dev --host --port 4321"
+  environment:
+    # The repo lives on an external volume; filesystem events don't always
+    # cross the bind mount, so watch by polling instead.
+    CHOKIDAR_USEPOLLING: '1'
+    ASTRO_TELEMETRY_DISABLED: '1'
+  restart: unless-stopped
+
+services:
+  # The working copy — branch derek.dev.
+  synthesis:
+    <<: *astro
+    container_name: sondri-synthesis
+    ports: ['4321:4321']
+    expose: ['4321']
+    volumes:
+      - ./sondri-site:/app
+      - synthesis_modules:/app/node_modules
+
+  # Frozen reference: the pre-v2 design.
+  old:
+    <<: *astro
+    container_name: sondri-old
+    ports: ['4322:4321']
+    expose: ['4321']
+    volumes:
+      - ../sondri-old-design/sondri-site:/app
+      - old_modules:/app/node_modules
+
+  # Frozen reference: v2 exactly as the team wrote it.
+  new:
+    <<: *astro
+    container_name: sondri-new
+    ports: ['4323:4321']
+    expose: ['4321']
+    volumes:
+      - ../sondri-new-design/sondri-site:/app
+      - new_modules:/app/node_modules
+
+  # Standalone experiment, not part of the site build. Its own dev script
+  # pins port 4330, so it doesn't take the shared 4321.
+  brutal:
+    <<: *astro
+    container_name: sondri-brutal
+    command: sh -c "bun install --silent && bun run dev --host"
+    ports: ['4330:4330']
+    expose: ['4330']
+    volumes:
+      - ./sondri-brutal:/app
+      - brutal_modules:/app/node_modules
+
+volumes:
+  synthesis_modules:
+  old_modules:
+  new_modules:
+  brutal_modules:
