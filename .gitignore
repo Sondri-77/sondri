@@ -31,3 +31,6 @@ skills-lock.json
 
 # local preview clones
 sondri-site-premium-preview/
+
+# Official package manager: Bun
+package-lock.json

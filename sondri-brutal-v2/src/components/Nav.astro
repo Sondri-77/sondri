@@ -1,0 +1,96 @@
+---
+import { nav, navSecondary } from '../v2-data';
+import { BOOK_HREF } from '../data';
+---
+
+<!-- Fixed, transparent over the hero photo, and it flips to the solid white
+     bar once the hero has scrolled past. -->
+<header data-nav>
+  <div class="px bar">
+    <a class="brand" href="/" aria-label="Sondri — home">
+      <img class="mark light" src="/brand/florexa-white.svg" alt="Sondri" width="977" height="443" />
+      <img class="mark dark" src="/brand/florexa-teal.svg" alt="" aria-hidden="true" width="977" height="443" />
+    </a>
+
+    <nav class="primary" aria-label="Primary">
+      {nav.map((i) => <a class="link label" href={i.href}>{i.label}</a>)}
+    </nav>
+
+    <nav class="secondary" aria-label="Secondary">
+      {navSecondary.map((i) => <a class="link label" href={i.href}>{i.label}</a>)}
+      <a class="btn contact" href={BOOK_HREF}>Contact</a>
+    </nav>
+
+    <button id="navtoggle" class="toggle label" aria-expanded="false" aria-controls="navpanel">Menu</button>
+  </div>
+
+  <div id="navpanel" hidden>
+    <div class="px panel-in">
+      {[...nav, ...navSecondary].map((i) => <a class="panel-link t-sm" href={i.href}>{i.label}</a>)}
+      <a class="btn panel-btn" href={BOOK_HREF}>Contact</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  header {
+    position: fixed; top: 0; left: 0; width: 100%; z-index: 60;
+    color: var(--white);
+    transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  header.solid { background: var(--white); color: var(--teal); border-bottom: 1px solid var(--line); }
+
+  .bar { display: flex; align-items: center; gap: var(--s-40); height: 74px; }
+  .brand { position: relative; display: block; }
+  .mark { height: 26px; width: auto; transition: opacity 0.3s ease-in-out; }
+  .mark.dark { position: absolute; inset: 0; opacity: 0; }
+  header.solid .mark.light { opacity: 0; }
+  header.solid .mark.dark { opacity: 1; }
+
+  .primary { display: flex; gap: var(--s-30); margin-left: var(--s-40); }
+  .secondary { display: flex; align-items: center; gap: var(--s-30); margin-left: auto; }
+
+  .link { text-decoration: none; padding-block: 6px; border-bottom: 1px solid transparent; }
+  .link:hover { border-bottom-color: currentColor; }
+
+  .contact { padding: 12px 18px; }
+  header:not(.solid) .contact:hover { background: var(--white); color: var(--teal); }
+
+  .toggle { display: none; margin-left: auto; background: none; border: 1px solid currentColor; padding: 11px 15px; color: inherit; cursor: pointer; }
+
+  #navpanel { background: var(--white); color: var(--teal); border-top: 1px solid var(--line); }
+  .panel-in { padding-block: var(--s-20) var(--s-40); }
+  .panel-link { display: block; padding: 10px 0; text-decoration: none; border-bottom: 1px solid var(--line-soft); }
+  .panel-btn { margin-top: var(--s-30); width: 100%; justify-content: center; }
+
+  @media (max-width: 1023px) {
+    .primary, .secondary { display: none; }
+    .toggle { display: block; }
+  }
+</style>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-nav]');
+  const t = document.getElementById('navtoggle');
+  const p = document.getElementById('navpanel');
+
+  t?.addEventListener('click', () => {
+    const open = t.getAttribute('aria-expanded') === 'true';
+    t.setAttribute('aria-expanded', String(!open));
+    t.textContent = open ? 'Menu' : 'Close';
+    if (p) (p as HTMLElement).hidden = open;
+    header?.classList.toggle('solid', !open ? true : window.scrollY > 40);
+  });
+
+  // Solid once we're off the photo.
+  const hero = document.querySelector('[data-hero]');
+  if (hero && header) {
+    const io = new IntersectionObserver(
+      ([e]) => header.classList.toggle('solid', !e.isIntersecting),
+      { rootMargin: '-70px 0px 0px 0px' },
+    );
+    io.observe(hero);
+  } else {
+    header?.classList.add('solid');
+  }
+</script>

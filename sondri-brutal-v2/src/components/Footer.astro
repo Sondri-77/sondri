@@ -1,0 +1,108 @@
+---
+import { contact, footerLegal, footerNav } from '../v2-data';
+import { BOOK_HREF, CONTACT_EMAIL, CTA_PRIMARY, TAGLINE, mailto } from '../data';
+const year = new Date().getFullYear();
+---
+
+<section class="cta px my-grid on-teal" id="book">
+  <div class="cta-title">
+    <h2 class="my-title">Tell us<br />what&rsquo;s slow</h2>
+  </div>
+  <div class="cta-body">
+    <p class="fs-24">
+      Thirty minutes with a founder. You describe the operation; we tell you honestly whether there
+      is a case. No prep, no jargon, no deck.
+    </p>
+    <a class="btn btn-inv" href={BOOK_HREF}>{CTA_PRIMARY}</a>
+  </div>
+</section>
+
+<footer class="on-teal">
+  <div class="px my-grid f-top">
+    <div class="col c1">
+      <p class="label lab">Stay in touch</p>
+      <a class="t-sm line" href={mailto('Hello from sondri.ai')}>{CONTACT_EMAIL}</a>
+      <a class="t-sm line" href={BOOK_HREF}>Book a discovery session</a>
+      <address class="my-text addr">{contact.address.map((l) => <span>{l}<br /></span>)}</address>
+    </div>
+
+    <div class="col c2">
+      <p class="label lab">Navigate</p>
+      <ul>{footerNav.map((l) => <li><a class="my-text" href={l.href}>{l.label}</a></li>)}</ul>
+    </div>
+
+    <div class="col c3">
+      <p class="label lab">Newsletter</p>
+      <p class="my-text note">What we&rsquo;re learning at the frontier, translated. Monthly, short.</p>
+      <form class="sub" id="sub-form">
+        <label class="sr-only" for="email">Email address for newsletter subscription</label>
+        <input id="email" type="email" name="email" placeholder="Email address" required />
+        <button type="submit" aria-label="Subscribe">→</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- The name, set as large as the page allows, closing the site out. -->
+  <div class="px mark-wrap">
+    <img class="mark" src="/brand/florexa-white.svg" alt="Sondri" width="977" height="443" />
+  </div>
+
+  <div class="px f-bottom">
+    <p class="label">&copy; {year}. Sondri. All rights reserved.</p>
+    <p class="label dim">{TAGLINE}</p>
+    <ul class="legal">{footerLegal.map((l) => <li><a class="label" href={l.href}>{l.label}</a></li>)}</ul>
+  </div>
+</footer>
+
+<style>
+  .cta { padding-block: var(--s-100); row-gap: var(--s-50); }
+  .cta-title { grid-column: 1 / -1; }
+  @media (min-width: 1024px) { .cta-title { grid-column: 1 / 7; } }
+  .cta-body { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-40); }
+  @media (min-width: 1024px) { .cta-body { grid-column: 7 / 12; align-self: end; } }
+
+  footer { border-top: 1px solid var(--line-inv); }
+  .f-top { padding-block: var(--s-80) var(--s-60); row-gap: var(--s-50); }
+  .col { grid-column: 1 / -1; }
+  @media (min-width: 1024px) {
+    .c1 { grid-column: 1 / 5; }
+    .c2 { grid-column: 5 / 8; }
+    .c3 { grid-column: 9 / -1; }
+  }
+
+  .lab { color: var(--muted-inv); padding-bottom: var(--s-20); }
+  .line { display: block; text-decoration: none; padding-block: 5px; }
+  .line:hover { opacity: 0.6; }
+  .addr { margin-top: var(--s-20); color: var(--muted-inv); }
+
+  ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  ul a { text-decoration: none; }
+  ul a:hover { opacity: 0.6; }
+  .note { color: var(--muted-inv); padding-bottom: var(--s-20); max-width: 34ch; }
+
+  .sub { display: flex; border: 1px solid var(--line-inv); }
+  .sub input {
+    flex: 1; min-width: 0; background: transparent; border: 0; outline: none;
+    color: var(--white); font-family: var(--mono); font-size: 14px; padding: 14px 15px;
+  }
+  .sub input::placeholder { color: var(--muted-inv); }
+  .sub button { background: var(--white); border: 0; color: var(--teal); width: 52px; cursor: pointer; font-size: 16px; }
+  .sub button:hover { background: var(--muted-inv); }
+
+  .mark-wrap { padding-block: var(--s-20) var(--s-30); }
+  .mark { width: 100%; height: auto; }
+
+  .f-bottom {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-15);
+    padding-block: var(--s-20); border-top: 1px solid var(--line-inv);
+  }
+  .f-bottom .label, .dim { color: var(--muted-inv); }
+  .legal { flex-direction: row; gap: var(--s-20); }
+  .legal a { text-decoration: none; }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+</style>
+
+<script>
+  document.getElementById('sub-form')?.addEventListener('submit', (e) => e.preventDefault());
+</script>

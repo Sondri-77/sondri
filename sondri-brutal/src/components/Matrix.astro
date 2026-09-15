@@ -1,0 +1,79 @@
+---
+import { matrix } from '../brutal-data';
+---
+
+<section class="section section-pad" id="compare">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow"><span class="sq"></span><span class="label">/ Compare</span></div>
+        <h2 class="h2">Same outcome. A fraction of the time and the bill<span class="gdot">.</span></h2>
+      </div>
+      <div class="right">
+        <p class="lede">
+          Every engagement is quoted individually and priced before the phase starts. Here is what
+          you are choosing between.
+        </p>
+      </div>
+    </div>
+
+    <div class="matrix">
+      <div class="row head">
+        <div class="cell lab"></div>
+        {matrix.cols.map((c, i) => (
+          <div class:list={['cell', { own: i === 0 }]}>
+            <span class="h6">{c}</span>
+          </div>
+        ))}
+      </div>
+
+      {matrix.groups.map((g) => (
+        <>
+          <div class="row group">
+            <div class="cell lab"><span class="label label-gold">{g.name}</span></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          </div>
+          {g.rows.map((r) => (
+            <div class="row">
+              <div class="cell lab">{r.label}</div>
+              {r.v.map((v, i) => (
+                <div class:list={['cell', { own: i === 0 }]}>
+                  {typeof v === 'boolean'
+                    ? <span class:list={['mark', { yes: v }]} aria-label={v ? 'Yes' : 'No'}>{v ? '✓' : '—'}</span>
+                    : <span>{v}</span>}
+                </div>
+              ))}
+            </div>
+          ))}
+        </>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Their comparison table draws one rule per row and nothing else — no outer
+     box, no vertical dividers, no fills. The row height does the work. */
+  .matrix { border-top: 1px solid var(--line); }
+  .row { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; border-bottom: 1px solid var(--line); }
+  .cell { padding: var(--s-32) var(--s-24) var(--s-32) 0; font-size: 16px; color: var(--pale); }
+  .lab { font-family: var(--mono); font-size: 13px; letter-spacing: 0.02em; text-transform: uppercase; color: var(--text-hi); }
+  .own { color: var(--text-hi); font-weight: 500; }
+
+  .head { border-bottom: 1px solid var(--line); }
+  .head .cell { padding-block: var(--s-24); }
+  .head .h6 { font-family: var(--mono); font-size: 13px; font-weight: 400; letter-spacing: 0.02em; text-transform: uppercase; }
+  .head .own .h6 { font-weight: 500; }
+
+  .group .cell { padding-block: var(--s-24) var(--s-08); }
+  .group .label { color: var(--text-hi); }
+
+  .mark { font-family: var(--mono); color: var(--steel); }
+  .mark.yes { color: var(--accent); }
+
+  @media (max-width: 900px) {
+    .matrix { overflow-x: auto; }
+    .row { grid-template-columns: 200px repeat(3, minmax(140px, 1fr)); min-width: 640px; }
+    .cell { padding: var(--s-16) var(--s-16) var(--s-16) 0; font-size: 14px; }
+  }
+</style>

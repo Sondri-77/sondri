@@ -1,0 +1,63 @@
+---
+import { framework } from '../data';
+import { BOOK_HREF } from '../data';
+---
+
+<section class="section section-pad" id="framework">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow"><span class="sq"></span><span class="label">/ The framework</span></div>
+        <h2 class="h2">Zero to one to n<span class="gdot">.</span></h2>
+      </div>
+      <div class="right">
+        <p class="lede">
+          Three phases, each quoted on its own. You commit one rung at a time, and every rung stands
+          up on the one below it.
+        </p>
+        <a class="btn" href={BOOK_HREF}>See the roadmap <span class="arr">→</span></a>
+      </div>
+    </div>
+
+    <div class="phases">
+      {framework.map((p) => (
+        <article class="phase" data-reveal>
+          <div class="num h1">{p.num}</div>
+          <div class="name">
+            <p class="label">Phase</p>
+            <h3 class="h3">{p.name}</h3>
+          </div>
+          <div class="cell">
+            <p class="label">What we do</p>
+            <p>{p.does}</p>
+          </div>
+          <div class="cell">
+            <p class="label">What you get</p>
+            <p>{p.gets}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .phases { border-top: 1px solid var(--line); }
+  .phase {
+    display: grid;
+    grid-template-columns: 160px 1fr 1.4fr 1.4fr;
+    border-bottom: 1px solid var(--line);
+  }
+  .phase > * { padding: var(--s-40) var(--s-32) var(--s-40) 0; }
+  .phase > * + * { border-left: 1px solid var(--line); padding-left: var(--s-32); }
+
+  .num { color: var(--text-hi); font-size: clamp(56px, 6vw, 88px); line-height: 1; letter-spacing: -0.0625em; }
+  .name .h3 { padding-top: var(--s-08); }
+  .cell p:last-child { padding-top: var(--s-16); color: var(--pale); font-size: 15px; }
+
+  @media (max-width: 980px) {
+    .phase { grid-template-columns: 1fr; }
+    .phase > * { padding: var(--s-24) 0; }
+    .phase > * + * { border-left: 0; border-top: 1px solid var(--line-soft); padding-left: 0; }
+  }
+</style>

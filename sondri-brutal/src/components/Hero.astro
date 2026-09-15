@@ -1,0 +1,112 @@
+---
+import { heroTerminal } from '../brutal-data';
+import { BOOK_HREF, CTA_PRIMARY, RISK_REVERSAL, mailto } from '../data';
+---
+
+<section class="hero on-dark">
+  <!-- Their hero opens on the pixel wordmark bleeding the full width of the
+       accent field, with the copy sitting underneath it. -->
+  <div class="wrap mark-wrap">
+    <img
+      class="wordmark"
+      src="/brand/wordmarks/florexa-white-gold.svg"
+      alt="Sondri"
+      width="952"
+      height="367"
+      fetchpriority="high"
+    />
+  </div>
+
+  <div class="wrap grid">
+    <!-- The template's code card: mono, boxed, hard offset shadow. -->
+    <div class="term panel dots">
+      <div class="term-bar">
+        <span class="label">engagement.log</span>
+        <span class="chip">live</span>
+      </div>
+      <div class="term-body">
+        {heroTerminal.map((l) => (
+          <p class="row"><span class="k">{l.k}:</span> <span class="v">{l.v}</span></p>
+        ))}
+        <p class="row"><span class="k">next:</span> <span class="v">scoping use case 02</span><span class="cur" aria-hidden="true">█</span></p>
+      </div>
+      <div class="term-foot">
+        <div class="bar"><span></span></div>
+        <span class="label">week 04 of 04</span>
+      </div>
+    </div>
+
+    <div class="right">
+      <h1 class="h2">Software &amp; automation, made simple<span class="gdot">.</span></h1>
+      <p class="lede">
+        We find the three workflows where automation pays fastest, build the first one into the
+        systems you already run, and hand you the keys.
+        <span class="hl">Fixed price. Weeks, not quarters.</span>
+      </p>
+      <div class="actions">
+        <a class="btn btn-gold" href={BOOK_HREF}>{CTA_PRIMARY} <span class="arr">→</span></a>
+        <a class="btn" href={mailto('Hello from sondri.ai')}>Contact our team</a>
+      </div>
+      <p class="label">{RISK_REVERSAL}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* An explicit top pad: without it the wordmark's margin collapses through
+     the section and opens a paper seam under the sticky bar. */
+  .hero { padding-block: var(--s-24) var(--s-96); }
+  .mark-wrap { padding-bottom: var(--s-64); }
+
+  /* Florexa is a pixel display face; at this size it is the artwork. Theirs
+     is a single flat line of type, so it can run the full width; ours carries
+     the swoosh and is only 2.6:1, so it is capped by height instead and left
+     aligned — same weight on the page, no distortion. */
+  .wordmark {
+    height: clamp(110px, 17vw, 230px); width: auto;
+  }
+
+  .grid {
+    display: grid; grid-template-columns: 1fr 1.05fr;
+    align-items: start; gap: var(--s-64);
+  }
+  /* Grid items default to min-width:auto; the mono log would otherwise
+     push the page wider than the viewport. */
+  .grid > * { min-width: 0; }
+
+  .right { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-32); }
+  .right .h2 { max-width: 15ch; }
+  .lede { max-width: 46ch; }
+  .actions { display: flex; flex-wrap: wrap; gap: var(--s-16); }
+
+  .term-bar,
+  .term-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--s-16); padding: 12px var(--s-16);
+  }
+  .term-bar { border-bottom: 1px solid var(--line); }
+  .term-foot { border-top: 1px solid var(--line); }
+  /* The log panel keeps its paper surface on the teal field, so its own
+     text stays ink rather than inheriting the section's bone. */
+  .term-bar .label,
+  .term-foot .label { color: var(--ink); }
+
+  .term-body { padding: var(--s-24) var(--s-16); font-family: var(--mono); font-size: 14px; line-height: 28px; }
+  .row { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .k { color: rgba(8, 31, 31, 0.55); }
+  .v { color: var(--ink); }
+  .cur { color: var(--ink); margin-left: 6px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .cur { animation: none; } }
+
+  .bar { flex: 1; height: 8px; border: 1px solid var(--line); }
+  .bar { border-color: var(--ink); }
+  .bar span { display: block; height: 100%; width: 100%; background: var(--gold); }
+
+  @media (max-width: 980px) {
+    .grid { grid-template-columns: 1fr; gap: var(--s-48); }
+    .mark-wrap { padding-bottom: var(--s-40); }
+    .hero { padding-bottom: var(--s-64); }
+    .right { order: -1; }
+  }
+</style>

@@ -39,3 +39,13 @@ derek.dev  ──(merge/push)──►  derek.test  ──(PR)──►  dev  �
 - Never merge a PR into `dev` — that is the team's call.
 - If you're on the wrong branch, stop and switch to `derek.dev` before making changes.
 - Keep `derek.dev` current with the team by rebasing/merging `origin/dev` into it, not the other way around.
+
+## Two machines, one branch
+
+- `derek.dev` is the only edited branch in the `sondri` checkout on both Macs.
+- Before leaving a machine, commit (WIP commits are fine) and push.
+- On arriving, run `git pull --ff-only`.
+- Never stash across machines.
+- Design worktrees `sondri-new-design` and `sondri-old-design` use their own branches: `derek.new-design` and `derek.old-design`, respectively.
+- Both design worktrees follow the same commit-and-push-before-leaving / `git pull --ff-only`-on-arrival rule.
+- `bun.lock` is the tracked lockfile; `package-lock.json` is ignored.

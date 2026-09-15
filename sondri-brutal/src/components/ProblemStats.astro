@@ -1,0 +1,40 @@
+---
+import { problemStats } from '../data';
+---
+
+<section class="section section-pad">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="h2">The traditional way is slow, expensive, and usually dies in the pilot<span class="gdot">.</span></h2>
+      <div class="right">
+        <p class="lede">
+          None of that is a technology problem. It is a delivery problem — too many people between
+          the operator with the problem and the engineer who can fix it.
+        </p>
+      </div>
+    </div>
+
+    <div class="rule-cols cols-3 stats">
+      {problemStats.map((s, i) => (
+        <div data-reveal style={`transition-delay:${i * 80}ms`}>
+          <p class="label n-idx">{String(i + 1).padStart(2, '0')}</p>
+          <p class="n h1">{s.n}</p>
+          <p class="body-s">{s.label}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .stats > * { display: flex; flex-direction: column; gap: var(--s-16); min-height: 260px; }
+  .n { font-size: clamp(48px, 5vw, 76px); color: var(--accent); margin-top: auto; }
+  .n-idx { color: var(--text-hi); }
+  /* Their list marker: a filled square ahead of the mono index. */
+    .n-idx::before {
+    content: ''; display: inline-block;
+    width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
+    background: currentColor;
+  }
+  .body-s { max-width: 32ch; }
+</style>

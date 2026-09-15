@@ -1,0 +1,86 @@
+---
+import { footerCols } from '../brutal-data';
+import { BOOK_HREF, CONTACT_EMAIL, CTA_PRIMARY, RISK_REVERSAL, TAGLINE, mailto } from '../data';
+const year = new Date().getFullYear();
+---
+
+<!-- Their page turns over on the oversized pixel wordmark, still on paper, and
+     only then drops into the accent field for the close. -->
+<section class="section wordmark-band">
+  <div class="wrap">
+    <img src="/brand/wordmarks/florexa-black.svg" alt="Sondri" width="977" height="442" />
+  </div>
+</section>
+
+<!-- CTA and footer are one continuous accent field, the way theirs is. -->
+<section class="section on-dark" id="book">
+  <div class="wrap cta">
+    <h2 class="h2">Start with a free discovery session, or just tell us what&rsquo;s slow<span class="gdot">.</span></h2>
+    <div class="cta-actions">
+      <a class="btn btn-gold" href={BOOK_HREF}>{CTA_PRIMARY} <span class="arr">→</span></a>
+      <a class="btn" href={mailto('Hello from sondri.ai')}>Contact the team</a>
+    </div>
+    <p class="label">{RISK_REVERSAL}</p>
+  </div>
+</section>
+
+<footer class="on-dark" id="contact">
+  <div class="wrap">
+    <div class="rule-cols cols-4 f-grid">
+      <div class="f-brand">
+        <p class="label col-title">/ Sondri</p>
+        <p class="h6">{TAGLINE}<span class="gdot">.</span></p>
+        <a class="mail" href={mailto('Hello from sondri.ai')}>{CONTACT_EMAIL}</a>
+      </div>
+      {footerCols.map((col) => (
+        <div>
+          <p class="label col-title">/ {col.title}</p>
+          <ul>
+            {col.links.map((l) => (
+              <li><a href={l.href}>{l.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <div class="f-bottom">
+      <p class="label">&copy; {year} Sondri</p>
+      <p class="label">Built in your systems, owned by you</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .wordmark-band { padding-block: var(--s-96); overflow: hidden; }
+  .wordmark-band img { height: clamp(110px, 17vw, 230px); width: auto; }
+
+  .cta { padding-block: var(--s-96); display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-32); }
+  .cta .h2 { max-width: 20ch; }
+  .cta-actions { display: flex; flex-wrap: wrap; gap: var(--s-16); }
+
+  .f-grid { padding-top: var(--s-64); }
+  .f-brand .h6 { max-width: 18ch; margin-top: var(--s-08); }
+  .mail {
+    display: inline-block; margin-top: var(--s-24);
+    font-family: var(--mono); font-size: 14px; letter-spacing: 0.04em;
+    text-transform: uppercase; text-decoration: none; color: var(--accent);
+    border-bottom: 1px solid currentColor;
+  }
+
+  /* Their footer column head: the "/ NAME" kicker with a rule under it. */
+  .col-title { color: var(--text-hi); padding-bottom: var(--s-16); }
+
+  ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  ul a {
+    font-family: var(--mono); font-size: 14px; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--pale); text-decoration: none;
+  }
+  ul a:hover { color: var(--text-hi); }
+
+  .f-bottom {
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--s-16);
+    border-top: 1px solid var(--line); margin-top: var(--s-96); padding-block: var(--s-24);
+  }
+
+</style>

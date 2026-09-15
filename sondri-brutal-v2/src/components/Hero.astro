@@ -1,0 +1,146 @@
+---
+import { TAGLINE } from '../data';
+---
+
+<!-- Full-viewport photo hero. Their layout: the company name set enormous
+     across the bottom, the sentence in the upper right, and five 1px vertical
+     rules that grow in on load. -->
+<section class="hero px" data-hero>
+  <div class="bg">
+    <img
+      data-dither-src
+      src="/img/hero-industrial.jpg"
+      alt=""
+      width="2400"
+      height="1194"
+      aria-hidden="true"
+      fetchpriority="high"
+    />
+    <canvas data-dither aria-hidden="true"></canvas>
+    <div class="noise" aria-hidden="true"></div>
+    <div class="veil" aria-hidden="true"></div>
+  </div>
+
+  <h1 class="sr-only">Sondri — {TAGLINE}</h1>
+
+  <div class="grid my-grid">
+    <div class="ln a1" aria-hidden="true"><i data-line style="--origin:top"></i></div>
+    <div class="ln a2" aria-hidden="true"><i data-line style="--origin:top"></i></div>
+    <div class="ln a3" aria-hidden="true"><i data-line style="--origin:bottom"></i></div>
+    <div class="ln a4" aria-hidden="true"><i data-line style="--origin:top"></i></div>
+    <div class="ln a5" aria-hidden="true"><i data-line style="--origin:top"></i></div>
+
+    <div class="tagline">
+      <p class="fs-24">Made simple.<br />Built into the systems<br />you already run.</p>
+    </div>
+
+    <span class="my-title t1" aria-hidden="true">Software &amp;</span>
+    <span class="my-title t2" aria-hidden="true">Automation</span>
+
+    <div class="scroll label" aria-hidden="true">Scroll</div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    height: 100svh;
+    min-height: 620px;
+    color: var(--white);
+    overflow: hidden;
+    background: var(--teal-deep);
+  }
+
+  .bg { position: absolute; inset: 0; overflow: hidden; }
+  /* The source photo never paints — the canvas draws its dithered form. */
+  .bg img { position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
+  .bg canvas {
+    width: 100%; height: 100%;
+    image-rendering: pixelated;
+    display: block;
+  }
+
+  /* The animated grain, composited over the dither. */
+  .noise {
+    position: absolute; inset: -50%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+    opacity: 0.3;
+    animation: grain 0.6s steps(1) infinite;
+    pointer-events: none;
+  }
+  @keyframes grain {
+    0%   { transform: translate(0, 0); }
+    20%  { transform: translate(-6%, 4%); }
+    40%  { transform: translate(5%, -7%); }
+    60%  { transform: translate(-4%, -3%); }
+    80%  { transform: translate(7%, 5%); }
+    100% { transform: translate(0, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) { .noise { animation: none; opacity: 0.28; } }
+
+  /* Keeps the type legible over the brightest part of the sky. */
+  .veil {
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(180deg, rgba(3, 25, 25, 0.42) 0%, rgba(3, 25, 25, 0) 34%, rgba(3, 25, 25, 0.62) 100%);
+  }
+
+  .grid {
+    position: relative;
+    height: 100%;
+    align-content: end;
+    /* Clears the fixed header on short viewports. */
+    padding-top: 96px;
+    padding-bottom: var(--s-30);
+    row-gap: var(--s-20);
+  }
+
+  /* line1..line5, in their grid areas. */
+  .ln { position: relative; overflow: hidden; display: none; }
+  .ln i { position: absolute; left: 0; top: 0; width: 1px; height: 100%; background: var(--white); display: block; }
+  .a3 i { top: auto; bottom: 0; }
+
+  .tagline { grid-column: 9 / -1; align-self: end; padding-bottom: var(--s-20); }
+  .tagline p { text-transform: none; }
+
+  .t1, .t2 { display: block; }
+  .t1 { grid-column: 1 / -1; }
+  .t2 { grid-column: 1 / -1; margin-bottom: 10px; }
+
+  .scroll { grid-column: 1 / 3; padding-top: var(--s-15); opacity: 0.7; }
+
+  @media (min-width: 1024px) {
+    .grid {
+      grid-template-areas:
+        '. . . . . . . . line1 line1 line2 line2'
+        '. . . . . . . . line1 line1 tagline tagline'
+        'title1 title1 title1 title1 title1 title1 title1 title1 title1 title1 line3 line3'
+        'title2 title2 title2 title2 title2 title2 title2 title2 title2 title2 title2 title2'
+        '. . . . . . . . line4 line4 line5 line5';
+      grid-template-rows: 1fr auto auto auto 45px;
+      padding-bottom: 0;
+    }
+    .ln { display: block; }
+    .a1 { grid-area: line1; }
+    .a2 { grid-area: line2; }
+    .a3 { grid-area: line3; }
+    .a4 { grid-area: line4; }
+    .a5 { grid-area: line5; }
+    .tagline { grid-area: tagline; padding-bottom: 0; align-self: end; }
+    .t1 { grid-area: title1; margin-top: -0.05em; }
+    .t2 { grid-area: title2; margin-bottom: 10px; }
+    .scroll { display: none; }
+  }
+
+  /* Absurdly tall viewports (screenshot tooling, kiosk displays) shouldn't get
+     a 3-metre hero. */
+  @media (min-height: 2000px) { .hero { height: auto; min-height: 780px; } }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+</style>
+
+<script>
+  import { initHeroFx } from '../scripts/hero-fx';
+  const el = document.querySelector<HTMLElement>('[data-hero]');
+  if (el) initHeroFx(el);
+</script>

@@ -1,0 +1,42 @@
+---
+import { industries } from '../data';
+---
+
+<section class="section section-pad" id="industries">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow"><span class="sq"></span><span class="label">/ Where we work</span></div>
+        <h2 class="h2">Operator language, not vendor language<span class="gdot">.</span></h2>
+      </div>
+      <div class="right">
+        <p class="lede">
+          We build on the stack you already run. No Sondri platform to adopt, no licence to shelve.
+        </p>
+      </div>
+    </div>
+
+    <div class="rule-cols cols-3 list">
+      {industries.map((ind, i) => (
+        <div data-reveal style={`transition-delay:${(i % 3) * 70}ms`}>
+          <p class="label idx">{String(i + 1).padStart(2, '0')}</p>
+          <h3 class="h5">{ind.name}</h3>
+          <p class="body-s">{ind.line}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .list { border-top: 1px solid var(--line); }
+  .list > * { display: flex; flex-direction: column; gap: var(--s-12, 12px); min-height: 200px; border-bottom: 1px solid var(--line); }
+  .idx { color: var(--accent); }
+  /* Their list marker: a filled square ahead of the mono index. */
+    .idx::before {
+    content: ''; display: inline-block;
+    width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
+    background: currentColor;
+  }
+  .body-s { margin-top: auto; max-width: 30ch; }
+</style>

@@ -1,0 +1,264 @@
+/* Sondri — brutalist study v1.
+   A close copy of blacksmith.sh, rebuilt on Sondri's gold + deep green instead
+   of their acid yellow + near-black. Their system, verified against the live
+   site's computed styles and kept intact:
+
+   - one field colour carrying the hero, the stat band and the CTA/footer, with
+     light paper between them. Theirs is the accent; ours is the brand's deep
+     teal, and gold stays a signal — buttons, chips, marks, the full stop.
+   - an 8px spacing scale (their --spacing--spacing-04…96, same steps as ours)
+   - IBM Plex Sans for everything structural, IBM Plex Mono for labels and code.
+     Ours swaps the mono for JetBrains and adds Florexa for the wordmark — their
+     display wordmark is a pixel face too, which is the whole reason a pixel
+     display face is in this brand.
+   - a fixed heading scale at a constant -0.0625em tracking (they ship it as
+     96/-6px, 64/-4px, 40/-2.5px, 32/-2px, 24/-1.5px, 20/-1.25px — one ratio)
+   - solid 1px #202020 hairlines. Not translucent, and *horizontal*: rules run
+     across a section, they don't box its columns in.
+   - pill buttons (border-radius: 100px). Primary is a dark fill with accent
+     text, secondary is a 1px outline. Everything else stays square.
+   - a hard, unblurred offset shadow behind panels
+   - dotted halftone fills inside panels
+   - "/ SECTION NAME" mono kickers under a rule, and "■ 01" mono list markers */
+
+@font-face {
+  font-family: 'Florexa';
+  src: url('/fonts/florexa.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ── Brand constants (Sondri Brand Guidelines v2.0) ── */
+  --ink: #081f1f;
+  --deep: #031919;
+  --bone: #e6f2f0;
+  --mist: #c9dad7;
+  --gold: #fdb343;
+  --gold-2: #f5a71e;
+  /* Their body field is a neutral #f5f5f5; ours carries a trace of the brand
+     green so it sits under gold without reading grey. */
+  --paper: #f4f6f5;
+  --paper-2: #e9edec;
+
+  /* ── Semantic tokens. Paper is the default; the accent fields opt in with
+     .on-dark. Components read these and nothing else. ── */
+  --surface: var(--paper);
+  --surface-2: var(--paper-2);
+  --text-hi: var(--ink);
+  --pale: #2c3f3e;
+  --steel: #5c7472;
+  --accent: var(--ink);
+  --line: var(--ink);
+  --line-soft: rgba(8, 31, 31, 0.22);
+  --tint: rgba(8, 31, 31, 0.05);
+  --chip-bg: var(--ink);
+  --chip-fg: var(--gold);
+  /* The brand's full stop, and the primary button fill. */
+  --dot: var(--gold-2);
+  --btn-fill: var(--gold);
+  --btn-text: var(--ink);
+
+  /* 8px spacing scale — the same steps they use. */
+  --s-04: 4px;  --s-08: 8px;  --s-16: 16px; --s-24: 24px;
+  --s-32: 32px; --s-40: 40px; --s-48: 48px; --s-64: 64px;
+  --s-80: 80px; --s-96: 96px;
+
+  --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --display: 'Florexa', var(--sans);
+
+  --wrap: 1360px;
+  --pad-x: 24px;
+  --nav-h: 72px;
+  --pill: 100px;
+  --shadow-col: var(--ink);
+  --shadow-x: 10px;
+}
+
+/* The deep-teal field: hero, stat band, CTA/footer. Gold is the signal on it. */
+.on-dark {
+  --surface: var(--ink);
+  --surface-2: var(--deep);
+  --text-hi: #edf5f4;
+  --pale: #aac2c2;
+  --steel: #6a8988;
+  --accent: var(--gold);
+  --line: rgba(230, 242, 240, 0.24);
+  --line-soft: rgba(230, 242, 240, 0.12);
+  --tint: rgba(230, 242, 240, 0.06);
+  --dot: var(--gold);
+  --chip-bg: var(--gold);
+  --chip-fg: var(--ink);
+  --shadow-col: var(--gold);
+}
+.on-dark,
+.on-paper { background: var(--surface); color: var(--pale); }
+
+* { margin: 0; padding: 0; box-sizing: border-box; border-radius: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  background: var(--paper);
+  color: var(--pale);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--gold); color: var(--ink); }
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+
+/* ── Shell ──────────────────────────────────────────── */
+
+.wrap { max-width: var(--wrap); margin-inline: auto; padding-inline: var(--pad-x); }
+
+/* A hairline separates two sections that share a surface; an accent field
+   separates itself, so it neither draws one nor needs one above it. */
+.section { border-top: 1px solid var(--line); }
+.section.on-dark,
+.on-dark + .section { border-top: 0; }
+.section-pad { padding-block: var(--s-96); }
+
+.skip {
+  position: absolute; left: -9999px; top: 0; z-index: 100;
+  background: var(--gold); color: var(--ink); padding: 12px 20px;
+  font: 500 14px/1 var(--mono); text-transform: uppercase;
+}
+.skip:focus { left: 0; }
+
+/* ── Type ───────────────────────────────────────────── */
+
+/* Their fixed scale, made fluid at the top end. Tracking is a constant
+   -0.0625em at every step, which is exactly their px values over their sizes. */
+.h1 { font-size: clamp(46px, 6.7vw, 96px); line-height: 1.125; }
+.h2 { font-size: clamp(36px, 4.4vw, 64px); line-height: 1.125; }
+.h3 { font-size: clamp(28px, 2.8vw, 40px); line-height: 1.15; }
+.h4 { font-size: 32px; line-height: 1.125; }
+.h5 { font-size: 24px; line-height: 1.25; }
+.h6 { font-size: 20px; line-height: 1.2; }
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  color: var(--text-hi);
+  font-weight: 600;
+  letter-spacing: -0.0625em;
+}
+
+.lede { font-size: 18px; line-height: 28px; color: var(--pale); }
+.body-s { font-size: 14px; line-height: 20px; color: var(--steel); }
+
+/* Mono labels at their label-02 metrics. */
+.label {
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--steel);
+}
+.label-gold { color: var(--text-hi); }
+.gdot { color: var(--dot); }
+
+/* Their marker highlight: a flat block of the secondary tint behind a phrase. */
+.hl {
+  background: var(--mist); color: var(--ink);
+  padding: 0 4px; box-decoration-break: clone; -webkit-box-decoration-break: clone;
+}
+.on-dark .hl { background: var(--gold); color: var(--ink); }
+
+/* A dark chip with accent text — their stat markers. */
+.chip {
+  display: inline-block; padding: 2px 8px;
+  background: var(--chip-bg); color: var(--chip-fg);
+  font-family: var(--mono); font-size: 12px; line-height: 16px;
+  letter-spacing: 0.02em; text-transform: uppercase;
+}
+
+/* ── Buttons — pills, two flavours ──────────────────── */
+
+.btn {
+  display: inline-flex; align-items: center; gap: var(--s-08);
+  padding: 18px 32px;
+  border: 1px solid var(--line);
+  border-radius: var(--pill);
+  font-family: var(--mono);
+  font-size: 14px; line-height: 16px; letter-spacing: 0.04em;
+  text-transform: uppercase; text-decoration: none;
+  color: var(--text-hi); background: transparent;
+  cursor: pointer;
+  transition: background 0.15s linear, color 0.15s linear, border-color 0.15s linear;
+}
+.btn:hover { background: var(--tint); }
+/* Primary: the gold fill. It is the one place the accent becomes a surface. */
+.btn-gold {
+  background: var(--btn-fill); border-color: var(--btn-fill); color: var(--btn-text);
+  font-weight: 500;
+}
+.btn-gold:hover { background: var(--gold-2); border-color: var(--gold-2); color: var(--ink); }
+.btn .arr { transition: transform 0.15s linear; }
+.btn:hover .arr { transform: translateX(3px); }
+
+/* ── Grids ──────────────────────────────────────────── */
+
+/* Their columns are divided by a rule *above* the row, never boxed in by
+   verticals. The per-cell top border reads as one line across the section. */
+.rule-cols { display: grid; column-gap: var(--s-48); }
+.rule-cols > * { border-top: 1px solid var(--line); padding-top: var(--s-32); min-width: 0; }
+.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 900px) {
+  .cols-3, .cols-4 { grid-template-columns: 1fr; row-gap: var(--s-40); }
+  .section-pad { padding-block: var(--s-64); }
+}
+@media (max-width: 640px) {
+  .cols-2 { grid-template-columns: 1fr; row-gap: var(--s-40); }
+  :root { --pad-x: 16px; }
+}
+
+/* Section header: title left, supporting text right. */
+.sec-head {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: var(--s-48);
+  align-items: end;
+  padding-bottom: var(--s-64);
+}
+.sec-head > * { min-width: 0; }
+.sec-head .right { display: flex; flex-direction: column; gap: var(--s-24); align-items: flex-start; }
+@media (max-width: 900px) { .sec-head { grid-template-columns: 1fr; gap: var(--s-24); padding-bottom: var(--s-40); } }
+
+/* Their kicker: a full-width rule with "/ NAME" sitting under it. */
+.eyebrow {
+  display: block;
+  border-top: 1px solid var(--line);
+  padding-top: var(--s-16);
+  margin-bottom: var(--s-32);
+}
+.eyebrow .sq { display: none; }
+
+/* ── Surfaces ───────────────────────────────────────── */
+
+/* Their panel: a 1px outline plus a hard, unblurred offset block. Never a blur.
+   The offset takes the surface's own contrast colour — ink on paper, gold on
+   the teal field — so it always reads as a solid block, never as a shadow. */
+.panel {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  box-shadow: var(--shadow-x) var(--shadow-x) 0 var(--shadow-col);
+}
+.on-dark .panel { border-color: var(--gold); }
+
+/* Their halftone fill. */
+.dots {
+  background-image: radial-gradient(var(--line-soft) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* Reveal on scroll — linear, no easing curves. Brutalism doesn't bounce. */
+[data-reveal] { opacity: 0; transform: translateY(16px); transition: opacity 0.5s linear, transform 0.5s linear; }
+[data-reveal].in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { [data-reveal] { opacity: 1; transform: none; transition: none; } }
