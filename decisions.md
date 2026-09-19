@@ -44,16 +44,40 @@ which is where `/decide` appends. Two things the skill does not do for you:
 
 ## Index
 
-1 decision. Superseded ones are kept — the reasoning is often still useful — but marked here
+3 decisions. Superseded ones are kept — the reasoning is often still useful — but marked here
 and inline. **Read the marked ones with their replacement, never alone.**
 
 | # | Decision | Status |
 |---|---|---|
+| D3 | Only brutal (:4330) is worked on; brutal-v2 and the copy workbench are frozen references | DECIDED |
+| D2 | Home copy = the edgy voice (workbench home-edgy, round-2 picks), approved for now | DECIDED |
 | D1 | Home page structure = the locked 12-section sequence | DECIDED |
 
 ---
 
 ## DECIDED
+
+### D3 — Which design study is the working site?
+
+**Choice:** Only `sondri-brutal/` (:4330) is worked on from 2026-09-18 21:02. `sondri-brutal-v2/` (:4331, at commit 845e204) and `copy-workbench/` (:4350) are frozen references - not edited, not retuned. All pending hero tweaks and the performance work apply to :4330 only.
+
+**Why:** Two parallel studies were doubling every tweak; brutal now carries v2's treatment (hero, dither, gradient map, pixel tail) plus its own layout language and gold accent, so it is the superset.
+
+**Options not taken:**
+- **Keep both studies in step** — every captain tweak cost two crews; no longer worth it.
+- **Make brutal-v2 the working site** — it lacks brutal's layout language and gold accent that the captain kept.
+
+### D2 — Which copy voice does the home page use?
+
+**Choice:** The edgy voice - the workbench `home-edgy` page with the captain's round-2 heading picks (commit 96e3121), verbatim into :4330 - approved "for now". Logo strip replaced by the capability scroll; the money-moves value line lives in the footer.
+
+**Why:** The captain reviewed three versions in the workbench (current, alt draft, edgy) and picked the edgy headings section by section.
+
+**Options not taken:**
+- **Current-site copy (`home-alt`)** — safe, but the captain wanted the brazen voice; kept as a reference page.
+- **Blend of alt body + edgy headings** — not chosen; edgy page goes over as a whole.
+
+**Supersedes:** nothing (D1 structure still applies; the logo-strip slot now holds the capability scroll).
 
 ### D1 — What is the section structure of the Sondri home page?
 
