@@ -1,8 +1,11 @@
 /* Hero background effect.
 
    The reference site runs its hero photo through a canvas dither
-   (`data-dither-image`). This does the same, plus an animated noise layer
+   (`data-dither-image`). This does the same, plus a static noise layer
    composited with a blend mode (CSS, in Hero.astro).
+
+   The grain is generated once per size, never re-rolled: no flicker, no
+   ticking. The rAF loop keeps running for the cursor trail only.
 
    The photo is already a monochrome teal duotone on disk; here it is reduced
    to luminance and re-quantised through an ordered (Bayer 4x4) dither, so the
@@ -14,7 +17,7 @@
 
 import { createPixelTrail } from './pixel-trail';
 
-const BAYER = [
+export const BAYER = [
   [0, 8, 2, 10],
   [12, 4, 14, 6],
   [3, 11, 1, 9],
@@ -22,7 +25,7 @@ const BAYER = [
 ];
 
 /** Teal -> white ramp. Four steps reads as dithered without going to 1-bit mud. */
-const RAMP: [number, number, number][] = [
+export const RAMP: [number, number, number][] = [
   [3, 25, 25],
   [26, 64, 62],
   [120, 150, 148],
@@ -56,8 +59,11 @@ export function initHeroFx(root: HTMLElement) {
   let out: ImageData | null = null;
   let trailA = new Float32Array(0);
   let trailLive = false;
-  let frame = 0;
+  let wasLive = false;
+  let drawn = false;
   let raf = 0;
+  /** Static per-pixel grain: rolled once in `measure`, then fixed. */
+  let grain = new Float32Array(0);
 
   // Mouse only: the trail makes no sense under a finger, and reduced motion
   // gets the still dither with nothing following the cursor.
@@ -106,6 +112,10 @@ export function initHeroFx(root: HTMLElement) {
     canvas.height = h;
     out = ctx.createImageData(w, h);
     trailA = new Float32Array(w * h);
+    grain = new Float32Array(w * h);
+    const jitter = reduced ? 0 : 11;
+    for (let i = 0; i < grain.length; i++) grain[i] = (Math.random() - 0.5) * jitter;
+    drawn = false;
     sample();
     trail?.resize();
   };
@@ -114,14 +124,13 @@ export function initHeroFx(root: HTMLElement) {
     if (!out || !lum.length) return;
     const data = out.data;
 
-    // The noise term is what animates: it shifts the dither threshold every
-    // frame, so flat areas shimmer instead of banding.
-    const jitter = reduced ? 0 : 11;
-    const ox = frame & 3;
-    const oy = (frame >> 1) & 3;
-
     // The trail lands in the source, ahead of the ramp and dither.
     trailLive = trail ? trail.render(trailA, w, h) : false;
+
+    // Nothing moves but the trail: once the still frame is up, only redraw
+    // while the tail is live (plus one frame after, to clear it).
+    if (drawn && !trailLive && !wasLive) return;
+    wasLive = trailLive;
 
     for (let y = 0; y < h; y++) {
       for (let x = 0; x < w; x++) {
@@ -132,10 +141,11 @@ export function initHeroFx(root: HTMLElement) {
           if (a > 0) l += a * (TRAIL_LUM - l);
         }
 
-        const t = (BAYER[(y + oy) & 3][(x + ox) & 3] / 16 - 0.5) * 38;
-        const n = jitter ? (Math.random() - 0.5) * jitter : 0;
+        // Fixed Bayer phase and the pre-rolled grain: the threshold never
+        // shifts between frames, so flat areas hold still.
+        const t = (BAYER[y & 3][x & 3] / 16 - 0.5) * 38;
 
-        let v = (l + t + n) / 255;
+        let v = (l + t + grain[i]) / 255;
         v = v < 0 ? 0 : v > 1 ? 1 : v;
 
         const c = RAMP[Math.round(v * LEVELS)];
@@ -148,17 +158,16 @@ export function initHeroFx(root: HTMLElement) {
     }
 
     ctx.putImageData(out, 0, 0);
+    drawn = true;
   };
 
-  // One rAF loop. The dither redraws at ~24fps (the photo isn't moving; the
-  // dither is) and the trail is composited in the same pass; the trail's
-  // decay runs every tick, as in the playground.
+  // One rAF loop. The composite is checked at ~24fps and only repaints while
+  // the trail is live; the trail's decay runs every tick, as in the playground.
   let last = 0;
   const loop = (now: number) => {
     trail?.frame(now);
     if (now - last > 41) {
       last = now;
-      frame++;
       draw();
     }
     raf = requestAnimationFrame(loop);
