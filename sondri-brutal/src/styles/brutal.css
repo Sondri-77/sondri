@@ -19,8 +19,8 @@
      96/-6px, 64/-4px, 40/-2.5px, 32/-2px, 24/-1.5px, 20/-1.25px — one ratio)
    - solid 1px #202020 hairlines. Not translucent, and *horizontal*: rules run
      across a section, they don't box its columns in.
-   - pill buttons (border-radius: 100px). Primary is a dark fill with accent
-     text, secondary is a 1px outline. Everything else stays square.
+   - square corners everywhere. Primary buttons use a dark fill with accent
+     text; secondary buttons use a 1px outline.
    - a hard, unblurred offset shadow behind panels
    - dotted halftone fills inside panels
    - "/ SECTION NAME" mono kickers under a rule, and "■ 01" mono list markers */
@@ -85,7 +85,7 @@
   --wrap: 1360px;
   --pad-x: 24px;
   --nav-h: 72px;
-  --pill: 100px;
+  --pill: 0;
   --shadow-col: var(--ink);
   --shadow-x: 10px;
 }
@@ -191,13 +191,12 @@ a { color: inherit; }
   letter-spacing: 0.02em; text-transform: uppercase;
 }
 
-/* ── Buttons — pills, two flavours ──────────────────── */
+/* ── Buttons — square, two flavours ──────────────────── */
 
 .btn {
   display: inline-flex; align-items: center; gap: var(--s-08);
   padding: 18px 32px;
   border: 1px solid var(--line);
-  border-radius: var(--pill);
   font-family: var(--mono);
   font-size: 14px; line-height: 16px; letter-spacing: 0.04em;
   text-transform: uppercase; text-decoration: none;
