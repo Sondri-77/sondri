@@ -6,7 +6,7 @@
 
    The photo is already a monochrome teal duotone on disk; here it is reduced
    to luminance and re-quantised through an ordered (Bayer 4x4) dither, so the
-   image is drawn in a handful of steps between teal and white.
+   image is drawn in a handful of steps between deep teal and light teal.
 
    The pixel cursor trail (`pixel-trail.ts`) is blended into that luminance
    before the ramp and dither run, so it is graded, dithered and grained like
@@ -22,7 +22,8 @@ export const BAYER = [
 ];
 
 /** Teal -> white ramp. Four steps reads as dithered without going to 1-bit mud.
-    Exported (the one edit to v2's file) so dither-block.ts shares the palette. */
+    Exported (the one edit to v2's file) so dither-block.ts shares the palette.
+    The hero itself draws with HERO_RAMP below. */
 export const RAMP: [number, number, number][] = [
   [3, 25, 25],
   [26, 64, 62],
@@ -30,7 +31,20 @@ export const RAMP: [number, number, number][] = [
   [255, 255, 255],
 ];
 
-const LEVELS = RAMP.length - 1;
+/** The hero's own ramp: same dark/mid stops, but the top is capped at a light
+    teal instead of white so the headline and lede stay the only pure white in
+    the hero. #5c918c is the lightest teal that keeps white text at >= 3:1
+    (WCAG AA for the display headline) over the brightest possible image
+    region; the lede sits in the veil's dark band and clears 4.5:1 there.
+    dither-block.ts keeps RAMP (its blocks carry no text). */
+export const HERO_RAMP: [number, number, number][] = [
+  RAMP[0],
+  RAMP[1],
+  [62, 105, 102],
+  [92, 145, 140],
+];
+
+const LEVELS = HERO_RAMP.length - 1;
 
 /** Luminance the trail pulls the photo toward. 85/255 lands exactly on
     RAMP[1] — the mid teal, i.e. brand green after grading — so the tail reads
@@ -41,7 +55,7 @@ const TRAIL_LUM = 85;
 
 // The integer LUT preserves the original half-integer ramp boundaries.
 const GRADIENT = new Uint8ClampedArray(256 * 3);
-for (let l = 0; l < 256; l++) GRADIENT.set(RAMP[Math.round(l / 255 * LEVELS)], l * 3);
+for (let l = 0; l < 256; l++) GRADIENT.set(HERO_RAMP[Math.round(l / 255 * LEVELS)], l * 3);
 
 interface GrainPhase {
   static: HTMLCanvasElement;
