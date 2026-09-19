@@ -78,6 +78,21 @@ services:
       - ./sondri-brutal-v2:/app
       - brutal2_modules:/app/node_modules
 
+  # Copy workbench: every string on the current site, zero design. Its dev
+  # script pins 4350. sondri-site/src is mounted alongside, read-only, so the
+  # page imports the live data.ts instead of a copy.
+  workbench:
+    <<: *astro
+    container_name: sondri-copy-workbench
+    working_dir: /app/copy-workbench
+    command: sh -c "bun install --silent && bun run dev --host"
+    ports: ['4350:4350']
+    expose: ['4350']
+    volumes:
+      - ./copy-workbench:/app/copy-workbench
+      - ./sondri-site/src:/app/sondri-site/src:ro
+      - workbench_modules:/app/copy-workbench/node_modules
+
   # Design references that have no build step: the .dc.html canvases, the
   # wordmark exports, the screenshots, the font originals. Served as a browsable
   # directory. The interactive styleguide is not here — it is a page in
@@ -98,3 +113,4 @@ volumes:
   new_modules:
   brutal_modules:
   brutal2_modules:
+  workbench_modules:

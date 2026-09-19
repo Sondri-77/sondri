@@ -1,0 +1,36 @@
+---
+import Page from '../components/Page.astro';
+import Sec from '../components/Sec.astro';
+import Img from '../components/Img.astro';
+import Btn from '../components/Btn.astro';
+import { contactSteps, CTA_PRIMARY, RISK_REVERSAL } from '../../../sondri-site/src/data';
+---
+
+<Page
+  name="Get in Touch"
+  route="/get-in-touch/"
+  title="Get in Touch — Sondri"
+  description="Talk to a Sondri founder. Thirty minutes, straight answers, and a free discovery session if there's a case."
+/>
+
+<Sec page="Get in Touch" name="Hero">
+  <Img w="100%" h={90} what="glyph-field canvas (calm variant)" />
+  <h1>Talk to a founder.</h1>
+  <p class="lede">No sales team, no qualification form. You'll talk to the people who build the software, and you'll get a straight answer about whether there's a case.</p>
+</Sec>
+
+<Sec page="Get in Touch" name="What happens next">
+  <h2>Three steps. The first two are free.</h2>
+  <div class="cards">
+    {contactSteps.map((s) => (
+      <div class="card">
+        <p class="stat">{s.i}</p>
+        <h3>{s.t}</h3>
+        <p>{s.b}</p>
+      </div>
+    ))}
+  </div>
+  <Btn kind="gold">{CTA_PRIMARY} →</Btn>
+  <p class="small">{RISK_REVERSAL}</p>
+  <p>Existing customer settling an invoice? Pay an Invoice →</p>
+</Sec>

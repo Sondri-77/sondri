@@ -1,0 +1,68 @@
+---
+import Sec from '../components/Sec.astro';
+import Img from '../components/Img.astro';
+import Btn from '../components/Btn.astro';
+import { navV2, TAGLINE, CONTACT_EMAIL } from '../../../sondri-site/src/data';
+import { displayFonts, shortlist } from '../../../sondri-site/src/display-fonts';
+
+const year = new Date().getFullYear();
+const rest = displayFonts.filter((f) => !f.shortlist);
+---
+
+<Sec page="Every page" name="Skip link" note="visually hidden until focused">
+  <p>Skip to content</p>
+</Sec>
+
+<Sec page="Every page" name="Nav">
+  <Img w={111} h={34} what="logo: wordmark lockup (florexa-white-gold.svg, alt “Sondri”)" />
+  <ul class="inline">
+    {navV2.map((i) => <li>{i.label}</li>)}
+  </ul>
+  <Btn kind="gold">Book discovery</Btn>
+  <p class="label">Mobile menu button aria-label: “Open menu” / “Close menu”. Mobile panel repeats the four links, then:</p>
+  <Btn kind="gold">Book discovery →</Btn>
+</Sec>
+
+<Sec page="Every page" name="Footer">
+  <Img w={152} h={45} what="logo: lockup.png (alt “Sondri”)" />
+  <p>{TAGLINE}</p>
+  <div class="cards">
+    <div class="card">
+      <h4>Company</h4>
+      <ul>{navV2.filter((i) => i.href !== '/').map((i) => <li>{i.label}</li>)}</ul>
+    </div>
+    <div class="card">
+      <h4>Contact</h4>
+      <ul>
+        <li>Get in Touch</li>
+        <li>Investor Inquiries <span class="note">(mailto {CONTACT_EMAIL}, subject “Investor inquiry”)</span></li>
+        <li>Customer Pilots <span class="note">(mailto, subject “Customer pilot”)</span></li>
+        <li>Careers <span class="note">(mailto, subject “Founding-team application”)</span></li>
+      </ul>
+    </div>
+  </div>
+  <p>© Sondri {year}</p>
+  <p>Pay an Invoice</p>
+</Sec>
+
+<Sec page="Every page" name="Privacy notice" note="fixed bottom-left card, dismissable">
+  <p>By continuing to use this website, you agree to our privacy policy.</p>
+  <Btn>Got It</Btn>
+</Sec>
+
+<Sec page="Every page" name="Font switcher" note="design-time widget, bottom corner; hidden on /styleguide">
+  <p>Aa &nbsp; Florexa</p>
+  <p>Display face</p>
+  <p class="label">Select — Shortlist:</p>
+  <ul class="inline">{shortlist.map((f) => <li>{f.name}</li>)}</ul>
+  <p class="label">Select — Everything else:</p>
+  <ul class="inline">{rest.map((f) => <li>{f.name}</li>)}</ul>
+  <p class="label">Select — Reference:</p>
+  <ul class="inline"><li>Fraunces (v2 original)</li></ul>
+  <p>Open styleguide →</p>
+</Sec>
+
+<Sec page="Every page" name="Structured data" note="Organization schema, not visible">
+  <p>Sondri — https://sondri.ai — {CONTACT_EMAIL}</p>
+  <p>Software and automation for small and midsize companies, delivered simply.</p>
+</Sec>

@@ -1,0 +1,6 @@
+---
+/** A button label, drawn as a plain bordered box. Never navigates. */
+interface Props { kind?: string }
+const { kind } = Astro.props;
+---
+<span class="btn"><slot />{kind && <small class="kind">{kind}</small>}</span>

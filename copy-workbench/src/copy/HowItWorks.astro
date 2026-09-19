@@ -1,0 +1,62 @@
+---
+import Page from '../components/Page.astro';
+import Sec from '../components/Sec.astro';
+import Img from '../components/Img.astro';
+import Btn from '../components/Btn.astro';
+import { timeline, teamModel, faq, CTA_PRIMARY, RISK_REVERSAL } from '../../../sondri-site/src/data';
+---
+
+<Page
+  name="How It Works"
+  route="/how-it-works/"
+  title="How It Works — Sondri"
+  description="A board-ready roadmap first, then working software in production — proven on your workflows, measured on your P&L. How Sondri takes a business from zero to one to many."
+/>
+
+<Sec page="How It Works" name="Hero">
+  <Img w="100%" h={90} what="glyph-field canvas (calm variant)" />
+  <h1>From kickoff to production, without the drag.</h1>
+  <p class="lede">A senior core team designs the solution. A vetted specialist network builds it. You get results in the systems you already own — not another platform.</p>
+</Sec>
+
+<Sec page="How It Works" name="Timeline">
+  <div class="cards">
+    {timeline.map((t) => (
+      <div class="card">
+        <p class="label">{t.wk.toLowerCase()}</p>
+        <h3>{t.title}</h3>
+        <p>{t.body}</p>
+      </div>
+    ))}
+  </div>
+</Sec>
+
+<Sec page="How It Works" name="Team model" note="data has tags ARCHITECTS / BUILDERS / YOURS but the page does not render them">
+  <h2>Senior architects. Vetted builders. Your operators.</h2>
+  <div class="cards">
+    {teamModel.map((m) => (
+      <div class="card">
+        <p class="label">{m.tag} (unrendered)</p>
+        <h3>{m.title}</h3>
+        <p>{m.body}</p>
+      </div>
+    ))}
+  </div>
+</Sec>
+
+<Sec page="How It Works" name="FAQ" note="accordion; also emitted as FAQPage schema">
+  <h2>Asked on almost every intro call.</h2>
+  {faq.map((f) => (
+    <div class="faq">
+      <h3>{f.q} <span class="note">+</span></h3>
+      <p>{f.a}</p>
+    </div>
+  ))}
+</Sec>
+
+<Sec page="How It Works" name="CTA band">
+  <h2>Proven on your workflows. Measured on your P&L.</h2>
+  <Btn kind="gold">{CTA_PRIMARY} →</Btn>
+  <Btn kind="ghost">Get in Touch</Btn>
+  <p class="small">{RISK_REVERSAL}</p>
+</Sec>

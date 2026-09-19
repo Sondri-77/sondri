@@ -1,0 +1,13 @@
+---
+/** Page header: route, meta title, meta description. */
+interface Props { name: string; route: string; title: string; description: string; note?: string }
+const { name, route, title, description, note } = Astro.props;
+---
+<header class="page" id={route === '/' ? 'home' : route.replaceAll('/', '')}>
+  <p class="label">Page · {route}{note && <span class="note"> — {note}</span>}</p>
+  <h1 class="page-name">{name}</h1>
+  <dl class="meta">
+    <dt>meta title</dt><dd>{title}</dd>
+    <dt>meta description</dt><dd>{description}</dd>
+  </dl>
+</header>

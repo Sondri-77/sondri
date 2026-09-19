@@ -1,0 +1,9 @@
+---
+/** One section of one page: small gray label, then the copy. */
+interface Props { page: string; name: string; note?: string }
+const { page, name, note } = Astro.props;
+---
+<section class="sec">
+  <p class="label">{page} / {name}{note && <span class="note"> — {note}</span>}</p>
+  <slot />
+</section>
