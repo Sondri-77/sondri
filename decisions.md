@@ -44,11 +44,14 @@ which is where `/decide` appends. Two things the skill does not do for you:
 
 ## Index
 
-4 decisions. Superseded ones are kept — the reasoning is often still useful — but marked here
+7 decisions. Superseded ones are kept — the reasoning is often still useful — but marked here
 and inline. **Read the marked ones with their replacement, never alone.**
 
 | # | Decision | Status |
 |---|---|---|
+| D7 | Task 1458 dropped - no industries / for-customers / pricing pages | DECIDED |
+| D6 | CI runs on bun (bun.lock tracked, package-lock.json ignored) | DECIDED |
+| D5 | The site is one page: brutal's home as on :4330, shipped as sondri-site | DECIDED |
 | D4 | Home copy = the reviewed workbench home-edgy (banned-copy rounds 1+2, voice rule) - approved | DECIDED |
 | D3 | Only brutal (:4330) is worked on; brutal-v2 and the copy workbench are frozen references | DECIDED |
 | D2 | Home copy = the edgy voice (workbench home-edgy, round-2 picks), approved for now | DECIDED (wording superseded by D4) |
@@ -57,6 +60,38 @@ and inline. **Read the marked ones with their replacement, never alone.**
 ---
 
 ## DECIDED
+
+### D7 — Do the old industries / for-customers / pricing pages come back?
+
+**Choice:** No. Task 1458 dropped (captain, 2026-09-18 22:50). Their content stays only in `derek.old-design` history.
+
+**Why:** The site is one page (D5); those pages have no slot.
+
+**Options not taken:**
+- **Restore into brutal's language** — extra pages the one-page decision excludes.
+- **Fold their copy into home sections** — pricing / unit economics deliberately not on the page.
+
+### D6 — Which package manager does CI use?
+
+**Choice:** bun. `ci.yml` installs with `bun install --frozen-lockfile` and runs `bun run check` / `bun run build`; `bun.lock` stays tracked, `package-lock.json` stays ignored (2026-09-15 rule). Decision 1765 closed.
+
+**Why:** PR checks were red because `actions/setup-node`'s npm cache needs `package-lock.json`. The repo is bun-first on both machines; changing CI is one file, restoring npm lockfiles is ongoing noise.
+
+**Options not taken:**
+- **Restore `package-lock.json`** — two lockfiles drift; reverses the 09-15 rule.
+
+### D5 — What ships as the Sondri site?
+
+**Choice:** One page. `sondri-site` becomes brutal's home exactly as reviewed on :4330 on 2026-09-18 (treatment, pixel tail, D4 copy, nav, footer, square corners, white-gold lockup). No `/about`, `/how-it-works`, `/get-in-touch`, `/pay`, `/success`. Unknown paths get the custom 404 in brutal's look. Deploy config (wrangler → Cloudflare Workers), robots, sitemap, canonical, OG and structured data are kept from the old `BaseV2`; `noindex` removed. Booking keeps the live site's Cal.com target. Studies `sondri-brutal/` and `sondri-brutal-v2/` are archived once `sondri-site` builds without them; `copy-workbench/` stays as the copy tool.
+
+**Why:** The captain reviewed :4330 section by section and declared it final; the sub-pages carried nothing the one page doesn't say. Avoids restyling six pages (merge-review step 3).
+
+**Options not taken:**
+- **Fold brutal into sondri-site and restyle the six sub-pages** (merge-review §3) — most work, kept pages nobody asked for.
+- **Swap the app root to `sondri-brutal/`** — loses deploy config, SEO and the billing worker's front end wiring in one move.
+- **Keep `/pay` + `/success`** — billing worker stays deployable separately; the checkout pages can return later if needed.
+
+**Supersedes:** merge-review recommendation (2026-09-18 22:40) for the sub-pages.
 
 ### D4 — Which copy goes live on the working site after the banned-copy review?
 
