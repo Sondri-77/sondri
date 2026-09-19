@@ -59,7 +59,7 @@ and inline. **Read the marked ones with their replacement, never alone.**
 
 ### D3 — Which design study is the working site?
 
-**Choice:** Only `sondri-brutal/` (:4330) is worked on from 2026-09-18 21:02. `sondri-brutal-v2/` (:4331, at commit 845e204) and `copy-workbench/` (:4350) are frozen references - not edited, not retuned. All pending hero tweaks and the performance work apply to :4330 only.
+**Choice:** Only `sondri-brutal/` (:4330) is worked on from 2026-09-18 21:02. `sondri-brutal-v2/` (:4331, at commit 845e204) is a frozen reference - not edited, not retuned. `copy-workbench/` (:4350) is not a design: it stays the live copy tool (copy edits, rules, review pages happen there) and :4330 receives copy only after the captain approves it in the workbench. All pending hero tweaks and the performance work apply to :4330 only.
 
 **Why:** Two parallel studies were doubling every tweak; brutal now carries v2's treatment (hero, dither, gradient map, pixel tail) plus its own layout language and gold accent, so it is the superset.
 
