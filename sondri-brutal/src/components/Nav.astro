@@ -49,23 +49,20 @@ import { BOOK_HREF, CTA_PRIMARY } from '../data';
   .ann-cta { text-decoration: none; border-bottom: 1px solid transparent; }
   .ann-cta:hover { border-bottom-color: var(--ink); }
 
-  /* Blacksmith keeps this bar one solid field the whole way down the page; ours
-     frosts it once the page moves so the section under it reads through. */
+  /* Glass at the top of the page: the bar sits over the hero with nothing
+     behind it, then goes solid ink the moment the page moves. Only the
+     background and rule animate, so nothing reflows. */
   header {
     position: sticky; top: 0; z-index: 50;
-    background: var(--ink);
+    background: transparent;
     border-bottom: 1px solid transparent;
-    transition: background 0.25s linear, border-color 0.25s linear;
+    transition: background-color 0.25s linear, border-color 0.25s linear;
   }
   header.stuck {
-    background: rgba(8, 31, 31, 0.78);
-    backdrop-filter: blur(16px) saturate(150%);
-    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    background: var(--ink);
+    border-bottom-color: var(--line-soft);
   }
-  /* No blur support: fall back to the solid bar rather than unreadable text. */
-  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    header.stuck { background: var(--ink); }
-  }
+  @media (prefers-reduced-motion: reduce) { header { transition: none; } }
   .nav-in { display: flex; align-items: center; gap: var(--s-32); height: var(--nav-h); }
   .brand img { height: 26px; width: auto; }
 
@@ -100,7 +97,7 @@ import { BOOK_HREF, CTA_PRIMARY } from '../data';
 </style>
 
 <script>
-  // Frost the bar as soon as the page leaves the top.
+  // Solidify the bar as soon as the page leaves the top.
   const header = document.getElementById('siteheader');
   const onScroll = () => header?.classList.toggle('stuck', window.scrollY > 8);
   onScroll();
