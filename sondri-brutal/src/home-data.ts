@@ -70,7 +70,7 @@ export const homeFaq = [
 
 /** Section 1 · Hero */
 export const hero = {
-  h1: 'We fix expensive bullshit. (Using AI where it helps)',
+  h1: 'Fix expensive bullshit. (Use AI where it helps)',
   lede: 'Built into the systems you already run. Live in weeks.',
 };
 
