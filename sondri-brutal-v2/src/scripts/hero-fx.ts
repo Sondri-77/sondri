@@ -4,8 +4,8 @@
    (`data-dither-image`). This does the same, plus a static noise layer
    composited with a blend mode (CSS, in Hero.astro).
 
-   The grain is generated once per size, never re-rolled: no flicker, no
-   ticking. The rAF loop keeps running for the cursor trail only.
+   The grain re-rolls on its own clock (GRAIN_MS, half the speed of the
+   original 24fps re-roll); the trail composites at 24fps in between.
 
    The photo is already a monochrome teal duotone on disk; here it is reduced
    to luminance and re-quantised through an ordered (Bayer 4x4) dither, so the
@@ -61,9 +61,14 @@ export function initHeroFx(root: HTMLElement) {
   let trailLive = false;
   let wasLive = false;
   let drawn = false;
+  let frame = 0;
   let raf = 0;
-  /** Static per-pixel grain: rolled once in `measure`, then fixed. */
+  /** Per-pixel grain, re-rolled every GRAIN_MS. */
   let grain = new Float32Array(0);
+  const jitter = reduced ? 0 : 11;
+  const roll = () => {
+    for (let i = 0; i < grain.length; i++) grain[i] = (Math.random() - 0.5) * jitter;
+  };
 
   // Mouse only: the trail makes no sense under a finger, and reduced motion
   // gets the still dither with nothing following the cursor.
@@ -113,8 +118,7 @@ export function initHeroFx(root: HTMLElement) {
     out = ctx.createImageData(w, h);
     trailA = new Float32Array(w * h);
     grain = new Float32Array(w * h);
-    const jitter = reduced ? 0 : 11;
-    for (let i = 0; i < grain.length; i++) grain[i] = (Math.random() - 0.5) * jitter;
+    roll();
     drawn = false;
     sample();
     trail?.resize();
@@ -127,10 +131,12 @@ export function initHeroFx(root: HTMLElement) {
     // The trail lands in the source, ahead of the ramp and dither.
     trailLive = trail ? trail.render(trailA, w, h) : false;
 
-    // Nothing moves but the trail: once the still frame is up, only redraw
-    // while the tail is live (plus one frame after, to clear it).
+    // Redraw when the grain has re-rolled or the tail is live (plus one
+    // frame after, to clear it).
     if (drawn && !trailLive && !wasLive) return;
     wasLive = trailLive;
+    const ox = frame & 3;
+    const oy = (frame >> 1) & 3;
 
     for (let y = 0; y < h; y++) {
       for (let x = 0; x < w; x++) {
@@ -141,9 +147,9 @@ export function initHeroFx(root: HTMLElement) {
           if (a > 0) l += a * (TRAIL_LUM - l);
         }
 
-        // Fixed Bayer phase and the pre-rolled grain: the threshold never
-        // shifts between frames, so flat areas hold still.
-        const t = (BAYER[y & 3][x & 3] / 16 - 0.5) * 38;
+        // The grain and the Bayer phase shift the threshold each re-roll, so
+        // flat areas shimmer instead of banding.
+        const t = (BAYER[(y + oy) & 3][(x + ox) & 3] / 16 - 0.5) * 38;
 
         let v = (l + t + grain[i]) / 255;
         v = v < 0 ? 0 : v > 1 ? 1 : v;
@@ -161,13 +167,22 @@ export function initHeroFx(root: HTMLElement) {
     drawn = true;
   };
 
-  // One rAF loop. The composite is checked at ~24fps and only repaints while
-  // the trail is live; the trail's decay runs every tick, as in the playground.
+  // One rAF loop. The composite is checked at ~24fps; the grain re-rolls on
+  // its own slower clock and forces a repaint. The trail's decay runs every
+  // tick, as in the playground.
+  const GRAIN_MS = 82;
   let last = 0;
+  let lastRoll = 0;
   const loop = (now: number) => {
     trail?.frame(now);
     if (now - last > 41) {
       last = now;
+      if (!reduced && now - lastRoll > GRAIN_MS) {
+        lastRoll = now;
+        frame++;
+        roll();
+        drawn = false;
+      }
       draw();
     }
     raf = requestAnimationFrame(loop);
