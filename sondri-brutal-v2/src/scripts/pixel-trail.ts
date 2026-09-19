@@ -5,11 +5,15 @@
    A low-res intensity grid (one float per CELL×CELL square) sits over the
    hero. Pointer moves stamp round falloff discs into it — interpolated along
    the path so fast moves stay contiguous — and every frame each cell loses
-   `dt / DECAY`, so the tail is residue, not history. Live cells are drawn as
-   rounded squares at full resolution; the GOO SVG filter on the canvas
-   (Hero.astro) blurs and re-thresholds the alpha so neighbouring squares weld
-   into one blob, and STEPPED snaps the fade to four alpha levels so the decay
-   flips instead of glides.
+   `dt / DECAY`, so the tail is residue, not history. STEPPED snaps the fade
+   to four alpha levels so the decay flips instead of glides.
+
+   Unlike the playground, the trail is not painted to its own canvas. It is
+   rasterised (`render`) into an alpha buffer at hero-fx's working resolution
+   and blended into the photo's luminance there, so the tail goes through the
+   same gradient map, Bayer dither and grain as the picture instead of sitting
+   on top as a flat sprite. The playground's GOO SVG filter (blur + alpha
+   `19a - 9`) is replicated in-buffer for GOO > 0.
 
    Constants are the captain's slider settings, mapped the way the playground
    binds them (`bind('t-…')`, ~936-945). */
@@ -20,43 +24,43 @@ const CELL = 19;
 const RAD = 4.1;
 /** DECAY slider: ms for a cell to fade from 1 to 0 (`DECAY = Math.max(16, v)`). */
 const DECAY = 1660;
-/** CORNER slider: corner radius as % of CELL (`rad = CORNER / 100 * CELL`). */
-const CORNER = 22;
-/** GOO slider: feGaussianBlur stdDeviation of the #goo-trail filter (Hero.astro). */
-const GOO = 4;
+/** CORNER slider: corner radius as % of CELL. 0 = hard squares (captain, round 4). */
+const CORNER = 0;
+/** GOO slider: feGaussianBlur stdDeviation in CSS px. 0 = off — the cells
+    stay square and the four fade steps survive the 19a-9 threshold. */
+const GOO = 0;
 /** FADE: STEPPED quantises alpha to `ceil(v * 4) / 4`. */
 const STEPPED = true;
-/** Ink. The hero ramp's mid teal (hero-fx RAMP[1]) — `--teal` (#081f1f) is
-    the photo's darkest step, so a blob in it vanishes over the dark half. */
-const INK: [number, number, number] = [26, 64, 62];
 
 export interface PixelTrail {
-  /** Decay and redraw. Call once per rAF tick. */
-  frame(ts: number): void;
+  /** Decay. Call once per rAF tick. True while any cell is alive. */
+  frame(ts: number): boolean;
   /** Re-fit the grid to the root's current size. Clears the trail. */
   resize(): void;
+  /** Rasterise the live cells into `buf` — one alpha (0..1) per pixel of a
+      bw×bh buffer that covers the root. Returns false (buf untouched) when
+      the trail is empty. */
+  render(buf: Float32Array, bw: number, bh: number): boolean;
 }
 
-export function createPixelTrail(root: HTMLElement, cv: HTMLCanvasElement): PixelTrail | null {
-  const ctx = cv.getContext('2d');
-  if (!ctx) return null;
-
-  document.getElementById('goo-blur')?.setAttribute('stdDeviation', String(GOO));
-  cv.style.filter = GOO > 0 ? 'url(#goo-trail)' : 'none';
-
+export function createPixelTrail(root: HTMLElement): PixelTrail {
   let cols = 0;
   let rows = 0;
+  let width = 0;
+  let height = 0;
   let vals = new Float32Array(0);
+  let alive = false;
   let px = -1;
   let py = -1;
 
   function size() {
     const r = root.getBoundingClientRect();
+    width = r.width;
+    height = r.height;
     cols = Math.ceil(r.width / CELL);
     rows = Math.ceil(r.height / CELL);
     vals = new Float32Array(cols * rows);
-    cv.width = r.width;
-    cv.height = r.height;
+    alive = false;
   }
   size();
 
@@ -77,6 +81,7 @@ export function createPixelTrail(root: HTMLElement, cv: HTMLCanvasElement): Pixe
         if (v > vals[i]) vals[i] = v;
       }
     }
+    alive = true;
   }
 
   root.addEventListener('pointermove', (e) => {
@@ -95,31 +100,87 @@ export function createPixelTrail(root: HTMLElement, cv: HTMLCanvasElement): Pixe
   });
 
   let last = 0;
-  function frame(ts: number) {
+  function frame(ts: number): boolean {
     const dt = Math.min(100, ts - last);
     last = ts;
-    ctx!.clearRect(0, 0, cv.width, cv.height);
+    if (!alive) return false;
     const dec = dt / DECAY;
-    const rad = (CORNER / 100) * CELL;
+    let any = false;
     for (let i = 0; i < vals.length; i++) {
-      let v = vals[i];
+      const v = vals[i];
       if (v <= 0) continue;
-      vals[i] = v = v - dec;
-      if (v <= 0) {
-        vals[i] = 0;
-        continue;
-      }
-      const a = STEPPED ? Math.ceil(v * 4) / 4 : v;
-      ctx!.fillStyle = 'rgba(' + INK[0] + ',' + INK[1] + ',' + INK[2] + ',' + a.toFixed(3) + ')';
-      const x = (i % cols) * CELL;
-      const y = ((i / cols) | 0) * CELL;
-      if (rad > 0) {
-        ctx!.beginPath();
-        ctx!.roundRect(x + 1, y + 1, CELL - 2, CELL - 2, rad);
-        ctx!.fill();
-      } else ctx!.fillRect(x + 1, y + 1, CELL - 2, CELL - 2);
+      const n = v - dec;
+      vals[i] = n <= 0 ? 0 : n;
+      if (n > 0) any = true;
     }
+    alive = any;
+    return any;
   }
 
-  return { frame, resize: size };
+  function render(buf: Float32Array, bw: number, bh: number): boolean {
+    if (!alive || !width || !height) return false;
+    const sx = width / bw;
+    const sy = height / bh;
+    const rad = (CORNER / 100) * CELL;
+    // The playground insets each square by 1 CSS px; at working resolution
+    // (~3 CSS px per buffer pixel) that gap is sub-pixel, so it is dropped.
+    for (let by = 0; by < bh; by++) {
+      const y = (by + 0.5) * sy;
+      const gy = (y / CELL) | 0;
+      for (let bx = 0; bx < bw; bx++) {
+        const x = (bx + 0.5) * sx;
+        const gx = (x / CELL) | 0;
+        const v = gx < cols && gy < rows ? vals[gy * cols + gx] : 0;
+        let a = 0;
+        if (v > 0) {
+          a = STEPPED ? Math.ceil(v * 4) / 4 : v;
+          if (rad > 0) {
+            // Corner rounding: outside the corner circles the square is empty.
+            const u = x - gx * CELL;
+            const w = y - gy * CELL;
+            const dx = u < rad ? rad - u : u > CELL - rad ? u - (CELL - rad) : 0;
+            const dy = w < rad ? rad - w : w > CELL - rad ? w - (CELL - rad) : 0;
+            if (dx * dx + dy * dy > rad * rad) a = 0;
+          }
+        }
+        buf[by * bw + bx] = a;
+      }
+    }
+    if (GOO > 0) goo(buf, bw, bh, GOO / sx);
+    return true;
+  }
+
+  return { frame, resize: size, render };
+}
+
+/** In-buffer stand-in for the playground's #goo-trail SVG filter:
+    feGaussianBlur(σ) then feColorMatrix alpha `19a - 9`, clamped. The
+    `atop` composite only mattered for colour, which is uniform here. */
+function goo(buf: Float32Array, bw: number, bh: number, sigma: number) {
+  const r = Math.max(1, Math.ceil(sigma * 3));
+  const k = new Float32Array(r * 2 + 1);
+  let sum = 0;
+  for (let i = -r; i <= r; i++) sum += k[i + r] = Math.exp(-(i * i) / (2 * sigma * sigma));
+  for (let i = 0; i < k.length; i++) k[i] /= sum;
+
+  const tmp = new Float32Array(buf.length);
+  for (let y = 0; y < bh; y++)
+    for (let x = 0; x < bw; x++) {
+      let acc = 0;
+      for (let i = -r; i <= r; i++) {
+        const xx = x + i;
+        if (xx >= 0 && xx < bw) acc += buf[y * bw + xx] * k[i + r];
+      }
+      tmp[y * bw + x] = acc;
+    }
+  for (let y = 0; y < bh; y++)
+    for (let x = 0; x < bw; x++) {
+      let acc = 0;
+      for (let i = -r; i <= r; i++) {
+        const yy = y + i;
+        if (yy >= 0 && yy < bh) acc += tmp[yy * bw + x] * k[i + r];
+      }
+      const a = acc * 19 - 9;
+      buf[y * bw + x] = a < 0 ? 0 : a > 1 ? 1 : a;
+    }
 }
