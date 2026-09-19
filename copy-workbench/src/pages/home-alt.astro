@@ -9,40 +9,40 @@
  */
 import Base from '../layouts/Base.astro';
 import Btn from '../components/Btn.astro';
-import { CTA_PRIMARY, RISK_REVERSAL, problemStats, faq } from '../../../sondri-site/src/data';
+import { CTA_PRIMARY, RISK_REVERSAL, problemStats, faq } from '../data/copy';
 
 const knife = [
-  { t: 'Money', b: 'A workaround that costs an hour a day is a salary a year — per person doing it. Multiply by the number of people who’ve quietly learned to live with it. [placeholder: cost-of-inaction calculator]' },
-  { t: 'Time', b: 'Every quarter the problem stays, growth makes it heavier. More volume means more manual work, not more leverage. The fix doesn’t get cheaper by waiting — it gets harder to unwind.' },
-  { t: 'People', b: 'Your best operators are spending their judgment on data entry. That’s the work people leave over. And when they go, the process leaves with them.' },
+  { t: 'Money', b: 'An hour a day adds up across everyone doing the workaround. [placeholder: cost-of-inaction calculator]' },
+  { t: 'Time', b: 'As volume grows, your team spends more time on manual work. The longer you wait, the more processes depend on the workaround.' },
+  { t: 'People', b: 'Experienced people spend hours on data entry. When they leave, undocumented steps can be lost.' },
 ];
 
 const benefits = [
-  { t: 'A number, not a deck', b: 'Every engagement starts from a line on your P&L — a cost to cut or revenue to unlock — and is measured against it.' },
-  { t: 'Your systems, your code', b: 'Built into the ERP, CRM, and spreadsheets you already run. No Sondri platform to adopt, nothing to license, nothing to migrate off later.' },
-  { t: 'One rung at a time', b: 'Fixed price per phase, agreed before it starts. Prove it before you fund production. Fund production before you fund scale.' },
+  { t: 'Cost and savings', b: 'We agree on a cost to cut or a way to increase revenue, then measure the change.' },
+  { t: 'Your systems, your code', b: 'Built into your existing ERP, CRM, and spreadsheets, with code your team owns.' },
+  { t: 'One phase at a time', b: 'Agree on a fixed price for each phase, then review the work before funding the next.' },
 ];
 
 const testimonials = [
   { q: '[placeholder] "We had talked about fixing invoice matching for two years. It was live in six weeks and it just… works."', who: '[placeholder] COO, regional logistics company · [placeholder] 14 hrs/week back to the finance team' },
   { q: '[placeholder] "They told us on the first call which of our three ideas was worth doing. That honesty is why we hired them."', who: '[placeholder] CFO, mid-market manufacturer · [placeholder] first solution in production in 7 weeks' },
-  { q: '[placeholder] "No platform, no lock-in. Our team owns it and can read every line."', who: '[placeholder] Head of Ops, healthcare services group · [placeholder] $180k annual cost removed' },
+  { q: '[placeholder] "Our team owns the code and can read every line."', who: '[placeholder] Head of Ops, healthcare services group · [placeholder] $180k annual cost removed' },
 ];
 
 const steps = [
-  { i: '01', t: 'Tell us what’s slow', b: 'Thirty minutes on the work that eats your team’s time. No prep, no jargon, no deck.' },
+  { i: '01', t: 'Tell us what’s slow', b: 'Spend thirty minutes describing the process that slows you down. You can come without preparing anything.' },
   { i: '02', t: 'We build it into your systems', b: 'You keep running the business. We build on the tech and data you already have.' },
-  { i: '03', t: 'You see the number move', b: 'A workflow that used to be slow, running fast — and a line on the P&L that changed.' },
+  { i: '03', t: 'Check the time and cost saved', b: 'Compare the time and cost of the workflow before and after the build.' },
 ];
 
 const comparison = {
   cols: ['Sondri', 'Typical agency / SI', 'Hiring in-house', 'DIY tools'],
   rows: [
-    { k: 'Time to something in production', v: ['Weeks [placeholder: 6–8]', 'Quarters [placeholder: 6–9 mo.]', 'Months to hire, then months to build', 'Days — until it touches a real system'] },
-    { k: 'Cost shape', v: ['Fixed price per phase, quoted before it starts', 'Time & materials; scope grows with the invoice', 'Salary + benefits + management, whether or not there’s a project', 'Cheap, then your time'] },
-    { k: 'Who owns the code', v: ['You. Runs in your environment', 'Often the vendor’s platform or license', 'You', 'You — and whoever set it up'] },
-    { k: 'Commitment up front', v: ['One rung. Discovery is free', 'Multi-phase SOW before the first result', 'A full-time headcount', 'None — and no one accountable'] },
-    { k: 'After launch', v: ['We operate, tune, and ship the next one', 'Change orders, or a handoff deck', 'Depends on whether that person stays', 'It breaks when the workflow changes'] },
+    { k: 'Time to something in production', v: ['Weeks [placeholder: 6–8]', 'Quarters [placeholder: 6–9 mo.]', 'Months to hire, then months to build', 'Days to try; integration takes longer'] },
+    { k: 'Cost shape', v: ['Fixed price per phase, quoted before it starts', 'Time & materials; cost depends on scope', 'Salary + benefits + management, whether or not there’s a project', 'Low fees; your team does the work'] },
+    { k: 'Who owns the code', v: ['You; runs in your environment', 'Often the vendor’s platform or license', 'You', 'You — and whoever set it up'] },
+    { k: 'Commitment up front', v: ['One phase; discovery is free', 'Multi-phase contract before launch', 'A full-time headcount', 'No contract; your team maintains it'] },
+    { k: 'After launch', v: ['We maintain it and build the next workflow', 'Change orders, or a handoff deck', 'Depends on whether that person stays', 'Your team updates it when the workflow changes'] },
   ],
 };
 
@@ -51,18 +51,18 @@ const features = [
   { t: 'Data & Reporting', b: 'The numbers you argue about in meetings, pulled from the systems of record and kept current without anyone re-keying them.' },
   { t: 'Customer Operations', b: 'Quoting, onboarding, tickets, renewals — faster responses without adding headcount.' },
   { t: 'Back Office', b: 'Invoicing, matching, claims, collections, close. The unglamorous work where errors cost real money.' },
-  { t: 'Integrations', b: 'The systems that don’t talk, made to talk. Yes, that includes the spreadsheet.' },
+  { t: 'Integrations', b: 'Connect your systems and spreadsheets so staff can stop copying data between them.' },
   { t: 'Agentic AI Solutions', b: 'AI that runs a multi-step job end to end — with monitoring, audit trails, and a person who can stop it.' },
 ];
 
 const extraFaq = [
   {
     q: 'Why not just hire an agency, or someone in-house?',
-    a: 'Both work — if you have a quarter and a budget to burn before the first result. An agency sells you a multi-phase engagement up front; a hire takes months to land and only helps if that person stays. We quote one phase at a time, you own everything we build, and we stay on to run it. If the honest answer for you is “hire someone,” we’ll say so on the first call.',
+    a: 'An agency may suit a larger project; a hire can make sense for ongoing work. Compare their costs and lead times with our fixed price for one phase. You own what we build, and we support it after launch. We’ll recommend hiring if that fits your needs better.',
   },
   {
     q: 'Do you use AI for everything?',
-    a: 'No. We use AI where it makes the solution better and regular software where it doesn’t. Nobody is impressed that it uses AI. What matters is whether the problem is gone.',
+    a: 'We choose AI or regular software based on the job it needs to do.',
   },
 ];
 ---
@@ -71,7 +71,7 @@ const extraFaq = [
   <section>
     <p class="label">1 · Hero</p>
     <h1>Simple solutions to not-so-simple problems.</h1>
-    <p>We fix the problems costing you time and money — built into the systems you already run, live in weeks. AI where it helps. Regular software where it doesn’t.</p>
+    <p>We build software into your existing systems in weeks, using AI when it helps.</p>
     <div class="ctas">
       <Btn href="#">{CTA_PRIMARY} →</Btn>
     </div>
@@ -80,7 +80,7 @@ const extraFaq = [
 
   <section>
     <p class="label">2 · Logo / social-proof strip</p>
-    <p>Trusted by operators who were tired of pilots. <span class="ph">[placeholder] client count / one-line proof</span></p>
+    <p>Customer references: <span class="ph">[placeholder] client count / one-line proof</span></p>
     <div class="logos">
       {[1, 2, 3, 4, 5, 6].map(() => <div class="logo">[placeholder] client logo</div>)}
     </div>
@@ -89,7 +89,7 @@ const extraFaq = [
   <section>
     <p class="label">3 · Problem</p>
     <h2>Everyone has an AI initiative. Almost nobody has one in production.</h2>
-    <p>The deck got approved. The pilot launched. Eighteen months later, smart people are still doing the slow thing by hand because nobody built them a better way. The technology was never the issue — the overwhelm was.</p>
+    <p>Eighteen months after the pilot launched, people are still doing the work by hand. The team hasn’t found a way to put the software into use.</p>
     <div class="cards">
       {problemStats.map((s) => (
         <div class="card stat">
@@ -98,14 +98,14 @@ const extraFaq = [
         </div>
       ))}
     </div>
-    <p>Your business doesn’t need more AI. It needs fewer problems.</p>
+    <p>Start with the process costing your team the most time.</p>
   </section>
 
 
   <section>
     <p class="label">4 · Twist the knife</p>
     <h2>Leaving it alone isn’t free.</h2>
-    <p>The workaround feels cheap because nobody sends an invoice for it. Here’s what it’s actually costing.</p>
+    <p>Count the hours your team spends on the workaround.</p>
     <div class="cards">
       {knife.map((k) => (
         <div class="card">
@@ -114,13 +114,13 @@ const extraFaq = [
         </div>
       ))}
     </div>
-    <p>You’ve been talking about fixing this for two years. That’s the real number.</p>
+    <p>How many hours have you spent on it since you first discussed a fix?</p>
   </section>
 
   <section>
     <p class="label">5 · Solution &amp; benefits</p>
     <h2>0 → 1 → n.</h2>
-    <p>Prove it, ship it, multiply it. Discovery finds the three workflows where the money moves fastest. Production puts the first one live inside your systems. Multiply ships the next ones on the foundation already built — each faster and cheaper than the last.</p>
+    <p>Discovery identifies three workflows to improve. We build for the first, then reuse that work for the next.</p>
     <ul>
       {benefits.map((b) => (
         <li><b>{b.t}.</b> {b.b}</li>
@@ -130,7 +130,7 @@ const extraFaq = [
 
   <section>
     <p class="label">6 · Social proof</p>
-    <h2>What it looks like when the number moves.</h2>
+    <h2>What customers say about the work.</h2>
     <div class="cards">
       {testimonials.map((t) => (
         <div class="card">
@@ -139,13 +139,13 @@ const extraFaq = [
         </div>
       ))}
     </div>
-    <p class="ph">All three are placeholders — shape only (role, company type, outcome number). Replace with real customer quotes before this ships.</p>
+    <p class="ph">All three are placeholders — shape only (role, company type, measured change). Replace with real customer quotes before this ships.</p>
   </section>
 
   <section>
     <p class="label">7 · How it works</p>
     <h2>You never have to become an AI company.</h2>
-    <p>Most teams don’t need to understand AI. They need it to work. The whole experience:</p>
+    <p>Here’s how we build software with your team.</p>
     <div class="cards">
       {steps.map((s) => (
         <div class="card">
@@ -159,8 +159,8 @@ const extraFaq = [
 
   <section>
     <p class="label">8 · Competitor comparison</p>
-    <h2>Your other options, honestly.</h2>
-    <p>None of these are wrong. They’re just slower, pricier, or riskier than they need to be for a problem this size.</p>
+    <h2>Compare ways to get the work done.</h2>
+    <p>Compare the cost of outside help with the time your own team can commit.</p>
     <table>
       <thead>
         <tr>
@@ -193,8 +193,8 @@ const extraFaq = [
   <section>
     <p class="label">10 · Why Sondri exists</p>
     <div class="card">
-      <p>"We started Sondri because we kept watching the same movie: a capable team, a real problem, and eighteen months of AI pilots that never shipped. The technology was never the issue — the overwhelm was. So we built the company we wished existed: it shows up, solves the problem simply, and proves it on a number you already track."</p>
-      <p>We use AI, but we’re not emotionally attached to it. We’re attached to fixing the problem.</p>
+      <p>"We started Sondri after watching teams spend eighteen months on AI pilots that never shipped. We help them choose a workflow to fix, build the software, and put it to use."</p>
+      <p>We use AI when it helps with the job.</p>
       <a href="/get-in-touch/">Get in Touch →</a>
     </div>
   </section>
@@ -213,7 +213,7 @@ const extraFaq = [
   <section>
     <p class="label">12 · Final CTA</p>
     <h2>The first conversation is free. The roadmap is yours either way.</h2>
-    <p>Thirty minutes with a founder. You describe the operation; we tell you honestly whether there’s a case.</p>
+    <p>Spend thirty minutes with a founder describing the process you want to fix. We’ll tell you whether we can help.</p>
     <div class="ctas">
       <Btn href="#">{CTA_PRIMARY} →</Btn>
     </div>

@@ -1,13 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
 import Btn from '../components/Btn.astro';
-import { CTA_PRIMARY, RISK_REVERSAL, problemStats, framework, capabilities, feelSteps } from '../../../sondri-site/src/data';
+import { CTA_PRIMARY, RISK_REVERSAL, problemStats, framework, capabilities, feelSteps } from '../data/copy';
 ---
 
 <Base title="Sondri — Simple solutions to not-so-simple problems">
   <section>
     <h1>Simple solutions to not-so-simple problems.</h1>
-    <p>The technology you need built — live within your business, fast.</p>
+    <p>We build software for the work slowing your business down.</p>
     <div class="ctas">
       <Btn href="#">{CTA_PRIMARY} →</Btn>
       <Btn href="/how-it-works/">See How It Works</Btn>
@@ -21,7 +21,7 @@ import { CTA_PRIMARY, RISK_REVERSAL, problemStats, framework, capabilities, feel
 
   <section>
     <h2>Everyone has an AI initiative. Almost nobody has one in production.</h2>
-    <p>Pilots launch, decks get approved, and the value never reaches production.</p>
+    <p>Teams approve AI pilots that never become software people use.</p>
     <div class="cards">
       {problemStats.map((s) => (
         <div class="card stat">
@@ -34,7 +34,7 @@ import { CTA_PRIMARY, RISK_REVERSAL, problemStats, framework, capabilities, feel
 
   <section>
     <h2>0 → 1 → n.</h2>
-    <p>Prove it, ship it, multiply it — and you commit one rung at a time, at the pace your business sets.</p>
+    <p>Start with one workflow, then decide whether to fund the next build.</p>
     <div class="cards">
       {framework.map((p) => (
         <div class="card">
@@ -46,12 +46,12 @@ import { CTA_PRIMARY, RISK_REVERSAL, problemStats, framework, capabilities, feel
         </div>
       ))}
     </div>
-    <p>Long-term customers can add a standing advisory seat — a permanent partner for every technology decision ahead.</p>
+    <p>Long-term customers can hire us to advise on technology purchases and plans.</p>
   </section>
 
   <section>
     <h2>You never have to become an AI company.</h2>
-    <p>Most teams don't need to understand AI. They need it to work. Here's the whole experience:</p>
+    <p>Here’s how we build software with your team.</p>
     <div class="cards">
       {feelSteps.map((s) => (
         <div class="card">
@@ -65,7 +65,7 @@ import { CTA_PRIMARY, RISK_REVERSAL, problemStats, framework, capabilities, feel
 
   <section>
     <div class="card">
-      <p>"We started Sondri because we kept watching the same movie: a capable team, a real problem, and eighteen months of AI pilots that never shipped. The technology was never the issue — the overwhelm was. So we built the company we wished existed: it shows up, solves the problem simply, and proves it on a number you already track."</p>
+      <p>"We started Sondri after watching teams spend eighteen months on AI pilots that never shipped. We help them choose a workflow to fix, build the software, and put it to use."</p>
       <a href="/get-in-touch/">Get in Touch →</a>
     </div>
   </section>

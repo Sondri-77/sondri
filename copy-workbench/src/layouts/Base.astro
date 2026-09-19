@@ -1,7 +1,7 @@
 ---
 import Img from '../components/Img.astro';
 import Btn from '../components/Btn.astro';
-import { navV2, TAGLINE, mailto } from '../../../sondri-site/src/data';
+import { navV2, TAGLINE, mailto } from '../data/copy';
 
 interface Props { title: string; footerLine?: string }
 const { title, footerLine = TAGLINE } = Astro.props;
@@ -23,6 +23,8 @@ const year = new Date().getFullYear();
         {navV2.map((item) => <a href={item.href}>{item.label}</a>)}
         <a href="/home-alt/">Home (alt: 10-section proposal)</a>
         <a href="/home-edgy/">Home (edgy)</a>
+        <a href="/rules/">Rules</a>
+        <a href="/copy-review/">Copy review</a>
       </div>
       <Btn href="#">Book discovery</Btn>
     </nav>

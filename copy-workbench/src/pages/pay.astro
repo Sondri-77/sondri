@@ -4,14 +4,14 @@ import Base from '../layouts/Base.astro';
 
 <Base title="Payments & deposits — Sondri">
   <section>
-    <h1>Secure client payment portal.</h1>
-    <p>Submit an agreed project deposit, retainer payment, or invoice. All transactions run through encrypted Stripe Checkout with instant receipt generation.</p>
+    <h1>Pay Sondri.</h1>
+    <p>Pay your agreed deposit, retainer, or invoice through Stripe Checkout and receive a receipt by email.</p>
   </section>
 
   <section>
     <div class="card">
       <h2>Pay an invoice or deposit</h2>
-      <p>Enter your billing email, the custom amount agreed with the Sondri engineering team, and your project reference.</p>
+      <p>Enter your billing email, the agreed amount, and your project reference.</p>
       <form>
         <div>
           <label for="cEmail">Billing email address *</label>
@@ -25,9 +25,9 @@ import Base from '../layouts/Base.astro';
           <label for="cDesc">Invoice reference / project description *</label>
           <input type="text" id="cDesc" placeholder="Deposit for AI Workflow Sprint" />
         </div>
-        <div><span class="btn">Proceed to Secure Checkout →</span></div>
+        <div><span class="btn">Continue to Stripe Checkout →</span></div>
       </form>
     </div>
-    <p>256-bit encrypted · Automatic PDF tax receipts · Powered by Stripe</p>
+    <p>Payments processed by Stripe.</p>
   </section>
 </Base>
