@@ -25,7 +25,8 @@ x-astro: &astro
   restart: unless-stopped
 
 services:
-  # The working copy — branch derek.dev.
+  # The working copy — branch derek.dev. The brutal design (formerly the
+  # :4330 study, now sondri-site/graveyard/sondri-brutal) lives here.
   synthesis:
     <<: *astro
     container_name: sondri-synthesis
@@ -55,29 +56,6 @@ services:
       - ../sondri-new-design/sondri-site:/app
       - new_modules:/app/node_modules
 
-  # Standalone experiment, not part of the site build. Its own dev script
-  # pins port 4330, so it doesn't take the shared 4321.
-  brutal:
-    <<: *astro
-    container_name: sondri-brutal
-    command: sh -c "bun install --silent && bun run dev --host"
-    ports: ['4330:4330']
-    expose: ['4330']
-    volumes:
-      - ./sondri-brutal:/app
-      - brutal_modules:/app/node_modules
-
-  # The second brutalist study, alongside v1. Its dev script pins 4331.
-  brutal2:
-    <<: *astro
-    container_name: sondri-brutal-v2
-    command: sh -c "bun install --silent && bun run dev --host"
-    ports: ['4331:4331']
-    expose: ['4331']
-    volumes:
-      - ./sondri-brutal-v2:/app
-      - brutal2_modules:/app/node_modules
-
   # Copy workbench: sondri-site page for page with the design stripped. Its dev
   # script pins 4350. sondri-site/src is mounted alongside, read-only, so the
   # page imports the live data.ts instead of a copy.
@@ -95,8 +73,7 @@ services:
 
   # Design references that have no build step: the .dc.html canvases, the
   # wordmark exports, the screenshots, the font originals. Served as a browsable
-  # directory. The interactive styleguide is not here — it is a page in
-  # sondri-site, at http://localhost:4321/styleguide.
+  # directory.
   design:
     image: nginx:alpine
     container_name: sondri-design-system
@@ -111,6 +88,4 @@ volumes:
   synthesis_modules:
   old_modules:
   new_modules:
-  brutal_modules:
-  brutal2_modules:
   workbench_modules:
