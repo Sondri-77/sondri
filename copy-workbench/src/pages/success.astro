@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+import Btn from '../components/Btn.astro';
+---
+
+<Base title="Payment confirmed — Sondri">
+  <section>
+    <div class="card">
+      <p>Payment confirmed</p>
+      <h1>Thank you for your payment.</h1>
+      <p>Your payment has been successfully processed by Stripe. A confirmation email with your tax invoice and receipt has been dispatched to your email address.</p>
+      <div class="ctas">
+        <Btn href="#">View Official Receipt &amp; Invoice →</Btn>
+      </div>
+      <a href="/">← Return to the Sondri homepage</a>
+    </div>
+  </section>
+</Base>

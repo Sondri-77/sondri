@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Payments & deposits — Sondri">
+  <section>
+    <h1>Secure client payment portal.</h1>
+    <p>Submit an agreed project deposit, retainer payment, or invoice. All transactions run through encrypted Stripe Checkout with instant receipt generation.</p>
+  </section>
+
+  <section>
+    <div class="card">
+      <h2>Pay an invoice or deposit</h2>
+      <p>Enter your billing email, the custom amount agreed with the Sondri engineering team, and your project reference.</p>
+      <form>
+        <div>
+          <label for="cEmail">Billing email address *</label>
+          <input type="email" id="cEmail" placeholder="billing@company.com" />
+        </div>
+        <div>
+          <label for="cAmount">Payment amount ($ USD) *</label>
+          <input type="number" id="cAmount" placeholder="2500.00" />
+        </div>
+        <div>
+          <label for="cDesc">Invoice reference / project description *</label>
+          <input type="text" id="cDesc" placeholder="Deposit for AI Workflow Sprint" />
+        </div>
+        <div><span class="btn">Proceed to Secure Checkout →</span></div>
+      </form>
+    </div>
+    <p>256-bit encrypted · Automatic PDF tax receipts · Powered by Stripe</p>
+  </section>
+</Base>

@@ -1,110 +1,79 @@
 ---
-// Every string on the current site, in page order (nav order, then unlinked
-// pages), section order = render order. Zero design: white, black, grays.
-import Shared from '../copy/Shared.astro';
-import Home from '../copy/Home.astro';
-import About from '../copy/About.astro';
-import HowItWorks from '../copy/HowItWorks.astro';
-import GetInTouch from '../copy/GetInTouch.astro';
-import Pay from '../copy/Pay.astro';
-import Success from '../copy/Success.astro';
-import NotFound from '../copy/NotFound.astro';
-import Styleguide from '../copy/Styleguide.astro';
-
-const toc = [
-  ['#shared', 'Shared (nav, footer, notices)'],
-  ['#home', 'Home'],
-  ['#about', 'About'],
-  ['#how-it-works', 'How It Works'],
-  ['#get-in-touch', 'Get in Touch'],
-  ['#pay', 'Pay an Invoice'],
-  ['#success', 'Payment confirmed'],
-  ['#404', '404'],
-  ['#styleguide', 'Styleguide'],
-];
+import Base from '../layouts/Base.astro';
+import Btn from '../components/Btn.astro';
+import { CTA_PRIMARY, RISK_REVERSAL, problemStats, framework, capabilities, feelSteps } from '../../../sondri-site/src/data';
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sondri copy workbench</title>
-    <meta name="robots" content="noindex" />
-  </head>
-  <body>
-    <header class="top">
-      <p class="label">Copy workbench — every string on the current sondri-site, verbatim, in page and render order. Gray boxes stand in for images. Buttons are labels, not links.</p>
-      <ul class="inline toc">{toc.map(([href, t]) => <li><a href={href}>{t}</a></li>)}</ul>
-    </header>
+<Base title="Sondri — Simple solutions to not-so-simple problems">
+  <section>
+    <h1>Simple solutions to not-so-simple problems.</h1>
+    <p>The technology you need built — live within your business, fast.</p>
+    <div class="ctas">
+      <Btn href="#">{CTA_PRIMARY} →</Btn>
+      <Btn href="/how-it-works/">See How It Works</Btn>
+    </div>
+    <p>{RISK_REVERSAL}</p>
+  </section>
 
-    <div id="shared" class="page"><p class="label">Shared across every page</p><h1 class="page-name">Layout</h1></div>
-    <Shared />
-    <Home />
-    <About />
-    <HowItWorks />
-    <GetInTouch />
-    <Pay />
-    <Success />
-    <NotFound />
-    <Styleguide />
-  </body>
-</html>
+  <section>
+    <div class="strip">{capabilities.map((c) => <span>{c}</span>)}</div>
+  </section>
 
-<style is:global>
-  :root { --g1: #f4f4f4; --g2: #d9d9d9; --g3: #999; --g4: #666; }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0 auto;
-    padding: 32px 24px 120px;
-    max-width: 880px;
-    background: #fff;
-    color: #000;
-    font: 16px/1.55 system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
-  }
-  a { color: #000; }
-  h1, h2, h3, h4 { margin: 0 0 12px; line-height: 1.2; font-weight: 600; }
-  h1 { font-size: 30px; }
-  h2 { font-size: 24px; }
-  h3 { font-size: 18px; }
-  h4 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.06em; }
-  p, ul { margin: 0 0 12px; }
-  ul { padding-left: 20px; }
-  .lede { font-size: 18px; color: #222; }
-  .small { font-size: 14px; color: var(--g4); }
-  .label { font-size: 12px; color: var(--g3); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 14px; }
-  .note { color: var(--g3); font-size: 12px; text-transform: none; letter-spacing: 0; font-weight: 400; }
-  .stat { font-size: 28px; font-weight: 600; margin: 0 0 6px; }
+  <section>
+    <h2>Everyone has an AI initiative. Almost nobody has one in production.</h2>
+    <p>Pilots launch, decks get approved, and the value never reaches production.</p>
+    <div class="cards">
+      {problemStats.map((s) => (
+        <div class="card stat">
+          <b>{s.n}</b>
+          <span>{s.label}</span>
+        </div>
+      ))}
+    </div>
+  </section>
 
-  .top { padding-bottom: 24px; border-bottom: 1px solid var(--g2); }
-  .toc { margin: 0; }
+  <section>
+    <h2>0 → 1 → n.</h2>
+    <p>Prove it, ship it, multiply it — and you commit one rung at a time, at the pace your business sets.</p>
+    <div class="cards">
+      {framework.map((p) => (
+        <div class="card">
+          <p>{p.num}</p>
+          <h3>{p.name}</h3>
+          <p>{p.does}</p>
+          <p>You walk away with</p>
+          <p>{p.gets}</p>
+        </div>
+      ))}
+    </div>
+    <p>Long-term customers can add a standing advisory seat — a permanent partner for every technology decision ahead.</p>
+  </section>
 
-  .page { margin-top: 96px; padding-top: 32px; border-top: 4px solid #000; }
-  .page-name { font-size: 40px; }
-  .meta { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; font-size: 14px; margin: 0; }
-  .meta dt { color: var(--g3); }
-  .meta dd { margin: 0; }
+  <section>
+    <h2>You never have to become an AI company.</h2>
+    <p>Most teams don't need to understand AI. They need it to work. Here's the whole experience:</p>
+    <div class="cards">
+      {feelSteps.map((s) => (
+        <div class="card">
+          <p>{s.i}</p>
+          <h3>{s.t}</h3>
+          <p>{s.b}</p>
+        </div>
+      ))}
+    </div>
+  </section>
 
-  .sec { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--g2); }
+  <section>
+    <div class="card">
+      <p>"We started Sondri because we kept watching the same movie: a capable team, a real problem, and eighteen months of AI pilots that never shipped. The technology was never the issue — the overwhelm was. So we built the company we wished existed: it shows up, solves the problem simply, and proves it on a number you already track."</p>
+      <a href="/get-in-touch/">Get in Touch →</a>
+    </div>
+  </section>
 
-  .inline { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 10px; }
-  .inline li { border: 1px solid var(--g2); padding: 3px 10px; font-size: 14px; }
-  .inline li.note { border: 0; padding: 3px 0; }
-
-  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 0 0 12px; }
-  .card { border: 1px solid var(--g2); padding: 16px; }
-  .card > :last-child { margin-bottom: 0; }
-  .card ul { padding-left: 0; list-style: none; }
-  .faq { margin-bottom: 18px; }
-
-  .img {
-    display: flex; align-items: center; justify-content: center;
-    background: var(--g1); border: 1px dashed var(--g2);
-    color: var(--g3); font-size: 12px; text-align: center; padding: 4px; margin: 0 0 12px;
-  }
-  .img span { max-width: 100%; }
-
-  .btn { display: inline-block; border: 1px solid #000; padding: 10px 18px; margin: 0 8px 12px 0; }
-  .btn .kind { display: block; color: var(--g3); font-size: 11px; margin-top: 2px; }
-  .field { border: 1px solid var(--g2); background: var(--g1); padding: 8px 12px; font-family: ui-monospace, Menlo, monospace; font-size: 14px; }
-</style>
+  <section>
+    <h2>The first conversation is free. The roadmap is yours either way.</h2>
+    <div class="ctas">
+      <Btn href="#">{CTA_PRIMARY} →</Btn>
+    </div>
+  </section>
+</Base>

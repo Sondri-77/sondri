@@ -1,7 +1,7 @@
 ---
 /** Gray box standing in for an image / illustration / logo. */
-interface Props { w?: number | string; h?: number | string; what: string }
-const { w = 320, h = 180, what } = Astro.props;
+interface Props { w?: number | string; h?: number | string }
+const { w = 320, h = 180 } = Astro.props;
 const px = (v: number | string) => (typeof v === 'number' ? `${v}px` : v);
 ---
-<div class="img" style={`width:${px(w)};max-width:100%;height:${px(h)}`}><span>{what}</span></div>
+<div class="img" style={`width:${px(w)};max-width:100%;height:${px(h)}`}></div>

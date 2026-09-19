@@ -78,7 +78,7 @@ services:
       - ./sondri-brutal-v2:/app
       - brutal2_modules:/app/node_modules
 
-  # Copy workbench: every string on the current site, zero design. Its dev
+  # Copy workbench: sondri-site page for page with the design stripped. Its dev
   # script pins 4350. sondri-site/src is mounted alongside, read-only, so the
   # page imports the live data.ts instead of a copy.
   workbench:

@@ -1,6 +1,6 @@
 ---
-/** A button label, drawn as a plain bordered box. Never navigates. */
-interface Props { kind?: string }
-const { kind } = Astro.props;
+/** Button / CTA: a plain bordered box with the label. */
+interface Props { href: string }
+const { href } = Astro.props;
 ---
-<span class="btn"><slot />{kind && <small class="kind">{kind}</small>}</span>
+<a class="btn" href={href}><slot /></a>

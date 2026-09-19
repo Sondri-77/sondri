@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+import Btn from '../components/Btn.astro';
+import { contactSteps, CTA_PRIMARY, RISK_REVERSAL } from '../../../sondri-site/src/data';
+---
+
+<Base title="Get in Touch — Sondri">
+  <section>
+    <h1>Talk to a founder.</h1>
+    <p>No sales team, no qualification form. You'll talk to the people who build the software, and you'll get a straight answer about whether there's a case.</p>
+  </section>
+
+  <section>
+    <h2>Three steps. The first two are free.</h2>
+    <div class="cards">
+      {contactSteps.map((s) => (
+        <div class="card">
+          <p>{s.i}</p>
+          <h3>{s.t}</h3>
+          <p>{s.b}</p>
+        </div>
+      ))}
+    </div>
+    <div class="ctas">
+      <Btn href="#">{CTA_PRIMARY} →</Btn>
+    </div>
+    <p>{RISK_REVERSAL}</p>
+    <p>Existing customer settling an invoice? <a href="/pay/">Pay an Invoice →</a></p>
+  </section>
+</Base>

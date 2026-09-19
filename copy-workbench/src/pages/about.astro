@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import Btn from '../components/Btn.astro';
+import { mailto } from '../../../sondri-site/src/data';
+---
+
+<Base title="About — Sondri">
+  <section>
+    <h1>Built by operators who've shipped AI into the real world.</h1>
+    <p>A small senior core team with a global specialist network. We put working AI inside the enterprises that move real money — and we're hiring the first ten people who will shape how.</p>
+    <div class="ctas">
+      <Btn href="#">Book a Discovery Sprint →</Btn>
+    </div>
+  </section>
+
+  <section>
+    <h2>Our mission.</h2>
+    <p>Great software shouldn't require an enterprise budget. Our mission is to give small and midsize businesses the technology muscle the giants take for granted — built into the systems they already run, proven on the numbers they already track.</p>
+    <p>We're hiring the first ten people who will shape how. <a href={mailto('Founding-team application')}>Careers →</a></p>
+  </section>
+</Base>

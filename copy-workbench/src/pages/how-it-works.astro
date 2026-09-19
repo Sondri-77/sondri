@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import Btn from '../components/Btn.astro';
+import { timeline, teamModel, faq, CTA_PRIMARY, RISK_REVERSAL } from '../../../sondri-site/src/data';
+---
+
+<Base title="How It Works — Sondri">
+  <section>
+    <h1>From kickoff to production, without the drag.</h1>
+    <p>A senior core team designs the solution. A vetted specialist network builds it. You get results in the systems you already own — not another platform.</p>
+  </section>
+
+  <section>
+    <div class="cards">
+      {timeline.map((t) => (
+        <div class="card">
+          <p>{t.wk.toLowerCase()}</p>
+          <h3>{t.title}</h3>
+          <p>{t.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2>Senior architects. Vetted builders. Your operators.</h2>
+    <div class="cards">
+      {teamModel.map((m) => (
+        <div class="card">
+          <h3>{m.title}</h3>
+          <p>{m.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2>Asked on almost every intro call.</h2>
+    {faq.map((f) => (
+      <details>
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </section>
+
+  <section>
+    <h2>Proven on your workflows. Measured on your P&L.</h2>
+    <div class="ctas">
+      <Btn href="#">{CTA_PRIMARY} →</Btn>
+      <Btn href="/get-in-touch/">Get in Touch</Btn>
+    </div>
+    <p>{RISK_REVERSAL}</p>
+  </section>
+</Base>

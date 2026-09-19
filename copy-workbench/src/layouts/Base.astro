@@ -1,0 +1,99 @@
+---
+import Img from '../components/Img.astro';
+import Btn from '../components/Btn.astro';
+import { navV2, TAGLINE, mailto } from '../../../sondri-site/src/data';
+
+interface Props { title: string }
+const { title } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="robots" content="noindex" />
+  </head>
+  <body>
+    <nav>
+      <a href="/"><Img w={111} h={42} /></a>
+      <div class="links">
+        {navV2.map((item) => <a href={item.href}>{item.label}</a>)}
+      </div>
+      <Btn href="#">Book discovery</Btn>
+    </nav>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer>
+      <Img w={152} h={45} />
+      <p>{TAGLINE}</p>
+      <div class="cols">
+        <div>
+          <p><b>Company</b></p>
+          {navV2.filter((i) => i.href !== '/').map((i) => <a href={i.href}>{i.label}</a>)}
+        </div>
+        <div>
+          <p><b>Contact</b></p>
+          <a href="/get-in-touch/">Get in Touch</a>
+          <a href={mailto('Investor inquiry')}>Investor Inquiries</a>
+          <a href={mailto('Customer pilot')}>Customer Pilots</a>
+          <a href={mailto('Founding-team application')}>Careers</a>
+        </div>
+      </div>
+      <p class="bottom"><span>© Sondri {year}</span> <a href="/pay/">Pay an Invoice</a></p>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0 auto;
+    padding: 0 24px 64px;
+    max-width: 720px;
+    background: #fff;
+    color: #000;
+    font: 16px/1.5 sans-serif;
+  }
+  a { color: #000; }
+  h1, h2, h3 { margin: 0 0 12px; line-height: 1.2; }
+  h1 { font-size: 32px; }
+  h2 { font-size: 24px; }
+  h3 { font-size: 18px; }
+  p, ul { margin: 0 0 12px; }
+  ul { padding-left: 20px; }
+
+  nav { display: flex; align-items: center; gap: 24px; padding: 16px 0; border-bottom: 1px solid #eee; }
+  nav .links { display: flex; gap: 20px; flex: 1; flex-wrap: wrap; }
+  nav .img { margin: 0; }
+
+  section { padding: 32px 0; border-bottom: 1px solid #eee; }
+  section > :last-child { margin-bottom: 0; }
+
+  .img { background: #ccc; margin: 0 0 12px; }
+  .btn { display: inline-block; border: 1px solid #000; padding: 10px 18px; margin: 0 8px 12px 0; text-decoration: none; }
+  .ctas { margin-top: 16px; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 0 0 12px; }
+  .card { border: 1px solid #eee; padding: 16px; }
+  .card > :last-child { margin-bottom: 0; }
+  .strip { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+  .stat b { display: block; font-size: 28px; }
+
+  details { margin: 0 0 12px; }
+  details p { margin-top: 8px; }
+
+  form { display: flex; flex-direction: column; gap: 16px; }
+  label { display: block; margin-bottom: 4px; }
+  input { display: block; width: 100%; border: 1px solid #000; padding: 8px 12px; font: inherit; background: #fff; }
+
+  footer { padding-top: 32px; }
+  footer .cols { display: flex; gap: 48px; flex-wrap: wrap; margin-bottom: 24px; }
+  footer .cols a { display: block; margin-bottom: 6px; }
+  footer .bottom { display: flex; justify-content: space-between; border-top: 1px solid #eee; padding-top: 16px; }
+</style>
