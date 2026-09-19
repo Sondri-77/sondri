@@ -41,5 +41,6 @@ const [h2, dot] = splitDot(knifeHead.h2);
     background: currentColor;
   }
   .body { color: var(--pale); font-size: 15px; line-height: 22px; max-width: 34ch; margin-top: auto; }
-  .close { padding-top: var(--s-64); font-size: 20px; line-height: 1.4; max-width: 40ch; }
+  .close { padding-top: var(--s-64); font-size: 20px; line-height: 1.4; max-width: 60ch; }
+  @media (min-width: 900px) { .close { white-space: nowrap; max-width: none; } }
 </style>

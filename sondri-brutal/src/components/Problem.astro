@@ -2,6 +2,9 @@
 import { problem, problemStats } from '../home-data';
 import { splitDot } from '../lib/dot';
 const [h2, dot] = splitDot(problem.h2);
+// Straight quotes in the copy string set as curly ones, and the quoted
+// phrase never breaks: the closer is one line on desktop.
+const [closeHead, closeTail] = problem.close.replace(/"([^"]+)"/, '\u201c$1\u201d').split(/(?=\u201c)/);
 ---
 
 <!-- ProblemStats, re-headed: the three big numbers under the workbench copy. -->
@@ -27,7 +30,7 @@ const [h2, dot] = splitDot(problem.h2);
       ))}
     </div>
 
-    <p class="h4 close">{problem.close}</p>
+    <p class="h4 close">{closeHead}<span class="nb">{closeTail}</span></p>
   </div>
 </section>
 
@@ -42,5 +45,7 @@ const [h2, dot] = splitDot(problem.h2);
     background: currentColor;
   }
   .body-s { max-width: 32ch; }
-  .close { padding-top: var(--s-64); max-width: 24ch; }
+  .close { padding-top: var(--s-64); max-width: 40ch; }
+  @media (min-width: 900px) { .close { white-space: nowrap; max-width: none; } }
+  .nb { white-space: nowrap; }
 </style>
