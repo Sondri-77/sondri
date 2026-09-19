@@ -3,22 +3,13 @@
  * PROPOSAL — alternate home page (first-draft copy).
  * Blends the 10 sections from docs/comparison-sections.html with the site's
  * existing home sections (founder note kept as its own section) plus two
- * added after Problem: "Describe the problem" and "Twist the knife".
+ * added after Problem: "Twist the knife".
  * Numbered labels are intentional on this page. `[placeholder]` marks
  * proof/claims we don't have yet.
  */
 import Base from '../layouts/Base.astro';
 import Btn from '../components/Btn.astro';
 import { CTA_PRIMARY, RISK_REVERSAL, problemStats, faq } from '../../../sondri-site/src/data';
-
-const symptoms = [
-  'The same data gets typed into two systems because they don’t talk.',
-  'One process only works because Dana knows how it works. Nobody talks about what happens if Dana leaves.',
-  'The month-end number lives in a spreadsheet that three people email around and nobody fully trusts.',
-  'A quote, a claim, or an approval sits in someone’s inbox for days. The customer notices.',
-  'Everyone has a workaround. None of them are the same workaround.',
-  'You tried the software. It created three new problems.',
-];
 
 const knife = [
   { t: 'Money', b: 'A workaround that costs an hour a day is a salary a year — per person doing it. Multiply by the number of people who’ve quietly learned to live with it. [placeholder: cost-of-inaction calculator]' },
@@ -110,18 +101,9 @@ const extraFaq = [
     <p>Your business doesn’t need more AI. It needs fewer problems.</p>
   </section>
 
-  <section>
-    <p class="label">4 · Describe the problem</p>
-    <h2>You already know which one it is.</h2>
-    <p>It’s the process everyone complains about, nobody owns, and people have quietly learned to work around. It usually looks like one of these:</p>
-    <ul>
-      {symptoms.map((x) => <li>{x}</li>)}
-    </ul>
-    <p>“Why do we still do it this way?” “It’s how we’ve always done it.” That’s not a reason.</p>
-  </section>
 
   <section>
-    <p class="label">5 · Twist the knife</p>
+    <p class="label">4 · Twist the knife</p>
     <h2>Leaving it alone isn’t free.</h2>
     <p>The workaround feels cheap because nobody sends an invoice for it. Here’s what it’s actually costing.</p>
     <div class="cards">
@@ -136,7 +118,7 @@ const extraFaq = [
   </section>
 
   <section>
-    <p class="label">6 · Solution &amp; benefits</p>
+    <p class="label">5 · Solution &amp; benefits</p>
     <h2>0 → 1 → n.</h2>
     <p>Prove it, ship it, multiply it. Discovery finds the three workflows where the money moves fastest. Production puts the first one live inside your systems. Multiply ships the next ones on the foundation already built — each faster and cheaper than the last.</p>
     <ul>
@@ -147,7 +129,7 @@ const extraFaq = [
   </section>
 
   <section>
-    <p class="label">7 · Social proof</p>
+    <p class="label">6 · Social proof</p>
     <h2>What it looks like when the number moves.</h2>
     <div class="cards">
       {testimonials.map((t) => (
@@ -161,7 +143,7 @@ const extraFaq = [
   </section>
 
   <section>
-    <p class="label">8 · How it works</p>
+    <p class="label">7 · How it works</p>
     <h2>You never have to become an AI company.</h2>
     <p>Most teams don’t need to understand AI. They need it to work. The whole experience:</p>
     <div class="cards">
@@ -176,7 +158,7 @@ const extraFaq = [
   </section>
 
   <section>
-    <p class="label">9 · Competitor comparison</p>
+    <p class="label">8 · Competitor comparison</p>
     <h2>Your other options, honestly.</h2>
     <p>None of these are wrong. They’re just slower, pricier, or riskier than they need to be for a problem this size.</p>
     <table>
@@ -199,7 +181,7 @@ const extraFaq = [
   </section>
 
   <section>
-    <p class="label">10 · Features</p>
+    <p class="label">9 · Features</p>
     <h2>Six things we build. Bring us the messy one.</h2>
     <ul>
       {features.map((f) => (
@@ -209,7 +191,7 @@ const extraFaq = [
   </section>
 
   <section>
-    <p class="label">11 · Why Sondri exists</p>
+    <p class="label">10 · Why Sondri exists</p>
     <div class="card">
       <p>"We started Sondri because we kept watching the same movie: a capable team, a real problem, and eighteen months of AI pilots that never shipped. The technology was never the issue — the overwhelm was. So we built the company we wished existed: it shows up, solves the problem simply, and proves it on a number you already track."</p>
       <p>We use AI, but we’re not emotionally attached to it. We’re attached to fixing the problem.</p>
@@ -218,7 +200,7 @@ const extraFaq = [
   </section>
 
   <section>
-    <p class="label">12 · FAQ</p>
+    <p class="label">11 · FAQ</p>
     <h2>Asked on almost every intro call.</h2>
     {[...faq, ...extraFaq].map((f) => (
       <details>
@@ -229,7 +211,7 @@ const extraFaq = [
   </section>
 
   <section>
-    <p class="label">13 · Final CTA</p>
+    <p class="label">12 · Final CTA</p>
     <h2>The first conversation is free. The roadmap is yours either way.</h2>
     <p>Thirty minutes with a founder. You describe the operation; we tell you honestly whether there’s a case.</p>
     <div class="ctas">
