@@ -1,11 +1,15 @@
-/* Sondri — brutalist study v1.
-   A close copy of blacksmith.sh, rebuilt on Sondri's gold + deep green instead
-   of their acid yellow + near-black. Their system, verified against the live
-   site's computed styles and kept intact:
+/* Sondri — brutalist study v1, on v2's palette, with gold as the accent.
+   A close copy of blacksmith.sh, rebuilt on Sondri's gold + deep teal instead
+   of their acid yellow + near-black. The teal/white field colours and the
+   gradient-map ramp come from the v2 study (paper.css, hero-fx.ts); gold is
+   the signal on top of them, the way it always was here. Their system,
+   verified against the live site's computed styles and kept intact:
 
    - one field colour carrying the hero, the stat band and the CTA/footer, with
-     light paper between them. Theirs is the accent; ours is the brand's deep
+     white between them. Theirs is the accent; ours is the brand's deep
      teal, and gold stays a signal — buttons, chips, marks, the full stop.
+   - sections are separated by spacing and background tone only — no rules
+     between them (captain's call).
    - an 8px spacing scale (their --spacing--spacing-04…96, same steps as ours)
    - IBM Plex Sans for everything structural, IBM Plex Mono for labels and code.
      Ours swaps the mono for JetBrains and adds Florexa for the wordmark — their
@@ -30,35 +34,44 @@
 }
 
 :root {
-  /* ── Brand constants (Sondri Brand Guidelines v2.0) ── */
-  --ink: #081f1f;
-  --deep: #031919;
-  --bone: #e6f2f0;
+  /* ── v2's palette: teal and white, plus the ramp between. ── */
+  --teal: #081f1f;
+  --teal-deep: #031919;
+  --white: #ffffff;
+  --off: #f2f6f5;       /* the faint tint their white-on-mercury sections used */
+  --muted: #4d6b6a;     /* teal at reading weight on white */
+  --muted-inv: #9db6b4;
+  /* The hero's gradient-map ramp (hero-fx.ts RAMP[1], RAMP[2]) — the trail's
+     green and the dithered image slots. */
+  --teal-mid: #1a403e;
+  --teal-soft: #789694;
   --mist: #c9dad7;
+  /* ── The accent (Sondri Brand Guidelines v2.0). ── */
   --gold: #fdb343;
   --gold-2: #f5a71e;
-  /* Their body field is a neutral #f5f5f5; ours carries a trace of the brand
-     green so it sits under gold without reading grey. */
-  --paper: #f4f6f5;
-  --paper-2: #e9edec;
+  /* Aliases the components were written against. */
+  --ink: var(--teal);
+  --deep: var(--teal-deep);
+  --paper: var(--white);
+  --paper-2: var(--off);
 
   /* ── Semantic tokens. Paper is the default; the accent fields opt in with
      .on-dark. Components read these and nothing else. ── */
   --surface: var(--paper);
   --surface-2: var(--paper-2);
-  --text-hi: var(--ink);
-  --pale: #2c3f3e;
-  --steel: #5c7472;
-  --accent: var(--ink);
-  --line: var(--ink);
-  --line-soft: rgba(8, 31, 31, 0.22);
+  --text-hi: var(--teal);
+  --pale: var(--teal-mid);
+  --steel: var(--muted);
+  --accent: var(--teal);
+  --line: var(--teal);
+  --line-soft: rgba(8, 31, 31, 0.18);
   --tint: rgba(8, 31, 31, 0.05);
-  --chip-bg: var(--ink);
+  --chip-bg: var(--teal);
   --chip-fg: var(--gold);
   /* The brand's full stop, and the primary button fill. */
   --dot: var(--gold-2);
   --btn-fill: var(--gold);
-  --btn-text: var(--ink);
+  --btn-text: var(--teal);
 
   /* 8px spacing scale — the same steps they use. */
   --s-04: 4px;  --s-08: 8px;  --s-16: 16px; --s-24: 24px;
@@ -79,20 +92,25 @@
 
 /* The deep-teal field: hero, stat band, CTA/footer. Gold is the signal on it. */
 .on-dark {
-  --surface: var(--ink);
-  --surface-2: var(--deep);
-  --text-hi: #edf5f4;
-  --pale: #aac2c2;
-  --steel: #6a8988;
+  --surface: var(--teal);
+  --surface-2: var(--teal-deep);
+  --text-hi: var(--white);
+  --pale: var(--muted-inv);
+  --steel: var(--teal-soft);
   --accent: var(--gold);
-  --line: rgba(230, 242, 240, 0.24);
-  --line-soft: rgba(230, 242, 240, 0.12);
-  --tint: rgba(230, 242, 240, 0.06);
+  --line: rgba(255, 255, 255, 0.4);
+  --line-soft: rgba(255, 255, 255, 0.16);
+  --tint: rgba(255, 255, 255, 0.07);
   --dot: var(--gold);
+  --btn-fill: var(--gold);
+  --btn-text: var(--teal);
   --chip-bg: var(--gold);
-  --chip-fg: var(--ink);
+  --chip-fg: var(--teal);
   --shadow-col: var(--gold);
 }
+/* The off-white field: the same components one tone down, so two light
+   sections in a row still read as two without a rule between them. */
+.on-off { --surface: var(--off); --paper: var(--off); background: var(--surface); }
 .on-dark,
 .on-paper { background: var(--surface); color: var(--pale); }
 
@@ -108,7 +126,7 @@ body {
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
 }
-::selection { background: var(--gold); color: var(--ink); }
+::selection { background: var(--gold); color: var(--teal); }
 img { display: block; max-width: 100%; }
 a { color: inherit; }
 
@@ -116,16 +134,13 @@ a { color: inherit; }
 
 .wrap { max-width: var(--wrap); margin-inline: auto; padding-inline: var(--pad-x); }
 
-/* A hairline separates two sections that share a surface; an accent field
-   separates itself, so it neither draws one nor needs one above it. */
-.section { border-top: 1px solid var(--line); }
-.section.on-dark,
-.on-dark + .section { border-top: 0; }
+/* No rules between sections: tone and the 96px pad do the separating. */
+.section { border-top: 0; }
 .section-pad { padding-block: var(--s-96); }
 
 .skip {
   position: absolute; left: -9999px; top: 0; z-index: 100;
-  background: var(--gold); color: var(--ink); padding: 12px 20px;
+  background: var(--gold); color: var(--teal); padding: 12px 20px;
   font: 500 14px/1 var(--mono); text-transform: uppercase;
 }
 .skip:focus { left: 0; }
@@ -166,7 +181,7 @@ a { color: inherit; }
   background: var(--mist); color: var(--ink);
   padding: 0 4px; box-decoration-break: clone; -webkit-box-decoration-break: clone;
 }
-.on-dark .hl { background: var(--gold); color: var(--ink); }
+.on-dark .hl { background: var(--gold); color: var(--teal); }
 
 /* A dark chip with accent text — their stat markers. */
 .chip {
@@ -196,7 +211,7 @@ a { color: inherit; }
   background: var(--btn-fill); border-color: var(--btn-fill); color: var(--btn-text);
   font-weight: 500;
 }
-.btn-gold:hover { background: var(--gold-2); border-color: var(--gold-2); color: var(--ink); }
+.btn-gold:hover { background: var(--gold-2); border-color: var(--gold-2); color: var(--teal); }
 .btn .arr { transition: transform 0.15s linear; }
 .btn:hover .arr { transform: translateX(3px); }
 
@@ -231,11 +246,10 @@ a { color: inherit; }
 .sec-head .right { display: flex; flex-direction: column; gap: var(--s-24); align-items: flex-start; }
 @media (max-width: 900px) { .sec-head { grid-template-columns: 1fr; gap: var(--s-24); padding-bottom: var(--s-40); } }
 
-/* Their kicker: a full-width rule with "/ NAME" sitting under it. */
+/* Their kicker, "/ NAME". It used to sit under a full-width rule; that went
+   with the section dividers. */
 .eyebrow {
   display: block;
-  border-top: 1px solid var(--line);
-  padding-top: var(--s-16);
   margin-bottom: var(--s-32);
 }
 .eyebrow .sq { display: none; }
@@ -243,14 +257,14 @@ a { color: inherit; }
 /* ── Surfaces ───────────────────────────────────────── */
 
 /* Their panel: a 1px outline plus a hard, unblurred offset block. Never a blur.
-   The offset takes the surface's own contrast colour — ink on paper, gold on
+   The offset takes the surface's own contrast colour — teal on white, gold on
    the teal field — so it always reads as a solid block, never as a shadow. */
 .panel {
   border: 1px solid var(--line);
   background: var(--paper);
   box-shadow: var(--shadow-x) var(--shadow-x) 0 var(--shadow-col);
 }
-.on-dark .panel { border-color: var(--gold); }
+.on-dark .panel { border-color: var(--gold); background: var(--teal); }
 
 /* Their halftone fill. */
 .dots {
