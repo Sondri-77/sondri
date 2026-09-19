@@ -1,0 +1,260 @@
+---
+/**
+ * EDGY — the locked 12 sections (decision D1), rewritten in the captain's
+ * voice. Same order and roughly the same facts as home-alt; different mouth.
+ * Every big heading has 3 variants (primary + 2), cycled by the ‹ › control.
+ * `[placeholder]` marks proof we don't have yet.
+ */
+import Base from '../layouts/Base.astro';
+import Btn from '../components/Btn.astro';
+import Heading from '../components/Heading.astro';
+import { CTA_PRIMARY, RISK_REVERSAL, problemStats } from '../../../sondri-site/src/data';
+
+const VALUE_LINE =
+  'Sondri works where the money moves—helping businesses improve the workflows, decisions, and systems that create value, with AI where it helps.';
+
+const knife = [
+  { t: 'Money', b: 'An hour a day of workaround is a salary a year, per person doing it. Now count the people who’ve quietly learned to live with it. [placeholder: cost-of-inaction calculator]' },
+  { t: 'Time', b: 'It doesn’t get cheaper by waiting. More volume means more hands on the manual thing, and a bigger mess to unwind when you finally do.' },
+  { t: 'People', b: 'Your best operators are spending their judgment on data entry. That’s the work people quit over. And when Greg leaves, Greg was the documentation.' },
+];
+
+const benefits = [
+  { t: 'A number, not a deck', b: 'Every engagement starts from a line on your P&L, a cost to cut or revenue to unlock, and gets measured against it.' },
+  { t: 'Your systems, your code', b: 'Built into the ERP, CRM, and spreadsheets you already run. No Sondri platform, nothing to license, nothing to migrate off later.' },
+  { t: 'One rung at a time', b: 'Fixed price per phase, agreed before it starts. Prove it before you fund production. Fund production before you fund scale.' },
+];
+
+const testimonials = [
+  { q: '[placeholder] "We’d been talking about fixing invoice matching for two years. Six weeks later it was live and it just… works."', who: '[placeholder] COO, regional logistics company · [placeholder] 14 hrs/week back to the finance team' },
+  { q: '[placeholder] "They told us on the first call which of our three ideas was worth doing. That’s why we hired them."', who: '[placeholder] CFO, mid-market manufacturer · [placeholder] first build in production in 7 weeks' },
+  { q: '[placeholder] "No platform, no lock-in. Our team owns it and can read every line."', who: '[placeholder] Head of Ops, healthcare services group · [placeholder] $180k annual cost gone' },
+];
+
+const steps = [
+  { i: '01', t: 'Tell us what’s slow', b: 'Thirty minutes on the work that eats your team’s week. No prep, no jargon, no deck.' },
+  { i: '02', t: 'We build it into your systems', b: 'You keep running the business. We build on the tech and data you already have.' },
+  { i: '03', t: 'You watch the number move', b: 'The slow thing, running fast, and a line on the P&L that changed.' },
+];
+
+const comparison = {
+  cols: ['Sondri', 'Typical agency / SI', 'Hiring in-house', 'DIY tools'],
+  rows: [
+    { k: 'Time to something in production', v: ['Weeks [placeholder: 6–8]', 'Quarters [placeholder: 6–9 mo.]', 'Months to hire, then months to build', 'Days, until it touches a real system'] },
+    { k: 'Cost shape', v: ['Fixed price per phase, quoted before it starts', 'Time & materials; scope grows with the invoice', 'Salary + benefits + management, project or not', 'Cheap, then your weekends'] },
+    { k: 'Who owns the code', v: ['You. Runs in your environment', 'Often the vendor’s platform or license', 'You', 'You, and whoever set it up'] },
+    { k: 'Commitment up front', v: ['One rung. Discovery is free', 'Multi-phase SOW before the first thing ships', 'A full-time headcount', 'None, and nobody accountable'] },
+    { k: 'After launch', v: ['We run it, tune it, ship the next one', 'Change orders, or a handoff deck', 'Depends on whether that person stays', 'Breaks the day the workflow changes'] },
+  ],
+};
+
+const features = [
+  { t: 'Workflow Automation', b: 'The three-person, half-a-day process, done by software, with a human approval gate where it matters.' },
+  { t: 'Data & Reporting', b: 'The numbers you argue about in meetings, pulled from the systems of record and kept current without anyone re-keying them.' },
+  { t: 'Customer Operations', b: 'Quoting, onboarding, tickets, renewals. Faster answers without adding headcount.' },
+  { t: 'Back Office', b: 'Invoicing, matching, claims, collections, close. The unglamorous work where a typo costs real money.' },
+  { t: 'Integrations', b: 'The systems that don’t talk, made to talk. Yes, that includes the spreadsheet everyone fears but nobody is allowed to kill.' },
+  { t: 'Agentic AI Solutions', b: 'AI that runs a multi-step job end to end, with monitoring, audit trails, and a person who can pull the plug.' },
+];
+
+const faq = [
+  { q: 'Does our data leave our systems?', a: 'No. Everything we build runs in your environment, inside your controls, with audit trails, approvals, and guardrails your auditors will recognize.' },
+  { q: 'What do you build on?', a: 'Whatever you already run. ERP, CRM, spreadsheets, payments. There is no Sondri platform to adopt and no license to shelve.' },
+  { q: 'Who owns what you build?', a: 'You do. Code, integrations, docs. Yours, in your environment. We are not holding your business hostage.' },
+  { q: 'What does it cost?', a: 'Quoted per engagement, fixed price agreed before each phase, and you commit one rung at a time. No one-size-fits-all packages.' },
+  { q: 'What if the first build misses its baseline?', a: 'The baseline is agreed before we start and the work is measured against it. Miss the bar and you keep the roadmap and the measurement, and you owe nothing further.' },
+  { q: 'How fast can we start?', a: 'The first discovery call is free. From kickoff, the roadmap comes together in days and working software follows in weeks. Not quarters.' },
+  { q: 'Why not just hire an agency, or someone in-house?', a: 'Both work, if you have a quarter and a budget to burn before the first thing ships. An agency sells you a multi-phase engagement up front. A hire takes months to land and only helps if that person stays. We quote one phase at a time, you own everything, and we stick around to run it. If the honest answer for you is “hire someone,” we’ll say so on the first call.' },
+  { q: 'Do you use AI for everything?', a: 'No. AI where it makes the fix better, regular software where it doesn’t. We’re not going to fuck up your business just to say we used AI.' },
+];
+---
+
+<Base title="Sondri — Home (edgy)">
+  <section>
+    <p class="label">Hero</p>
+    <Heading tag="h1" v={['We unf*ck how work gets done.', 'We fix problems costing you time, money, and the will to fucking live.', 'Unsexy solutions to big fkn problems.']} />
+    <p class="sub">{VALUE_LINE}</p>
+    <p>Built into the systems you already run. Live in weeks. AI where it helps, regular software where it doesn’t.</p>
+    <div class="ctas">
+      <Btn href="#">{CTA_PRIMARY} →</Btn>
+    </div>
+    <p>{RISK_REVERSAL} The roadmap is yours either way.</p>
+  </section>
+
+  <section>
+    <p class="label">Logo strip</p>
+    <Heading tag="h2" v={['Companies that were tired of pilots.', 'Businesses whose systems fucked around and found out.', 'People who stopped putting up with it.']} />
+    <p class="ph">[placeholder] client count / one-line proof</p>
+    <div class="logos">
+      {[1, 2, 3, 4, 5, 6].map(() => <div class="logo">[placeholder] client logo</div>)}
+    </div>
+  </section>
+
+  <section>
+    <p class="label">Problem</p>
+    <Heading tag="h2" v={['Somewhere in your business, an expensive person is copying and pasting something.', 'Your people aren’t inefficient. The shit you make them use is.', 'Everyone has an AI initiative. Almost nobody has one in production.']} />
+    <p>Somewhere in your business, good people are wasting hours on a process everybody agrees is stupid. Nobody has fixed it because the available software doesn’t get it and traditional consulting costs a small fucking fortune. Hi.</p>
+    <div class="cards">
+      {problemStats.map((s) => (
+        <div class="card stat">
+          <b>{s.n}</b>
+          <span>{s.label}</span>
+        </div>
+      ))}
+    </div>
+    <p>The deck got approved. The pilot launched. Eighteen months later the slow thing is still done by hand, because a pilot isn’t a fix.</p>
+  </section>
+
+  <section>
+    <p class="label">Twist the knife</p>
+    <Heading tag="h2" v={['That workaround has been temporary for four fucking years.', 'Your workaround has developed a workaround of its own.', 'Leaving it alone isn’t free.']} />
+    <p>The workaround feels cheap because nobody sends an invoice for it. Here’s the bill.</p>
+    <div class="cards">
+      {knife.map((k) => (
+        <div class="card">
+          <h3>{k.t}</h3>
+          <p>{k.b}</p>
+        </div>
+      ))}
+    </div>
+    <p>Your team has gotten frighteningly good at working around something that shouldn’t be broken. That doesn’t make it solved. It makes your people unpaid infrastructure.</p>
+  </section>
+
+  <section>
+    <p class="label">Solution &amp; benefits</p>
+    <Heading tag="h2" v={['We fix expensive bullshit. (Using AI where it helps)', 'Cut the crap. Fix the work.', '0 → 1 → n.']} />
+    <p>Prove it, ship it, multiply it. Discovery finds the three workflows where the money moves fastest. Production puts the first one live inside your systems. Multiply ships the next ones on what’s already built, each faster and cheaper than the last.</p>
+    <ul>
+      {benefits.map((b) => (
+        <li><b>{b.t}.</b> {b.b}</li>
+      ))}
+    </ul>
+  </section>
+
+  <section>
+    <p class="label">Social proof</p>
+    <Heading tag="h2" v={['From “this is fucking stupid” to “it just works.”', 'What it looks like when the number moves.', 'Boring, dependable systems. Ask them.']} />
+    <div class="cards">
+      {testimonials.map((t) => (
+        <div class="card">
+          <p>{t.q}</p>
+          <p class="who">{t.who}</p>
+        </div>
+      ))}
+    </div>
+    <p class="ph">All three are placeholders, shape only (role, company type, number). Replace with real customer quotes before this ships.</p>
+  </section>
+
+  <section>
+    <p class="label">How it works</p>
+    <Heading tag="h2" v={['Just fix the damn thing.', 'You never have to become an AI company.', 'Thirty minutes. Then we build.']} />
+    <p>Most teams don’t need to understand AI. They need the slow thing to stop being slow. The whole experience:</p>
+    <div class="cards">
+      {steps.map((s) => (
+        <div class="card">
+          <p>{s.i}</p>
+          <h3>{s.t}</h3>
+          <p>{s.b}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <p class="label">Competitor comparison</p>
+    <Heading tag="h2" v={['Maybe you need AI. Maybe your software just sucks. Let’s find out.', 'A lot of consultants will charge you to rename your problem.', 'Your other options, honestly.']} />
+    <p>None of these are wrong. They’re slower, pricier, or riskier than a problem this size deserves. One of them will put it in a deck and recommend another consultant.</p>
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          {comparison.cols.map((c) => <th>{c}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {comparison.rows.map((r) => (
+          <tr>
+            <th>{r.k}</th>
+            {r.v.map((cell) => <td>{cell}</td>)}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <p class="ph">Numbers marked [placeholder] need a source or a real engagement behind them before publishing.</p>
+  </section>
+
+  <section>
+    <p class="label">Features</p>
+    <Heading tag="h2" v={['Unsexy solutions that work ridiculously well.', 'Kill the workaround.', 'Six things we build. Bring us the messy one.']} />
+    <ul>
+      {features.map((f) => (
+        <li><b>{f.t}.</b> {f.b}</li>
+      ))}
+    </ul>
+  </section>
+
+  <section>
+    <p class="label">Why Sondri exists</p>
+    <Heading tag="h2" v={['Fuck the future of work. Let’s fix the work you have now.', 'AI is a tool, not our entire fucking personality.', 'Most AI strategy is expensive fan fiction.']} />
+    <div class="card">
+      <p>"We started Sondri because we kept watching the same movie: a capable team, a real problem, and eighteen months of AI pilots that never shipped. Here’s the dirty secret: nobody wants AI. They want the expensive, annoying, deeply unsexy problem to go away. That’s what we work on. AI is welcome if it can help."</p>
+      <p>We could sell you an AI transformation. We’d rather understand the damn thing and build a fix.</p>
+      <a href="/get-in-touch/">Get in Touch →</a>
+    </div>
+  </section>
+
+  <section>
+    <p class="label">FAQ</p>
+    <Heading tag="h2" v={['Asked on almost every intro call.', 'Things people ask before they trust us with money.', 'Fine. Ask.']} />
+    {faq.map((f) => (
+      <details>
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </section>
+
+  <section>
+    <p class="label">Final CTA</p>
+    <Heading tag="h2" v={['If your tech stack is a crime scene, let’s talk.', 'Stop paying smart people to babysit stupid systems.', 'The first conversation is free. The roadmap is yours either way.']} />
+    <p>Thirty minutes with a founder. Bring the process that makes reasonable adults consider arson. We’ll tell you straight whether there’s a case, and if the honest answer is “hire someone,” we’ll say that too.</p>
+    <div class="ctas">
+      <Btn href="#">{CTA_PRIMARY} →</Btn>
+    </div>
+    <p>{RISK_REVERSAL}</p>
+  </section>
+</Base>
+
+<script>
+  // Cycle heading variants in place. One handler for the whole page.
+  document.querySelectorAll<HTMLElement>('.hv').forEach((hv) => {
+    const vs = hv.querySelectorAll<HTMLElement>('.v');
+    const n = hv.querySelector<HTMLElement>('.n')!;
+    let i = 0;
+    const show = () => {
+      vs.forEach((v, k) => (v.hidden = k !== i));
+      n.textContent = `${i + 1}/${vs.length}`;
+    };
+    hv.querySelector('.prev')!.addEventListener('click', () => { i = (i + vs.length - 1) % vs.length; show(); });
+    hv.querySelector('.next')!.addEventListener('click', () => { i = (i + 1) % vs.length; show(); });
+    show();
+  });
+</script>
+
+<style>
+  @font-face {
+    font-family: 'Florexa';
+    src: url('/fonts/florexa.woff2') format('woff2');
+    font-display: swap;
+  }
+  .label { color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .sub { font-size: 18px; }
+  .ph { color: #888; font-size: 14px; }
+  .who { color: #666; font-size: 14px; }
+  .logos { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+  .logo { background: #ddd; color: #666; font-size: 11px; text-align: center; height: 48px; display: flex; align-items: center; justify-content: center; padding: 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 0 0 12px; }
+  th, td { border: 1px solid #eee; padding: 8px; text-align: left; vertical-align: top; }
+  thead th { background: #f5f5f5; }
+  tbody th { font-weight: normal; color: #666; }
+</style>
