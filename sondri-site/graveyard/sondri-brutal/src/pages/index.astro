@@ -1,0 +1,40 @@
+---
+/* Home = the locked 12 sections, in order (decisions.md D1). Copy comes from
+   home-data.ts, verbatim from the workbench's approved home-edgy page (D2). */
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Marquee from '../components/Marquee.astro';
+import Problem from '../components/Problem.astro';
+import Knife from '../components/Knife.astro';
+import Solution from '../components/Solution.astro';
+import SocialProof from '../components/SocialProof.astro';
+import HowItWorks from '../components/HowItWorks.astro';
+import Comparison from '../components/Comparison.astro';
+import Features from '../components/Features.astro';
+import Why from '../components/Why.astro';
+import Faq from '../components/Faq.astro';
+import FinalCta from '../components/FinalCta.astro';
+---
+
+<Base
+  title="Sondri — Fix expensive bullshit"
+  description="Built into the systems you already run. Live in weeks. AI where it helps, regular software where it doesn’t."
+>
+  <Hero />
+  <Marquee />
+  <Problem />
+  <Knife />
+  <Solution />
+  <SocialProof />
+  <HowItWorks />
+  <Comparison />
+  <Features />
+  <Why />
+  <Faq />
+  <FinalCta />
+</Base>
+
+<script>
+  import { initDitherBlocks } from '../scripts/dither-block';
+  initDitherBlocks();
+</script>

@@ -1,0 +1,33 @@
+---
+import { logoStrip } from '../home-data';
+const logos = Array.from({ length: logoStrip.count }, (_, i) => i);
+---
+
+<!-- Proof strip. One mono line, then six logo slots drawn as static dither
+     blocks (dither-block.ts) so they sit in the same picture as the hero. -->
+<section class="strip px" id="proof">
+  <p class="line">
+    <span class="my-text">{logoStrip.line}</span>
+    <span class="label ph">{logoStrip.ph}</span>
+  </p>
+  <div class="my-grid logos">
+    {logos.map((i) => (
+      <div class="logo" data-reveal style={`transition-delay:${i * 50}ms`}>
+        <canvas data-dither-block data-seed={i} aria-hidden="true"></canvas>
+        <span class="label cap">{logoStrip.logo}</span>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .strip { padding-block: var(--s-60) var(--s-80); }
+  .line { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s-10) var(--s-20); }
+  .ph { color: var(--muted); }
+
+  .logos { margin-top: var(--s-40); row-gap: var(--gutter); }
+  .logo { position: relative; grid-column: span 3; aspect-ratio: 200 / 88; background: var(--teal); overflow: hidden; }
+  @media (min-width: 1024px) { .logo { grid-column: span 2; } }
+  .logo canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; display: block; }
+  .cap { position: absolute; inset: auto 0 8px 0; text-align: center; color: var(--white); font-size: 10px; opacity: 0.85; }
+</style>

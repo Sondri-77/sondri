@@ -1,0 +1,42 @@
+---
+import { benefits, solution } from '../home-data';
+import { splitDot } from '../lib/dot';
+const [h2, dot] = splitDot(solution.h2);
+---
+
+<!-- Solution & benefits, in Framework's grammar: the heading, the phase
+     copy beside it, then three ruled benefit columns. -->
+<section class="section section-pad" id="framework">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow"><span class="label">/ {solution.eyebrow}</span></div>
+        <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
+      </div>
+      <div class="intro">
+        <p class="lede">{solution.lede}</p>
+      </div>
+    </div>
+
+    <div class="rule-cols cols-3 benefits">
+      {benefits.map((b, i) => (
+        <article data-reveal style={`transition-delay:${i * 80}ms`}>
+          <p class="label idx">{String(i + 1).padStart(2, '0')}</p>
+          <h3 class="h5">{b.t}<span class="gdot">.</span></h3>
+          <p class="body-s">{b.b}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .benefits article { display: flex; flex-direction: column; gap: var(--s-16); min-height: 260px; }
+  .idx { color: var(--text-hi); }
+  .idx::before {
+    content: ''; display: inline-block;
+    width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
+    background: currentColor;
+  }
+  .body-s { margin-top: auto; max-width: 34ch; font-size: 15px; line-height: 22px; }
+</style>

@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Payments & deposits — Sondri">
+  <section>
+    <h1>Pay Sondri.</h1>
+    <p>Pay your agreed deposit, retainer, or invoice through Stripe Checkout and receive a receipt by email.</p>
+  </section>
+
+  <section>
+    <div class="card">
+      <h2>Pay an invoice or deposit</h2>
+      <p>Enter your billing email, the agreed amount, and your project reference.</p>
+      <form>
+        <div>
+          <label for="cEmail">Billing email address *</label>
+          <input type="email" id="cEmail" placeholder="billing@company.com" />
+        </div>
+        <div>
+          <label for="cAmount">Payment amount ($ USD) *</label>
+          <input type="number" id="cAmount" placeholder="2500.00" />
+        </div>
+        <div>
+          <label for="cDesc">Invoice reference / project description *</label>
+          <input type="text" id="cDesc" placeholder="Deposit for invoice-matching software" />
+        </div>
+        <div><span class="btn">Continue to Stripe Checkout →</span></div>
+      </form>
+    </div>
+    <p>Stripe processes your payment.</p>
+  </section>
+</Base>

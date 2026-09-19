@@ -1,0 +1,57 @@
+---
+import { features, featuresHead } from '../home-data';
+import { splitDot } from '../lib/dot';
+const [h2, dot] = splitDot(featuresHead.h2);
+---
+
+<!-- Six things we build: a 3×2 ruled grid, each with a dithered mark. -->
+<section class="section section-pad" id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow"><span class="label">/ {featuresHead.eyebrow}</span></div>
+        <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
+      </div>
+    </div>
+
+    <div class="rule-cols cols-3 grid">
+      {features.map((f, i) => (
+        <article data-reveal style={`transition-delay:${(i % 3) * 80}ms`}>
+          <div class="mark panel">
+            <canvas class="dither-block" data-dither-block data-shape="flat" data-seed={40 + i}></canvas>
+            <span class="icon" style={`--icon:url(/icons/${f.icon}.svg)`} aria-hidden="true"></span>
+          </div>
+          <p class="label idx">{String(i + 1).padStart(2, '0')} / 06</p>
+          <h3 class="h5">{f.t}<span class="gdot">.</span></h3>
+          <p class="body-s">{f.b}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid { row-gap: var(--s-48); }
+  .grid article { display: flex; flex-direction: column; gap: var(--s-16); }
+  .mark { position: relative; width: 96px; height: 64px; --shadow-x: 6px; margin-bottom: var(--s-08); }
+  /* Pixel icon where the dither block's lit blob used to be: a 24-grid glyph
+     at exactly 2 CSS px per cell (48px), centred on the block's light source
+     (its vertical midpoint). The SVG is a mask so the colour is the same white
+     the blob quantised to; integer size + offset keep every cell on the pixel
+     grid at 1x and 2x, with nothing to anti-alias. */
+  .icon {
+    position: absolute; left: 24px; top: 8px; width: 48px; height: 48px;
+    background: var(--white);
+    -webkit-mask: var(--icon) center / 48px 48px no-repeat;
+    mask: var(--icon) center / 48px 48px no-repeat;
+    image-rendering: pixelated;
+    pointer-events: none;
+  }
+  .idx { color: var(--text-hi); }
+  .idx::before {
+    content: ''; display: inline-block;
+    width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
+    background: currentColor;
+  }
+  .body-s { max-width: 34ch; font-size: 15px; line-height: 22px; }
+</style>

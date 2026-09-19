@@ -1,0 +1,144 @@
+---
+import { services } from '../v2-data';
+import { BOOK_HREF } from '../data';
+---
+
+<!-- Their `our_services`: a split 160px title, a vertical rule dropped at
+     column 7, a crossfading image plate on the left and an accordion on the
+     right. Opening a row swaps the plate. -->
+<section class="svc px my-grid" id="services">
+  <h2 class="sr-only">What we build</h2>
+
+  <div class="vline" aria-hidden="true"></div>
+
+  <div class="title my-grid" aria-hidden="true">
+    <div class="t-a my-title">What</div>
+    <div class="t-b my-title">We build</div>
+  </div>
+
+  <div class="plate-wrap" aria-hidden="true">
+    <div class="plate">
+      {services.map((s, i) => (
+        <div class:list={['face', { on: i === 0 }]} data-face={i}>
+          <span class="my-title n">{String(i + 1).padStart(2, '0')}</span>
+          <span class="label">{s.name}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div class="acc-wrap">
+    <div class="acc rule-t">
+      {services.map((s, i) => (
+        <div class="item rule-b">
+          <h3>
+            <button class="head" data-acc={i} aria-expanded={i === 0 ? 'true' : 'false'} aria-controls={`svc-${i}`}>
+              <span class="t-sm">{s.name}</span>
+              <span class="sign" aria-hidden="true"></span>
+            </button>
+          </h3>
+          <div class="panel" id={`svc-${i}`} data-panel={i} style={i === 0 ? 'grid-template-rows:1fr' : ''}>
+            <div class="panel-in">
+              <p class="my-text">{s.body}</p>
+              <a class="brk" href={BOOK_HREF}><span class="arr">→</span> Learn more</a>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="cta">
+      <a class="btn btn-solid" href={BOOK_HREF}>View all services</a>
+    </div>
+  </div>
+
+  <div class="rule-b end"></div>
+</section>
+
+<style>
+  .svc { position: relative; padding-top: var(--s-50); align-content: start; }
+  @media (min-width: 1024px) { .svc { min-height: 100svh; grid-template-rows: repeat(2, auto); } }
+
+  .vline { display: none; }
+  @media (min-width: 1024px) {
+    .vline {
+      display: block; border-left: 1px solid var(--line);
+      grid-column: 7 / -1; grid-row: 1 / 3; margin-left: -1.11vw;
+    }
+  }
+
+  .title { grid-column: 1 / -1; }
+  @media (min-width: 1024px) { .title { grid-row: 1; margin-top: 70px; margin-bottom: 110px; } }
+  .t-a { grid-column: 1 / 7; }
+  .t-b { grid-column: 7 / -1; }
+  @media (max-width: 1023px) { .t-a, .t-b { grid-column: 1 / -1; } }
+
+  /* Left plate — one visible face at a time. */
+  .plate-wrap { display: none; }
+  @media (min-width: 1024px) {
+    .plate-wrap { display: block; grid-column: 1 / 7; grid-row: 2; position: relative; }
+    .plate {
+      position: absolute; inset: 0; margin: auto;
+      width: 49%; aspect-ratio: 340 / 240;
+      background: var(--teal); overflow: hidden;
+    }
+  }
+  .face {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    color: var(--white); opacity: 0; transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .face.on { opacity: 1; }
+  .face .n { font-size: clamp(48px, 5vw, 92px); line-height: 1; }
+
+  .acc-wrap { grid-column: 1 / -1; margin-top: var(--s-50); padding-bottom: var(--s-15); }
+  @media (min-width: 1024px) { .acc-wrap { grid-column: 7 / -1; grid-row: 2; margin-top: 0; } }
+
+  .head {
+    width: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--s-20);
+    background: none; border: 0; color: inherit; cursor: pointer; text-align: left;
+    padding-block: 18px;
+  }
+  .head:hover { opacity: 0.65; }
+
+  .sign { position: relative; width: 14px; height: 14px; flex: none; }
+  .sign::before, .sign::after { content: ''; position: absolute; left: 0; top: 6.5px; width: 14px; height: 1px; background: currentColor; }
+  .sign::after { transform: rotate(90deg); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  .head[aria-expanded='true'] .sign::after { transform: rotate(0deg); }
+
+  /* Their 0fr -> 1fr grid trick, so the panel animates without a fixed height. */
+  .panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  .panel-in { overflow: hidden; display: flex; flex-direction: column; align-items: flex-start; }
+  .panel-in p { max-width: 52ch; }
+  .panel-in .brk { margin-top: var(--s-30); padding-bottom: 22px; }
+
+  .cta { padding-top: var(--s-40); }
+  .end { grid-column: 1 / -1; margin-top: var(--s-50); }
+
+  @media (min-height: 2000px) { .svc { min-height: 0; } }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+</style>
+
+<script>
+  const heads = document.querySelectorAll<HTMLButtonElement>('[data-acc]');
+  const panels = document.querySelectorAll<HTMLElement>('[data-panel]');
+  const faces = document.querySelectorAll<HTMLElement>('[data-face]');
+
+  heads.forEach((head) => {
+    head.addEventListener('click', () => {
+      const i = head.dataset.acc;
+      const isOpen = head.getAttribute('aria-expanded') === 'true';
+
+      heads.forEach((h) => h.setAttribute('aria-expanded', 'false'));
+      panels.forEach((p) => (p.style.gridTemplateRows = '0fr'));
+
+      if (!isOpen) {
+        head.setAttribute('aria-expanded', 'true');
+        const panel = document.querySelector<HTMLElement>(`[data-panel="${i}"]`);
+        if (panel) panel.style.gridTemplateRows = '1fr';
+        faces.forEach((f) => f.classList.toggle('on', f.dataset.face === i));
+      }
+    });
+  });
+</script>

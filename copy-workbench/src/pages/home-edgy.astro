@@ -1,0 +1,263 @@
+---
+/**
+ * EDGY — the locked 12 sections (decision D1), rewritten in the captain's
+ * voice. Same order and roughly the same facts as home-alt; different mouth.
+ * Slot 2 is the capability strip from the live site (no logo strip).
+ * Every big heading has 3 variants (primary + 2), cycled by the ‹ › control.
+ * `[placeholder]` marks proof we don't have yet.
+ */
+import Base from '../layouts/Base.astro';
+import Btn from '../components/Btn.astro';
+import Heading from '../components/Heading.astro';
+import { CTA_PRIMARY, RISK_REVERSAL, problemStats, capabilities } from '../data/copy';
+
+const VALUE_LINE =
+  'We fix the work costing your team time and money, using AI where it helps.';
+
+const knife = [
+  { t: 'Money', b: 'Count the time each person on your team spends on the workaround. [placeholder: cost-of-inaction calculator]' },
+  { t: 'Time', b: 'As your orders grow, your team has more manual work to do.' },
+  { t: 'People', b: 'Your experienced staff spend hours on data entry. If someone leaves, you may have to work out their steps again.' },
+];
+
+const benefits = [
+  { t: 'Cost and savings', b: 'Pick a cost to cut or a way to increase revenue. We measure the change.' },
+  { t: 'Your systems, your code', b: 'Built into the software and spreadsheets you already use. You own the code.' },
+  { t: 'One phase at a time', b: 'Agree on a fixed price for each phase, then review the work before funding the next.' },
+];
+
+const testimonials = [
+  { q: '[placeholder] "We’d been talking about fixing invoice matching for two years. Six weeks later it was live and we use it every day."', who: '[placeholder] COO, regional logistics company · [placeholder] 14 hrs/week back to the finance team' },
+  { q: '[placeholder] "They told us on the first call which of our three ideas was worth doing. That’s why we hired them."', who: '[placeholder] CFO, mid-market manufacturer · [placeholder] first software in use in 7 weeks' },
+  { q: '[placeholder] "Our team owns the code and can read every line."', who: '[placeholder] Head of Ops, healthcare services group · [placeholder] $180k annual cost gone' },
+];
+
+const steps = [
+  { i: '01', t: 'Tell us what’s slow', b: 'Spend thirty minutes describing the work slowing you down. You can come without preparing anything.' },
+  { i: '02', t: 'We build it into your systems', b: 'You keep running your business while we build with your existing software and data.' },
+  { i: '03', t: 'Check what changed', b: 'Compare the hours and money spent on the job before and after the build.' },
+];
+
+const comparison = {
+  cols: ['Sondri', 'Software agency', 'Hiring in-house', 'DIY tools'],
+  rows: [
+    { k: 'Time until you can use it', v: ['Weeks [placeholder: 6–8]', 'Quarters [placeholder: 6–9 mo.]', 'Months to hire, then months to build', 'Days to try; integration takes longer'] },
+    { k: 'What you pay', v: ['Fixed price per phase, quoted before it starts', 'You pay for hours and expenses', 'Salary + benefits + management, project or not', 'Low fees; you do the work'] },
+    { k: 'Who owns the code', v: ['You; runs in your systems', 'Often the vendor’s platform or license', 'You', 'Check ownership terms with your tool provider'] },
+    { k: 'Commitment up front', v: ['One phase; your planning session is free', 'You sign a contract for several phases before launch', 'A full-time employee', 'No contract; maintenance is on you'] },
+    { k: 'After launch', v: ['We maintain it and build the next workflow', 'You pay for changes or take over the upkeep', 'Depends on whether that person stays', 'You fix it when the workflow changes'] },
+  ],
+};
+
+const features = [
+  { t: 'Workflow Automation', b: 'Automate the steps taking up your day, with your staff checking work that needs approval.' },
+  { t: 'Data & Reporting', b: 'See current figures from your software without typing them in again.' },
+  { t: 'Customer Operations', b: 'Help your staff answer customers and send quotes faster.' },
+  { t: 'Back Office', b: 'Cut mistakes in your invoices, payment matching, and monthly accounts.' },
+  { t: 'Integrations', b: 'Connect your software and spreadsheets so your staff can stop copying data between them.' },
+  { t: 'AI for multi-step jobs', b: 'Use AI for jobs with several steps, with records you can check and a way for your staff to stop it.' },
+];
+
+const faq = [
+  { q: 'Does our data leave our systems?', a: 'Your software runs in your systems, where you control access and approvals and can check records of what happened.' },
+  { q: 'What do you build on?', a: 'We connect to the business software, spreadsheets, and payment systems you use. You can run the code without a Sondri platform or license.' },
+  { q: 'Who owns what you build?', a: 'You own the code and instructions for using it, including the connections to your other software.' },
+  { q: 'What does it cost?', a: 'We quote a fixed price before each phase. You decide whether to fund the next one.' },
+  { q: 'What if it doesn’t save what we agreed?', a: 'You agree with us on the time or cost savings before we start. If the software falls short, you keep the plan and measurements and owe nothing further.' },
+  { q: 'How fast can we start?', a: 'The first call is free, the roadmap takes days, and working software follows in weeks.' },
+  { q: 'Why not just hire an agency, or someone in-house?', a: 'Compare the cost and time to hire someone or use an agency with our price for one phase. You own the code we build and can have us maintain it, and we’ll recommend hiring if that suits your work better.' },
+  { q: 'Do you use AI for everything?', a: 'We use AI if it helps with your job.' },
+];
+---
+
+<Base title="Sondri — Home (edgy)" footerLine={VALUE_LINE}>
+  <section>
+    <p class="label">Hero</p>
+    <Heading tag="h1" v={['Fix expensive bullshit. (Use AI where it helps)', 'Get help with the work taking up your day.', 'Fix the process costing you money.']} />
+    <p>Built into the systems you already run. Live in weeks.</p>
+    <div class="ctas">
+      <Btn href="#">{CTA_PRIMARY} →</Btn>
+    </div>
+    <p>{RISK_REVERSAL} The roadmap is yours either way.</p>
+  </section>
+
+  <section>
+    <p class="label">Things we do</p>
+    <div class="marquee" aria-label="Capabilities">
+      <div class="track">
+        {[...capabilities, ...capabilities].map((c) => <span>{c}</span>)}
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="label">Problem</p>
+    <Heading tag="h2" v={['Your people aren’t inefficient. The shit you make them use is.', 'How much time does your team spend copying and pasting?', 'Still doing the work by hand after trying AI?']} />
+    <p>Your team spends hours on work your software doesn’t handle, and the quotes you’ve had to fix it cost too much.</p>
+    <div class="cards">
+      {problemStats.map((s) => (
+        <div class="card stat">
+          <b>{s.n}</b>
+          <span>{s.label}</span>
+        </div>
+      ))}
+    </div>
+    <p>How long has your fix been "in pilot"?</p>
+  </section>
+
+  <section>
+    <p class="label">Twist the knife</p>
+    <Heading tag="h2" v={['That workaround has been temporary for years.', 'Now there are extra steps to fix the workaround.', 'Leaving it alone isn’t free.']} />
+    <p>The workaround feels cheap because nobody sends you an invoice for it.</p>
+    <div class="cards">
+      {knife.map((k) => (
+        <div class="card">
+          <h3>{k.t}</h3>
+          <p>{k.b}</p>
+        </div>
+      ))}
+    </div>
+    <p>Add up what those extra steps cost you each week.</p>
+  </section>
+
+  <section>
+    <p class="label">Solution &amp; benefits</p>
+    <Heading tag="h2" v={['We unf*ck how work gets done.', 'Fix the process everyone complains about.', 'Fix one job at a time.']} />
+    <p>You choose three jobs worth fixing with us. We build for the first and reuse what we can for the next.</p>
+    <ul>
+      {benefits.map((b) => (
+        <li><b>{b.t}.</b> {b.b}</li>
+      ))}
+    </ul>
+  </section>
+
+  <section>
+    <p class="label">Social proof</p>
+    <Heading tag="h2" v={['Hear from customers using what we built.', 'What customers say about working with us.', 'Ask customers how their software holds up.']} />
+    <div class="cards">
+      {testimonials.map((t) => (
+        <div class="card">
+          <p>{t.q}</p>
+          <p class="who">{t.who}</p>
+        </div>
+      ))}
+    </div>
+    <p class="ph">All three are placeholders, shape only (role, company type, number). Replace with real customer quotes before this ships.</p>
+  </section>
+
+  <section>
+    <p class="label">How it works</p>
+    <Heading tag="h2" v={['Just fix the damn thing.', 'Keep running your business while we build.', 'Start with a thirty-minute call.']} />
+    <p>You show us the work you want to fix, and we build with your team.</p>
+    <div class="cards">
+      {steps.map((s) => (
+        <div class="card">
+          <p>{s.i}</p>
+          <h3>{s.t}</h3>
+          <p>{s.b}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <p class="label">Competitor comparison</p>
+    <Heading tag="h2" v={['A lot of consultants will charge you to rename your problem.', 'Where does your software slow you down?', 'What will it take to fix it?']} />
+    <p>Compare the time and money each option takes. Ask who’s responsible for fixing it after launch.</p>
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          {comparison.cols.map((c) => <th>{c}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {comparison.rows.map((r) => (
+          <tr>
+            <th>{r.k}</th>
+            {r.v.map((cell) => <td>{cell}</td>)}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <p class="ph">Numbers marked [placeholder] need a source or a real engagement behind them before publishing.</p>
+  </section>
+
+  <section>
+    <p class="label">Features</p>
+    <Heading tag="h2" v={['Unsexy solutions that work ridiculously well.', 'Replace your workaround.', 'What can we help you fix?']} />
+    <ul>
+      {features.map((f) => (
+        <li><b>{f.t}.</b> {f.b}</li>
+      ))}
+    </ul>
+  </section>
+
+  <section>
+    <p class="label">Why Sondri exists</p>
+    <Heading tag="h2" v={['Let’s fix the work you have now.', 'We use AI when it helps with the job.', 'Tell us what you’ve tried so far.']} />
+    <div class="card">
+      <p>We started Sondri because we saw businesses spend eighteen months trying AI without getting software they could use. You can bring us one job that needs fixing, and we’ll build software for it.</p>
+      <p>Show us how you do the job today.</p>
+      <a href="/get-in-touch/">Get in Touch →</a>
+    </div>
+  </section>
+
+  <section>
+    <p class="label">FAQ</p>
+    <Heading tag="h2" v={['Things people ask before they trust us with money.', 'Questions you may have.', 'What would you like to know?']} />
+    {faq.map((f) => (
+      <details>
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </section>
+
+  <section>
+    <p class="label">Final CTA</p>
+    <Heading tag="h2" v={['Stop paying smart people to babysit stupid systems.', 'Tell us which system is wasting your time.', 'Your first call is free, and you keep the plan we put together.']} />
+    <p>Spend thirty minutes with a founder on the job you want to fix. We’ll tell you whether we can help or whether hiring someone would suit you better.</p>
+    <div class="ctas">
+      <Btn href="#">{CTA_PRIMARY} →</Btn>
+    </div>
+    <p>{RISK_REVERSAL}</p>
+  </section>
+</Base>
+
+<script>
+  // Cycle heading variants in place. One handler for the whole page.
+  document.querySelectorAll<HTMLElement>('.hv').forEach((hv) => {
+    const vs = hv.querySelectorAll<HTMLElement>('.v');
+    const n = hv.querySelector<HTMLElement>('.n')!;
+    let i = 0;
+    const show = () => {
+      vs.forEach((v, k) => (v.hidden = k !== i));
+      n.textContent = `${i + 1}/${vs.length}`;
+    };
+    hv.querySelector('.prev')!.addEventListener('click', () => { i = (i + vs.length - 1) % vs.length; show(); });
+    hv.querySelector('.next')!.addEventListener('click', () => { i = (i + 1) % vs.length; show(); });
+    show();
+  });
+</script>
+
+<style>
+  @font-face {
+    font-family: 'Florexa';
+    src: url('/fonts/florexa.woff2') format('woff2');
+    font-display: swap;
+  }
+  .label { color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .sub { font-size: 18px; }
+  .ph { color: #888; font-size: 14px; }
+  .who { color: #666; font-size: 14px; }
+  .marquee { overflow: hidden; border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 10px 0; }
+  .track { display: flex; gap: 40px; width: max-content; white-space: nowrap; animation: scroll 24s linear infinite; }
+  .track span { font-size: 20px; text-transform: uppercase; }
+  .marquee:hover .track { animation-play-state: paused; }
+  @keyframes scroll { to { transform: translateX(-50%); } }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 0 0 12px; }
+  th, td { border: 1px solid #eee; padding: 8px; text-align: left; vertical-align: top; }
+  thead th { background: #f5f5f5; }
+  tbody th { font-weight: normal; color: #666; }
+</style>
