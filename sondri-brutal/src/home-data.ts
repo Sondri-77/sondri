@@ -46,13 +46,14 @@ export const comparison = {
   ],
 };
 
+/** `icon` names a file in public/icons/ (Pixel Icon Library, see NOTICES.md). */
 export const features = [
-  { t: 'Workflow Automation', b: 'The three-person, half-a-day process, done by software, with a human approval gate where it matters.' },
-  { t: 'Data & Reporting', b: 'The numbers you argue about in meetings, pulled from the systems of record and kept current without anyone re-keying them.' },
-  { t: 'Customer Operations', b: 'Quoting, onboarding, tickets, renewals. Faster answers without adding headcount.' },
-  { t: 'Back Office', b: 'Invoicing, matching, claims, collections, close. The unglamorous work where a typo costs real money.' },
-  { t: 'Integrations', b: 'The systems that don’t talk, made to talk. Yes, that includes the spreadsheet everyone fears but nobody is allowed to kill.' },
-  { t: 'Agentic AI Solutions', b: 'AI that runs a multi-step job end to end, with monitoring, audit trails, and a person who can pull the plug.' },
+  { t: 'Workflow Automation', icon: 'cog', b: 'The three-person, half-a-day process, done by software, with a human approval gate where it matters.' },
+  { t: 'Data & Reporting', icon: 'analytics', b: 'The numbers you argue about in meetings, pulled from the systems of record and kept current without anyone re-keying them.' },
+  { t: 'Customer Operations', icon: 'user-headset', b: 'Quoting, onboarding, tickets, renewals. Faster answers without adding headcount.' },
+  { t: 'Back Office', icon: 'receipt', b: 'Invoicing, matching, claims, collections, close. The unglamorous work where a typo costs real money.' },
+  { t: 'Integrations', icon: 'link', b: 'The systems that don’t talk, made to talk. Yes, that includes the spreadsheet everyone fears but nobody is allowed to kill.' },
+  { t: 'Agentic AI Solutions', icon: 'robot', b: 'AI that runs a multi-step job end to end, with monitoring, audit trails, and a person who can pull the plug.' },
 ];
 
 /** The edgy page carries its own eight FAQs (worded differently from data.ts's). */

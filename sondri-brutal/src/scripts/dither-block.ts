@@ -8,7 +8,9 @@
    should read as part of the same picture as the hero, not compete with it.
 
    `data-shape="disc"` (avatars) lights a centred disc; the default lights a
-   wide band, which reads as a wordmark-shaped blob in a logo box. */
+   wide band, which reads as a wordmark-shaped blob in a logo box;
+   `data-shape="flat"` lights nothing (the feature tiles overlay a pixel icon
+   where the blob would be). */
 
 import { BAYER, RAMP } from './hero-fx';
 
@@ -40,6 +42,7 @@ function drawBlock(cv: HTMLCanvasElement, index: number) {
   const seed = Number(cv.dataset.seed ?? index) + 1;
   const rnd = mulberry(seed * 7919);
   const disc = cv.dataset.shape === 'disc';
+  const flat = cv.dataset.shape === 'flat';
 
   // Light source: a disc for avatars, a wide flat band for logos/marks.
   const cx = disc ? 0.5 : 0.35 + rnd() * 0.3;
@@ -62,7 +65,7 @@ function drawBlock(cv: HTMLCanvasElement, index: number) {
       const dx = (u - cx) / rx;
       const dy = (v - cy) / ry;
       const dd = dx * dx + dy * dy;
-      if (dd < 1) l += (1 - dd) * 0.85;
+      if (dd < 1 && !flat) l += (1 - dd) * 0.85;
       if (disc && v > 0.7) l += Math.min(1, (v - 0.7) * 3) * 0.45; // shoulders
       const t = (BAYER[(y + oy) & 3][(x + ox) & 3] / 16 - 0.5) * 0.15;
       const q = Math.max(0, Math.min(1, l + t));
