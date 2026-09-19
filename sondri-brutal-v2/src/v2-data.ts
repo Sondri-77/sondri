@@ -3,15 +3,15 @@
    a rotating principle, a contact block. Everything else comes from data.ts. */
 
 export const nav = [
-  { label: 'About', href: '#about' },
-  { label: 'What we build', href: '#services' },
-  { label: 'Process', href: '#process' },
-  { label: 'Framework', href: '#framework' },
+  { label: 'Problem', href: '#problem' },
+  { label: 'Solution', href: '#solution' },
+  { label: 'How it works', href: '#how' },
+  { label: 'What we build', href: '#features' },
 ];
 
 export const navSecondary = [
-  { label: 'Principles', href: '#principles' },
-  { label: 'Questions', href: '#questions' },
+  { label: 'Why Sondri', href: '#why' },
+  { label: 'FAQ', href: '#faq' },
 ];
 
 /** Hero support paragraphs — the two columns under the headline. */
@@ -52,19 +52,19 @@ export const services = [
 export const phaseTags = ['Prove', 'Production', 'Multiply'];
 
 /** The news list becomes the questions list — same row anatomy. */
-export const questionTags = ['Security', 'Stack', 'Ownership', 'Price', 'Risk', 'Timing'];
+export const questionTags = ['Security', 'Stack', 'Ownership', 'Price', 'Risk', 'Timing', 'Alternatives', 'AI'];
 
 export const contact = {
   address: ['Sondri', 'Digital-first, wherever your operators are'],
 };
 
 export const footerNav = [
-  { label: 'About', href: '#about' },
-  { label: 'What we build', href: '#services' },
-  { label: 'Process', href: '#process' },
-  { label: 'Framework', href: '#framework' },
-  { label: 'Principles', href: '#principles' },
-  { label: 'Questions', href: '#questions' },
+  { label: 'Problem', href: '#problem' },
+  { label: 'Solution', href: '#solution' },
+  { label: 'How it works', href: '#how' },
+  { label: 'What we build', href: '#features' },
+  { label: 'Why Sondri', href: '#why' },
+  { label: 'FAQ', href: '#faq' },
 ];
 
 export const footerLegal = [

@@ -1,21 +1,8 @@
 ---
 import { contact, footerLegal, footerNav } from '../v2-data';
-import { BOOK_HREF, CONTACT_EMAIL, CTA_PRIMARY, TAGLINE, mailto } from '../data';
+import { BOOK_HREF, CONTACT_EMAIL, TAGLINE, mailto } from '../data';
 const year = new Date().getFullYear();
 ---
-
-<section class="cta px my-grid on-teal" id="book">
-  <div class="cta-title">
-    <h2 class="my-title">Tell us<br />what&rsquo;s slow</h2>
-  </div>
-  <div class="cta-body">
-    <p class="fs-24">
-      Thirty minutes with a founder. You describe the operation; we tell you honestly whether there
-      is a case. No prep, no jargon, no deck.
-    </p>
-    <a class="btn btn-inv" href={BOOK_HREF}>{CTA_PRIMARY}</a>
-  </div>
-</section>
 
 <footer class="on-teal">
   <div class="px my-grid f-top">
@@ -55,14 +42,7 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
-  .cta { padding-block: var(--s-100); row-gap: var(--s-50); }
-  .cta-title { grid-column: 1 / -1; }
-  @media (min-width: 1024px) { .cta-title { grid-column: 1 / 7; } }
-  .cta-body { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-40); }
-  @media (min-width: 1024px) { .cta-body { grid-column: 7 / 12; align-self: end; } }
-
-  footer { border-top: 1px solid var(--line-inv); }
-  .f-top { padding-block: var(--s-80) var(--s-60); row-gap: var(--s-50); }
+  .f-top { padding-block: var(--s-40) var(--s-60); row-gap: var(--s-50); }
   .col { grid-column: 1 / -1; }
   @media (min-width: 1024px) {
     .c1 { grid-column: 1 / 5; }
@@ -94,7 +74,7 @@ const year = new Date().getFullYear();
 
   .f-bottom {
     display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-15);
-    padding-block: var(--s-20); border-top: 1px solid var(--line-inv);
+    padding-block: var(--s-20);
   }
   .f-bottom .label, .dim { color: var(--muted-inv); }
   .legal { flex-direction: row; gap: var(--s-20); }

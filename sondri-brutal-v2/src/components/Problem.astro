@@ -1,0 +1,68 @@
+---
+import { problemStats } from '../data';
+import { problem } from '../home-data';
+---
+
+<!-- The tinted field, mono index, a statement, and the three numbers set on
+     teal plates the way the framework's 0 / 1 / n were. -->
+<section class="prob px" id="problem">
+  <div class="index label">
+    <span>Problem</span>
+    <span aria-hidden="true">[SND.1]</span>
+  </div>
+
+  <div class="my-grid body">
+    <div class="head">
+      <h2 class="t-md" data-reveal>{problem.h2}</h2>
+    </div>
+    <div class="copy">
+      <p class="fs-24" data-reveal>{problem.body}</p>
+    </div>
+  </div>
+
+  <div class="my-grid stats">
+    {problemStats.map((s, i) => (
+      <article class="stat" data-reveal style={`transition-delay:${i * 70}ms`}>
+        <span class="label">{String(i + 1).padStart(2, '0')}</span>
+        <div class="plate"><span class="my-title n">{s.n}</span></div>
+        <p class="my-text">{s.label}</p>
+      </article>
+    ))}
+  </div>
+
+  <div class="my-grid close">
+    <p class="fs-46" data-reveal>{problem.close}</p>
+  </div>
+</section>
+
+<style>
+  .prob { background: var(--off); padding-top: var(--s-50); padding-bottom: var(--s-80); }
+  @media (min-width: 1024px) { .prob { padding-bottom: var(--s-130); } }
+  .index { display: flex; justify-content: space-between; }
+
+  .body { margin-top: var(--s-66); row-gap: var(--s-40); }
+  .head { grid-column: 1 / -1; }
+  .copy { grid-column: 1 / -1; }
+  .copy p { max-width: 52ch; }
+  @media (min-width: 1024px) {
+    .head { grid-column: 1 / 10; }
+    .copy { grid-column: 7 / -1; }
+  }
+
+  .stats { margin-top: var(--s-66); row-gap: var(--s-50); }
+  @media (min-width: 1024px) { .stats { margin-top: var(--s-100); } }
+  .stat { grid-column: 1 / -1; display: flex; flex-direction: column; gap: var(--s-20); }
+  @media (min-width: 1024px) {
+    .stat:nth-child(1) { grid-column: 1 / 5; }
+    .stat:nth-child(2) { grid-column: 5 / 9; }
+    .stat:nth-child(3) { grid-column: 9 / -1; }
+  }
+  .plate { background: var(--teal); color: var(--white); aspect-ratio: 4 / 3; display: grid; place-items: center; }
+  .n { font-size: clamp(56px, 6.4vw, 104px); line-height: 1; }
+  .stat p { max-width: 36ch; }
+
+  .close { margin-top: var(--s-80); }
+  @media (min-width: 1024px) { .close { margin-top: var(--s-130); } }
+  .close p { grid-column: 1 / -1; }
+  @media (min-width: 1024px) { .close p { grid-column: 3 / -1; } }
+</style>

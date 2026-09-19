@@ -1,23 +1,38 @@
 ---
+/* Home = the locked 12 sections, in order (decisions.md D1). Copy comes from
+   home-data.ts, verbatim from the workbench's home-alt page. */
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
-import Intro from '../components/Intro.astro';
-import Services from '../components/Services.astro';
-import Process from '../components/Process.astro';
-import Framework from '../components/Framework.astro';
-import Principles from '../components/Principles.astro';
-import Questions from '../components/Questions.astro';
+import LogoStrip from '../components/LogoStrip.astro';
+import Problem from '../components/Problem.astro';
+import Knife from '../components/Knife.astro';
+import Solution from '../components/Solution.astro';
+import SocialProof from '../components/SocialProof.astro';
+import HowItWorks from '../components/HowItWorks.astro';
+import Comparison from '../components/Comparison.astro';
+import Features from '../components/Features.astro';
+import Why from '../components/Why.astro';
+import Faq from '../components/Faq.astro';
+import FinalCta from '../components/FinalCta.astro';
+import { hero } from '../home-data';
 ---
 
-<Base
-  title="Sondri — Software & automation, made simple"
-  description="We find the three workflows where automation pays fastest, build the first one into the systems you already run, and hand you the keys."
->
+<Base title={`Sondri — ${hero.h1}`} description={hero.lede}>
   <Hero />
-  <Intro />
-  <Services />
-  <Process />
-  <Framework />
-  <Principles />
-  <Questions />
+  <LogoStrip />
+  <Problem />
+  <Knife />
+  <Solution />
+  <SocialProof />
+  <HowItWorks />
+  <Comparison />
+  <Features />
+  <Why />
+  <Faq />
+  <FinalCta />
 </Base>
+
+<script>
+  import { initDitherBlocks } from '../scripts/dither-block';
+  initDitherBlocks();
+</script>

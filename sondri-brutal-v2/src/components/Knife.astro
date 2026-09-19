@@ -1,0 +1,74 @@
+---
+import { knife } from '../home-data';
+---
+
+<!-- The cost of leaving it alone: a full teal field carrying three columns
+     with the tick-rule notes, the stairs eating its bottom edge. -->
+<section class="knife px on-teal" id="cost">
+  <div class="index label">
+    <span>Twist the knife</span>
+    <span aria-hidden="true">[SND.2]</span>
+  </div>
+
+  <div class="my-grid body">
+    <div class="head">
+      <h2 class="t-md" data-reveal>{knife.h2}</h2>
+    </div>
+    <div class="copy">
+      <p class="fs-24" data-reveal>{knife.body}</p>
+    </div>
+  </div>
+
+  <ul class="my-grid items">
+    {knife.items.map((k, i) => (
+      <li data-reveal style={`transition-delay:${i * 70}ms`}>
+        <span class="tick" aria-hidden="true"></span>
+        <h3 class="t-sm">{k.t}</h3>
+        <p class="my-text">{k.b}</p>
+      </li>
+    ))}
+  </ul>
+
+  <div class="my-grid close">
+    <p class="fs-46" data-reveal>{knife.close}</p>
+  </div>
+
+  <div class="stairs my-grid" aria-hidden="true">
+    <div class="stair stair-1"></div>
+    <div class="stair stair-2"></div>
+    <div class="stair stair-3"></div>
+  </div>
+</section>
+
+<style>
+  .knife { position: relative; padding-top: var(--s-50); padding-bottom: 330px; }
+  @media (min-width: 1024px) { .knife { padding-bottom: 500px; } }
+  .index { display: flex; justify-content: space-between; }
+
+  .body { margin-top: var(--s-66); row-gap: var(--s-40); }
+  .head { grid-column: 1 / -1; }
+  .copy { grid-column: 1 / -1; }
+  .copy p { max-width: 44ch; }
+  @media (min-width: 1024px) {
+    .head { grid-column: 1 / 9; }
+    .copy { grid-column: 7 / -1; }
+  }
+
+  .items { list-style: none; margin-top: var(--s-66); row-gap: var(--s-50); }
+  @media (min-width: 1024px) { .items { margin-top: var(--s-100); } }
+  .items li { grid-column: 1 / -1; display: flex; flex-direction: column; gap: var(--s-20); }
+  @media (min-width: 1024px) {
+    .items li:nth-child(1) { grid-column: 1 / 5; }
+    .items li:nth-child(2) { grid-column: 5 / 9; }
+    .items li:nth-child(3) { grid-column: 9 / -1; }
+  }
+  .tick { display: block; width: 28px; height: 1px; background: var(--white); }
+  .items p { max-width: 40ch; }
+
+  .close { margin-top: var(--s-80); }
+  @media (min-width: 1024px) { .close { margin-top: var(--s-130); } }
+  .close p { grid-column: 1 / -1; }
+  @media (min-width: 1024px) { .close p { grid-column: 3 / -1; } }
+
+  .stairs { display: grid; }
+</style>

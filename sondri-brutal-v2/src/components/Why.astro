@@ -1,0 +1,38 @@
+---
+import { why } from '../home-data';
+---
+
+<!-- The founder note: the intro's colour field carrying one large statement,
+     the second line beneath it, and a bracket link. -->
+<section class="why px my-grid on-teal" id="why">
+  <div class="index label">
+    <span>Why Sondri exists</span>
+    <span aria-hidden="true">[SND.7]</span>
+  </div>
+
+  <div class="statement">
+    <p class="fs-46" data-reveal>{why.quote}</p>
+  </div>
+
+  <div class="note" data-reveal>
+    <span class="tick" aria-hidden="true"></span>
+    <p class="fs-24">{why.body}</p>
+    <a class="brk" href={why.link.href}>{why.link.label} <span class="arr">→</span></a>
+  </div>
+</section>
+
+<style>
+  .why { padding-top: var(--s-50); padding-bottom: var(--s-80); row-gap: var(--s-66); }
+  @media (min-width: 1024px) { .why { padding-bottom: var(--s-130); row-gap: var(--s-100); } }
+
+  .index { grid-column: 1 / -1; display: flex; justify-content: space-between; }
+
+  .statement { grid-column: 1 / -1; }
+  @media (min-width: 1024px) { .statement { grid-column: 1 / 12; } }
+
+  .note { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-20); }
+  @media (min-width: 1024px) { .note { grid-column: 7 / -1; } }
+  .tick { display: block; width: 28px; height: 1px; background: var(--white); }
+  .note p { max-width: 42ch; }
+  .note .brk { margin-top: var(--s-10); }
+</style>

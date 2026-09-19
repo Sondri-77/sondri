@@ -1,10 +1,11 @@
 ---
-import { TAGLINE } from '../data';
+import { BOOK_HREF, CTA_PRIMARY, RISK_REVERSAL } from '../data';
+import { hero } from '../home-data';
 ---
 
-<!-- Full-viewport photo hero. Their layout: the company name set enormous
-     across the bottom, the sentence in the upper right, and five 1px vertical
-     rules that grow in on load. -->
+<!-- Full-viewport photo hero. Their layout: the headline set enormous across
+     the bottom, the sentence in the upper right, and five 1px vertical rules
+     that grow in on load. No lockup here — that lives in the nav and footer. -->
 <section class="hero px" data-hero>
   <div class="bg">
     <img
@@ -23,8 +24,6 @@ import { TAGLINE } from '../data';
          canvas by hero-fx.ts; it has no layer of its own. -->
   </div>
 
-  <h1 class="sr-only">Sondri — {TAGLINE}</h1>
-
   <div class="grid my-grid">
     <div class="ln a1" aria-hidden="true"><i data-line style="--origin:top"></i></div>
     <div class="ln a2" aria-hidden="true"><i data-line style="--origin:top"></i></div>
@@ -32,12 +31,16 @@ import { TAGLINE } from '../data';
     <div class="ln a4" aria-hidden="true"><i data-line style="--origin:top"></i></div>
     <div class="ln a5" aria-hidden="true"><i data-line style="--origin:top"></i></div>
 
-    <div class="tagline">
-      <p class="fs-24">Made simple.<br />Built into the systems<br />you already run.</p>
+    <div class="lede">
+      <p class="fs-24">{hero.lede}</p>
     </div>
 
-    <span class="my-title t1" aria-hidden="true">Software &amp;</span>
-    <span class="my-title t2" aria-hidden="true">Automation</span>
+    <h1 class="my-title t1">{hero.h1}</h1>
+
+    <div class="cta">
+      <a class="btn" href={BOOK_HREF}>{CTA_PRIMARY} <span class="arr" aria-hidden="true">→</span></a>
+      <p class="label after">{RISK_REVERSAL} {hero.after}</p>
+    </div>
 
     <div class="scroll label" aria-hidden="true">Scroll</div>
   </div>
@@ -102,12 +105,19 @@ import { TAGLINE } from '../data';
   .ln i { position: absolute; left: 0; top: 0; width: 1px; height: 100%; background: var(--white); display: block; }
   .a3 i { top: auto; bottom: 0; }
 
-  .tagline { grid-column: 9 / -1; align-self: end; padding-bottom: var(--s-20); }
-  .tagline p { text-transform: none; }
+  .lede { grid-column: 1 / -1; align-self: end; padding-bottom: var(--s-20); }
+  .lede p { max-width: 40ch; }
 
-  .t1, .t2 { display: block; }
-  .t1 { grid-column: 1 / -1; }
-  .t2 { grid-column: 1 / -1; margin-bottom: 10px; }
+  /* The headline is a sentence, not a name: Florexa, but a size down from the
+     160px display line so it holds in two or three lines. */
+  .t1 { grid-column: 1 / -1; font-size: clamp(38px, 6.6vw, 96px); line-height: 1; max-width: 16ch; }
+
+  .cta { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-20); padding-top: var(--s-10); }
+  .cta .btn { border-color: var(--white); }
+  .cta .btn:hover { background: var(--white); color: var(--teal); }
+  .cta .arr { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  .cta .btn:hover .arr { transform: translateX(4px); }
+  .after { opacity: 0.8; line-height: 1.5; }
 
   .scroll { grid-column: 1 / 3; padding-top: var(--s-15); opacity: 0.7; }
 
@@ -115,11 +125,10 @@ import { TAGLINE } from '../data';
     .grid {
       grid-template-areas:
         '. . . . . . . . line1 line1 line2 line2'
-        '. . . . . . . . line1 line1 tagline tagline'
-        'title1 title1 title1 title1 title1 title1 title1 title1 title1 title1 line3 line3'
-        'title2 title2 title2 title2 title2 title2 title2 title2 title2 title2 title2 title2'
-        '. . . . . . . . line4 line4 line5 line5';
-      grid-template-rows: 1fr auto auto auto 45px;
+        '. . . . . . . lede lede lede lede lede'
+        'title title title title title title title title title title line3 line3'
+        'cta cta cta cta cta cta cta cta line4 line4 line5 line5';
+      grid-template-rows: 1fr auto auto 120px;
       padding-bottom: 0;
     }
     .ln { display: block; }
@@ -128,17 +137,15 @@ import { TAGLINE } from '../data';
     .a3 { grid-area: line3; }
     .a4 { grid-area: line4; }
     .a5 { grid-area: line5; }
-    .tagline { grid-area: tagline; padding-bottom: 0; align-self: end; }
-    .t1 { grid-area: title1; margin-top: -0.05em; }
-    .t2 { grid-area: title2; margin-bottom: 10px; }
+    .lede { grid-area: lede; padding-bottom: var(--s-30); align-self: end; }
+    .t1 { grid-area: title; margin-top: -0.05em; }
+    .cta { grid-area: cta; align-self: start; padding-top: var(--s-26); }
     .scroll { display: none; }
   }
 
   /* Absurdly tall viewports (screenshot tooling, kiosk displays) shouldn't get
      a 3-metre hero. */
   @media (min-height: 2000px) { .hero { height: auto; min-height: 780px; } }
-
-  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 </style>
 
 <script>
