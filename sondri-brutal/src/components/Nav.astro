@@ -22,7 +22,7 @@ import { BOOK_HREF, CTA_PRIMARY } from '../data';
 
     <div class="right">
       <a class="link log" href="#contact">Get in touch</a>
-      <a class="btn btn-gold" href={BOOK_HREF}>{CTA_PRIMARY}</a>
+      <a class="btn btn-white" href={BOOK_HREF}>{CTA_PRIMARY}</a>
     </div>
 
     <button id="navtoggle" class="toggle label" aria-expanded="false" aria-controls="navpanel">Menu</button>
@@ -31,7 +31,7 @@ import { BOOK_HREF, CTA_PRIMARY } from '../data';
   <div id="navpanel" hidden>
     {nav.map((i) => <a class="panel-link" href={i.href}>{i.label}</a>)}
     <a class="panel-link" href="#contact">Get in touch</a>
-    <a class="btn btn-gold panel-btn" href={BOOK_HREF}>{CTA_PRIMARY}</a>
+    <a class="btn btn-white panel-btn" href={BOOK_HREF}>{CTA_PRIMARY}</a>
   </div>
 </header>
 
@@ -75,6 +75,10 @@ import { BOOK_HREF, CTA_PRIMARY } from '../data';
   .link:hover { color: var(--text-hi); border-bottom-color: var(--accent); }
 
   .right { display: flex; align-items: center; gap: var(--s-24); }
+  /* The bar's CTA is the white pill, not the gold one: gold stays the hero's.
+     Same grammar as .btn-gold with paper for the fill, in both bar states. */
+  .btn-white { background: var(--white); border-color: var(--white); color: var(--teal); font-weight: 500; }
+  .btn-white:hover { background: var(--off); border-color: var(--off); color: var(--teal); }
   .log { margin-left: auto; }
 
   .toggle {
