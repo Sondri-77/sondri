@@ -44,18 +44,31 @@ which is where `/decide` appends. Two things the skill does not do for you:
 
 ## Index
 
-3 decisions. Superseded ones are kept — the reasoning is often still useful — but marked here
+4 decisions. Superseded ones are kept — the reasoning is often still useful — but marked here
 and inline. **Read the marked ones with their replacement, never alone.**
 
 | # | Decision | Status |
 |---|---|---|
+| D4 | Home copy = the reviewed workbench home-edgy (banned-copy rounds 1+2, voice rule) - approved | DECIDED |
 | D3 | Only brutal (:4330) is worked on; brutal-v2 and the copy workbench are frozen references | DECIDED |
-| D2 | Home copy = the edgy voice (workbench home-edgy, round-2 picks), approved for now | DECIDED |
+| D2 | Home copy = the edgy voice (workbench home-edgy, round-2 picks), approved for now | DECIDED (wording superseded by D4) |
 | D1 | Home page structure = the locked 12-section sequence | DECIDED |
 
 ---
 
 ## DECIDED
+
+### D4 — Which copy goes live on the working site after the banned-copy review?
+
+**Choice:** The workbench `home-edgy` page as it stands after banned-copy rounds 1 and 2 (commits 5d3f27b, b514abd) plus the captain's 21:50/21:55 tweaks (hero H1 "Fix expensive bullshit. (Use AI where it helps)", Problem closer `How long has your fix been "in pilot"?`) is approved and ported verbatim onto :4330. Approved by the captain 2026-09-18 22:03 ("the before/after copy review was amazing").
+
+**Why:** The review pass applied the captain's 12 banned patterns, the slop test and the blue-collar second-person voice rule with a before → after → rule changelog (`/copy-review/`), which the captain read and accepted.
+
+**Options not taken:**
+- **Keep :4330 on the pre-review edgy copy (D2 as shipped)** — carried lines that break the rules list.
+- **Port only the flagged/changed lines** — piecemeal; the whole page is the reviewed unit.
+
+**Supersedes:** D2 for the exact wording (D2's voice choice stands).
 
 ### D3 — Which design study is the working site?
 
