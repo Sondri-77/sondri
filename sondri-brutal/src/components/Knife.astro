@@ -1,0 +1,45 @@
+---
+import { knife, knifeHead } from '../home-data';
+import { splitDot } from '../lib/dot';
+const [h2, dot] = splitDot(knifeHead.h2);
+---
+
+<!-- Twist the knife: the cost of inaction, on the teal field. Three ruled
+     columns, each a cost line with its mono marker. -->
+<section class="section section-pad on-dark">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow"><span class="label">/ Cost of inaction</span></div>
+        <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
+      </div>
+      <div class="right">
+        <p class="lede">{knifeHead.lede}</p>
+      </div>
+    </div>
+
+    <div class="rule-cols cols-3 costs">
+      {knife.map((k, i) => (
+        <article data-reveal style={`transition-delay:${i * 80}ms`}>
+          <p class="label idx">{String(i + 1).padStart(2, '0')}</p>
+          <h3 class="h3">{k.t}</h3>
+          <p class="body">{k.b}</p>
+        </article>
+      ))}
+    </div>
+
+    <p class="close"><span class="hl">{knifeHead.close}</span></p>
+  </div>
+</section>
+
+<style>
+  .costs article { display: flex; flex-direction: column; gap: var(--s-16); min-height: 300px; }
+  .idx { color: var(--accent); }
+  .idx::before {
+    content: ''; display: inline-block;
+    width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
+    background: currentColor;
+  }
+  .body { color: var(--pale); font-size: 15px; line-height: 22px; max-width: 34ch; margin-top: auto; }
+  .close { padding-top: var(--s-64); font-size: 20px; line-height: 1.4; max-width: 40ch; }
+</style>

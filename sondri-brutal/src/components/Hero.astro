@@ -1,11 +1,14 @@
 ---
-import { BOOK_HREF, CTA_PRIMARY, RISK_REVERSAL, mailto } from '../data';
+import { BOOK_HREF, CTA_PRIMARY, RISK_REVERSAL } from '../data';
+import { hero } from '../home-data';
+import { splitDot } from '../lib/dot';
+const [h1, dot] = splitDot(hero.h1);
 ---
 
 <!-- The v2 study's treated photo hero (hero-fx.ts: luminance → gradient-map
      ramp → Bayer dither + grain; the cursor trail, pixel-trail.ts, is
      composited into the dither canvas under all of it and has no layer of its
-     own), carrying brutal's copy block: display headline, lede, two pills, the
+     own), carrying brutal's copy block: display headline, lede, the pill, the
      mono risk line. No lockup here — that lives in the nav and footer. -->
 <section class="hero on-dark" data-hero>
   <div class="bg" aria-hidden="true">
@@ -23,17 +26,12 @@ import { BOOK_HREF, CTA_PRIMARY, RISK_REVERSAL, mailto } from '../data';
   </div>
 
   <div class="wrap copy">
-    <h1 class="display">Software &amp; automation, made simple<span class="gdot">.</span></h1>
-    <p class="lede">
-      We find the three workflows where automation pays fastest, build the first one into the
-      systems you already run, and hand you the keys.
-      <span class="hl">Fixed price. Weeks, not quarters.</span>
-    </p>
+    <h1 class="display">{h1}<span class="gdot">{dot}</span></h1>
+    <p class="lede">{hero.lede}</p>
     <div class="actions">
       <a class="btn btn-gold" href={BOOK_HREF}>{CTA_PRIMARY} <span class="arr">→</span></a>
-      <a class="btn" href={mailto('Hello from sondri.ai')}>Contact our team</a>
     </div>
-    <p class="label">{RISK_REVERSAL}</p>
+    <p class="label">{RISK_REVERSAL} {hero.after}</p>
   </div>
 </section>
 
@@ -56,24 +54,15 @@ import { BOOK_HREF, CTA_PRIMARY, RISK_REVERSAL, mailto } from '../data';
     display: block;
   }
 
-  /* The animated grain, composited over the dither. */
+  /* The grain, composited over the dither. Static — generated once by the
+     SVG filter and never moved (captain: no flicker, no ticking). */
   .noise {
-    position: absolute; inset: -50%;
+    position: absolute; inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
     mix-blend-mode: overlay;
     opacity: 0.3;
-    animation: grain 0.6s steps(1) infinite;
     pointer-events: none;
   }
-  @keyframes grain {
-    0%   { transform: translate(0, 0); }
-    20%  { transform: translate(-6%, 4%); }
-    40%  { transform: translate(5%, -7%); }
-    60%  { transform: translate(-4%, -3%); }
-    80%  { transform: translate(7%, 5%); }
-    100% { transform: translate(0, 0); }
-  }
-  @media (prefers-reduced-motion: reduce) { .noise { animation: none; opacity: 0.28; } }
 
   /* Keeps the type legible over the brightest part of the sky. */
   .veil {
@@ -94,7 +83,7 @@ import { BOOK_HREF, CTA_PRIMARY, RISK_REVERSAL, mailto } from '../data';
     letter-spacing: 0; text-transform: uppercase;
     color: var(--white); max-width: 14ch;
   }
-  .lede { max-width: 46ch; color: var(--white); }
+  .lede { max-width: 52ch; color: var(--white); }
   .actions { display: flex; flex-wrap: wrap; gap: var(--s-16); }
   .label { color: var(--muted-inv); }
 

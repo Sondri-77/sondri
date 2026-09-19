@@ -276,3 +276,14 @@ a { color: inherit; }
 [data-reveal] { opacity: 0; transform: translateY(16px); transition: opacity 0.5s linear, transform 0.5s linear; }
 [data-reveal].in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { [data-reveal] { opacity: 1; transform: none; transition: none; } }
+
+/* ── Dithered image slots ───────────────────────────── */
+
+/* Placeholder imagery (logo boxes, avatars, feature marks) drawn by
+   dither-block.ts through the hero's ramp + Bayer, so every picture on the
+   page is the same picture. */
+.dither-block {
+  display: block; width: 100%; height: 100%;
+  image-rendering: pixelated;
+  background: var(--teal-deep);
+}

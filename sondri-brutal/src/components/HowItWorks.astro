@@ -1,0 +1,42 @@
+---
+import { howItWorks, steps } from '../home-data';
+import { splitDot } from '../lib/dot';
+const [h2, dot] = splitDot(howItWorks.h2);
+---
+
+<!-- Feel, re-headed: three ruled steps with mono indices. -->
+<section class="section section-pad" id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow"><span class="label">/ How it works</span></div>
+        <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
+      </div>
+      <div class="right">
+        <p class="lede">{howItWorks.lede}</p>
+      </div>
+    </div>
+
+    <div class="rule-cols cols-3 feel">
+      {steps.map((s, i) => (
+        <div data-reveal style={`transition-delay:${i * 80}ms`}>
+          <p class="i">{s.i}</p>
+          <h3 class="h5">{s.t}</h3>
+          <p class="body-s">{s.b}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .feel > * { display: flex; flex-direction: column; gap: var(--s-16); min-height: 280px; }
+  .i { font-family: var(--mono); font-size: 14px; color: var(--accent); padding-bottom: var(--s-08); }
+  /* Their list marker: a filled square ahead of the mono index. */
+  .i::before {
+    content: ''; display: inline-block;
+    width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
+    background: currentColor;
+  }
+  .body-s { margin-top: auto; max-width: 32ch; }
+</style>

@@ -1,0 +1,43 @@
+---
+import { socialProof, testimonials } from '../home-data';
+import { splitDot } from '../lib/dot';
+const [h2, dot] = splitDot(socialProof.h2);
+---
+
+<!-- Social proof: three quote panels with the hard offset block, each with a
+     dithered avatar slot. -->
+<section class="section section-pad on-off">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow"><span class="label">/ Proof</span></div>
+        <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
+      </div>
+    </div>
+
+    <div class="quotes">
+      {testimonials.map((t, i) => (
+        <figure class="panel dots quote" data-reveal style={`transition-delay:${i * 80}ms`}>
+          <blockquote class="q">{t.q}</blockquote>
+          <figcaption class="who">
+            <span class="avatar"><canvas class="dither-block" data-dither-block data-shape="disc" data-seed={20 + i}></canvas></span>
+            <span class="label">{t.who}</span>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+
+    <p class="label ph">{socialProof.ph}</p>
+  </div>
+</section>
+
+<style>
+  .quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-32); }
+  .quote { display: flex; flex-direction: column; gap: var(--s-32); padding: var(--s-32); background: var(--white); }
+  .q { font-size: 18px; line-height: 28px; color: var(--text-hi); }
+  .who { display: flex; align-items: center; gap: var(--s-16); margin-top: auto; }
+  .avatar { flex: 0 0 56px; width: 56px; height: 56px; border: 1px solid var(--line); }
+  .who .label { color: var(--steel); }
+  .ph { padding-top: var(--s-48); max-width: 70ch; }
+  @media (max-width: 900px) { .quotes { grid-template-columns: 1fr; } }
+</style>

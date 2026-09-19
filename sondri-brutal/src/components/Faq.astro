@@ -1,16 +1,18 @@
 ---
-import { faq } from '../data';
+import { faqHead, homeFaq } from '../home-data';
+import { splitDot } from '../lib/dot';
+const [h2, dot] = splitDot(faqHead.h2);
 ---
 
 <section class="section section-pad" id="faq">
   <div class="wrap faq-grid">
     <div class="head">
-      <div class="eyebrow"><span class="sq"></span><span class="label">/ FAQ</span></div>
-      <h2 class="h3">The questions that come up<span class="gdot">.</span></h2>
+      <div class="eyebrow"><span class="label">/ FAQ</span></div>
+      <h2 class="h3">{h2}<span class="gdot">{dot}</span></h2>
     </div>
 
     <div class="items">
-      {faq.map((f) => (
+      {homeFaq.map((f) => (
         <details>
           <summary>
             <span class="q h6">{f.q}</span>

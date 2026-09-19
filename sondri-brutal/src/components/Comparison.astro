@@ -1,0 +1,61 @@
+---
+import { comparison, comparisonHead } from '../home-data';
+import { splitDot } from '../lib/dot';
+const [h2, dot] = splitDot(comparisonHead.h2);
+---
+
+<!-- Matrix's table grammar — one rule per row, no outer box, no verticals,
+     the Sondri column set in the high colour — on the workbench's four options. -->
+<section class="section section-pad on-off" id="compare">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow"><span class="label">/ Compare</span></div>
+        <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
+      </div>
+      <div class="right">
+        <p class="lede">{comparisonHead.lede}</p>
+      </div>
+    </div>
+
+    <div class="scroll">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            {comparison.cols.map((c, i) => <th scope="col" class:list={{ own: i === 0 }}>{c}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {comparison.rows.map((r) => (
+            <tr>
+              <th scope="row">{r.k}</th>
+              {r.v.map((cell, i) => <td class:list={{ own: i === 0 }}>{cell}</td>)}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p class="label ph">{comparisonHead.ph}</p>
+  </div>
+</section>
+
+<style>
+  .matrix { width: 100%; border-collapse: collapse; border-top: 1px solid var(--line); }
+  th, td { text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); padding: var(--s-24) var(--s-24) var(--s-24) 0; font-size: 15px; line-height: 22px; color: var(--pale); font-weight: 400; }
+  thead th { font-family: var(--mono); font-size: 13px; letter-spacing: 0.02em; text-transform: uppercase; color: var(--text-hi); padding-block: var(--s-16); }
+  tbody th { font-family: var(--mono); font-size: 13px; letter-spacing: 0.02em; text-transform: uppercase; color: var(--text-hi); width: 22%; }
+  .own { color: var(--text-hi); font-weight: 500; }
+  thead .own { font-weight: 500; }
+  /* The Sondri column carries the accent square, the way the matrix's group heads did. */
+  thead .own::before {
+    content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px; background: var(--gold-2);
+  }
+  .ph { padding-top: var(--s-32); max-width: 70ch; }
+  @media (max-width: 900px) {
+    .scroll { overflow-x: auto; }
+    .matrix { min-width: 820px; }
+    th, td { padding: var(--s-16) var(--s-16) var(--s-16) 0; font-size: 14px; }
+  }
+</style>

@@ -1,0 +1,42 @@
+---
+import { logoStrip } from '../home-data';
+// Marquee's rail: two copies so the loop is seamless; the second is hidden from a11y.
+const logos = Array.from({ length: logoStrip.count }, (_, i) => i);
+const track = [...logos, ...logos];
+---
+
+<section class="section strip">
+  <div class="wrap">
+    <p class="line"><span class="label">{logoStrip.line}</span> <span class="label ph">{logoStrip.ph}</span></p>
+  </div>
+  <div class="rail">
+    <div class="track">
+      {track.map((i, n) => (
+        <div class="logo panel" aria-hidden={n >= logos.length ? 'true' : undefined}>
+          <canvas class="dither-block" data-dither-block data-seed={i}></canvas>
+          <span class="label cap">{logoStrip.logo}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .strip { padding-block: var(--s-48) var(--s-64); overflow: hidden; }
+  .line { text-align: center; padding-bottom: var(--s-32); }
+  .line .label { color: var(--text-hi); }
+  .line .ph { color: var(--steel); }
+
+  .rail { display: flex; width: 100%; }
+  .track { display: flex; flex: 0 0 auto; gap: var(--s-24); padding-right: var(--s-24); animation: slide 48s linear infinite; }
+  .logo {
+    position: relative; width: 200px; height: 88px; flex: 0 0 auto;
+    --shadow-x: 6px;
+  }
+  .cap {
+    position: absolute; inset: auto 0 8px 0; text-align: center;
+    color: var(--white); font-size: 11px;
+  }
+  @keyframes slide { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .track { animation: none; } }
+</style>
