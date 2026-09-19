@@ -1,11 +1,12 @@
 ---
 import { capabilities } from '../data';
+import { capabilityStrip } from '../home-data';
 // Two copies so the loop is seamless; the second is hidden from a11y.
 const track = [...capabilities, ...capabilities];
 ---
 
 <section class="section strip">
-  <p class="label heading">What we build</p>
+  <p class="label heading">/ {capabilityStrip.eyebrow}</p>
   <div class="rail">
     <div class="track">
       {track.map((c, i) => (

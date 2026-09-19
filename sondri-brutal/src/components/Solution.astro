@@ -4,14 +4,14 @@ import { splitDot } from '../lib/dot';
 const [h2, dot] = splitDot(solution.h2);
 ---
 
-<!-- Solution & benefits, in Framework's grammar: the 0 → 1 → n line set
-     enormous, the phase copy beside it, then three ruled benefit columns. -->
+<!-- Solution & benefits, in Framework's grammar: the heading, the phase
+     copy beside it, then three ruled benefit columns. -->
 <section class="section section-pad" id="framework">
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="eyebrow"><span class="label">/ The framework</span></div>
-        <h2 class="h1 big">{h2}<span class="gdot">{dot}</span></h2>
+        <div class="eyebrow"><span class="label">/ {solution.eyebrow}</span></div>
+        <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
       </div>
       <div class="right">
         <p class="lede">{solution.lede}</p>
@@ -31,7 +31,6 @@ const [h2, dot] = splitDot(solution.h2);
 </section>
 
 <style>
-  .big { font-size: clamp(56px, 8vw, 120px); line-height: 1; }
   .benefits article { display: flex; flex-direction: column; gap: var(--s-16); min-height: 260px; }
   .idx { color: var(--text-hi); }
   .idx::before {

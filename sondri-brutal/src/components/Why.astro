@@ -1,12 +1,19 @@
 ---
 import { why } from '../home-data';
+import { splitDot } from '../lib/dot';
+const [h2, dot] = splitDot(why.h2);
 ---
 
 <!-- Why Sondri exists: the founder note as one panel on the teal field,
      the hard gold offset behind it. -->
 <section class="section section-pad on-dark" id="about">
   <div class="wrap">
-    <div class="eyebrow"><span class="label">/ Why Sondri exists</span></div>
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow"><span class="label">/ {why.eyebrow}</span></div>
+        <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
+      </div>
+    </div>
     <div class="panel dots note" data-reveal>
       <p class="h4 quote">{why.quote}</p>
       <p class="lede line">{why.line}</p>

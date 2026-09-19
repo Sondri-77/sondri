@@ -7,8 +7,8 @@ const [h2, dot] = splitDot(faqHead.h2);
 <section class="section section-pad" id="faq">
   <div class="wrap faq-grid">
     <div class="head">
-      <div class="eyebrow"><span class="label">/ FAQ</span></div>
-      <h2 class="h3">{h2}<span class="gdot">{dot}</span></h2>
+      <div class="eyebrow"><span class="label">/ {faqHead.eyebrow}</span></div>
+      <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
     </div>
 
     <div class="items">
@@ -27,7 +27,7 @@ const [h2, dot] = splitDot(faqHead.h2);
 
 <style>
   .faq-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: var(--s-64); }
-  .head .h3 { max-width: 14ch; }
+  .head .h2 { max-width: 14ch; }
 
   .items { border-top: 1px solid var(--line); }
   details { border-bottom: 1px solid var(--line); }

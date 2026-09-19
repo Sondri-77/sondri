@@ -1,6 +1,9 @@
 ---
 import { footerCols } from '../brutal-data';
-import { CONTACT_EMAIL, TAGLINE, mailto } from '../data';
+import { CONTACT_EMAIL, mailto } from '../data';
+import { VALUE_LINE } from '../home-data';
+import { splitDot } from '../lib/dot';
+const [line, dot] = splitDot(VALUE_LINE);
 const year = new Date().getFullYear();
 ---
 
@@ -14,7 +17,7 @@ const year = new Date().getFullYear();
     <div class="rule-cols cols-4 f-grid">
       <div class="f-brand">
         <p class="label col-title">/ Sondri</p>
-        <p class="h6">{TAGLINE}<span class="gdot">.</span></p>
+        <p class="h6">{line}<span class="gdot">{dot}</span></p>
         <a class="mail" href={mailto('Hello from sondri.ai')}>{CONTACT_EMAIL}</a>
       </div>
       {footerCols.map((col) => (
@@ -41,7 +44,7 @@ const year = new Date().getFullYear();
   .wordmark-band img { height: clamp(110px, 17vw, 230px); width: auto; }
 
   .f-grid { padding-top: 0; }
-  .f-brand .h6 { max-width: 18ch; margin-top: var(--s-08); }
+  .f-brand .h6 { max-width: 30ch; margin-top: var(--s-08); }
   .mail {
     display: inline-block; margin-top: var(--s-24);
     font-family: var(--mono); font-size: 14px; letter-spacing: 0.04em;
