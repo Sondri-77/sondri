@@ -2,13 +2,14 @@
 /**
  * EDGY — the locked 12 sections (decision D1), rewritten in the captain's
  * voice. Same order and roughly the same facts as home-alt; different mouth.
+ * Slot 2 is the capability strip from the live site (no logo strip).
  * Every big heading has 3 variants (primary + 2), cycled by the ‹ › control.
  * `[placeholder]` marks proof we don't have yet.
  */
 import Base from '../layouts/Base.astro';
 import Btn from '../components/Btn.astro';
 import Heading from '../components/Heading.astro';
-import { CTA_PRIMARY, RISK_REVERSAL, problemStats } from '../../../sondri-site/src/data';
+import { CTA_PRIMARY, RISK_REVERSAL, problemStats, capabilities } from '../../../sondri-site/src/data';
 
 const VALUE_LINE =
   'Sondri works where the money moves—helping businesses improve the workflows, decisions, and systems that create value, with AI where it helps.';
@@ -69,11 +70,10 @@ const faq = [
 ];
 ---
 
-<Base title="Sondri — Home (edgy)">
+<Base title="Sondri — Home (edgy)" footerLine={VALUE_LINE}>
   <section>
     <p class="label">Hero</p>
-    <Heading tag="h1" v={['We unf*ck how work gets done.', 'We fix problems costing you time, money, and the will to fucking live.', 'Unsexy solutions to big fkn problems.']} />
-    <p class="sub">{VALUE_LINE}</p>
+    <Heading tag="h1" v={['We fix expensive bullshit. (Using AI where it helps)', 'We fix problems costing you time, money, and the will to fucking live.', 'Unsexy solutions to big fkn problems.']} />
     <p>Built into the systems you already run. Live in weeks. AI where it helps, regular software where it doesn’t.</p>
     <div class="ctas">
       <Btn href="#">{CTA_PRIMARY} →</Btn>
@@ -82,17 +82,17 @@ const faq = [
   </section>
 
   <section>
-    <p class="label">Logo strip</p>
-    <Heading tag="h2" v={['Companies that were tired of pilots.', 'Businesses whose systems fucked around and found out.', 'People who stopped putting up with it.']} />
-    <p class="ph">[placeholder] client count / one-line proof</p>
-    <div class="logos">
-      {[1, 2, 3, 4, 5, 6].map(() => <div class="logo">[placeholder] client logo</div>)}
+    <p class="label">Things we do</p>
+    <div class="marquee" aria-label="Capabilities">
+      <div class="track">
+        {[...capabilities, ...capabilities].map((c) => <span>{c}</span>)}
+      </div>
     </div>
   </section>
 
   <section>
     <p class="label">Problem</p>
-    <Heading tag="h2" v={['Somewhere in your business, an expensive person is copying and pasting something.', 'Your people aren’t inefficient. The shit you make them use is.', 'Everyone has an AI initiative. Almost nobody has one in production.']} />
+    <Heading tag="h2" v={['Your people aren’t inefficient. The shit you make them use is.', 'Somewhere in your business, an expensive person is copying and pasting something.', 'Everyone has an AI initiative. Almost nobody has one in production.']} />
     <p>Somewhere in your business, good people are wasting hours on a process everybody agrees is stupid. Nobody has fixed it because the available software doesn’t get it and traditional consulting costs a small fucking fortune. Hi.</p>
     <div class="cards">
       {problemStats.map((s) => (
@@ -122,7 +122,7 @@ const faq = [
 
   <section>
     <p class="label">Solution &amp; benefits</p>
-    <Heading tag="h2" v={['We fix expensive bullshit. (Using AI where it helps)', 'Cut the crap. Fix the work.', '0 → 1 → n.']} />
+    <Heading tag="h2" v={['We unf*ck how work gets done.', 'Cut the crap. Fix the work.', '0 → 1 → n.']} />
     <p>Prove it, ship it, multiply it. Discovery finds the three workflows where the money moves fastest. Production puts the first one live inside your systems. Multiply ships the next ones on what’s already built, each faster and cheaper than the last.</p>
     <ul>
       {benefits.map((b) => (
@@ -162,7 +162,7 @@ const faq = [
 
   <section>
     <p class="label">Competitor comparison</p>
-    <Heading tag="h2" v={['Maybe you need AI. Maybe your software just sucks. Let’s find out.', 'A lot of consultants will charge you to rename your problem.', 'Your other options, honestly.']} />
+    <Heading tag="h2" v={['A lot of consultants will charge you to rename your problem.', 'Maybe you need AI. Maybe your software just sucks. Let’s find out.', 'Your other options, honestly.']} />
     <p>None of these are wrong. They’re slower, pricier, or riskier than a problem this size deserves. One of them will put it in a deck and recommend another consultant.</p>
     <table>
       <thead>
@@ -205,7 +205,7 @@ const faq = [
 
   <section>
     <p class="label">FAQ</p>
-    <Heading tag="h2" v={['Asked on almost every intro call.', 'Things people ask before they trust us with money.', 'Fine. Ask.']} />
+    <Heading tag="h2" v={['Things people ask before they trust us with money.', 'Asked on almost every intro call.', 'Fine. Ask.']} />
     {faq.map((f) => (
       <details>
         <summary>{f.q}</summary>
@@ -216,7 +216,7 @@ const faq = [
 
   <section>
     <p class="label">Final CTA</p>
-    <Heading tag="h2" v={['If your tech stack is a crime scene, let’s talk.', 'Stop paying smart people to babysit stupid systems.', 'The first conversation is free. The roadmap is yours either way.']} />
+    <Heading tag="h2" v={['Stop paying smart people to babysit stupid systems.', 'If your tech stack is a crime scene, let’s talk.', 'The first conversation is free. The roadmap is yours either way.']} />
     <p>Thirty minutes with a founder. Bring the process that makes reasonable adults consider arson. We’ll tell you straight whether there’s a case, and if the honest answer is “hire someone,” we’ll say that too.</p>
     <div class="ctas">
       <Btn href="#">{CTA_PRIMARY} →</Btn>
@@ -251,8 +251,11 @@ const faq = [
   .sub { font-size: 18px; }
   .ph { color: #888; font-size: 14px; }
   .who { color: #666; font-size: 14px; }
-  .logos { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
-  .logo { background: #ddd; color: #666; font-size: 11px; text-align: center; height: 48px; display: flex; align-items: center; justify-content: center; padding: 4px; }
+  .marquee { overflow: hidden; border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 10px 0; }
+  .track { display: flex; gap: 40px; width: max-content; white-space: nowrap; animation: scroll 24s linear infinite; }
+  .track span { font-family: 'Florexa', sans-serif; font-size: 20px; text-transform: uppercase; }
+  .marquee:hover .track { animation-play-state: paused; }
+  @keyframes scroll { to { transform: translateX(-50%); } }
   table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 0 0 12px; }
   th, td { border: 1px solid #eee; padding: 8px; text-align: left; vertical-align: top; }
   thead th { background: #f5f5f5; }

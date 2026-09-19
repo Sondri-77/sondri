@@ -3,8 +3,8 @@ import Img from '../components/Img.astro';
 import Btn from '../components/Btn.astro';
 import { navV2, TAGLINE, mailto } from '../../../sondri-site/src/data';
 
-interface Props { title: string }
-const { title } = Astro.props;
+interface Props { title: string; footerLine?: string }
+const { title, footerLine = TAGLINE } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
@@ -33,7 +33,7 @@ const year = new Date().getFullYear();
 
     <footer>
       <Img w={152} h={45} />
-      <p>{TAGLINE}</p>
+      <p>{footerLine}</p>
       <div class="cols">
         <div>
           <p><b>Company</b></p>
