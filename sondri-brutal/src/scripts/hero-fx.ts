@@ -57,9 +57,7 @@ export function initHeroFx(root: HTMLElement) {
   let out: ImageData | null = null;
   let trailA = new Float32Array(0);
   let trailLive = false;
-  // Static grain (captain): the dither threshold noise is generated once per
-  // size and never re-rolled, so nothing ticks — only the trail changes.
-  let noise = new Float32Array(0);
+  let frame = 0;
   let raf = 0;
 
   // Mouse only: the trail makes no sense under a finger, and reduced motion
@@ -109,8 +107,6 @@ export function initHeroFx(root: HTMLElement) {
     canvas.height = h;
     out = ctx.createImageData(w, h);
     trailA = new Float32Array(w * h);
-    noise = new Float32Array(w * h);
-    for (let i = 0; i < noise.length; i++) noise[i] = (Math.random() - 0.5) * 11;
     sample();
     trail?.resize();
   };
@@ -119,8 +115,10 @@ export function initHeroFx(root: HTMLElement) {
     if (!out || !lum.length) return;
     const data = out.data;
 
-    // The noise term shifts the dither threshold so flat areas grain instead
-    // of banding. It is fixed per size (see `noise`), not per frame.
+    // Shift the dither threshold and re-roll noise on each grain tick.
+    const jitter = reduced ? 0 : 11;
+    const ox = frame & 3;
+    const oy = (frame >> 1) & 3;
 
     // The trail lands in the source, ahead of the ramp and dither.
     trailLive = trail ? trail.render(trailA, w, h) : false;
@@ -134,8 +132,8 @@ export function initHeroFx(root: HTMLElement) {
           if (a > 0) l += a * (TRAIL_LUM - l);
         }
 
-        const t = (BAYER[y & 3][x & 3] / 16 - 0.5) * 38;
-        const n = noise[i];
+        const t = (BAYER[(y + oy) & 3][(x + ox) & 3] / 16 - 0.5) * 38;
+        const n = jitter ? (Math.random() - 0.5) * jitter : 0;
 
         let v = (l + t + n) / 255;
         v = v < 0 ? 0 : v > 1 ? 1 : v;
@@ -152,22 +150,20 @@ export function initHeroFx(root: HTMLElement) {
     ctx.putImageData(out, 0, 0);
   };
 
-  // One rAF loop. The picture is static; it only redraws (~24fps) while the
-  // trail is alive, or once more to clear the last of it. The trail's decay
-  // runs every tick, as in the playground.
+  // Grain advances every 82ms, twice the original 41ms interval. The trail
+  // is composited in the same pass, with its decay still running every tick.
   let last = 0;
-  let dirty = true;
   const loop = (now: number) => {
-    const live = trail ? trail.frame(now) : false;
-    if ((live || dirty) && now - last > 41) {
+    trail?.frame(now);
+    if (now - last > 82) {
       last = now;
+      frame++;
       draw();
-      dirty = live;
     }
     raf = requestAnimationFrame(loop);
   };
 
-  window.addEventListener('resize', () => { measure(); dirty = true; }, { passive: true });
+  window.addEventListener('resize', () => measure(), { passive: true });
 
   if (src.complete) measure();
   else src.addEventListener('load', measure, { once: true });
