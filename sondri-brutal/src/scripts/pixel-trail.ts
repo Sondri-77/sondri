@@ -32,18 +32,22 @@ const GOO = 0;
 /** FADE: STEPPED quantises alpha to `ceil(v * 4) / 4`. */
 const STEPPED = true;
 
+export interface TrailBounds { x0: number; y0: number; x1: number; y1: number }
+
 export interface PixelTrail {
   /** Decay. Call once per rAF tick. True while any cell is alive. */
   frame(ts: number): boolean;
   /** Re-fit the grid to the root's current size. Clears the trail. */
   resize(): void;
+  setActive(active: boolean): void;
   /** Rasterise the live cells into `buf` — one alpha (0..1) per pixel of a
-      bw×bh buffer that covers the root. Returns false (buf untouched) when
+      bw×bh buffer that covers the root. Returns null (buf untouched) when
       the trail is empty. */
-  render(buf: Float32Array, bw: number, bh: number): boolean;
+  render(buf: Float32Array, bw: number, bh: number): TrailBounds | null;
 }
 
 export function createPixelTrail(root: HTMLElement): PixelTrail {
+  let active = false;
   let cols = 0;
   let rows = 0;
   let width = 0;
@@ -52,6 +56,9 @@ export function createPixelTrail(root: HTMLElement): PixelTrail {
   let alive = false;
   let px = -1;
   let py = -1;
+  let pending: { x: number; y: number }[] = [];
+  let last = 0;
+  let stampTime = 0;
 
   function size() {
     const r = root.getBoundingClientRect();
@@ -61,6 +68,9 @@ export function createPixelTrail(root: HTMLElement): PixelTrail {
     rows = Math.ceil(r.height / CELL);
     vals = new Float32Array(cols * rows);
     alive = false;
+    pending = [];
+    px = py = -1;
+    last = stampTime = 0;
   }
   size();
 
@@ -84,25 +94,38 @@ export function createPixelTrail(root: HTMLElement): PixelTrail {
     alive = true;
   }
 
+  // Events only collect coordinates; stamping and decay belong to hero's rAF.
   root.addEventListener('pointermove', (e) => {
+    if (!active) return;
     const r = root.getBoundingClientRect();
-    const x = e.clientX - r.left;
-    const y = e.clientY - r.top;
-    if (px >= 0) {
-      const steps = Math.ceil(Math.hypot(x - px, y - py) / (CELL / 2));
-      for (let i = 1; i <= steps; i++) stamp(px + ((x - px) * i) / steps, py + ((y - py) * i) / steps);
-    } else stamp(x, y);
-    px = x;
-    py = y;
+    pending.push({ x: e.clientX - r.left, y: e.clientY - r.top });
   });
   root.addEventListener('pointerleave', () => {
-    px = py = -1;
+    if (!active) return;
+    pending.push({ x: -1, y: -1 });
   });
 
-  let last = 0;
+  function samplePointer() {
+    for (const { x, y } of pending) {
+      if (x < 0) { px = py = -1; continue; }
+      if (px >= 0) {
+        const steps = Math.ceil(Math.hypot(x - px, y - py) / (CELL / 2));
+        for (let i = 1; i <= steps; i++) stamp(px + ((x - px) * i) / steps, py + ((y - py) * i) / steps);
+      } else stamp(x, y);
+      px = x;
+      py = y;
+    }
+    pending = [];
+  }
+
   function frame(ts: number): boolean {
-    const dt = Math.min(100, ts - last);
+    const dt = last ? Math.min(100, ts - last) : 0;
     last = ts;
+    stampTime += dt;
+    if (stampTime >= 45) {
+      stampTime %= 45;
+      samplePointer();
+    }
     if (!alive) return false;
     const dec = dt / DECAY;
     let any = false;
@@ -117,17 +140,30 @@ export function createPixelTrail(root: HTMLElement): PixelTrail {
     return any;
   }
 
-  function render(buf: Float32Array, bw: number, bh: number): boolean {
-    if (!alive || !width || !height) return false;
+  function render(buf: Float32Array, bw: number, bh: number): TrailBounds | null {
+    if (!alive || !width || !height) return null;
     const sx = width / bw;
     const sy = height / bh;
     const rad = (CORNER / 100) * CELL;
+    let minX = cols, minY = rows, maxX = -1, maxY = -1;
+    for (let gy = 0; gy < rows; gy++) for (let gx = 0; gx < cols; gx++) {
+      if (vals[gy * cols + gx] <= 0) continue;
+      minX = Math.min(minX, gx); minY = Math.min(minY, gy);
+      maxX = Math.max(maxX, gx); maxY = Math.max(maxY, gy);
+    }
+    if (maxX < 0) return null;
+    const bounds: TrailBounds = GOO > 0 ? { x0: 0, y0: 0, x1: bw, y1: bh } : {
+      x0: Math.max(0, Math.floor(minX * CELL / sx)),
+      y0: Math.max(0, Math.floor(minY * CELL / sy)),
+      x1: Math.min(bw, Math.ceil((maxX + 1) * CELL / sx)),
+      y1: Math.min(bh, Math.ceil((maxY + 1) * CELL / sy)),
+    };
     // The playground insets each square by 1 CSS px; at working resolution
     // (~3 CSS px per buffer pixel) that gap is sub-pixel, so it is dropped.
-    for (let by = 0; by < bh; by++) {
+    for (let by = bounds.y0; by < bounds.y1; by++) {
       const y = (by + 0.5) * sy;
       const gy = (y / CELL) | 0;
-      for (let bx = 0; bx < bw; bx++) {
+      for (let bx = bounds.x0; bx < bounds.x1; bx++) {
         const x = (bx + 0.5) * sx;
         const gx = (x / CELL) | 0;
         const v = gx < cols && gy < rows ? vals[gy * cols + gx] : 0;
@@ -147,10 +183,10 @@ export function createPixelTrail(root: HTMLElement): PixelTrail {
       }
     }
     if (GOO > 0) goo(buf, bw, bh, GOO / sx);
-    return true;
+    return bounds;
   }
 
-  return { frame, resize: size, render };
+  return { frame, resize: size, render, setActive(value) { active = value; } };
 }
 
 /** In-buffer stand-in for the playground's #goo-trail SVG filter:

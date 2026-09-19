@@ -12,7 +12,7 @@
    before the ramp and dither run, so it is graded, dithered and grained like
    the photo rather than drawn over it. */
 
-import { createPixelTrail } from './pixel-trail';
+import { createPixelTrail, type TrailBounds } from './pixel-trail';
 
 export const BAYER = [
   [0, 8, 2, 10],
@@ -39,30 +39,41 @@ const LEVELS = RAMP.length - 1;
     pure dark → invisible over the dark half, which is RAMP[0] already.) */
 const TRAIL_LUM = 85;
 
+// The integer LUT preserves the original half-integer ramp boundaries.
+const GRADIENT = new Uint8ClampedArray(256 * 3);
+for (let l = 0; l < 256; l++) GRADIENT.set(RAMP[Math.round(l / 255 * LEVELS)], l * 3);
+
+interface GrainPhase {
+  static: HTMLCanvasElement;
+  // Five possible STEPPED trail alphas: 0, 1/4, 1/2, 3/4, 1.
+  graded: Uint8ClampedArray[];
+}
+
 export function initHeroFx(root: HTMLElement) {
   const canvas = root.querySelector<HTMLCanvasElement>('[data-dither]');
   const src = root.querySelector<HTMLImageElement>('[data-dither-src]');
   if (!canvas || !src) return;
-
   const ctx = canvas.getContext('2d', { alpha: false });
   if (!ctx) return;
-
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = window.matchMedia('(pointer: fine)').matches;
-
-  // Working resolution. Deliberately coarse — the upscale is the look.
+  const trail = finePointer ? createPixelTrail(root) : null;
   let w = 0;
   let h = 0;
   let lum = new Uint8ClampedArray(0);
-  let out: ImageData | null = null;
+  let out: ImageData;
   let trailA = new Float32Array(0);
-  let trailLive = false;
-  let frame = 0;
+  let phases: GrainPhase[] = [];
+  let previous: TrailBounds | null = null;
+  let phase = 0;
   let raf = 0;
-
-  // Mouse only: the trail makes no sense under a finger, and reduced motion
-  // gets the still dither with nothing following the cursor.
-  const trail = finePointer && !reduced ? createPixelTrail(root) : null;
+  let visible = true;
+  let last = 0;
+  let painted = 0;
+  let grainTime = 0;
+  let slow = false;
+  let badFrames = 0;
+  let goodTime = 0;
 
   /** Draw the photo once at working resolution and keep only its luminance. */
   const sample = () => {
@@ -98,94 +109,140 @@ export function initHeroFx(root: HTMLElement) {
     }
   };
 
-  const measure = () => {
+  // Bake noise before quantisation, exactly where the old pipeline applied it.
+  // Eight full-size noise tiles also cover the eight Bayer phase offsets.
+  // Baking each stepped alpha avoids regrading any pixels during animation.
+  function cache() {
+    phases = [];
+    const count = motion.matches ? 1 : 8;
+    for (let f = 0; f < count; f++) {
+      const thresholds = new Uint8Array(w * h);
+      const noise = new Float64Array(w * h);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const i = y * w + x;
+        thresholds[i] = BAYER[(y + (f >> 1)) & 3][(x + f) & 3];
+        noise[i] = motion.matches ? 0 : (Math.random() - 0.5) * 11;
+      }
+      const graded: Uint8ClampedArray[] = [];
+      for (let a = 0; a < (motion.matches ? 1 : 5); a++) {
+        const pixels = new Uint8ClampedArray(w * h * 4);
+        for (let i = 0; i < lum.length; i++) {
+          const l = lum[i] + a / 4 * (TRAIL_LUM - lum[i]);
+          const value = l + (thresholds[i] / 16 - 0.5) * 38 + noise[i];
+          const q = Math.max(0, Math.min(255, Math.floor(value + 0.5))) * 3;
+          const p = i * 4;
+          pixels[p] = GRADIENT[q];
+          pixels[p + 1] = GRADIENT[q + 1];
+          pixels[p + 2] = GRADIENT[q + 2];
+          pixels[p + 3] = 255;
+        }
+        graded.push(pixels);
+      }
+      const still = document.createElement('canvas');
+      still.width = w;
+      still.height = h;
+      const staticImage = new ImageData(w, h);
+      staticImage.data.set(graded[0]);
+      still.getContext('2d')!.putImageData(staticImage, 0, 0);
+      phases.push({ static: still, graded });
+    }
+  }
+
+  function draw(grainChanged: boolean) {
+    const tile = phases[phase];
+    if (!tile) return;
+    const bounds = motion.matches ? null : trail?.render(trailA, w, h) ?? null;
+    if (grainChanged) ctx!.drawImage(tile.static, 0, 0);
+    // Include the previous extent so the final faded cells get restored.
+    const dirty = bounds && previous ? {
+      x0: Math.min(bounds.x0, previous.x0), y0: Math.min(bounds.y0, previous.y0),
+      x1: Math.max(bounds.x1, previous.x1), y1: Math.max(bounds.y1, previous.y1),
+    } : bounds ?? previous;
+    if (dirty) {
+      for (let y = dirty.y0; y < dirty.y1; y++) for (let x = dirty.x0; x < dirty.x1; x++) {
+        const i = y * w + x;
+        const inside = bounds && x >= bounds.x0 && x < bounds.x1 && y >= bounds.y0 && y < bounds.y1;
+        const pixels = tile.graded[inside ? trailA[i] * 4 : 0];
+        const p = i * 4;
+        out.data[p] = pixels[p];
+        out.data[p + 1] = pixels[p + 1];
+        out.data[p + 2] = pixels[p + 2];
+        out.data[p + 3] = 255;
+      }
+      ctx!.putImageData(out, 0, 0, dirty.x0, dirty.y0, dirty.x1 - dirty.x0, dirty.y1 - dirty.y0);
+    }
+    previous = bounds;
+  }
+
+  function measure() {
+    if (!src!.complete || !src!.naturalWidth) return;
     const r = root.getBoundingClientRect();
     const aspect = r.height > 0 ? r.width / r.height : 1.6;
+    // CSS-sized working buffer, independent of devicePixelRatio (DPR <= 1).
     w = 420;
     h = Math.max(120, Math.round(w / aspect));
-    canvas.width = w;
-    canvas.height = h;
-    out = ctx.createImageData(w, h);
+    canvas!.width = w;
+    canvas!.height = h;
+    out = ctx!.createImageData(w, h);
     trailA = new Float32Array(w * h);
     sample();
     trail?.resize();
-  };
-
-  const draw = () => {
-    if (!out || !lum.length) return;
-    const data = out.data;
-
-    // Shift the dither threshold and re-roll noise on each grain tick.
-    const jitter = reduced ? 0 : 11;
-    const ox = frame & 3;
-    const oy = (frame >> 1) & 3;
-
-    // The trail lands in the source, ahead of the ramp and dither.
-    trailLive = trail ? trail.render(trailA, w, h) : false;
-
-    for (let y = 0; y < h; y++) {
-      for (let x = 0; x < w; x++) {
-        const i = y * w + x;
-        let l: number = lum[i];
-        if (trailLive) {
-          const a = trailA[i];
-          if (a > 0) l += a * (TRAIL_LUM - l);
-        }
-
-        const t = (BAYER[(y + oy) & 3][(x + ox) & 3] / 16 - 0.5) * 38;
-        const n = jitter ? (Math.random() - 0.5) * jitter : 0;
-
-        let v = (l + t + n) / 255;
-        v = v < 0 ? 0 : v > 1 ? 1 : v;
-
-        const c = RAMP[Math.round(v * LEVELS)];
-        const p = i * 4;
-        data[p] = c[0];
-        data[p + 1] = c[1];
-        data[p + 2] = c[2];
-        data[p + 3] = 255;
-      }
-    }
-
-    ctx.putImageData(out, 0, 0);
-  };
-
-  // Grain advances every 82ms, twice the original 41ms interval. The trail
-  // is composited in the same pass, with its decay still running every tick.
-  let last = 0;
-  const loop = (now: number) => {
-    trail?.frame(now);
-    if (now - last > 82) {
-      last = now;
-      frame++;
-      draw();
-    }
-    raf = requestAnimationFrame(loop);
-  };
-
-  window.addEventListener('resize', () => measure(), { passive: true });
-
-  if (src.complete) measure();
-  else src.addEventListener('load', measure, { once: true });
-
-  if (reduced) {
-    const once = () => draw();
-    if (src.complete) once();
-    else src.addEventListener('load', once, { once: true });
-    return;
+    previous = null;
+    phase = 0;
+    grainTime = 0;
+    cache();
+    draw(true);
   }
 
-  raf = requestAnimationFrame(loop);
-
-  // Stop burning frames once the hero is off screen.
-  const io = new IntersectionObserver((entries) => {
-    for (const e of entries) {
-      if (e.isIntersecting && !raf) raf = requestAnimationFrame(loop);
-      else if (!e.isIntersecting && raf) {
-        cancelAnimationFrame(raf);
-        raf = 0;
-      }
+  function loop(now: number) {
+    raf = 0;
+    // Media/visibility events can arrive after a queued animation callback.
+    if (motion.matches) { measure(); sync(); return; }
+    if (!visible || document.hidden) return;
+    const dt = last ? now - last : 0;
+    last = now;
+    // Judge actual frame gaps, including work elsewhere on the page.
+    if (!slow) {
+      badFrames = dt > 24 ? badFrames + 1 : 0;
+      if (badFrames >= 2) { slow = true; goodTime = 0; }
+    } else {
+      goodTime = dt <= 24 ? goodTime + dt : 0;
+      if (goodTime >= 2000) { slow = false; badFrames = 0; }
     }
+    grainTime += dt;
+    // Simulation still sees every rAF; its stamp accumulator stays at 45 ms.
+    trail?.frame(now);
+    if (!slow || now - painted >= 1000 / 30 - 0.5) {
+      const interval = slow ? 164 : 82;
+      const ticks = Math.floor(grainTime / interval);
+      if (ticks && phases.length) {
+        grainTime %= interval;
+        phase = (phase + ticks) % phases.length;
+      }
+      draw(ticks > 0);
+      painted = now;
+    }
+    raf = requestAnimationFrame(loop);
+  }
+
+  function sync() {
+    if (raf) cancelAnimationFrame(raf);
+    raf = 0;
+    last = painted = 0;
+    trail?.resize();
+    trail?.setActive(!motion.matches && visible && !document.hidden);
+    if (motion.matches) draw(true);
+    if (!motion.matches && visible && !document.hidden) raf = requestAnimationFrame(loop);
+  }
+  window.addEventListener('resize', measure, { passive: true });
+  document.addEventListener('visibilitychange', sync);
+  motion.addEventListener('change', () => { measure(); sync(); });
+  const io = new IntersectionObserver(entries => {
+    visible = entries.some(entry => entry.isIntersecting);
+    sync();
   });
   io.observe(root);
+  if (src.complete) measure();
+  else src.addEventListener('load', measure, { once: true });
+  sync();
 }
