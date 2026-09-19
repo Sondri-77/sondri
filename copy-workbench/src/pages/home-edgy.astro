@@ -15,66 +15,66 @@ const VALUE_LINE =
   'We fix the work costing your team time and money, using AI where it helps.';
 
 const knife = [
-  { t: 'Money', b: 'An hour a day wasted, for every person stuck doing it. Count them. [placeholder: cost-of-inaction calculator]' },
-  { t: 'Time', b: 'As volume grows, more people get stuck doing it by hand. Waiting makes the fix harder.' },
-  { t: 'People', b: 'Your best people are stuck doing data entry. If Greg quits, who else knows all the steps?' },
+  { t: 'Money', b: 'Count the time each person on your team spends on the workaround. [placeholder: cost-of-inaction calculator]' },
+  { t: 'Time', b: 'As your orders grow, your team has more manual work to do.' },
+  { t: 'People', b: 'Your experienced staff spend hours on data entry. If someone leaves, you may have to work out their steps again.' },
 ];
 
 const benefits = [
   { t: 'Cost and savings', b: 'Pick a cost to cut or a way to increase revenue. We measure the change.' },
-  { t: 'Your systems, your code', b: 'Built into your existing ERP, CRM, and spreadsheets. You own the code.' },
+  { t: 'Your systems, your code', b: 'Built into the software and spreadsheets you already use. You own the code.' },
   { t: 'One phase at a time', b: 'Agree on a fixed price for each phase, then review the work before funding the next.' },
 ];
 
 const testimonials = [
-  { q: '[placeholder] "We’d been talking about fixing invoice matching for two years. Six weeks later it was live and it just… works."', who: '[placeholder] COO, regional logistics company · [placeholder] 14 hrs/week back to the finance team' },
-  { q: '[placeholder] "They told us on the first call which of our three ideas was worth doing. That’s why we hired them."', who: '[placeholder] CFO, mid-market manufacturer · [placeholder] first build in production in 7 weeks' },
+  { q: '[placeholder] "We’d been talking about fixing invoice matching for two years. Six weeks later it was live and we use it every day."', who: '[placeholder] COO, regional logistics company · [placeholder] 14 hrs/week back to the finance team' },
+  { q: '[placeholder] "They told us on the first call which of our three ideas was worth doing. That’s why we hired them."', who: '[placeholder] CFO, mid-market manufacturer · [placeholder] first software in use in 7 weeks' },
   { q: '[placeholder] "Our team owns the code and can read every line."', who: '[placeholder] Head of Ops, healthcare services group · [placeholder] $180k annual cost gone' },
 ];
 
 const steps = [
-  { i: '01', t: 'Tell us what’s slow', b: 'Spend thirty minutes describing the work wasting your week. Come as you are.' },
-  { i: '02', t: 'We build it into your systems', b: 'You keep running the business. We build on the tech and data you already have.' },
+  { i: '01', t: 'Tell us what’s slow', b: 'Spend thirty minutes describing the work slowing you down. You can come without preparing anything.' },
+  { i: '02', t: 'We build it into your systems', b: 'You keep running your business while we build with your existing software and data.' },
   { i: '03', t: 'Check what changed', b: 'Compare the hours and money spent on the job before and after the build.' },
 ];
 
 const comparison = {
-  cols: ['Sondri', 'Typical agency / SI', 'Hiring in-house', 'DIY tools'],
+  cols: ['Sondri', 'Software agency', 'Hiring in-house', 'DIY tools'],
   rows: [
-    { k: 'Time to something in production', v: ['Weeks [placeholder: 6–8]', 'Quarters [placeholder: 6–9 mo.]', 'Months to hire, then months to build', 'Days to try; integration takes longer'] },
-    { k: 'Cost shape', v: ['Fixed price per phase, quoted before it starts', 'Time & materials; cost depends on scope', 'Salary + benefits + management, project or not', 'Low fees; you do the work'] },
-    { k: 'Who owns the code', v: ['You; runs in your environment', 'Often the vendor’s platform or license', 'You', 'You, and whoever set it up'] },
-    { k: 'Commitment up front', v: ['One phase; discovery is free', 'Multi-phase SOW before the first thing ships', 'A full-time headcount', 'No contract; maintenance is on you'] },
-    { k: 'After launch', v: ['We maintain it and build the next workflow', 'Change orders, or a handoff deck', 'Depends on whether that person stays', 'You fix it when the workflow changes'] },
+    { k: 'Time until you can use it', v: ['Weeks [placeholder: 6–8]', 'Quarters [placeholder: 6–9 mo.]', 'Months to hire, then months to build', 'Days to try; integration takes longer'] },
+    { k: 'What you pay', v: ['Fixed price per phase, quoted before it starts', 'You pay for hours and expenses', 'Salary + benefits + management, project or not', 'Low fees; you do the work'] },
+    { k: 'Who owns the code', v: ['You; runs in your systems', 'Often the vendor’s platform or license', 'You', 'Check ownership terms with your tool provider'] },
+    { k: 'Commitment up front', v: ['One phase; your planning session is free', 'You sign a contract for several phases before launch', 'A full-time employee', 'No contract; maintenance is on you'] },
+    { k: 'After launch', v: ['We maintain it and build the next workflow', 'You pay for changes or take over the upkeep', 'Depends on whether that person stays', 'You fix it when the workflow changes'] },
   ],
 };
 
 const features = [
-  { t: 'Workflow Automation', b: 'The three-person, half-a-day process, done by software, with a human approval gate where it matters.' },
-  { t: 'Data & Reporting', b: 'The numbers you argue about in meetings, pulled from the systems of record and kept current without anyone re-keying them.' },
-  { t: 'Customer Operations', b: 'Handle quotes, onboarding, tickets, and renewals faster without adding headcount.' },
-  { t: 'Back Office', b: 'Invoicing, matching, claims, collections, close. The unglamorous work where a typo costs real money.' },
-  { t: 'Integrations', b: 'Connect the systems your team copies data between, including that spreadsheet nobody is allowed to delete.' },
-  { t: 'Agentic AI Solutions', b: 'AI that runs a multi-step job end to end, with monitoring, audit trails, and a person who can pull the plug.' },
+  { t: 'Workflow Automation', b: 'Automate the steps taking up your day, with your staff checking work that needs approval.' },
+  { t: 'Data & Reporting', b: 'See current figures from your software without typing them in again.' },
+  { t: 'Customer Operations', b: 'Help your staff answer customers and send quotes faster.' },
+  { t: 'Back Office', b: 'Cut mistakes in your invoices, payment matching, and monthly accounts.' },
+  { t: 'Integrations', b: 'Connect your software and spreadsheets so your staff can stop copying data between them.' },
+  { t: 'AI for multi-step jobs', b: 'Use AI for jobs with several steps, with records you can check and a way for your staff to stop it.' },
 ];
 
 const faq = [
-  { q: 'Does our data leave our systems?', a: 'Everything we build runs in your environment, with your access controls, approval steps, and audit logs.' },
-  { q: 'What do you build on?', a: 'We connect to your existing ERP, CRM, spreadsheets, and payment systems. You can run the code without a Sondri platform or license.' },
-  { q: 'Who owns what you build?', a: 'You own the code, integrations, and docs, all in your environment.' },
+  { q: 'Does our data leave our systems?', a: 'Your software runs in your systems, where you control access and approvals and can check records of what happened.' },
+  { q: 'What do you build on?', a: 'We connect to the business software, spreadsheets, and payment systems you use. You can run the code without a Sondri platform or license.' },
+  { q: 'Who owns what you build?', a: 'You own the code and instructions for using it, including the connections to your other software.' },
   { q: 'What does it cost?', a: 'We quote a fixed price before each phase. You decide whether to fund the next one.' },
-  { q: 'What if the first build misses its baseline?', a: 'We agree on a baseline before we start and measure the build against it. If it falls short, you keep the roadmap and measurements and owe nothing further.' },
+  { q: 'What if it doesn’t save what we agreed?', a: 'You agree with us on the time or cost savings before we start. If the software falls short, you keep the plan and measurements and owe nothing further.' },
   { q: 'How fast can we start?', a: 'The first call is free, the roadmap takes days, and working software follows in weeks.' },
-  { q: 'Why not just hire an agency, or someone in-house?', a: 'An agency may suit a larger project; a hire can make sense for ongoing work. Check their costs and lead times against our price for one phase. You own the code, and we stick around to maintain it. If hiring fits better, we’ll say so.' },
-  { q: 'Do you use AI for everything?', a: 'We choose AI or regular software based on the job. We’re not going to fuck up your business just to say we used AI.' },
+  { q: 'Why not just hire an agency, or someone in-house?', a: 'Compare the cost and time to hire someone or use an agency with our price for one phase. You own the code we build and can have us maintain it, and we’ll recommend hiring if that suits your work better.' },
+  { q: 'Do you use AI for everything?', a: 'We use AI if it helps with your job.' },
 ];
 ---
 
 <Base title="Sondri — Home (edgy)" footerLine={VALUE_LINE}>
   <section>
     <p class="label">Hero</p>
-    <Heading tag="h1" v={['We fix expensive bullshit. (Using AI where it helps)', 'We fix problems costing you time, money, and the will to fucking live.', 'Fix the process costing you a fucking fortune.']} />
-    <p>Live in your existing systems in weeks, using AI where it helps.</p>
+    <Heading tag="h1" v={['We fix expensive bullshit. (Using AI where it helps)', 'Get help with the work taking up your day.', 'Fix the process costing you money.']} />
+    <p>Built into the systems you already run. Live in weeks.</p>
     <div class="ctas">
       <Btn href="#">{CTA_PRIMARY} →</Btn>
     </div>
@@ -92,8 +92,8 @@ const faq = [
 
   <section>
     <p class="label">Problem</p>
-    <Heading tag="h2" v={['Your people aren’t inefficient. The shit you make them use is.', 'Somewhere in your business, an expensive person is copying and pasting something.', 'Everyone has an AI initiative. Almost nobody has one in production.']} />
-    <p>Good people are wasting hours on a process everybody agrees is stupid. The available software doesn’t handle it, and traditional consulting costs a small fucking fortune.</p>
+    <Heading tag="h2" v={['Your people aren’t inefficient. The shit you make them use is.', 'How much time does your team spend copying and pasting?', 'Still doing the work by hand after trying AI?']} />
+    <p>Your team spends hours on work your software doesn’t handle, and the quotes you’ve had to fix it cost too much.</p>
     <div class="cards">
       {problemStats.map((s) => (
         <div class="card stat">
@@ -102,13 +102,13 @@ const faq = [
         </div>
       ))}
     </div>
-    <p>Eighteen months after the pilot launched, your team is still doing the same shit by hand.</p>
+    <p>You’ve spent months trying AI, but your team still does the work by hand.</p>
   </section>
 
   <section>
     <p class="label">Twist the knife</p>
-    <Heading tag="h2" v={['That workaround has been temporary for four fucking years.', 'Now there are extra steps to fix the workaround.', 'Leaving it alone isn’t free.']} />
-    <p>Count the hours your team spends keeping the workaround going.</p>
+    <Heading tag="h2" v={['That workaround has been temporary for four years.', 'Now there are extra steps to fix the workaround.', 'Leaving it alone isn’t free.']} />
+    <p>The workaround feels cheap because nobody sends you an invoice for it.</p>
     <div class="cards">
       {knife.map((k) => (
         <div class="card">
@@ -117,13 +117,13 @@ const faq = [
         </div>
       ))}
     </div>
-    <p>Your team knows every extra step by heart. They still have to waste time doing them.</p>
+    <p>Add up what those extra steps cost you each week.</p>
   </section>
 
   <section>
     <p class="label">Solution &amp; benefits</p>
-    <Heading tag="h2" v={['We unf*ck how work gets done.', 'Fix the process everyone complains about.', '0 → 1 → n.']} />
-    <p>Pick three workflows worth fixing, then build for the first. Reuse that work for the next one.</p>
+    <Heading tag="h2" v={['We unf*ck how work gets done.', 'Fix the process everyone complains about.', 'Fix one job at a time.']} />
+    <p>You choose three jobs worth fixing with us. We build for the first and reuse what we can for the next.</p>
     <ul>
       {benefits.map((b) => (
         <li><b>{b.t}.</b> {b.b}</li>
@@ -133,7 +133,7 @@ const faq = [
 
   <section>
     <p class="label">Social proof</p>
-    <Heading tag="h2" v={['From “this is fucking stupid” to “it just works.”', 'What customers say about the work.', 'Ask customers how their software holds up.']} />
+    <Heading tag="h2" v={['Hear from customers using what we built.', 'What customers say about working with us.', 'Ask customers how their software holds up.']} />
     <div class="cards">
       {testimonials.map((t) => (
         <div class="card">
@@ -147,8 +147,8 @@ const faq = [
 
   <section>
     <p class="label">How it works</p>
-    <Heading tag="h2" v={['Just fix the damn thing.', 'You never have to become an AI company.', 'Thirty minutes. Then we build.']} />
-    <p>Here’s how we fix the process slowing your team down.</p>
+    <Heading tag="h2" v={['Just fix the damn thing.', 'Keep running your business while we build.', 'Start with a thirty-minute call.']} />
+    <p>You show us the work you want to fix, and we build with your team.</p>
     <div class="cards">
       {steps.map((s) => (
         <div class="card">
@@ -162,7 +162,7 @@ const faq = [
 
   <section>
     <p class="label">Competitor comparison</p>
-    <Heading tag="h2" v={['A lot of consultants will charge you to rename your problem.', 'Let’s find out why your software sucks.', 'What will it take to fix it?']} />
+    <Heading tag="h2" v={['A lot of consultants will charge you to rename your problem.', 'Where does your software slow you down?', 'What will it take to fix it?']} />
     <p>Compare the time and money each option takes. Ask who’s responsible for fixing it after launch.</p>
     <table>
       <thead>
@@ -185,7 +185,7 @@ const faq = [
 
   <section>
     <p class="label">Features</p>
-    <Heading tag="h2" v={['Unsexy solutions that work ridiculously well.', 'Retire the fucking workaround.', 'Six things we build. Bring us the messy one.']} />
+    <Heading tag="h2" v={['Unsexy solutions that work ridiculously well.', 'Replace your workaround.', 'What can we help you fix?']} />
     <ul>
       {features.map((f) => (
         <li><b>{f.t}.</b> {f.b}</li>
@@ -195,17 +195,17 @@ const faq = [
 
   <section>
     <p class="label">Why Sondri exists</p>
-    <Heading tag="h2" v={['Fuck the future of work. Let’s fix the work you have now.', 'We use AI when it helps with the job.', 'How much did you spend on that unused AI strategy?']} />
+    <Heading tag="h2" v={['Let’s fix the work you have now.', 'We use AI when it helps with the job.', 'Tell us what you’ve tried so far.']} />
     <div class="card">
-      <p>"We started Sondri after watching teams spend eighteen months on AI pilots that never shipped. People were still stuck with the same expensive, annoying work. We build software they can put to use."</p>
-      <p>Show us the process so we can understand the damn thing and fix it.</p>
+      <p>We started Sondri because we saw businesses spend eighteen months trying AI without getting software they could use. You can bring us one job that needs fixing, and we’ll build software for it.</p>
+      <p>Show us how you do the job today.</p>
       <a href="/get-in-touch/">Get in Touch →</a>
     </div>
   </section>
 
   <section>
     <p class="label">FAQ</p>
-    <Heading tag="h2" v={['Things people ask before they trust us with money.', 'Asked on almost every intro call.', 'Fine. Ask.']} />
+    <Heading tag="h2" v={['Things people ask before they trust us with money.', 'Questions you may have.', 'What would you like to know?']} />
     {faq.map((f) => (
       <details>
         <summary>{f.q}</summary>
@@ -216,8 +216,8 @@ const faq = [
 
   <section>
     <p class="label">Final CTA</p>
-    <Heading tag="h2" v={['Stop paying smart people to babysit stupid systems.', 'Tell us which system is wasting your time.', 'The first conversation is free. The roadmap is yours either way.']} />
-    <p>Spend thirty minutes with a founder on the process that pisses you off most. We’ll tell you whether we can fix it or whether you’re better off hiring someone.</p>
+    <Heading tag="h2" v={['Stop paying smart people to babysit stupid systems.', 'Tell us which system is wasting your time.', 'Your first call is free, and you keep the plan we put together.']} />
+    <p>Spend thirty minutes with a founder on the job you want to fix. We’ll tell you whether we can help or whether hiring someone would suit you better.</p>
     <div class="ctas">
       <Btn href="#">{CTA_PRIMARY} →</Btn>
     </div>
@@ -253,7 +253,7 @@ const faq = [
   .who { color: #666; font-size: 14px; }
   .marquee { overflow: hidden; border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 10px 0; }
   .track { display: flex; gap: 40px; width: max-content; white-space: nowrap; animation: scroll 24s linear infinite; }
-  .track span { font-family: 'Florexa', sans-serif; font-size: 20px; text-transform: uppercase; }
+  .track span { font-size: 20px; text-transform: uppercase; }
   .marquee:hover .track { animation-play-state: paused; }
   @keyframes scroll { to { transform: translateX(-50%); } }
   table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 0 0 12px; }
