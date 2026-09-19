@@ -234,17 +234,24 @@ a { color: inherit; }
   :root { --pad-x: 16px; }
 }
 
-/* Section header: title left, supporting text right. */
+/* Section header: one left-aligned column — eyebrow, heading, intro — for
+   every section (captain's call; the hero stacks the same way). The heading
+   holds to ~65% of the container, the intro to a reading measure; both go
+   full width on mobile. */
 .sec-head {
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: var(--s-48);
-  align-items: end;
+  grid-template-columns: 1fr;
+  gap: var(--s-24);
   padding-bottom: var(--s-64);
 }
 .sec-head > * { min-width: 0; }
-.sec-head .right { display: flex; flex-direction: column; gap: var(--s-24); align-items: flex-start; }
-@media (max-width: 900px) { .sec-head { grid-template-columns: 1fr; gap: var(--s-24); padding-bottom: var(--s-40); } }
+.sec-head .h2 { max-width: 65%; }
+.sec-head .intro { display: flex; flex-direction: column; gap: var(--s-24); align-items: flex-start; }
+.sec-head .lede { max-width: 60ch; }
+@media (max-width: 900px) {
+  .sec-head { padding-bottom: var(--s-40); }
+  .sec-head .h2, .sec-head .lede { max-width: none; }
+}
 
 /* Their kicker, "/ NAME". It used to sit under a full-width rule; that went
    with the section dividers. */
