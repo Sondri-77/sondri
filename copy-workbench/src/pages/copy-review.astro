@@ -839,6 +839,24 @@ const round2 = [
     ]
   }
 ];
+const captainTweaks = [
+  {
+    "page": "home-edgy",
+    "href": "/home-edgy/",
+    "entries": [
+      [
+        "You’ve spent months trying AI, but your team still does the work by hand.",
+        "How long has your fix been \"in pilot\"?",
+        "captain"
+      ],
+      [
+        "We fix expensive bullshit. (Using AI where it helps)",
+        "Fix expensive bullshit. (Use AI where it helps)",
+        "captain"
+      ]
+    ]
+  }
+];
 const round2Flags = [
   [
     "We fix expensive bullshit. (Using AI where it helps)",
@@ -928,6 +946,14 @@ const round2Flags = [
     <p>“No contract; maintenance is on you” and “No contract; your team maintains it” describe upkeep responsibilities in the comparison table, without the rule-12 repeated-negative formula. “Free, with no commitment” is factual CTA micro-copy. Lists of software capabilities and ownership items describe the service, rather than a rhetorical tricolon. First-person placeholder customer quotes remain first person because they represent a customer speaking. Review labels and placeholder notes address the reviewer.</p>
     <p>Other negative-pattern matches are ordinary questions (“Why not just hire…” and “What if it doesn’t save…”), cost statements (“whether or not there’s a project” and “Leaving it alone isn’t free”), or descriptions of software that doesn’t handle a job. The home tagline describes problem complexity without a corrective “not X, but Y” structure. None use the rule-2/5 corrective formula. The explicit /404/ preview returns HTTP 200 through workbench middleware; unknown URLs still return 404. The original Round 1 notes above are preserved as history; this Round 2 review supersedes their claims about heading locks and pattern survivors.</p>
   </section>
+  {captainTweaks.map((page) => (
+    <section>
+      <h2>Captain tweaks 21:55 · <a href={page.href}>{page.page}</a> · {page.entries.length} edits</h2>
+      <ul>{page.entries.map(([before, after, rule]) => (
+        <li><span>{before}</span> → <strong>{after}</strong> → <span>{rule}</span></li>
+      ))}</ul>
+    </section>
+  ))}
 </Base>
 
 <style>

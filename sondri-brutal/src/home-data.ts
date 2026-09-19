@@ -82,7 +82,7 @@ export const problem = {
   eyebrow: 'Problem',
   h2: 'Your people aren’t inefficient. The shit you make them use is.',
   lede: 'Somewhere in your business, good people are wasting hours on a process everybody agrees is stupid. Nobody has fixed it because the available software doesn’t get it and traditional consulting costs a small fortune. Hi.',
-  close: 'The deck got approved. The pilot launched. Eighteen months later the slow thing is still done by hand, because a pilot isn’t a fix.',
+  close: 'How long has your fix been "in pilot"?',
 };
 
 /** Section 4 · Twist the knife */
