@@ -20,7 +20,6 @@ const [h2, dot] = splitDot(featuresHead.h2);
             <canvas class="dither-block" data-dither-block data-shape="flat" data-seed={40 + i}></canvas>
             <span class="icon" style={`--icon:url(/icons/${f.icon}.svg)`} aria-hidden="true"></span>
           </div>
-          <p class="label idx">{String(i + 1).padStart(2, '0')} / 06</p>
           <h3 class="h5">{f.t}<span class="gdot">.</span></h3>
           <p class="body-s">{f.b}</p>
         </article>
@@ -45,12 +44,6 @@ const [h2, dot] = splitDot(featuresHead.h2);
     mask: var(--icon) center / 48px 48px no-repeat;
     image-rendering: pixelated;
     pointer-events: none;
-  }
-  .idx { color: var(--text-hi); }
-  .idx::before {
-    content: ''; display: inline-block;
-    width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
-    background: currentColor;
   }
   .body-s { max-width: 34ch; font-size: 15px; line-height: 22px; }
 </style>
