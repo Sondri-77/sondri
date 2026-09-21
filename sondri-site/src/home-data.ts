@@ -95,7 +95,7 @@ export const homeFaq = [
 /** Section 1 · Hero */
 export const hero = {
   h1: 'Fix the Expensive Bullsh*t.',
-  lede: 'Built into the systems you already run, using AI where it helps. Live in weeks.',
+  lede: 'Software built into the systems you already run, using AI where it helps. Live in weeks.',
 };
 
 /** Section 2 · Capability scroll */
