@@ -169,3 +169,130 @@ export const finalCta = {
   h2: 'Stop paying smart people to babysit stupid systems.',
   lede: 'Spend thirty minutes with a founder on the job you want to fix. We’ll tell you whether we can help or whether hiring someone would suit you better.',
 };
+
+/* ── Value panel: four jobs, before and after (captain's 2026-09-21 Value
+   brief). Each step's `who` is the mono chip on the node: `staff` is a
+   person doing the step by hand, `auto` is regular software, `ai` is the step
+   the AI does. `after` steps that still have `staff` on them are the checks a
+   person keeps. The savings are shape-only: every metric carries the
+   [placeholder] mark until a real engagement stands behind it. ── */
+export type StepWho = 'staff' | 'auto' | 'ai';
+export interface ValueStep { who: StepWho; t: string }
+export interface ValueMetric { k: string; t: string; before: number; after: number; unit: 'money' | 'hours' | 'people' }
+export interface ValueCase {
+  id: string;
+  name: string;
+  job: string;
+  before: ValueStep[];
+  after: ValueStep[];
+  metrics: ValueMetric[];
+}
+
+export const valuePanel = {
+  prompt: 'Pick a job and watch the work change.',
+  before: 'Before — by hand',
+  after: 'After — AI where it helps',
+  who: { staff: 'Staff', auto: 'Auto', ai: 'AI' } as Record<StepWho, string>,
+  legend: { before: 'Before', after: 'After' },
+  placeholder: '[placeholder]',
+};
+
+export const valueCases: ValueCase[] = [
+  {
+    id: 'service',
+    name: 'Customer service',
+    job: 'A customer emails to ask where their order is.',
+    before: [
+      { who: 'staff', t: 'Email lands in the shared inbox' },
+      { who: 'staff', t: 'Someone opens the order system and finds the order' },
+      { who: 'staff', t: 'Copies the tracking number into the courier site' },
+      { who: 'staff', t: 'Types the reply by hand' },
+      { who: 'staff', t: 'Logs the ticket in a spreadsheet' },
+    ],
+    after: [
+      { who: 'auto', t: 'Email lands in the shared inbox' },
+      { who: 'ai', t: 'AI reads it and pulls up the order' },
+      { who: 'auto', t: 'Tracking fetched from the courier' },
+      { who: 'ai', t: 'Reply drafted with the delivery date' },
+      { who: 'staff', t: 'Your staff check it and send' },
+    ],
+    metrics: [
+      { k: 'Money', t: 'Cost per month', before: 6400, after: 1900, unit: 'money' },
+      { k: 'Time', t: 'Hours per week', before: 38, after: 9, unit: 'hours' },
+      { k: 'People', t: 'People on the job', before: 3, after: 1, unit: 'people' },
+    ],
+  },
+  {
+    id: 'accounting',
+    name: 'Accounting',
+    job: 'A supplier invoice arrives and needs paying.',
+    before: [
+      { who: 'staff', t: 'Invoice PDF arrives by email' },
+      { who: 'staff', t: 'Someone keys it into the accounting system' },
+      { who: 'staff', t: 'Matches it to the purchase order by eye' },
+      { who: 'staff', t: 'Emails the manager for approval' },
+      { who: 'staff', t: 'Chases the reply a week later' },
+      { who: 'staff', t: 'Schedules the payment' },
+    ],
+    after: [
+      { who: 'auto', t: 'Invoice PDF arrives by email' },
+      { who: 'ai', t: 'AI reads the amounts and the PO number' },
+      { who: 'auto', t: 'Matched against the purchase order' },
+      { who: 'staff', t: 'Manager approves with one click' },
+      { who: 'auto', t: 'Payment scheduled in your accounting system' },
+    ],
+    metrics: [
+      { k: 'Money', t: 'Cost per month', before: 5200, after: 1100, unit: 'money' },
+      { k: 'Time', t: 'Hours per week', before: 30, after: 6, unit: 'hours' },
+      { k: 'People', t: 'People on the job', before: 2, after: 1, unit: 'people' },
+    ],
+  },
+  {
+    id: 'sales',
+    name: 'Sales deal progression',
+    job: 'A quote goes out and needs following up.',
+    before: [
+      { who: 'staff', t: 'Rep writes the quote in Word' },
+      { who: 'staff', t: 'Emails it to the customer' },
+      { who: 'staff', t: 'Updates the CRM stage by hand' },
+      { who: 'staff', t: 'Sets a reminder in their calendar' },
+      { who: 'staff', t: 'Follows up when they remember' },
+    ],
+    after: [
+      { who: 'staff', t: 'Rep picks the products' },
+      { who: 'auto', t: 'Quote built from your price list' },
+      { who: 'auto', t: 'Sent and logged in the CRM' },
+      { who: 'ai', t: 'Follow-up drafted by AI on day three' },
+      { who: 'staff', t: 'Rep sends it or picks up the phone' },
+    ],
+    metrics: [
+      { k: 'Money', t: 'Cost per month', before: 7800, after: 2600, unit: 'money' },
+      { k: 'Time', t: 'Hours per week', before: 44, after: 14, unit: 'hours' },
+      { k: 'People', t: 'People on the job', before: 4, after: 2, unit: 'people' },
+    ],
+  },
+  {
+    id: 'legal',
+    name: 'Legal: contract review',
+    job: 'A customer sends back your contract with their changes.',
+    before: [
+      { who: 'staff', t: 'Contract arrives as an email attachment' },
+      { who: 'staff', t: 'Paralegal saves it to the shared drive' },
+      { who: 'staff', t: 'Compares it to your standard terms line by line' },
+      { who: 'staff', t: 'Writes up the changes in an email' },
+      { who: 'staff', t: 'Lawyer reviews the whole thing again' },
+    ],
+    after: [
+      { who: 'auto', t: 'Contract arrives and is filed' },
+      { who: 'ai', t: 'AI compares it to your standard terms' },
+      { who: 'ai', t: 'Changed clauses flagged with what they cost you' },
+      { who: 'auto', t: 'Summary sent to the lawyer' },
+      { who: 'staff', t: 'Lawyer reviews the flagged clauses only' },
+    ],
+    metrics: [
+      { k: 'Money', t: 'Cost per month', before: 9600, after: 3200, unit: 'money' },
+      { k: 'Time', t: 'Hours per week', before: 24, after: 7, unit: 'hours' },
+      { k: 'People', t: 'People on the job', before: 2, after: 1, unit: 'people' },
+    ],
+  },
+];

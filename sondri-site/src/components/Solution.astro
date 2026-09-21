@@ -1,14 +1,28 @@
 ---
-import { benefits, solution } from '../home-data';
+import { benefits, solution, valueCases, valuePanel } from '../home-data';
+import type { ValueMetric } from '../home-data';
+import { money } from '../lib/cost';
 import { splitDot } from '../lib/dot';
-import Mark from './Mark.astro';
 const [h2, dot] = splitDot(solution.h2);
+
+// The first case is the one the server renders open, so the panel reads
+// without JS; the script only swaps which case is showing.
+const defaultCase = valueCases[0].id;
+const fmt = (m: ValueMetric, n: number) =>
+  m.unit === 'money' ? money(n) : m.unit === 'hours' ? `${n} h` : String(n);
+const pct = (m: ValueMetric) => Math.round((m.after / m.before) * 100);
+const idx = (i: number) => String(i + 1).padStart(2, '0');
 ---
 
-<!-- Value, in Framework's grammar: the heading, the phase copy beside it,
-     then three ruled benefit columns, each with its mark. -->
+<!-- Value, in Blacksmith's "Tool" grammar: the heading and lede up top left,
+     the three value points as a numbered, ruled list under them, and beside
+     the list a framed window holding the interactive before/after panel.
+     The panel's visual is the old cinematic ascent (sondri-old-design,
+     scripts/orbit/ascent.ts) flattened into CSS: the scattered manual chain
+     (chaos) beside the aligned automated one (governed), a mono HUD readout
+     over each, and steps that light rung by rung the way the robot climbed. -->
 <section class="section section-pad" id="framework">
-  <div class="wrap">
+  <div class="wrap tool">
     <div class="sec-head">
       <div>
         <div class="eyebrow"><span class="label">/ {solution.eyebrow}</span></div>
@@ -19,27 +33,265 @@ const [h2, dot] = splitDot(solution.h2);
       </div>
     </div>
 
-    <div class="rule-cols cols-3 benefits">
+    <ol class="points">
       {benefits.map((b, i) => (
-        <article data-reveal style={`transition-delay:${i * 80}ms`}>
-          <Mark icon={b.icon} seed={60 + i} />
-          <p class="label idx">{b.k}</p>
-          <h3 class="h5">{b.t}<span class="gdot">.</span></h3>
-          <p class="body-s">{b.b}</p>
-        </article>
+        <li data-reveal style={`transition-delay:${i * 80}ms`}>
+          <p class="label idx">{idx(i)}</p>
+          <div>
+            <h3 class="h5">{b.t}<span class="gdot">.</span></h3>
+            <p class="body-s">{b.b}</p>
+          </div>
+        </li>
       ))}
+    </ol>
+
+    <div class="window panel" data-value-panel data-case={defaultCase}>
+      <div class="bar dots" aria-hidden="true">
+        <span class="lights"><i></i><i></i><i></i></span>
+        <span class="label title">Sondri / before → after</span>
+      </div>
+
+      <div class="field on-dark">
+        <div class="pick">
+          <label class="prompt" for="value-case">{valuePanel.prompt}</label>
+          <div class="sel">
+            <select id="value-case" data-value-select>
+              {valueCases.map((c) => (
+                <option value={c.id} selected={c.id === defaultCase}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div class="cases">
+          {valueCases.map((c) => (
+            <div class="case" data-case-id={c.id} aria-hidden={c.id === defaultCase ? undefined : 'true'}>
+              <p class="job h6">{c.job}</p>
+
+              <div class="lanes">
+                {(['before', 'after'] as const).map((lane) => (
+                  <div class="lane" data-lane={lane}>
+                    <p class="hud label"><span class="hud-rule"></span>{valuePanel[lane]}</p>
+                    <ol class="chain" style={`--n:${c[lane].length}`}>
+                      {c[lane].map((s, i) => (
+                        <li class="node" data-who={s.who} style={`--i:${i}`}>
+                          <span class="n label">{idx(i)}</span>
+                          <span class="t">{s.t}</span>
+                          <span class="who">{valuePanel.who[s.who]}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                ))}
+              </div>
+
+              <div class="saves">
+                {c.metrics.map((m) => (
+                  <div class="metric">
+                    <p class="label"><span class="k">{m.k}</span> · {m.t} <span class="ph">{valuePanel.placeholder}</span></p>
+                    <div class="track">
+                      <span class="fill" style={`--w:${pct(m)}%`}><span>{fmt(m, m.after)}</span></span>
+                      <span class="was">{fmt(m, m.before)}</span>
+                    </div>
+                  </div>
+                ))}
+                <p class="legend label">
+                  <span><i class="sw sw-after"></i>{valuePanel.legend.after}</span>
+                  <span><i class="sw sw-before"></i>{valuePanel.legend.before}</span>
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <style>
-  /* Eyebrow, title and body sit together; no stretched column. */
-  .benefits article { display: flex; flex-direction: column; gap: var(--s-16); }
-  .idx { color: var(--text-hi); }
+  /* ── The two columns: head + list on the left, the window on the right,
+       the window's top on the list's top the way Blacksmith sets it. ── */
+  .tool { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); column-gap: var(--s-64); }
+  .tool .sec-head { grid-column: 1; }
+  .tool .sec-head .h2 { max-width: none; }
+  .points { grid-column: 1; list-style: none; align-self: start; }
+  .window { grid-column: 2; grid-row: 2; align-self: start; }
+  @media (max-width: 1100px) { .tool { column-gap: var(--s-40); } }
+  @media (max-width: 900px) {
+    .tool { grid-template-columns: 1fr; }
+    .tool .sec-head, .points, .window { grid-column: 1; grid-row: auto; }
+    .window { margin-top: var(--s-48); margin-right: var(--shadow-x); }
+  }
+
+  /* The numbered list: "■ 01" in its own column, rules between rows. */
+  .points li {
+    display: grid; grid-template-columns: 72px 1fr; column-gap: var(--s-24);
+    padding-block: var(--s-32);
+    border-top: 1px solid var(--line);
+  }
+  .points li:last-child { border-bottom: 1px solid var(--line); }
+  .points li > div { display: flex; flex-direction: column; gap: var(--s-08); }
+  .idx { color: var(--text-hi); padding-top: 6px; }
   .idx::before {
     content: ''; display: inline-block;
     width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
     background: currentColor;
   }
-  .body-s { max-width: 34ch; font-size: 15px; line-height: 22px; }
+  .body-s { max-width: 40ch; font-size: 15px; line-height: 22px; }
+  @media (max-width: 640px) { .points li { grid-template-columns: 1fr; row-gap: var(--s-16); } }
+
+  /* ── The window: halftone title bar with the three lights, then the field. ── */
+  .window { --shadow-x: 12px; }
+  .bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; border-bottom: 1px solid var(--line);
+  }
+  .lights { display: inline-flex; gap: 6px; }
+  .lights i { width: 9px; height: 9px; background: var(--teal); }
+  .title { color: var(--teal); }
+  .field { padding: var(--s-24); }
+  @media (max-width: 640px) { .field { padding: var(--s-16); } }
+
+  /* The pick: mono label, then the select in the page's button clothes —
+       square, gold rule, hard gold offset, our own chevron. */
+  .pick { display: flex; flex-direction: column; gap: var(--s-16); padding-bottom: var(--s-24); }
+  .prompt { font-size: 15px; color: var(--text-hi); }
+  .sel { position: relative; --shadow-x: 6px; margin-right: var(--shadow-x); }
+  .sel select {
+    appearance: none; -webkit-appearance: none;
+    width: 100%; padding: 14px 48px 14px 16px;
+    background: var(--teal-deep); color: var(--gold);
+    border: 1px solid var(--gold); box-shadow: var(--shadow-x) var(--shadow-x) 0 var(--gold);
+    font-family: var(--mono); font-size: 14px; line-height: 16px; letter-spacing: 0.04em;
+    text-transform: uppercase; cursor: pointer;
+  }
+  .sel select:hover { background: var(--teal-mid); }
+  .sel select:focus-visible { outline: 2px solid var(--white); outline-offset: 2px; }
+  .sel::after {
+    content: ''; position: absolute; right: 18px; top: 50%;
+    width: 8px; height: 8px; margin-top: -6px;
+    border-right: 2px solid var(--gold); border-bottom: 2px solid var(--gold);
+    transform: rotate(45deg); pointer-events: none;
+  }
+
+  /* Every case is in the DOM, stacked in the one grid cell, so the window
+       is as tall as its tallest case and never moves when the pick changes. */
+  .cases { display: grid; }
+  .case { grid-area: 1 / 1; visibility: hidden; display: flex; flex-direction: column; gap: var(--s-24); }
+  [data-case='service'] [data-case-id='service'],
+  [data-case='accounting'] [data-case-id='accounting'],
+  [data-case='sales'] [data-case-id='sales'],
+  [data-case='legal'] [data-case-id='legal'] { visibility: visible; }
+  .job { color: var(--text-hi); border-top: 1px solid var(--line-soft); padding-top: var(--s-24); }
+
+  /* ── The lanes: the manual chain beside the automated one. ── */
+  /* The lanes take any height the tallest case leaves, so the bars sit at
+       the window's foot for every case. */
+  .lanes { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-24); flex: 1; align-content: start; }
+  @media (max-width: 640px) { .lanes { grid-template-columns: 1fr; } }
+  /* The old stage's HUD readout: a short gold rule and a tracked mono line. */
+  .hud { display: flex; align-items: center; gap: 10px; color: var(--gold); letter-spacing: 0.12em; padding-bottom: var(--s-16); }
+  .hud-rule { width: 28px; height: 1px; background: var(--gold); flex: none; }
+  [data-lane='before'] .hud { color: var(--steel); }
+  [data-lane='before'] .hud-rule { background: var(--steel); }
+
+  .chain { list-style: none; display: flex; flex-direction: column; }
+  .node {
+    position: relative;
+    display: grid; grid-template-columns: auto 1fr auto; align-items: start; gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--line-soft);
+    font-size: 13px; line-height: 18px; color: var(--pale);
+    transition: background 0.2s linear, color 0.2s linear, border-color 0.2s linear;
+  }
+  .node .n { color: inherit; opacity: 0.7; padding-top: 1px; }
+  .node .who {
+    font-family: var(--mono); font-size: 10px; line-height: 14px; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 1px 5px; border: 1px solid currentColor; opacity: 0.8;
+  }
+  .node[data-who='ai'] .who { background: var(--gold); border-color: var(--gold); color: var(--teal); opacity: 1; }
+  /* The connector: a short vertical run between nodes, the after lane's a
+       gold rail, the before lane's a broken one. */
+  .node + .node { margin-top: 14px; }
+  .node + .node::before {
+    content: ''; position: absolute; left: 20px; top: -15px; width: 0; height: 14px;
+    border-left: 1px solid var(--line);
+  }
+  [data-lane='after'] .node + .node::before { border-left: 2px solid var(--gold); left: 19px; }
+  [data-lane='before'] .node + .node::before { border-left-style: dashed; }
+  /* The manual chain never lines up: the shards before the halo. */
+  [data-lane='before'] .chain { padding-right: 12px; }
+  [data-lane='before'] .node:nth-child(even) { transform: translateX(12px); }
+  [data-lane='before'] .node:nth-child(3n) { transform: translateX(6px); }
+  [data-lane='before'] .node:nth-child(even)::before { left: 8px; }
+  [data-lane='before'] .node:nth-child(3n)::before { left: 14px; }
+  [data-lane='before'] .node:last-child::after {
+    content: ''; position: absolute; left: 12px; right: 12px; bottom: -1px;
+    border-bottom: 1px dashed var(--line);
+  }
+  /* The automated chain stands on gold-edged rungs. */
+  [data-lane='after'] .node { border-bottom: 2px solid var(--gold); }
+
+  /* The run: each step lights in turn, like the robot hopping rung to rung.
+       One 9s loop for both lanes; the after lane fills fast and holds, the
+       before lane crawls, each handoff going dark before the next lights. */
+  [data-lane='after'] .node { animation: rung 9s linear infinite; animation-delay: calc(var(--i) * 0.55s); }
+  [data-lane='before'] .node { animation: crawl 9s linear infinite; animation-delay: calc(var(--i) * 1.3s); }
+  @keyframes rung {
+    0% { background: transparent; color: var(--pale); border-color: var(--line-soft); }
+    5%, 80% { background: var(--gold); color: var(--teal); border-color: var(--gold); }
+    92%, 100% { background: transparent; color: var(--pale); border-color: var(--line-soft); }
+  }
+  @keyframes crawl {
+    0% { background: transparent; color: var(--pale); border-color: var(--line-soft); }
+    4%, 12% { background: var(--tint); color: var(--text-hi); border-color: var(--line); }
+    18%, 100% { background: transparent; color: var(--pale); border-color: var(--line-soft); }
+  }
+  /* Only the showing case runs; the hidden ones sit still. */
+  .case[aria-hidden='true'] .node { animation-play-state: paused; }
+  @media (prefers-reduced-motion: reduce) {
+    .node { animation: none !important; }
+    [data-lane='after'] .node { background: var(--gold); color: var(--teal); border-color: var(--gold); }
+  }
+
+  /* ── The savings: Blacksmith's comparison bars, gold for after inside
+       the outlined before, the two figures at the ends. ── */
+  .saves { display: flex; flex-direction: column; gap: var(--s-16); border-top: 1px solid var(--line-soft); padding-top: var(--s-24); }
+  .metric { display: flex; flex-direction: column; gap: var(--s-08); }
+  .metric .k { color: var(--text-hi); }
+  .ph { color: var(--steel); text-transform: none; letter-spacing: 0; }
+  .track {
+    position: relative; display: flex; align-items: stretch; height: 40px;
+    border: 1px solid var(--line);
+    font-family: var(--mono); font-size: 13px; letter-spacing: 0.02em; font-variant-numeric: tabular-nums;
+  }
+  .fill {
+    display: flex; align-items: center; justify-content: flex-end;
+    width: var(--w); min-width: 4.5em; padding-right: 10px;
+    background: var(--gold); color: var(--teal);
+    border-right: 1px solid var(--line);
+  }
+  .was { display: flex; align-items: center; margin-left: auto; padding-right: 10px; color: var(--text-hi); }
+  .legend { display: flex; gap: var(--s-24); }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .sw { width: 14px; height: 14px; border: 1px solid var(--line); }
+  .sw-after { background: var(--gold); border-color: var(--gold); }
 </style>
+
+<script>
+  // The whole panel is server-rendered; the pick just swaps which case
+  // shows, and tells assistive tech which one that is.
+  const panel = document.querySelector<HTMLElement>('[data-value-panel]');
+  const select = panel?.querySelector<HTMLSelectElement>('[data-value-select]');
+  if (panel && select) {
+    const show = () => {
+      panel.dataset.case = select.value;
+      panel.querySelectorAll<HTMLElement>('[data-case-id]').forEach((c) => {
+        if (c.dataset.caseId === select.value) c.removeAttribute('aria-hidden');
+        else c.setAttribute('aria-hidden', 'true');
+      });
+    };
+    select.addEventListener('change', show);
+    show();
+  }
+</script>
