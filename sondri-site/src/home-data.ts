@@ -1,5 +1,6 @@
-/* VARIANT V3 — "hybrid". Derek's reviewed edgy structure (decisions.md D1,
-   D4) carrying the composure of the tk-dev/v2 site copy. Where tk-dev had a
+/* VARIANT V3 — "hybrid / professional". Derek's reviewed structure
+   (decisions.md D1, D4) carrying the composure of the tk-dev/v2 site copy.
+   This is the version that leads on simplifying rather than fixing. Where tk-dev had a
    line that was blunt AND professional it is used directly ("You never have
    to become an AI company", "the plan is yours either way"); where it was
    boardroom register ("board-ready roadmap", "hard ROI") it is left out,
@@ -96,8 +97,8 @@ export const homeFaq = [
 
 /** Section 1 · Hero */
 export const hero = {
-  h1: 'Fix what slows you down. (Use AI where it helps)',
-  lede: 'Built into the systems you already run. Live in weeks, not quarters.',
+  h1: 'Make complex work simple.',
+  lede: 'Built into the systems you already run, using AI where it helps. Live in weeks, not quarters.',
 };
 
 /** Section 2 · Capability scroll */
