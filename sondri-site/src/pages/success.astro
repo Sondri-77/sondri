@@ -1,0 +1,115 @@
+---
+/* Stripe's return leg. The worker defaults success_url to
+   `${origin}/success?session_id={CHECKOUT_SESSION_ID}`, so this page reads the
+   id back off the query string and asks /checkout-session/:id for the receipt
+   link. Logic unchanged from v2; the centred rounded card became brutal's
+   left-aligned panel, and the pill badge became the .chip. */
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Payment confirmed — Sondri"
+  description="Thank you for your payment to Sondri."
+>
+  <section class="section on-dark success-section">
+    <div class="wrap">
+      <div class="panel success-card">
+        <p class="chip status-badge">
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Payment confirmed
+        </p>
+
+        <h1 class="h3 success-title">Thank you for your payment<span class="gdot">.</span></h1>
+
+        <p class="lede success-lede">
+          Your payment has been successfully processed by Stripe. A confirmation email with your
+          tax invoice and receipt has been dispatched to your email address.
+        </p>
+
+        <div id="downloadsContainer" class="action-wrapper" hidden>
+          <a id="btnReceipt" href="#" target="_blank" rel="noopener" class="btn btn-gold btn-full">
+            View Official Receipt &amp; Invoice <span class="arr">→</span>
+          </a>
+        </div>
+
+        <a href="/" class="label link-home">← Return to the Sondri homepage</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const WORKER_BASE =
+    window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:8787'
+      : 'https://billing.sondri.ai';
+
+  async function loadTransactionDocs() {
+    const sessionId = new URLSearchParams(window.location.search).get('session_id');
+    if (!sessionId) return;
+
+    try {
+      const res = await fetch(`${WORKER_BASE}/checkout-session/${sessionId}`);
+      const json = await res.json();
+
+      if (!json.success || !json.data) return;
+
+      const { receipt_url, invoice_url, invoice_pdf } = json.data;
+      const container = document.getElementById('downloadsContainer');
+      const btnReceipt = document.getElementById('btnReceipt') as HTMLAnchorElement | null;
+      const targetUrl = receipt_url || invoice_url || invoice_pdf;
+
+      if (targetUrl && btnReceipt && container) {
+        btnReceipt.href = targetUrl;
+        container.hidden = false;
+      }
+    } catch (err) {
+      // The payment already succeeded; a missing receipt link is not worth an
+      // error state on this page.
+      console.warn('Unable to load receipt link:', err);
+    }
+  }
+
+  loadTransactionDocs();
+</script>
+
+<style>
+  .success-section {
+    margin-top: calc(-1 * var(--nav-h));
+    padding-top: calc(var(--nav-h) + var(--s-96));
+    padding-bottom: var(--s-96);
+  }
+
+  .success-card { max-width: 640px; padding: var(--s-48); }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-08);
+    margin-bottom: var(--s-24);
+  }
+  .check-icon { width: 12px; height: 12px; }
+
+  .success-title { max-width: 18ch; }
+  .success-lede { max-width: 52ch; margin-top: var(--s-16); }
+
+  .action-wrapper { margin-top: var(--s-32); }
+  .action-wrapper[hidden] { display: none; }
+  .btn-full { width: 100%; justify-content: center; }
+
+  .link-home {
+    display: inline-block;
+    margin-top: var(--s-32);
+    color: var(--steel);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .link-home:hover { color: var(--text-hi); border-bottom-color: currentColor; }
+
+  @media (max-width: 640px) {
+    .success-section { padding-top: calc(var(--nav-h) + var(--s-48)); }
+    .success-card { padding: var(--s-24); }
+  }
+</style>

@@ -5,6 +5,10 @@ import { VALUE_LINE } from '../home-data';
 import { splitDot } from '../lib/dot';
 const [line, dot] = splitDot(VALUE_LINE);
 const year = new Date().getFullYear();
+
+/* Same reason as Nav: fragment links need a `/` prefix off the home page. */
+const home = Astro.url.pathname === '/' ? '' : '/';
+const to = (href: string) => (href.startsWith('#') ? home + href : href);
 ---
 
 <!-- The lockup lives in the nav and here — the page turns over on the
@@ -25,7 +29,7 @@ const year = new Date().getFullYear();
           <p class="label col-title">/ {col.title}</p>
           <ul>
             {col.links.map((l) => (
-              <li><a href={l.href}>{l.label}</a></li>
+              <li><a href={to(l.href)}>{l.label}</a></li>
             ))}
           </ul>
         </div>

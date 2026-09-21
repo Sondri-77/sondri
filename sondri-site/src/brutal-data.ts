@@ -75,6 +75,7 @@ export const footerCols = [
       { label: 'Book discovery', href: '#book' },
       { label: 'Get in touch', href: '#contact' },
       { label: 'FAQ', href: '#faq' },
+      { label: 'Pay an invoice', href: '/pay/' },
     ],
   },
 ];

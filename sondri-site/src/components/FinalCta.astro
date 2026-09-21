@@ -1,5 +1,5 @@
 ---
-import { BOOK_HREF, CTA_PRIMARY, RISK_REVERSAL } from '../data';
+import { BOOK_HREF, CTA_PRIMARY, RISK_REVERSAL, mailto } from '../data';
 import { finalCta } from '../home-data';
 import { splitDot } from '../lib/dot';
 const [h2, dot] = splitDot(finalCta.h2);
@@ -13,6 +13,7 @@ const [h2, dot] = splitDot(finalCta.h2);
     <p class="lede">{finalCta.lede}</p>
     <div class="cta-actions">
       <a class="btn btn-gold" href={BOOK_HREF}>{CTA_PRIMARY} <span class="arr">→</span></a>
+      <a class="btn" href={mailto('Hello from sondri.ai')}>Get in touch</a>
     </div>
     <p class="label">{RISK_REVERSAL}</p>
   </div>

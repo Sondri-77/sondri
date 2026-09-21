@@ -1,6 +1,12 @@
 ---
 import { announcement, nav } from '../brutal-data';
 import { BOOK_HREF, CTA_PRIMARY } from '../data';
+
+/* The section links are bare fragments because the site is one page. From a
+   sub-page (/pay, /success) a bare `#how` goes nowhere, so prefix it with `/`
+   there — and only there, so the home page keeps its smooth in-page scroll. */
+const home = Astro.url.pathname === '/' ? '' : '/';
+const to = (href: string) => (href.startsWith('#') ? home + href : href);
 ---
 
 <div class="ann on-paper">
@@ -17,11 +23,11 @@ import { BOOK_HREF, CTA_PRIMARY } from '../data';
     </a>
 
     <nav class="links" aria-label="Primary">
-      {nav.map((i) => <a class="link" href={i.href}>{i.label}</a>)}
+      {nav.map((i) => <a class="link" href={to(i.href)}>{i.label}</a>)}
     </nav>
 
     <div class="right">
-      <a class="link log" href="#contact">Get in touch</a>
+      <a class="link log" href="/pay/">Pay an invoice</a>
       <a class="btn btn-white" href={BOOK_HREF}>{CTA_PRIMARY}</a>
     </div>
 
@@ -29,8 +35,9 @@ import { BOOK_HREF, CTA_PRIMARY } from '../data';
   </div>
 
   <div id="navpanel" hidden>
-    {nav.map((i) => <a class="panel-link" href={i.href}>{i.label}</a>)}
-    <a class="panel-link" href="#contact">Get in touch</a>
+    {nav.map((i) => <a class="panel-link" href={to(i.href)}>{i.label}</a>)}
+    <a class="panel-link" href={to('#contact')}>Get in touch</a>
+    <a class="panel-link" href="/pay/">Pay an invoice</a>
     <a class="btn btn-white panel-btn" href={BOOK_HREF}>{CTA_PRIMARY}</a>
   </div>
 </header>
@@ -80,6 +87,10 @@ import { BOOK_HREF, CTA_PRIMARY } from '../data';
   .btn-white { background: var(--white); border-color: var(--white); color: var(--teal); font-weight: 500; }
   .btn-white:hover { background: var(--off); border-color: var(--off); color: var(--teal); }
   .log { margin-left: auto; }
+  /* The bar's CTA sits inside a 72px rule; at the base .btn's 18px block it
+     nearly fills it. Trim it so the bar reads as a bar, not a button rail.
+     Scoped to .right, so the full-width panel CTA keeps its tap target. */
+  .right .btn { padding: 12px 22px; font-size: 13px; }
 
   .toggle {
     display: none; background: none; border: 1px solid var(--line);

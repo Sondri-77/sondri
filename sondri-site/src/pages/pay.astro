@@ -1,0 +1,214 @@
+---
+/* The client payment portal, carried over from v2 and rebuilt on brutal's
+   surfaces. The logic is unchanged — it posts to the billing worker's
+   /create-checkout-session and hands off to Stripe. Only the shell is new:
+   v2's rounded .card and --pine became brutal's square .panel on the teal
+   field, and the form controls are authored here because the one-page site
+   had no inputs to inherit. */
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Pay an invoice — Sondri"
+  description="Pay an agreed Sondri invoice securely through Stripe Checkout."
+>
+  <section class="section on-dark pay-head">
+    <div class="wrap">
+      <div class="eyebrow"><span class="label">/ Payments</span></div>
+      <h1 class="h2">Pay an invoice through our secure client portal<span class="gdot">.</span></h1>
+      <p class="lede">
+        Submit an agreed invoice or retainer payment. All transactions run through
+        encrypted Stripe Checkout with instant receipt generation.
+      </p>
+    </div>
+  </section>
+
+  <section class="section on-dark pay-body">
+    <div class="wrap">
+      <div class="panel pay-card" data-reveal>
+        <h2 class="h5">Invoice payment</h2>
+        <p class="body-s pay-b">
+          Enter your billing email, the amount agreed with the Sondri engineering team,
+          and your invoice reference.
+        </p>
+
+        <form id="formCustomPay" class="pay-form" novalidate>
+          <div class="field">
+            <label for="cEmail" class="label field-label">Billing email address *</label>
+            <input type="email" id="cEmail" class="input" placeholder="billing@company.com" required />
+          </div>
+
+          <div class="field">
+            <label for="cAmount" class="label field-label">Payment amount ($ USD) *</label>
+            <input type="number" step="0.01" min="10" id="cAmount" class="input" placeholder="2500.00" required />
+          </div>
+
+          <div class="field">
+            <label for="cDesc" class="label field-label">Invoice reference / project description *</label>
+            <input type="text" id="cDesc" class="input" placeholder="Invoice 1042 — AI Workflow Sprint" required />
+          </div>
+
+          <p id="payError" class="label pay-error" role="alert" hidden></p>
+
+          <button type="submit" id="btnSubmit" class="btn btn-gold btn-full">
+            <span id="btnLabel">Proceed to Secure Checkout</span> <span class="arr">→</span>
+          </button>
+        </form>
+      </div>
+
+      <p class="label sec-note" data-reveal>
+        <span class="sec-dot" aria-hidden="true"></span>
+        256-bit encrypted · Automatic PDF tax receipts · Powered by Stripe
+      </p>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const WORKER_BASE =
+    window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:8787'
+      : 'https://billing.sondri.ai';
+
+  const form = document.getElementById('formCustomPay') as HTMLFormElement | null;
+  const btn = document.getElementById('btnSubmit') as HTMLButtonElement | null;
+  const btnLabel = document.getElementById('btnLabel');
+  const errEl = document.getElementById('payError');
+
+  const IDLE = 'Proceed to Secure Checkout';
+
+  /* v2 surfaced failures through alert(). On this field a flat gold line under
+     the form reads as part of the page, so errors land inline instead. */
+  function showError(message: string) {
+    if (!errEl) return;
+    errEl.textContent = message;
+    errEl.hidden = false;
+  }
+
+  function clearError() {
+    if (!errEl) return;
+    errEl.hidden = true;
+    errEl.textContent = '';
+  }
+
+  function setBusy(busy: boolean) {
+    if (btn) btn.disabled = busy;
+    if (btnLabel) btnLabel.textContent = busy ? 'Generating checkout…' : IDLE;
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearError();
+
+    const client_email = (document.getElementById('cEmail') as HTMLInputElement).value.trim();
+    const custom_amount = parseFloat((document.getElementById('cAmount') as HTMLInputElement).value);
+    const description = (document.getElementById('cDesc') as HTMLInputElement).value.trim();
+
+    if (!client_email || !description || !Number.isFinite(custom_amount) || custom_amount <= 0) {
+      showError('Enter a billing email, a valid amount, and an invoice reference.');
+      return;
+    }
+
+    setBusy(true);
+
+    try {
+      const res = await fetch(`${WORKER_BASE}/create-checkout-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'custom',
+          client_email,
+          custom_amount,
+          description,
+          cancel_url: `${window.location.origin}/pay/`,
+        }),
+      });
+
+      const json = await res.json();
+
+      if (json.success && json.data?.checkout_url) {
+        window.location.href = json.data.checkout_url;
+        return;
+      }
+
+      showError(json.error?.message || 'Unable to generate checkout session.');
+      setBusy(false);
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Unable to reach payment gateway.');
+      setBusy(false);
+    }
+  });
+</script>
+
+<style>
+  /* The band runs up under the transparent nav, the way the hero does, but
+     without the hero's viewport height — this page is a form, not a field. */
+  .pay-head {
+    margin-top: calc(-1 * var(--nav-h));
+    padding-top: calc(var(--nav-h) + var(--s-80));
+    padding-bottom: var(--s-48);
+  }
+  .pay-head .h2 { max-width: 24ch; }
+  .pay-head .lede { max-width: 56ch; margin-top: var(--s-24); }
+
+  .pay-body { padding-bottom: var(--s-96); }
+
+  .pay-card { max-width: 640px; padding: var(--s-48); }
+  .pay-card .h5 { margin-bottom: var(--s-08); }
+  .pay-b { margin-bottom: var(--s-32); }
+
+  .pay-form { display: flex; flex-direction: column; gap: var(--s-24); }
+  .field { display: flex; flex-direction: column; gap: var(--s-08); }
+  .field-label { color: var(--text-hi); }
+
+  /* Square, 1px, no radius — the panel's own edge repeated at control size. */
+  .input {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text-hi);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 24px;
+    padding: 14px 16px;
+    transition: border-color 0.15s linear, background-color 0.15s linear;
+  }
+  .input::placeholder { color: var(--steel); }
+  .input:hover { background: var(--tint); }
+  .input:focus {
+    outline: none;
+    border-color: var(--gold);
+    background: var(--tint);
+  }
+  /* Keyboard users still get a visible ring where the border alone is subtle. */
+  .input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  /* Chrome's number spinners fight the square treatment. */
+  .input[type='number'] { appearance: textfield; -moz-appearance: textfield; }
+  .input[type='number']::-webkit-outer-spin-button,
+  .input[type='number']::-webkit-inner-spin-button { appearance: none; margin: 0; }
+
+  .pay-error {
+    color: var(--gold);
+    border-left: 2px solid var(--gold);
+    padding-left: var(--s-16);
+  }
+  .pay-error[hidden] { display: none; }
+
+  .btn-full { width: 100%; justify-content: center; margin-top: var(--s-08); }
+  .btn-full[disabled] { opacity: 0.65; cursor: wait; }
+
+  .sec-note {
+    display: flex;
+    align-items: center;
+    gap: var(--s-08);
+    max-width: 640px;
+    margin-top: var(--s-32);
+  }
+  .sec-dot { width: 7px; height: 7px; background: var(--gold); flex: none; }
+
+  @media (max-width: 640px) {
+    .pay-head { padding-top: calc(var(--nav-h) + var(--s-48)); }
+    .pay-card { padding: var(--s-24); }
+  }
+</style>

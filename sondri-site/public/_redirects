@@ -1,15 +1,14 @@
 # Routes that no longer exist — the site is one page. Cloudflare static assets
 # serve these as 301s; anything else unknown gets the 404 page.
+#
+# /pay and /success are NOT listed: they are real pages again (the client
+# payment portal and Stripe's return leg), so they must resolve, not redirect.
 /about              /  301
 /about/             /  301
 /how-it-works       /  301
 /how-it-works/      /  301
 /get-in-touch       /  301
 /get-in-touch/      /  301
-/pay                /  301
-/pay/               /  301
-/success            /  301
-/success/           /  301
 /styleguide         /  301
 /styleguide/        /  301
 /for-customers      /  301
