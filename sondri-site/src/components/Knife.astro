@@ -96,7 +96,7 @@ const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value)
   /* The total: one yearly figure, big and gold, the label on its baseline.
      Tabular figures so the block never jitters as it counts. */
   .total { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s-16); padding-top: var(--s-24); font-variant-numeric: tabular-nums; }
-  .sum { font-size: clamp(48px, 7vw, 96px); line-height: 1; color: var(--accent); }
+  .sum { font-size: clamp(48px, 7vw, 96px); line-height: 1; font-weight: 700; color: var(--accent); }
 </style>
 
 <script>
