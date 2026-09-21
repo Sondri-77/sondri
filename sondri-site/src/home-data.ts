@@ -167,7 +167,7 @@ export const faqHead = { eyebrow: 'FAQ', h2: 'Things people ask before they trus
 export const finalCta = {
   eyebrow: 'Get in touch',
   h2: 'Stop paying smart people to babysit stupid systems.',
-  lede: 'Spend thirty minutes with a founder on the job you want to fix. We’ll tell you whether we can help or whether hiring someone would suit you better.',
+  lede: 'Spend 30 minutes with us describing the pain you are having. We’ll tell you whether we can help or whether hiring someone would suit you better.',
 };
 
 /* ── Value panel: four jobs, before and after (captain's 2026-09-21 Value
