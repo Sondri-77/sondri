@@ -10,9 +10,10 @@ const [closeHead, closeTail] = problem.close.replace(/"([^"]+)"/, '\u201c$1\u201
 <!-- ProblemStats, re-headed: the three big numbers under the workbench copy. -->
 <section class="section section-pad on-off">
   <div class="wrap">
+    <p class="h4 close">{closeHead}<span class="nb">{closeTail}</span></p>
+
     <div class="sec-head">
       <div>
-        <div class="eyebrow"><span class="label">/ {problem.eyebrow}</span></div>
         <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
       </div>
       <div class="intro">
@@ -23,29 +24,20 @@ const [closeHead, closeTail] = problem.close.replace(/"([^"]+)"/, '\u201c$1\u201
     <div class="rule-cols cols-3 stats">
       {problemStats.map((s, i) => (
         <div data-reveal style={`transition-delay:${i * 80}ms`}>
-          <p class="label n-idx">{String(i + 1).padStart(2, '0')}</p>
           <p class="n h1">{s.n}</p>
           <p class="body-s">{s.label}</p>
         </div>
       ))}
     </div>
 
-    <p class="h4 close">{closeHead}<span class="nb">{closeTail}</span></p>
   </div>
 </section>
 
 <style>
-  .stats > * { display: flex; flex-direction: column; gap: var(--s-16); min-height: 260px; }
-  .n { font-size: clamp(48px, 5vw, 76px); color: var(--accent); margin-top: auto; }
-  .n-idx { color: var(--text-hi); }
-  /* Their list marker: a filled square ahead of the mono index. */
-  .n-idx::before {
-    content: ''; display: inline-block;
-    width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
-    background: currentColor;
-  }
+  .stats > * { display: flex; flex-direction: column; gap: var(--s-16); }
+  .n { font-size: clamp(48px, 5vw, 76px); color: var(--accent); }
   .body-s { max-width: 32ch; }
-  .close { padding-top: var(--s-64); max-width: 40ch; }
+  .close { padding-bottom: var(--s-48); max-width: 40ch; }
   @media (min-width: 900px) { .close { white-space: nowrap; max-width: none; } }
   .nb { white-space: nowrap; }
 </style>
