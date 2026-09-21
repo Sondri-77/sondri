@@ -196,6 +196,17 @@ a { color: inherit; }
 .label-gold { color: var(--text-hi); }
 .gdot { color: var(--dot); }
 
+/* Florexa, the brand's pixel display face, for big KPI numbers only — the
+   calculator's yearly total, the Problem stats, the Value panel's bar figures,
+   the 0 / 1 / n numerals (captain: Florexa for careful big highlights). The
+   hero H1 is the one heading that carries it, in Hero.astro. Never on other
+   headings. */
+.kpi {
+  font-family: var(--display); font-weight: 400;
+  letter-spacing: 0.01em; line-height: 1;
+  font-variant-numeric: normal;
+}
+
 /* Their marker highlight: a flat block of the secondary tint behind a phrase. */
 .hl {
   background: var(--mist); color: var(--ink);

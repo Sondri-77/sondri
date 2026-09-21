@@ -80,8 +80,8 @@ const idx = (i: number) => String(i + 1).padStart(2, '0');
                     <div class="metric">
                       <p class="label"><span class="k">{m.k}</span> · {m.t} <span class="ph">{valuePanel.placeholder}</span></p>
                       <div class="track">
-                        <span class="fill" style={`--w:${pct(m)}%`}><span>{fmt(m, m.after)}</span></span>
-                        <span class="was">{fmt(m, m.before)}</span>
+                        <span class="fill" style={`--w:${pct(m)}%`}><span class="kpi">{fmt(m, m.after)}</span></span>
+                        <span class="was kpi">{fmt(m, m.before)}</span>
                       </div>
                     </div>
                   ))}
@@ -281,6 +281,8 @@ const idx = (i: number) => String(i + 1).padStart(2, '0');
     border: 1px solid var(--line);
     font-family: var(--mono); font-size: 13px; letter-spacing: 0.02em; font-variant-numeric: tabular-nums;
   }
+  /* The figures at the bar ends are KPIs, so they set in Florexa a step up from the mono. */
+  .track .kpi { font-size: 18px; }
   .fill {
     display: flex; align-items: center; justify-content: flex-end;
     width: var(--w); min-width: 4.5em; padding-right: 10px;
