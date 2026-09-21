@@ -1,5 +1,13 @@
-/* Home copy — the locked 12 sections (decisions.md D1) in the reviewed edgy
-   voice (decisions.md D4). Every string here is verbatim from
+/* VARIANT V3 — "hybrid". Derek's reviewed edgy structure (decisions.md D1,
+   D4) carrying the composure of the tk-dev/v2 site copy. Where tk-dev had a
+   line that was blunt AND professional it is used directly ("You never have
+   to become an AI company", "the plan is yours either way"); where it was
+   boardroom register ("board-ready roadmap", "hard ROI") it is left out,
+   because rules.astro's voice rule is blue-collar second person. Diverges
+   from the workbench; see the branch commit for the full list.
+
+   Home copy — the locked 12 sections (decisions.md D1) in the reviewed edgy
+   voice (decisions.md D4). Every other string here is verbatim from
    copy-workbench/src/pages/home-edgy.astro @ aef397a (after banned-copy
    rounds 1+2 and the captain's tweaks) — the PRIMARY (1/3) heading of each
    section, the eyebrow, body, lists, [placeholder] marks — with one captain
@@ -88,8 +96,8 @@ export const homeFaq = [
 
 /** Section 1 · Hero */
 export const hero = {
-  h1: 'Fix expensive bullshit. (Use AI where it helps)',
-  lede: 'Built into the systems you already run. Live in weeks.',
+  h1: 'Fix what slows you down. (Use AI where it helps)',
+  lede: 'Built into the systems you already run. Live in weeks, not quarters.',
 };
 
 /** Section 2 · Capability scroll */
@@ -98,8 +106,8 @@ export const capabilityStrip = { eyebrow: 'Things we do' };
 /** Section 3 · Problem */
 export const problem = {
   eyebrow: 'Problem',
-  h2: 'Your people aren’t inefficient. The shit you make them use is.',
-  lede: 'Your team spends hours on work your software doesn’t handle, and the quotes you’ve had to fix it cost too much.',
+  h2: 'Everyone has a plan for AI. Almost nobody has one their team uses.',
+  lede: 'Your team spends hours on work your software doesn’t handle, and the quotes to fix it have all come back too high.',
   close: 'How long has your fix been "in pilot"?',
 };
 
@@ -114,7 +122,7 @@ export const knifeHead = {
 /** Section 5 · Solution & benefits */
 export const solution = {
   eyebrow: 'Solution & benefits',
-  h2: 'We unf*ck how work gets done.',
+  h2: 'You never have to become an AI company.',
   lede: 'You choose three jobs worth fixing with us. We build for the first and reuse what we can for the next.',
 };
 
@@ -128,7 +136,7 @@ export const socialProof = {
 /** Section 7 · How it works */
 export const howItWorks = {
   eyebrow: 'How it works',
-  h2: 'Just fix the damn thing.',
+  h2: 'Start with one job. Prove it works.',
   lede: 'You show us the work you want to fix, and we build with your team.',
 };
 
@@ -143,7 +151,7 @@ export const comparisonHead = {
 /** Section 9 · Features */
 export const featuresHead = {
   eyebrow: 'Features',
-  h2: 'Unsexy solutions that work ridiculously well.',
+  h2: 'Unglamorous software, measured on what it saves.',
 };
 
 /** Section 10 · Why Sondri exists */
@@ -157,11 +165,11 @@ export const why = {
 };
 
 /** Section 11 · FAQ */
-export const faqHead = { eyebrow: 'FAQ', h2: 'Things people ask before they trust us with money.' };
+export const faqHead = { eyebrow: 'FAQ', h2: 'What people ask before they trust us with money.' };
 
 /** Section 12 · Final CTA */
 export const finalCta = {
   eyebrow: 'Final CTA',
-  h2: 'Stop paying smart people to babysit stupid systems.',
-  lede: 'Spend thirty minutes with a founder on the job you want to fix. We’ll tell you whether we can help or whether hiring someone would suit you better.',
+  h2: 'Stop paying good people to work around bad software.',
+  lede: 'Spend thirty minutes with a founder on the job you want to fix. The first conversation is free, and the plan is yours either way.',
 };
