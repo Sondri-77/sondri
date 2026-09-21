@@ -8,7 +8,6 @@ const [h2, dot] = splitDot(finalCta.h2);
 <!-- The close: one continuous teal field with the footer, the way theirs is. -->
 <section class="section on-dark" id="book">
   <div class="wrap cta">
-    <div class="eyebrow"><span class="label">/ {finalCta.eyebrow}</span></div>
     <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
     <p class="lede">{finalCta.lede}</p>
     <div class="cta-actions">
@@ -21,7 +20,6 @@ const [h2, dot] = splitDot(finalCta.h2);
 
 <style>
   .cta { padding-block: var(--s-96); display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-32); }
-  .cta .eyebrow { margin-bottom: 0; }
   .cta .h2 { max-width: 20ch; }
   .lede { max-width: 48ch; }
   .cta-actions { display: flex; flex-wrap: wrap; gap: var(--s-16); }

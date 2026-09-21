@@ -2,15 +2,18 @@
 import { howItWorks, steps } from '../home-data';
 import { splitDot } from '../lib/dot';
 const [h2, dot] = splitDot(howItWorks.h2);
+// Two sentences, so the heading takes a line each from tablet up rather than
+// breaking wherever the measure happens to run out. The gold full stop stays
+// with the sentence that ends the heading.
+const [head, tail] = h2.split(/(?<=\.) (?=\S)/);
 ---
 
-<!-- Feel, re-headed: three ruled steps with mono indices. -->
-<section class="section section-pad" id="how">
+<!-- Feel, re-headed: three ruled steps. -->
+<section class="section section-pad on-dark" id="how">
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="eyebrow"><span class="label">/ {howItWorks.eyebrow}</span></div>
-        <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
+        <h2 class="h2"><span class="l">{head}</span> {tail && <span class="l">{tail}<span class="gdot">{dot}</span></span>}</h2>
       </div>
       <div class="intro">
         <p class="lede">{howItWorks.lede}</p>
@@ -20,7 +23,6 @@ const [h2, dot] = splitDot(howItWorks.h2);
     <div class="rule-cols cols-3 feel">
       {steps.map((s, i) => (
         <div data-reveal style={`transition-delay:${i * 80}ms`}>
-          <p class="i">{s.i}</p>
           <h3 class="h5">{s.t}</h3>
           <p class="body-s">{s.b}</p>
         </div>
@@ -30,13 +32,11 @@ const [h2, dot] = splitDot(howItWorks.h2);
 </section>
 
 <style>
-  .feel > * { display: flex; flex-direction: column; gap: var(--s-16); min-height: 280px; }
-  .i { font-family: var(--mono); font-size: 14px; color: var(--accent); padding-bottom: var(--s-08); }
-  /* Their list marker: a filled square ahead of the mono index. */
-  .i::before {
-    content: ''; display: inline-block;
-    width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
-    background: currentColor;
-  }
-  .body-s { margin-top: auto; max-width: 32ch; }
+  /* One sentence per line from tablet up; phones wrap naturally. */
+  @media (min-width: 900px) { .h2 .l { display: block; } }
+
+  .feel > * { display: flex; flex-direction: column; gap: var(--s-16); }
+  /* --pale, not the inherited --steel: on the teal field that is the
+     brighter of the two body inks, and it matches the Knife section. */
+  .body-s { max-width: 32ch; color: var(--pale); }
 </style>

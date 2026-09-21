@@ -1,6 +1,12 @@
 /* VARIANT V3 — "hybrid / professional". Derek's reviewed structure
    (decisions.md D1, D4) carrying the composure of the tk-dev/v2 site copy.
-   This is the version that leads on simplifying rather than fixing. Where tk-dev had a
+   This is the version that leads on simplifying rather than fixing.
+
+   Carries V2's design work and its non-voice copy fixes (the knife's
+   opportunity-cost argument, "the alternatives" over "consultants", the
+   final CTA asking instead of complaining). What stays V3's own: the hero,
+   the problem, the solution, how-it-works and features headings, the FAQ
+   wording, and "not quarters". Where tk-dev had a
    line that was blunt AND professional it is used directly ("You never have
    to become an AI company", "the plan is yours either way"); where it was
    boardroom register ("board-ready roadmap", "hard ROI") it is left out,
@@ -98,7 +104,7 @@ export const homeFaq = [
 /** Section 1 · Hero */
 export const hero = {
   h1: 'Make complex work simple.',
-  lede: 'Built into the systems you already run, using AI where it helps. Live in weeks, not quarters.',
+  lede: 'Software built into the systems you already run, using AI where it helps. Live in weeks, not quarters.',
 };
 
 /** Section 2 · Capability scroll */
@@ -115,8 +121,8 @@ export const problem = {
 /** Section 4 · Twist the knife */
 export const knifeHead = {
   eyebrow: 'Twist the knife',
-  h2: 'That workaround has been temporary for years.',
-  lede: 'The workaround feels cheap because nobody sends you an invoice for it.',
+  h2: 'Every temporary fix costs you a permanent one.',
+  lede: 'The hours your team spends keeping it alive are the hours nobody has left to replace it.',
   close: 'Add up what those extra steps cost you each week.',
 };
 
@@ -138,13 +144,13 @@ export const socialProof = {
 export const howItWorks = {
   eyebrow: 'How it works',
   h2: 'Start with one job. Prove it works.',
-  lede: 'You show us the work you want to fix, and we build with your team.',
+  lede: 'Three steps, from the first conversation to a number you can check.',
 };
 
 /** Section 8 · Competitor comparison */
 export const comparisonHead = {
   eyebrow: 'Competitor comparison',
-  h2: 'A lot of consultants will charge you to rename your problem.',
+  h2: 'The alternatives will charge you to rename your problem.',
   lede: 'Compare the time and money each option takes. Ask who’s responsible for fixing it after launch.',
   ph: 'Numbers marked [placeholder] need a source or a real engagement behind them before publishing.',
 };
@@ -158,7 +164,7 @@ export const featuresHead = {
 /** Section 10 · Why Sondri exists */
 export const why = {
   eyebrow: 'Why Sondri exists',
-  h2: 'Let’s fix the work you have now.',
+  h2: 'Let’s start with the work you have now.',
   quote: 'We started Sondri because we saw businesses spend eighteen months trying AI without getting software they could use. You can bring us one job that needs fixing, and we’ll build software for it.',
   line: 'Show us how you do the job today.',
   cta: 'Get in Touch →',
@@ -171,6 +177,6 @@ export const faqHead = { eyebrow: 'FAQ', h2: 'What people ask before they trust 
 /** Section 12 · Final CTA */
 export const finalCta = {
   eyebrow: 'Final CTA',
-  h2: 'Stop paying good people to work around bad software.',
-  lede: 'Spend thirty minutes with a founder on the job you want to fix. The first conversation is free, and the plan is yours either way.',
+  h2: 'Find out what it would take.',
+  lede: 'Thirty minutes with a founder on one job. You’ll leave knowing whether we can help, or whether hiring someone would suit you better.',
 };
