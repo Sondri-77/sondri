@@ -2,10 +2,17 @@
 import { BOOK_HREF, CTA_PRIMARY, RISK_REVERSAL } from '../data';
 import { hero } from '../home-data';
 import { splitDot } from '../lib/dot';
-// The H1 sets as two lines on desktop: the claim, then the parenthetical.
-// The copy string stays verbatim; the break falls before the "(".
-const [line1, line2] = hero.h1.split(/ (?=\()/);
-const [h1, dot] = splitDot(line1);
+// The H1 sets as two lines on desktop. The copy string stays verbatim; the
+// break falls before the "(" when the claim carries a parenthetical, and
+// after the first sentence when it is two sentences instead.
+const [line1, line2] = hero.h1.includes('(')
+  ? hero.h1.split(/ (?=\()/)
+  : hero.h1.split(/(?<=\.) (?=\S)/);
+// The brand's gold full stop marks the end of the statement, so it belongs to
+// whichever line ends it. A parenthetical second line never takes it.
+const dotLast = !!line2 && line2.endsWith('.');
+const [h1, dot] = dotLast ? [line1, ''] : splitDot(line1);
+const [l2, dot2] = dotLast ? splitDot(line2) : [line2, ''];
 ---
 
 <!-- The v2 study's treated photo hero (hero-fx.ts: luminance → gradient-map
@@ -29,7 +36,7 @@ const [h1, dot] = splitDot(line1);
   </div>
 
   <div class="wrap copy">
-    <h1 class="display"><span class="l">{h1}<span class="gdot">{dot}</span></span> <span class="l">{line2}</span></h1>
+    <h1 class="display"><span class="l">{h1}<span class="gdot">{dot}</span></span> <span class="l">{l2}<span class="gdot">{dot2}</span></span></h1>
     <p class="lede">{hero.lede}</p>
     <div class="actions">
       <a class="btn btn-gold" href={BOOK_HREF}>{CTA_PRIMARY} <span class="arr">→</span></a>
