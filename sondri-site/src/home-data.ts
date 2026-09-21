@@ -134,8 +134,8 @@ export const socialProof = {
 /** Section 7 · How it works */
 export const howItWorks = {
   eyebrow: 'How it works',
-  h2: 'Just fix the thing that’s broken.',
-  lede: 'You show us the work you want to fix, and we build with your team.',
+  h2: 'Show us the slow part. We’ll build the rest.',
+  lede: 'Three steps, from the first conversation to a number you can check.',
 };
 
 /** Section 8 · Competitor comparison */
@@ -155,7 +155,7 @@ export const featuresHead = {
 /** Section 10 · Why Sondri exists */
 export const why = {
   eyebrow: 'Why Sondri exists',
-  h2: 'Let’s fix the work you have now.',
+  h2: 'Let’s start with the work you have now.',
   quote: 'We started Sondri because we saw businesses spend eighteen months trying AI without getting software they could use. You can bring us one job that needs fixing, and we’ll build software for it.',
   line: 'Show us how you do the job today.',
   cta: 'Get in Touch →',
