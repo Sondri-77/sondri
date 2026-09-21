@@ -34,16 +34,18 @@ export const capabilities = [
   'AI for multi-step jobs',
 ];
 
-/** The Impact section's cost-of-inaction calculator: one slider per input,
-    cost = wage × hours × people. `k` is the input's eyebrow (the old three
-    cards' titles), `t` the visible label, `unit` the suffix on its value. */
+/** The Impact section's cost-of-inaction calculator, cost = wage × hours ×
+    people × 52, read as one sentence (playground C3): each value is a bold
+    gold word that opens its slider. `k` is the slider tray's label, `t` the
+    input's accessible name, `unit` the suffix on its value. */
 export const calculator = {
   inputs: [
-    { id: 'wage', k: 'Money', t: 'Hourly wage', unit: '/h', min: 15, max: 150, step: 1, value: 35, money: true },
-    { id: 'hours', k: 'Time', t: 'Hours per week, per person', unit: ' h', min: 1, max: 40, step: 1, value: 5, money: false },
+    { id: 'wage', k: 'Hourly wage', t: 'Hourly wage', unit: '/h', min: 15, max: 150, step: 1, value: 35, money: true },
+    { id: 'hours', k: 'Hours a week', t: 'Hours per week, per person', unit: ' h', min: 1, max: 40, step: 1, value: 5, money: false },
     { id: 'people', k: 'People', t: 'People doing the workaround', unit: '', min: 1, max: 50, step: 1, value: 4, money: false },
   ],
   year: 'per year',
+  hint: 'Click a number to change it. Arrow keys work too.',
 };
 
 /** `k` is the card's eyebrow; `icon` names a file in public/icons/ (Pixel Icon Library, see NOTICES.md). */
@@ -53,12 +55,16 @@ export const benefits = [
   { k: 'Commitment', icon: 'numbered-list', t: 'One phase at a time', b: 'Agree on a fixed price for each phase, then review the work before funding the next.' },
 ];
 
+/** Endorsements (captain, 2026-09-21: was "Customers"): three fictitious
+    advisors / friends of the business on the Sondri method and why AI matters
+    now. Shape only — every one is a [placeholder] until a real person signs it. */
 export const testimonials = [
-  { q: '[placeholder] "We’d been talking about fixing invoice matching for two years. Six weeks later it was live and we use it every day."', who: '[placeholder] COO, regional logistics company · [placeholder] 14 hrs/week back to the finance team' },
-  { q: '[placeholder] "They told us on the first call which of our three ideas was worth doing. That’s why we hired them."', who: '[placeholder] CFO, mid-market manufacturer · [placeholder] first software in use in 7 weeks' },
-  { q: '[placeholder] "Our team owns the code and can read every line."', who: '[placeholder] Head of Ops, healthcare services group · [placeholder] $180k annual cost gone' },
+  { q: '[placeholder] "They had a working version in front of my ops manager in the second week. Every other firm we spoke to wanted a strategy phase first."', who: '[placeholder] Dana Whitlock · Owner, regional HVAC contractor' },
+  { q: '[placeholder] "Most small companies will get AI through the software they already own. Sondri builds it that way, and I haven’t seen another shop do it."', who: '[placeholder] Marcus Oyelaran · Advisor, former CIO of a food distributor' },
+  { q: '[placeholder] "Doing this work by hand costs more every year and doing it with AI costs less. Waiting is now the expensive choice, and they tell you that plainly."', who: '[placeholder] Priya Natarajan · Partner, small-business accounting firm' },
 ];
 
+/* Superseded 2026-09-21: How it works now renders data.ts's `framework` (0 / 1 / n). Kept for the workbench round-trip. */
 export const steps = [
   { i: '01', t: 'Tell us what’s slow', b: 'Spend thirty minutes describing the work slowing you down. You can come without preparing anything.' },
   { i: '02', t: 'We build it into your systems', b: 'You keep running your business while we build with your existing software and data.' },
@@ -85,6 +91,19 @@ export const features = [
   { k: 'Connect', t: 'Integrations', icon: 'link', b: 'Connect your software and spreadsheets so your staff can stop copying data between them.' },
   { k: 'Delegate', t: 'AI for multi-step jobs', icon: 'robot', b: 'Use AI for jobs with several steps, with records you can check and a way for your staff to stop it.' },
 ];
+
+/** The Capabilities console (captain, 2026-09-21): three framed panels, each a
+    heading, one line, and one of the playground animations (cards 01, 03, 09)
+    running in its lower half. `title` is the window's mono title bar. */
+export const consolePanels = [
+  { id: 'workflow', title: '01 · Workflow builder', t: 'Draw the flow. It runs itself.', b: 'An email, invoice or order moves through every step on its own. Your staff only see the ones that need a decision.' },
+  { id: 'chat', title: '02 · Agentic chat', t: 'Ask, and it takes the next step.', b: 'Your staff ask in plain words. The assistant looks it up in your systems and does the job.' },
+  { id: 'contract', title: '03 · Contract review', t: 'Every clause read, the risky ones flagged.', b: 'AI checks the whole contract against your terms and points your lawyer at the clauses that need a look.' },
+];
+
+/** The six capability verbs, one mono line under the console so the list from
+    the old tiles isn't lost. */
+export const consoleStrip = features.map((f) => f.k);
 
 /** The edgy page carries its own eight FAQs (worded differently from data.ts's). */
 export const homeFaq = [
@@ -130,11 +149,11 @@ export const solution = {
   lede: 'We build working software into the tools your team already uses, price each phase up front, and hand you the code.',
 };
 
-/** Section 6 · Social proof */
+/** Section 6 · Endorsements (was "Customers"; captain, 2026-09-21) */
 export const socialProof = {
-  eyebrow: 'Customers',
-  h2: 'Hear from customers using what we built.',
-  ph: 'All three are placeholders, shape only (role, company type, number). Replace with real customer quotes before this ships.',
+  eyebrow: 'Endorsements',
+  h2: 'People who’ve watched us work.',
+  ph: 'All three are placeholders, shape only (name, role, company type). Replace with real endorsements before this ships.',
 };
 
 /** Section 7 · How it works */

@@ -3,14 +3,17 @@ import { calculator, knifeHead } from '../home-data';
 import { money, weeklyCost, yearlyCost } from '../lib/cost';
 import { splitDot } from '../lib/dot';
 const [h2, dot] = splitDot(knifeHead.h2);
-// Server-rendered defaults: the section shows real numbers before (or without) JS.
-const [wage, hours, people] = calculator.inputs.map((i) => i.value);
-const year = yearlyCost(weeklyCost(wage, hours, people));
+// Server-rendered defaults: the sentence reads with real numbers before (or without) JS.
+const by = Object.fromEntries(calculator.inputs.map((i) => [i.id, i])) as Record<string, (typeof calculator.inputs)[number]>;
+const [wage, hours, people] = [by.wage.value, by.hours.value, by.people.value];
+const year = money(yearlyCost(weeklyCost(wage, hours, people)));
 const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value) : String(i.value)) + i.unit;
 ---
 
-<!-- Impact: the cost of inaction, on the teal field. Three ruled columns,
-     each a slider, and the live total under the closing line. -->
+<!-- Impact: the cost of inaction as one sentence (playground C3). The three
+     values are bold gold words; clicking one opens its slider in a tray under
+     the sentence, arrow keys nudge it in place. The yearly total repeats big
+     under a rule, in Florexa (.kpi). -->
 <section class="section section-pad on-dark" id="impact">
   <div class="wrap">
     <div class="sec-head">
@@ -24,51 +27,75 @@ const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value)
     </div>
 
     <form class="calc" data-calc onsubmit="return false">
-      <div class="rule-cols cols-3 inputs">
-        {calculator.inputs.map((i) => (
-          <div class="field">
-            <p class="label idx">{i.k}</p>
-            <label class="h5" for={`calc-${i.id}`}>{i.t}</label>
-            <output class="val h3" for={`calc-${i.id}`} data-val={i.id}>{fmt(i)}</output>
-            <input
-              type="range"
-              id={`calc-${i.id}`}
-              name={i.id}
-              min={i.min}
-              max={i.max}
-              step={i.step}
-              value={i.value}
-              data-money={i.money ? '' : undefined}
-              data-unit={i.unit}
-            />
-            <p class="label range"><span>{i.money ? money(i.min) : i.min}{i.unit}</span><span>{i.money ? money(i.max) : i.max}{i.unit}</span></p>
-          </div>
+      <p class="sentence">
+        {[by.people, by.hours, by.wage].map((i, n) => (
+          <Fragment>
+            <span class="edit" data-edit={i.id}>
+              <b class="val" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false" title={`Change ${i.t.toLowerCase()}`} data-val={i.id}>{fmt(i)}</b>
+              <span class="tray">
+                <label class="label" for={`calc-${i.id}`} title={i.t}>{i.k}</label>
+                <input
+                  type="range"
+                  id={`calc-${i.id}`}
+                  name={i.id}
+                  min={i.min}
+                  max={i.max}
+                  step={i.step}
+                  value={i.value}
+                  data-money={i.money ? '' : undefined}
+                  data-unit={i.unit}
+                  aria-label={i.t}
+                />
+              </span>
+            </span>
+            {n === 0 && <span data-people-word>{people === 1 ? 'person spends' : 'people spend'}</span>}
+            {n === 1 && ' a week at '}
+            {n === 2 && ' on the workaround. '}
+          </Fragment>
         ))}
-      </div>
+        That’s <b class="val sum" data-year>{year}</b> a year.
+      </p>
+      <p class="label hint">{calculator.hint}</p>
 
-      <p class="close"><span class="hl">{knifeHead.close}</span></p>
       <p class="total" aria-live="polite" aria-atomic="true">
-        <span class="sum display" data-year>{money(year)}</span> <span class="label">{calculator.year}</span>
+        <span class="figure kpi" data-year>{year}</span> <span class="label">{calculator.year}</span>
       </p>
     </form>
   </div>
 </section>
 
 <style>
-  .field { display: flex; flex-direction: column; gap: var(--s-16); }
-  .idx { color: var(--accent); }
-  .idx::before {
-    content: ''; display: inline-block;
-    width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
-    background: currentColor;
+  /* The sentence: display-size sans, the values gold and dotted underneath
+     so they read as things you can touch. Tabular figures so a nudge never
+     reflows the line. */
+  .sentence {
+    position: relative; max-width: 24ch; color: var(--text-hi);
+    font-size: clamp(28px, 3.4vw, 46px); line-height: 1.3; font-weight: 500;
+    letter-spacing: -0.03em; font-variant-numeric: tabular-nums;
   }
-  label { cursor: pointer; }
-  /* The value: gold, tabular so the line never jitters as it counts. */
-  .val { color: var(--accent); font-variant-numeric: tabular-nums; }
-  .range { display: flex; justify-content: space-between; color: var(--steel); }
+  .val { color: var(--accent); font-weight: 600; white-space: nowrap; }
+  .edit { display: inline; }
+  .edit .val { border-bottom: 3px dotted var(--accent); cursor: pointer; user-select: none; }
+  .edit .val:hover, .edit.is-open .val { background: rgba(253, 179, 67, 0.15); }
+  .edit .val:focus-visible { outline: 2px solid var(--white); outline-offset: 3px; }
 
-  /* The slider, square: a 2px rule for the track and a gold block for the
-     thumb, the same brutalist parts as the rest of the page. */
+  /* The open slider sits in a full-width tray where the hint line is, so it
+     never covers the sentence; the hint hides while a tray is open. */
+  .tray {
+    display: none; position: absolute; left: 0; right: 0; top: 100%; margin-top: var(--s-16);
+    padding: 10px 16px 6px; background: var(--teal-deep); border: 1px solid var(--accent);
+    grid-template-columns: 160px minmax(0, 1fr); gap: var(--s-16); align-items: center;
+    font-size: 16px; letter-spacing: 0; font-weight: 400;
+  }
+  .tray .label { color: var(--accent); }
+  .edit.is-open .tray { display: grid; }
+  .calc:has(.is-open) .hint { visibility: hidden; }
+  .hint { margin-top: var(--s-24); min-height: 50px; }
+  /* No JS: the values are just numbers, no cursor, no underline. */
+  .calc:not([data-js]) .edit .val { border-bottom: 0; cursor: default; }
+  .calc:not([data-js]) .hint { display: none; }
+
+  /* The slider, square: a 2px rule for the track and a gold block for the thumb. */
   input[type='range'] {
     appearance: none; -webkit-appearance: none;
     width: 100%; height: 28px; margin: 0; background: transparent; cursor: pointer;
@@ -90,13 +117,19 @@ const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value)
   input[type='range']:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--white); outline-offset: 2px; }
   input[type='range']:focus-visible::-moz-range-thumb { outline: 2px solid var(--white); outline-offset: 2px; }
 
-  .close { padding-top: var(--s-64); font-size: 20px; line-height: 1.4; max-width: 60ch; }
-  @media (min-width: 900px) { .close { white-space: nowrap; max-width: none; } }
+  /* The total, repeated big and gold in Florexa under a rule, the label on its baseline. */
+  .total {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s-24);
+    margin-top: var(--s-40); padding-top: var(--s-32); border-top: 1px solid var(--line);
+  }
+  .figure { font-size: clamp(64px, 8vw, 112px); color: var(--accent); }
 
-  /* The total: one yearly figure, big and gold, the label on its baseline.
-     Tabular figures so the block never jitters as it counts. */
-  .total { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s-16); padding-top: var(--s-24); font-variant-numeric: tabular-nums; }
-  .sum { font-size: clamp(48px, 7vw, 96px); line-height: 1; font-weight: 700; color: var(--accent); }
+  @media (max-width: 640px) {
+    .sentence { max-width: none; }
+    .tray { grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 10px 12px 6px; }
+    .hint { min-height: 76px; }
+  }
+  @media (prefers-reduced-motion: reduce) { input[type='range']::-webkit-slider-thumb { transition: none; } }
 </style>
 
 <script>
@@ -104,8 +137,11 @@ const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value)
 
   const form = document.querySelector<HTMLFormElement>('[data-calc]');
   if (form) {
+    form.dataset.js = '';
     const inputs = [...form.querySelectorAll<HTMLInputElement>('input[type="range"]')];
-    const year = form.querySelector<HTMLElement>('[data-year]')!;
+    const years = [...form.querySelectorAll<HTMLElement>('[data-year]')];
+    const word = form.querySelector<HTMLElement>('[data-people-word]');
+    const by = (name: string) => inputs.find((i) => i.name === name)!;
 
     const show = (i: HTMLInputElement) => {
       const out = form.querySelector<HTMLElement>(`[data-val="${i.name}"]`);
@@ -114,11 +150,62 @@ const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value)
       out.textContent = ('money' in i.dataset ? money(n) : String(n)) + (i.dataset.unit ?? '');
     };
     const update = () => {
-      const [wage, hours, people] = inputs.map((i) => Number(i.value));
-      year.textContent = money(yearlyCost(weeklyCost(wage, hours, people)));
+      const wage = Number(by('wage').value), hours = Number(by('hours').value), people = Number(by('people').value);
+      const total = money(yearlyCost(weeklyCost(wage, hours, people)));
+      years.forEach((y) => (y.textContent = total));
+      if (word) word.textContent = people === 1 ? 'person spends' : 'people spend';
       inputs.forEach(show);
     };
     inputs.forEach((i) => i.addEventListener('input', update));
     update();
+
+    // Inline edits: click a value to open its slider tray; arrow keys on the
+    // value nudge it directly; Enter/Space open; Escape (or Enter in the
+    // slider) closes and hands focus back.
+    const edits = [...form.querySelectorAll<HTMLElement>('.edit')];
+    const closeAll = () =>
+      edits.forEach((e) => {
+        e.classList.remove('is-open');
+        e.querySelector('.val')?.setAttribute('aria-expanded', 'false');
+      });
+    for (const edit of edits) {
+      const val = edit.querySelector<HTMLElement>('.val')!;
+      const input = edit.querySelector<HTMLInputElement>('input')!;
+      const tray = edit.querySelector<HTMLElement>('.tray')!;
+      const open = () => {
+        closeAll();
+        edit.classList.add('is-open');
+        val.setAttribute('aria-expanded', 'true');
+        input.focus({ preventScroll: true });
+      };
+      val.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        if (edit.classList.contains('is-open')) closeAll();
+        else open();
+      });
+      val.addEventListener('keydown', (ev) => {
+        const step = { ArrowUp: 1, ArrowRight: 1, ArrowDown: -1, ArrowLeft: -1 }[ev.key];
+        if (step) {
+          ev.preventDefault();
+          if (step > 0) input.stepUp(); else input.stepDown();
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        } else if (ev.key === 'Enter' || ev.key === ' ') {
+          ev.preventDefault();
+          open();
+        } else if (ev.key === 'Escape') {
+          closeAll();
+        }
+      });
+      input.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Escape' || ev.key === 'Enter') {
+          ev.preventDefault();
+          closeAll();
+          val.focus();
+        }
+      });
+      tray.addEventListener('click', (ev) => ev.stopPropagation());
+    }
+    document.addEventListener('click', closeAll);
+    document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') closeAll(); });
   }
 </script>
