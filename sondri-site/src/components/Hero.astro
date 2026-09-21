@@ -13,6 +13,10 @@ const [line1, line2] = hero.h1.includes('(')
 const dotLast = !!line2 && line2.endsWith('.');
 const [h1, dot] = dotLast ? [line1, ''] : splitDot(line1);
 const [l2, dot2] = dotLast ? splitDot(line2) : [line2, ''];
+// The lede sets as two lines too: the claim, then the promise. The copy
+// string stays verbatim; the break falls after the first sentence, so
+// "Live in weeks." starts its own line instead of trailing the one above.
+const [ledeA, ledeB] = hero.lede.split(/(?<=\.) (?=\S)/);
 ---
 
 <!-- The v2 study's treated photo hero (hero-fx.ts: luminance → gradient-map
@@ -37,7 +41,7 @@ const [l2, dot2] = dotLast ? splitDot(line2) : [line2, ''];
 
   <div class="wrap copy">
     <h1 class="display"><span class="l">{h1}<span class="gdot">{dot}</span></span>{l2 && <span class="l">{l2}<span class="gdot">{dot2}</span></span>}</h1>
-    <p class="lede">{hero.lede}</p>
+    <p class="lede"><span class="ll">{ledeA}</span> {ledeB && <span class="ll">{ledeB}</span>}</p>
     <div class="actions">
       <a class="btn btn-gold" href={BOOK_HREF}>{CTA_PRIMARY} <span class="arr">→</span></a>
     </div>
@@ -98,6 +102,13 @@ const [l2, dot2] = dotLast ? splitDot(line2) : [line2, ''];
     .display .l { display: block; white-space: nowrap; }
   }
   .lede { max-width: 52ch; color: var(--white); }
+  /* From tablet up the two sentences take a line each; the measure has to
+     open up so the first one is not clipped by the 52ch cap. Phones keep the
+     cap and wrap the sentences naturally. */
+  @media (min-width: 900px) {
+    .lede { max-width: none; }
+    .lede .ll { display: block; }
+  }
   .actions { display: flex; flex-wrap: wrap; gap: var(--s-16); }
   .label { color: var(--muted-inv); }
 
