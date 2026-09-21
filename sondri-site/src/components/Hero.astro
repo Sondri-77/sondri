@@ -90,11 +90,14 @@ const [ledeA, ledeB] = hero.lede.split(/(?<=\.) (?=\S)/);
     padding-block: var(--s-96) var(--s-64);
   }
 
-  /* Florexa, the brand's pixel display face, at the size the v2 study runs it. */
+  /* The v2 site's display serif — Fraunces at its display optical size, in
+     sentence case. The pixel face stayed glitchy at headline scale; this is
+     the one place on the page that is not the sans. */
   .display {
-    font-family: var(--display); font-weight: 400;
-    font-size: clamp(44px, 6.6vw, 100px); line-height: 1.02;
-    letter-spacing: 0; text-transform: uppercase;
+    font-family: var(--serif); font-weight: 560;
+    font-size: clamp(40px, 5.6vw, 84px); line-height: 1.06;
+    letter-spacing: -0.015em;
+    font-variation-settings: 'opsz' 100;
     color: var(--white);
   }
   /* Exactly two line boxes from tablet up; phones wrap naturally. */

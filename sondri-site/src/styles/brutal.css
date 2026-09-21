@@ -81,6 +81,8 @@
   --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
   --mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
   --display: 'Florexa', var(--sans);
+  /* The hero sets in the v2 site's display serif rather than the pixel face. */
+  --serif: 'Fraunces Variable', Georgia, serif;
 
   --wrap: 1360px;
   --pad-x: 24px;
