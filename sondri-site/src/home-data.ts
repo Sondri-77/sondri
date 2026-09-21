@@ -103,7 +103,7 @@ export const homeFaq = [
 
 /** Section 1 · Hero */
 export const hero = {
-  h1: 'Make complex work simple.',
+  h1: 'Make Complex Work Simple.',
   lede: 'Software built into the systems you already run, using AI where it helps. Live in weeks, not quarters.',
 };
 
