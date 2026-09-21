@@ -317,9 +317,10 @@ a { color: inherit; }
 /* ── Nav over hero ──────────────────────────────────── */
 /* The sticky bar is transparent at the top of the page (Nav.astro), so the
    hero is pulled up underneath it and padded back down by the same amount:
-   the copy lands where it did, the field just starts one bar higher. */
+   the copy never sits under the bar. The same padding at the bottom keeps the
+   copy block centred in the field. */
 #main > [data-hero] {
   margin-top: calc(-1 * var(--nav-h));
-  padding-top: var(--nav-h);
+  padding-block: var(--nav-h);
   min-height: calc(100svh - 40px);
 }
