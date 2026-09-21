@@ -2,7 +2,8 @@
 
 ## Pixel Icon Library (HackerNoon)
 
-`public/icons/*.svg` (`analytics`, `cog`, `link`, `receipt`, `robot`, `user-headset`)
+`public/icons/*.svg` (`analytics`, `code`, `cog`, `coins`, `link`, `numbered-list`, `receipt`,
+`robot`, `user-headset`)
 are the `solid` icons of the same names from the Pixel Icon Library by HackerNoon,
 vendored unmodified from <https://github.com/hackernoon/pixel-icon-library>
 (commit `fa56254`, 2026-08-11). Site: <https://pixeliconlibrary.com/>.

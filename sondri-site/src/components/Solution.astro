@@ -1,11 +1,12 @@
 ---
 import { benefits, solution } from '../home-data';
 import { splitDot } from '../lib/dot';
+import Mark from './Mark.astro';
 const [h2, dot] = splitDot(solution.h2);
 ---
 
-<!-- Solution & benefits, in Framework's grammar: the heading, the phase
-     copy beside it, then three ruled benefit columns. -->
+<!-- Value, in Framework's grammar: the heading, the phase copy beside it,
+     then three ruled benefit columns, each with its mark. -->
 <section class="section section-pad" id="framework">
   <div class="wrap">
     <div class="sec-head">
@@ -21,7 +22,8 @@ const [h2, dot] = splitDot(solution.h2);
     <div class="rule-cols cols-3 benefits">
       {benefits.map((b, i) => (
         <article data-reveal style={`transition-delay:${i * 80}ms`}>
-          <p class="label idx">{String(i + 1).padStart(2, '0')}</p>
+          <Mark icon={b.icon} seed={60 + i} />
+          <p class="label idx">{b.k}</p>
           <h3 class="h5">{b.t}<span class="gdot">.</span></h3>
           <p class="body-s">{b.b}</p>
         </article>
@@ -31,12 +33,13 @@ const [h2, dot] = splitDot(solution.h2);
 </section>
 
 <style>
-  .benefits article { display: flex; flex-direction: column; gap: var(--s-16); min-height: 260px; }
+  /* Eyebrow, title and body sit together; no stretched column. */
+  .benefits article { display: flex; flex-direction: column; gap: var(--s-16); }
   .idx { color: var(--text-hi); }
   .idx::before {
     content: ''; display: inline-block;
     width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
     background: currentColor;
   }
-  .body-s { margin-top: auto; max-width: 34ch; font-size: 15px; line-height: 22px; }
+  .body-s { max-width: 34ch; font-size: 15px; line-height: 22px; }
 </style>

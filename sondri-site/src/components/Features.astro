@@ -1,10 +1,11 @@
 ---
 import { features, featuresHead } from '../home-data';
 import { splitDot } from '../lib/dot';
+import Mark from './Mark.astro';
 const [h2, dot] = splitDot(featuresHead.h2);
 ---
 
-<!-- Six things we build: a 3×2 ruled grid, each with a dithered mark. -->
+<!-- Capabilities: six things we build in a 3×2 ruled grid, each with its mark. -->
 <section class="section section-pad" id="features">
   <div class="wrap">
     <div class="sec-head">
@@ -17,11 +18,8 @@ const [h2, dot] = splitDot(featuresHead.h2);
     <div class="rule-cols cols-3 grid">
       {features.map((f, i) => (
         <article data-reveal style={`transition-delay:${(i % 3) * 80}ms`}>
-          <div class="mark panel">
-            <canvas class="dither-block" data-dither-block data-shape="flat" data-seed={40 + i}></canvas>
-            <span class="icon" style={`--icon:url(/icons/${f.icon}.svg)`} aria-hidden="true"></span>
-          </div>
-          <p class="label idx">{String(i + 1).padStart(2, '0')} / 06</p>
+          <Mark icon={f.icon} seed={40 + i} />
+          <p class="label idx">{f.k}</p>
           <h3 class="h5">{f.t}<span class="gdot">.</span></h3>
           <p class="body-s">{f.b}</p>
         </article>
@@ -33,20 +31,6 @@ const [h2, dot] = splitDot(featuresHead.h2);
 <style>
   .grid { row-gap: var(--s-48); }
   .grid article { display: flex; flex-direction: column; gap: var(--s-16); }
-  .mark { position: relative; width: 96px; height: 64px; --shadow-x: 6px; margin-bottom: var(--s-08); }
-  /* Pixel icon where the dither block's lit blob used to be: a 24-grid glyph
-     at exactly 2 CSS px per cell (48px), centred on the block's light source
-     (its vertical midpoint). The SVG is a mask so the colour is the same white
-     the blob quantised to; integer size + offset keep every cell on the pixel
-     grid at 1x and 2x, with nothing to anti-alias. */
-  .icon {
-    position: absolute; left: 24px; top: 8px; width: 48px; height: 48px;
-    background: var(--white);
-    -webkit-mask: var(--icon) center / 48px 48px no-repeat;
-    mask: var(--icon) center / 48px 48px no-repeat;
-    image-rendering: pixelated;
-    pointer-events: none;
-  }
   .idx { color: var(--text-hi); }
   .idx::before {
     content: ''; display: inline-block;
