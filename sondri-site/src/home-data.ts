@@ -141,7 +141,7 @@ export const howItWorks = {
 /** Section 8 · Competitor comparison */
 export const comparisonHead = {
   eyebrow: 'Competitor comparison',
-  h2: 'A lot of consultants will charge you to rename your problem.',
+  h2: 'The alternatives will charge you to rename your problem.',
   lede: 'Compare the time and money each option takes. Ask who’s responsible for fixing it after launch.',
   ph: 'Numbers marked [placeholder] need a source or a real engagement behind them before publishing.',
 };
