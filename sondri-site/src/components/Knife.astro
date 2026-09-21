@@ -26,13 +26,13 @@ const [h2, dot] = splitDot(knifeHead.h2);
       ))}
     </div>
 
-    <p class="close"><span class="hl">{knifeHead.close}</span></p>
+    <p class="h4 close">{knifeHead.close}</p>
   </div>
 </section>
 
 <style>
   .costs article { display: flex; flex-direction: column; gap: var(--s-16); }
   .body { color: var(--pale); font-size: 15px; line-height: 22px; max-width: 34ch; }
-  .close { padding-top: var(--s-64); font-size: 20px; line-height: 1.4; max-width: 60ch; }
+  .close { padding-top: var(--s-64); max-width: 40ch; }
   @media (min-width: 900px) { .close { white-space: nowrap; max-width: none; } }
 </style>
