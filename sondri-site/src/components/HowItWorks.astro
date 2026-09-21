@@ -1,10 +1,16 @@
 ---
-import { howItWorks, steps } from '../home-data';
+import { framework } from '../data';
+import { howItWorks } from '../home-data';
 import { splitDot } from '../lib/dot';
 const [h2, dot] = splitDot(howItWorks.h2);
+const labels = { does: 'What we do', gets: 'What you get' };
 ---
 
-<!-- Feel, re-headed: three ruled steps with mono indices. -->
+<!-- How it works = the 0 → 1 → n framework, in the playground's "Zero, one,
+     many" ledger (Part B / 07, from sondri-brutal's Framework.astro): three
+     ruled rows, a huge Florexa numeral in the left column, then the phase
+     name, what we do, what you get. The numerals are KPIs, so they carry the
+     pixel face (.kpi); the phase names stay in the sans. -->
 <section class="section section-pad" id="how">
   <div class="wrap">
     <div class="sec-head">
@@ -17,26 +23,53 @@ const [h2, dot] = splitDot(howItWorks.h2);
       </div>
     </div>
 
-    <div class="rule-cols cols-3 feel">
-      {steps.map((s, i) => (
-        <div data-reveal style={`transition-delay:${i * 80}ms`}>
-          <p class="i">{s.i}</p>
-          <h3 class="h5">{s.t}</h3>
-          <p class="body-s">{s.b}</p>
-        </div>
+    <ol class="phases">
+      {framework.map((p, i) => (
+        <li class="phase" data-reveal style={`transition-delay:${i * 80}ms`}>
+          <span class="num kpi" aria-label={`Phase ${p.num}`}>{p.num}</span>
+          <div class="cell name">
+            <p class="label">Phase {p.num}</p>
+            <h3 class="h5">{p.name}<span class="gdot">.</span></h3>
+          </div>
+          <div class="cell">
+            <p class="label">{labels.does}</p>
+            <p class="body">{p.does}</p>
+          </div>
+          <div class="cell">
+            <p class="label">{labels.gets}</p>
+            <p class="body">{p.gets}</p>
+          </div>
+        </li>
       ))}
-    </div>
+    </ol>
   </div>
 </section>
 
 <style>
-  .feel > * { display: flex; flex-direction: column; gap: var(--s-16); min-height: 280px; }
-  .i { font-family: var(--mono); font-size: 14px; color: var(--accent); padding-bottom: var(--s-08); }
-  /* Their list marker: a filled square ahead of the mono index. */
-  .i::before {
-    content: ''; display: inline-block;
-    width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
-    background: currentColor;
+  /* The ledger: a rule above, one between each row, one below; verticals
+     between the four columns only inside the rows (the playground keeps
+     them, and they make the ledger read as a table, not a list). */
+  .phases { list-style: none; border-top: 1px solid var(--line); }
+  .phase {
+    display: grid; grid-template-columns: 0.65fr 1fr 1.3fr 1.3fr;
+    border-bottom: 1px solid var(--line);
   }
-  .body-s { margin-top: auto; max-width: 32ch; }
+  .phase > * { padding: var(--s-32); min-width: 0; }
+  .phase > * + * { border-left: 1px solid var(--line); }
+  .num { padding-left: 0; color: var(--gold-2); font-size: 96px; }
+  .cell { display: flex; flex-direction: column; gap: var(--s-16); }
+  .name .h5 { margin-top: -4px; }
+  .body { font-size: 15px; line-height: 22px; color: var(--pale); max-width: 34ch; }
+
+  @media (max-width: 1100px) { .phase > * { padding: var(--s-24) var(--s-16); } .num { font-size: 80px; } }
+  /* Phone: the numeral owns the left column across the row; the three cells
+     stack beside it, ruled between. */
+  @media (max-width: 720px) {
+    .phase { grid-template-columns: 72px minmax(0, 1fr); }
+    .phase > * { padding: var(--s-24) 0; border-left: 0; }
+    .num { grid-row: span 3; font-size: 64px; }
+    .cell { padding-left: var(--s-24); border-left: 1px solid var(--line); }
+    .cell + .cell { border-top: 1px solid var(--line); }
+    .body { max-width: none; }
+  }
 </style>
