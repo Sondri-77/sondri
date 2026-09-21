@@ -1,8 +1,8 @@
-/* VARIANT V2 — "clean edge". Derek's reviewed edgy voice (decisions.md D4)
-   with the profanity removed and two lines eased in register. The argument,
-   the structure and the rhythm are his; only the delivery changed. Diverges
-   from the workbench, so the provenance note below no longer holds for the
-   six headings listed in the branch commit.
+/* VARIANT V2 — "edgy". Derek's reviewed voice (decisions.md D4) with the
+   body headings eased in register but the hero keeping its edge, asterisked.
+   The professional/simplify reading lives in V3 instead. Diverges from the
+   workbench, so the provenance note below no longer holds for the headings
+   listed in the branch commits.
 
    Home copy — the locked 12 sections (decisions.md D1) in the reviewed edgy
    voice (decisions.md D4). Every other string here is verbatim from
@@ -94,7 +94,7 @@ export const homeFaq = [
 
 /** Section 1 · Hero */
 export const hero = {
-  h1: 'Make complex work simple.',
+  h1: 'Fix the Expensive Bullsh*t.',
   lede: 'Built into the systems you already run, using AI where it helps. Live in weeks.',
 };
 
