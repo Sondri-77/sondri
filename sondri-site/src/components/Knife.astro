@@ -5,7 +5,7 @@ import { splitDot } from '../lib/dot';
 const [h2, dot] = splitDot(knifeHead.h2);
 // Server-rendered defaults: the section shows real numbers before (or without) JS.
 const [wage, hours, people] = calculator.inputs.map((i) => i.value);
-const week = weeklyCost(wage, hours, people);
+const year = yearlyCost(weeklyCost(wage, hours, people));
 const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value) : String(i.value)) + i.unit;
 ---
 
@@ -47,10 +47,9 @@ const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value)
       </div>
 
       <p class="close"><span class="hl">{knifeHead.close}</span></p>
-      <div class="total" aria-live="polite" aria-atomic="true">
-        <p class="week"><span class="sum h1" data-week>{money(week)}</span> <span class="label">{calculator.week}</span></p>
-        <p class="year"><span class="h4" data-year>{money(yearlyCost(week))}</span> <span class="label">{calculator.year}</span></p>
-      </div>
+      <p class="total" aria-live="polite" aria-atomic="true">
+        <span class="sum display" data-year>{money(year)}</span> <span class="label">{calculator.year}</span>
+      </p>
     </form>
   </div>
 </section>
@@ -94,12 +93,10 @@ const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value)
   .close { padding-top: var(--s-64); font-size: 20px; line-height: 1.4; max-width: 60ch; }
   @media (min-width: 900px) { .close { white-space: nowrap; max-width: none; } }
 
-  /* The total: the week in the stat size, the year beside it. Tabular
-     figures and a reserved width so the block never reflows. */
-  .total { display: flex; flex-direction: column; gap: var(--s-08); padding-top: var(--s-24); font-variant-numeric: tabular-nums; }
-  .week, .year { display: flex; align-items: baseline; gap: var(--s-16); }
-  .sum { color: var(--accent); }
-  .year .h4 { font-weight: 500; }
+  /* The total: one yearly figure, big and gold, the label on its baseline.
+     Tabular figures so the block never jitters as it counts. */
+  .total { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s-16); padding-top: var(--s-24); font-variant-numeric: tabular-nums; }
+  .sum { font-size: clamp(48px, 7vw, 96px); line-height: 1; color: var(--accent); }
 </style>
 
 <script>
@@ -108,7 +105,6 @@ const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value)
   const form = document.querySelector<HTMLFormElement>('[data-calc]');
   if (form) {
     const inputs = [...form.querySelectorAll<HTMLInputElement>('input[type="range"]')];
-    const week = form.querySelector<HTMLElement>('[data-week]')!;
     const year = form.querySelector<HTMLElement>('[data-year]')!;
 
     const show = (i: HTMLInputElement) => {
@@ -119,9 +115,7 @@ const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value)
     };
     const update = () => {
       const [wage, hours, people] = inputs.map((i) => Number(i.value));
-      const w = weeklyCost(wage, hours, people);
-      week.textContent = money(w);
-      year.textContent = money(yearlyCost(w));
+      year.textContent = money(yearlyCost(weeklyCost(wage, hours, people)));
       inputs.forEach(show);
     };
     inputs.forEach((i) => i.addEventListener('input', update));

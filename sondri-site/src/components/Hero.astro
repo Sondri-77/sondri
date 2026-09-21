@@ -42,7 +42,7 @@ const [h1, dot] = splitDot(line1);
   .hero {
     position: relative;
     min-height: calc(100svh - var(--nav-h) - 40px);
-    display: flex; align-items: flex-end;
+    display: flex; align-items: center;
     overflow: hidden;
     background: var(--teal-deep);
     color: var(--white);
@@ -75,9 +75,13 @@ const [h1, dot] = splitDot(line1);
 
   .copy {
     position: relative; width: 100%;
-    display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-32);
+    display: flex; flex-direction: column; align-items: center; gap: var(--s-24);
+    text-align: center;
     padding-block: var(--s-96) var(--s-64);
   }
+  .lede { max-width: 52ch; color: var(--white); }
+  .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s-16); padding-top: var(--s-08); }
+  .label { color: var(--muted-inv); }
 
   /* Florexa, the brand's pixel display face, at the size the v2 study runs it. */
   .display {
@@ -90,12 +94,9 @@ const [h1, dot] = splitDot(line1);
   @media (min-width: 900px) {
     .display .l { display: block; white-space: nowrap; }
   }
-  .lede { max-width: 52ch; color: var(--white); }
-  .actions { display: flex; flex-wrap: wrap; gap: var(--s-16); }
-  .label { color: var(--muted-inv); }
 
   @media (max-width: 640px) {
-    .copy { padding-block: var(--s-64) var(--s-48); gap: var(--s-24); }
+    .copy { padding-block: var(--s-64) var(--s-48); gap: var(--s-16); }
   }
   /* Absurdly tall viewports (screenshot tooling, kiosk displays) shouldn't get
      a 3-metre hero. */

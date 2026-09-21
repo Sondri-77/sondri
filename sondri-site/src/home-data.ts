@@ -43,7 +43,6 @@ export const calculator = {
     { id: 'hours', k: 'Time', t: 'Hours per week, per person', unit: ' h', min: 1, max: 40, step: 1, value: 5, money: false },
     { id: 'people', k: 'People', t: 'People doing the workaround', unit: '', min: 1, max: 50, step: 1, value: 4, money: false },
   ],
-  week: 'per week',
   year: 'per year',
 };
 
@@ -121,14 +120,14 @@ export const knifeHead = {
   eyebrow: 'Impact',
   h2: 'Kill your workarounds.',
   lede: 'The workaround feels cheap because nobody sends you an invoice for it.',
-  close: 'Add up what those extra steps cost you each week.',
+  close: 'Add up what those extra steps cost you each year.',
 };
 
 /** Section 5 · Solution & benefits */
 export const solution = {
   eyebrow: 'Value',
   h2: 'We overhaul how work gets done.',
-  lede: 'You choose three jobs worth fixing with us. We build for the first and reuse what we can for the next.',
+  lede: 'We build working software into the tools your team already uses, price each phase up front, and hand you the code.',
 };
 
 /** Section 6 · Social proof */
