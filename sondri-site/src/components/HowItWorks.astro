@@ -5,7 +5,7 @@ const [h2, dot] = splitDot(howItWorks.h2);
 ---
 
 <!-- Feel, re-headed: three ruled steps. -->
-<section class="section section-pad" id="how">
+<section class="section section-pad on-dark" id="how">
   <div class="wrap">
     <div class="sec-head">
       <div>
@@ -29,5 +29,7 @@ const [h2, dot] = splitDot(howItWorks.h2);
 
 <style>
   .feel > * { display: flex; flex-direction: column; gap: var(--s-16); }
-  .body-s { max-width: 32ch; }
+  /* --pale, not the inherited --steel: on the teal field that is the
+     brighter of the two body inks, and it matches the Knife section. */
+  .body-s { max-width: 32ch; color: var(--pale); }
 </style>
