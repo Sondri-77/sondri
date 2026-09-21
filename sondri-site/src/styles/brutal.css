@@ -111,7 +111,27 @@
 /* The off-white field: the same components one tone down, so two light
    sections in a row still read as two without a rule between them. */
 .on-off { --surface: var(--off); --paper: var(--off); background: var(--surface); }
+/* The gold field: the accent as a surface, once — the closing CTA, so it
+   reads as its own block against the teal footer. Teal does everything gold
+   does on the dark field; the primary button inverts to teal-on-gold. */
+.on-gold {
+  --surface: var(--gold);
+  --surface-2: var(--gold-2);
+  --text-hi: var(--teal);
+  --pale: rgba(8, 31, 31, 0.8);
+  --steel: rgba(8, 31, 31, 0.72);
+  --accent: var(--teal);
+  --line: var(--teal);
+  --line-soft: rgba(8, 31, 31, 0.18);
+  --tint: rgba(8, 31, 31, 0.07);
+  --dot: var(--white);
+  --btn-fill: var(--teal);
+  --btn-text: var(--gold);
+  --shadow-col: var(--teal);
+}
+.on-gold .btn-gold:hover { background: var(--teal-deep); border-color: var(--teal-deep); color: var(--gold); }
 .on-dark,
+.on-gold,
 .on-paper { background: var(--surface); color: var(--pale); }
 
 * { margin: 0; padding: 0; box-sizing: border-box; border-radius: 0; }
