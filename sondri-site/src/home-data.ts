@@ -112,8 +112,8 @@ export const problem = {
 /** Section 4 · Twist the knife */
 export const knifeHead = {
   eyebrow: 'Twist the knife',
-  h2: 'That workaround has been temporary for years.',
-  lede: 'The workaround feels cheap because nobody sends you an invoice for it.',
+  h2: 'Every temporary fix costs you a permanent one.',
+  lede: 'The hours your team spends keeping it alive are the hours nobody has left to replace it.',
   close: 'Add up what those extra steps cost you each week.',
 };
 
