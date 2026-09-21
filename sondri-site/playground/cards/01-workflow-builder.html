@@ -1,0 +1,98 @@
+<section class="card c01" data-card="workflow-builder" id="c01-root" aria-label="Workflow builder">
+  <style>
+.c01 { --field: #081f1f; --gold: #fdb343; --gold-hover: #f5a71e; --text: #e9edec; --muted: #9db6b4; --line: #c9dad7; --panel: #0c2b29; --paper: #edf5f4; --success: #6ee7a8; --risk: #ff6b6b; --mono: 'JetBrains Mono', 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace; --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; box-sizing: border-box; width: 100%; min-width: 0; min-height: 320px; height: 352px; padding: 16px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 1px solid var(--text); border-radius: 0; box-shadow: 6px 6px 0 #000; color: var(--text); background-color: var(--field); background-image: radial-gradient(#1c3a39 1px, transparent 1px); background-size: 14px 14px; font-family: var(--sans); }
+.c01 .c01-chrome { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px dotted var(--muted); flex: 0 0 auto; }
+.c01 .c01-controls { display: flex; gap: 4px; flex: 0 0 auto; }
+.c01 .c01-square { width: 8px; height: 8px; box-sizing: border-box; border: 1px solid var(--text); }
+.c01 .c01-title { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; margin: 0; font-weight: 400; }
+.c01 .c01-stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; }
+.c01 .c01-caption { margin: 0; color: var(--muted); font: 10px/1.5 var(--mono); white-space: nowrap; }
+.c01 .c01-mono { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.c01 .c01-window { background: var(--panel); border: 1px solid var(--line); box-shadow: 3px 3px 0 #000; min-width: 0; box-sizing: border-box; }
+@media (prefers-reduced-motion: reduce) { .c01 .c01-stage { scroll-behavior: auto; } }
+
+.c01 .c01-map { width: 100%; height: 100%; overflow: visible; }
+.c01 .c01-wire { fill: none; stroke: #54716d; stroke-width: 1; }
+.c01 .c01-draw { fill: none; stroke: var(--gold); stroke-width: 1.5; }
+.c01 .c01-box { fill: var(--panel); stroke: var(--line); stroke-width: 1; filter: drop-shadow(3px 3px 0 #000); }
+.c01 .c01-label { fill: var(--text); font: 11px var(--mono); }
+.c01 .c01-detail { fill: var(--muted); font: 10px var(--mono); }
+.c01 .c01-tag { fill: var(--gold); font: 10px var(--mono); letter-spacing: .08em; }
+.c01 .c01-node { transform-box: fill-box; transform-origin: center; }
+.c01 .c01-packet { fill: var(--gold); }
+</style>
+  <div class="c01-chrome"><span class="c01-controls" aria-hidden="true"><i class="c01-square"></i><i class="c01-square"></i><i class="c01-square"></i></span><h2 class="c01-title">01 · Workflow builder</h2></div>
+  <div class="c01-stage"><svg class="c01-map" viewBox="0 0 320 274" role="img" aria-label="Email flows through parsing, CRM lookup, an amount check, posting and notification"><text class="c01-tag" x="4" y="21">YOUR NEXT WORKFLOW</text><text class="c01-detail" x="4" y="38">6 steps / 1 decision / no copy-paste</text><path class="c01-wire" d="M82 86H108"/><path class="c01-draw" d="M82 86H108"/><path class="c01-wire" d="M176 86H202"/><path class="c01-draw" d="M176 86H202"/><path class="c01-wire" d="M258 107V152"/><path class="c01-draw" d="M258 107V152"/><path class="c01-wire" d="M258 194V237H176"/><path class="c01-draw" d="M258 194V237H176"/><path class="c01-wire" d="M202 173H82"/><path class="c01-draw" d="M202 173H82"/><path class="c01-wire" d="M108 237H43V194"/><path class="c01-draw" d="M108 237H43V194"/><g class="c01-node"><rect class="c01-box" x="4" y="65" width="78" height="42"/><text class="c01-label" x="12" y="82">TRIGGER</text><text class="c01-detail" x="12" y="96">new email</text></g><g class="c01-node"><rect class="c01-box" x="108" y="65" width="68" height="42"/><text class="c01-label" x="116" y="82">PARSE</text><text class="c01-detail" x="116" y="96">extract</text></g><g class="c01-node"><rect class="c01-box" x="202" y="65" width="112" height="42"/><text class="c01-label" x="210" y="82">LOOKUP</text><text class="c01-detail" x="210" y="96">your CRM</text></g><g class="c01-node"><rect class="c01-box" x="202" y="152" width="112" height="42"/><text class="c01-label" x="210" y="169">IF > 5K</text><text class="c01-detail" x="210" y="183">check amount</text></g><g class="c01-node"><rect class="c01-box" x="108" y="216" width="68" height="42"/><text class="c01-label" x="116" y="233">POST</text><text class="c01-detail" x="116" y="247">your ERP</text></g><g class="c01-node"><rect class="c01-box" x="4" y="152" width="78" height="42"/><text class="c01-label" x="12" y="169">NOTIFY</text><text class="c01-detail" x="12" y="183">your team</text></g><rect class="c01-packet" width="5" height="5"/><rect class="c01-packet" width="5" height="5"/><rect class="c01-packet" width="5" height="5"/><rect class="c01-packet" width="5" height="5"/><rect class="c01-packet" width="5" height="5"/><rect class="c01-packet" width="5" height="5"/></svg></div>
+  <p class="c01-caption">You draw the flow. It runs itself.</p>
+  <script>
+  (function () {
+    function init() {
+      var root = document.getElementById('c01-root');
+      if (!root || root.dataset.inited) return;
+      root.dataset.inited = '1';
+
+      var nodes = Array.from(root.querySelectorAll('.c01-node'));
+      var edges = Array.from(root.querySelectorAll('.c01-draw'));
+      var packets = Array.from(root.querySelectorAll('.c01-packet'));
+      var lengths = edges.map(function(path) { return path.getTotalLength(); });
+      edges.forEach(function(path, i) { path.style.strokeDasharray = lengths[i]; });
+      function render(time, dt, reduced) {
+        var t = time % 9.4;
+        nodes.forEach(function(node, i) {
+          var age = t - i * .72;
+          var scale = age < 0 ? .6 : age < .15 ? .6 + age / .15 * .48 : age < .184 ? 1.08 : 1;
+          node.style.opacity = age < 0 ? '.12' : '1';
+          node.style.transform = 'scale(' + (reduced ? 1 : scale) + ')';
+        });
+        edges.forEach(function(edge, i) {
+          var start = (i < 4 ? i + 1 : 5) * .72;
+          var progress = Math.max(0, Math.min(1, (t - start) / .35));
+          edge.style.strokeDashoffset = lengths[i] * (1 - progress);
+          var travel = ((t - start) * .7 + i * .2) % 1;
+          var point = edge.getPointAtLength(Math.max(0, travel) * lengths[i]);
+          packets[i].style.opacity = t >= start && !reduced ? '1' : '0';
+          packets[i].setAttribute('transform', 'translate(' + (point.x - 2.5) + ' ' + (point.y - 2.5) + ')');
+        });
+      }
+
+
+    var motion = matchMedia('(prefers-reduced-motion: reduce)');
+    var visible = false;
+    var frame = 0;
+    var previous = 0;
+    var elapsed = 0;
+    function tick(now) {
+      frame = 0;
+      if (!root.isConnected) { observer.disconnect(); cleanup(); return; }
+      if (!visible || document.hidden || motion.matches) return;
+      var dt = previous ? Math.min((now - previous) / 1000, .05) : 0;
+      previous = now;
+      elapsed += dt;
+      render(elapsed, dt, false);
+      frame = requestAnimationFrame(tick);
+    }
+    function sync() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      previous = 0;
+      if (motion.matches) render(7.2, 0, true);
+      else if (visible && !document.hidden) frame = requestAnimationFrame(tick);
+    }
+    function cleanup() {
+      document.removeEventListener('visibilitychange', sync);
+      motion.removeEventListener('change', sync);
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      visible = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0 });
+    observer.observe(root);
+    document.addEventListener('visibilitychange', sync);
+    motion.addEventListener('change', sync);
+    render(motion.matches ? 7.2 : 0, 0, motion.matches);
+
+    }
+    if (document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init, { once: true });
+  })();
+  </script>
+</section>
