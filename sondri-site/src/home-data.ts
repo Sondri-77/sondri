@@ -194,6 +194,8 @@ export const valuePanel = {
   after: 'After — AI where it helps',
   who: { staff: 'Staff', auto: 'Auto', ai: 'AI' } as Record<StepWho, string>,
   legend: { before: 'Before', after: 'After' },
+  steps: 'Before / after steps',
+  toggle: 'Show steps',
   placeholder: '[placeholder]',
 };
 
