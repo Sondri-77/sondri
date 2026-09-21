@@ -278,10 +278,9 @@ a { color: inherit; }
   background-size: 16px 16px;
 }
 
-/* Reveal on scroll — linear, no easing curves. Brutalism doesn't bounce. */
-[data-reveal] { opacity: 0; transform: translateY(16px); transition: opacity 0.5s linear, transform 0.5s linear; }
-[data-reveal].in { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) { [data-reveal] { opacity: 1; transform: none; transition: none; } }
+/* Reveal on scroll is driven by scripts/motion.ts, which sets the hidden
+   state in JS and animates it with Motion. Nothing is hidden here: without
+   JS, or under prefers-reduced-motion, the page renders fully visible. */
 
 /* ── Dithered image slots ───────────────────────────── */
 

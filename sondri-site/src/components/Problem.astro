@@ -24,7 +24,7 @@ const [closeHead, closeTail] = problem.close.replace(/"([^"]+)"/, '\u201c$1\u201
     <div class="rule-cols cols-3 stats">
       {problemStats.map((s, i) => (
         <div data-reveal style={`transition-delay:${i * 80}ms`}>
-          <p class="n h1">{s.n}</p>
+          <p class="n h1" data-count>{s.n}</p>
           <p class="body-s">{s.label}</p>
         </div>
       ))}
