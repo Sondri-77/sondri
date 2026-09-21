@@ -120,7 +120,7 @@ export const knifeHead = {
 /** Section 5 · Solution & benefits */
 export const solution = {
   eyebrow: 'Solution & benefits',
-  h2: 'We fix how the work gets done.',
+  h2: 'We change how the work gets done.',
   lede: 'You choose three jobs worth fixing with us. We build for the first and reuse what we can for the next.',
 };
 
