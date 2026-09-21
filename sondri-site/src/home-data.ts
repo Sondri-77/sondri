@@ -168,6 +168,6 @@ export const faqHead = { eyebrow: 'FAQ', h2: 'Things people ask before they trus
 /** Section 12 · Final CTA */
 export const finalCta = {
   eyebrow: 'Final CTA',
-  h2: 'Stop paying smart people to babysit broken systems.',
-  lede: 'Spend thirty minutes with a founder on the job you want to fix. We’ll tell you whether we can help or whether hiring someone would suit you better.',
+  h2: 'Find out what it would take.',
+  lede: 'Thirty minutes with a founder on one job. You’ll leave knowing whether we can help, or whether hiring someone would suit you better.',
 };
