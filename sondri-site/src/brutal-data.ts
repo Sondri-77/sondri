@@ -64,7 +64,6 @@ export const footerCols = [
   {
     title: 'Company',
     links: [
-      { label: 'About', href: '#about' },
       { label: 'How it works', href: '#how' },
       { label: 'What we build', href: '#features' },
     ],

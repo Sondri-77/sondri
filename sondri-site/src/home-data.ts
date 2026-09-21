@@ -1,4 +1,4 @@
-/* Home copy — the locked 12 sections (decisions.md D1) in the reviewed edgy
+/* Home copy — the locked sections (decisions.md D1) in the reviewed edgy
    voice (decisions.md D4). Every string here is verbatim from
    copy-workbench/src/pages/home-edgy.astro @ aef397a (after banned-copy
    rounds 1+2 and the captain's tweaks) — the PRIMARY (1/3) heading of each
@@ -8,16 +8,21 @@
    the workbench takes from its shared copy.ts live here too, so the home
    page reads as one reviewed unit.
    The captain reviews copy in the workbench, not here. Do not edit copy in
-   this file; change the workbench and re-copy. */
+   this file; change the workbench and re-copy. Exception: the captain's
+   2026-09-21 site-fix brief (eyebrows, asterisked swears, "overhaul", "Kill
+   your workarounds", card labels, the cost calculator) was applied here
+   directly and still needs carrying back to the workbench. */
 
 /** Footer line (in the footer, not the hero). */
 export const VALUE_LINE =
   'We fix the work costing your team time and money, using AI where it helps.';
 
+/** `k` is the card's eyebrow (captain: labels, not numbers, on every card row
+    except the How-it-works steps). */
 export const problemStats = [
-  { n: '88%', label: 'of large-company AI trials never reach everyday use.' },
-  { n: '$2M+', label: 'typical bill for connecting business systems before launch.' },
-  { n: '9 mo.', label: 'average time to launch with a traditional provider.' },
+  { k: 'Adoption', n: '88%', label: 'of large-company AI trials never reach everyday use.' },
+  { k: 'Cost', n: '$2M+', label: 'typical bill for connecting business systems before launch.' },
+  { k: 'Time', n: '9 mo.', label: 'average time to launch with a traditional provider.' },
 ];
 
 export const capabilities = [
@@ -29,16 +34,24 @@ export const capabilities = [
   'AI for multi-step jobs',
 ];
 
-export const knife = [
-  { t: 'Money', b: 'Count the time each person on your team spends on the workaround. [placeholder: cost-of-inaction calculator]' },
-  { t: 'Time', b: 'As your orders grow, your team has more manual work to do.' },
-  { t: 'People', b: 'Your experienced staff spend hours on data entry. If someone leaves, you may have to work out their steps again.' },
-];
+/** The Impact section's cost-of-inaction calculator: one slider per input,
+    cost = wage × hours × people. `k` is the input's eyebrow (the old three
+    cards' titles), `t` the visible label, `unit` the suffix on its value. */
+export const calculator = {
+  inputs: [
+    { id: 'wage', k: 'Money', t: 'Hourly wage', unit: '/h', min: 15, max: 150, step: 1, value: 35, money: true },
+    { id: 'hours', k: 'Time', t: 'Hours per week, per person', unit: ' h', min: 1, max: 40, step: 1, value: 5, money: false },
+    { id: 'people', k: 'People', t: 'People doing the workaround', unit: '', min: 1, max: 50, step: 1, value: 4, money: false },
+  ],
+  week: 'per week',
+  year: 'per year',
+};
 
+/** `k` is the card's eyebrow; `icon` names a file in public/icons/ (Pixel Icon Library, see NOTICES.md). */
 export const benefits = [
-  { t: 'Cost and savings', b: 'Pick a cost to cut or a way to increase revenue. We measure the change.' },
-  { t: 'Your systems, your code', b: 'Built into the software and spreadsheets you already use. You own the code.' },
-  { t: 'One phase at a time', b: 'Agree on a fixed price for each phase, then review the work before funding the next.' },
+  { k: 'Outcome', icon: 'coins', t: 'Cost and savings', b: 'Pick a cost to cut or a way to increase revenue. We measure the change.' },
+  { k: 'Ownership', icon: 'code', t: 'Your systems, your code', b: 'Built into the software and spreadsheets you already use. You own the code.' },
+  { k: 'Commitment', icon: 'numbered-list', t: 'One phase at a time', b: 'Agree on a fixed price for each phase, then review the work before funding the next.' },
 ];
 
 export const testimonials = [
@@ -64,14 +77,14 @@ export const comparison = {
   ],
 };
 
-/** `icon` names a file in public/icons/ (Pixel Icon Library, see NOTICES.md). */
+/** `k` is the card's eyebrow; `icon` names a file in public/icons/ (Pixel Icon Library, see NOTICES.md). */
 export const features = [
-  { t: 'Workflow Automation', icon: 'cog', b: 'Automate the steps taking up your day, with your staff checking work that needs approval.' },
-  { t: 'Data & Reporting', icon: 'analytics', b: 'See current figures from your software without typing them in again.' },
-  { t: 'Customer Operations', icon: 'user-headset', b: 'Help your staff answer customers and send quotes faster.' },
-  { t: 'Back Office', icon: 'receipt', b: 'Cut mistakes in your invoices, payment matching, and monthly accounts.' },
-  { t: 'Integrations', icon: 'link', b: 'Connect your software and spreadsheets so your staff can stop copying data between them.' },
-  { t: 'AI for multi-step jobs', icon: 'robot', b: 'Use AI for jobs with several steps, with records you can check and a way for your staff to stop it.' },
+  { k: 'Automate', t: 'Workflow Automation', icon: 'cog', b: 'Automate the steps taking up your day, with your staff checking work that needs approval.' },
+  { k: 'Report', t: 'Data & Reporting', icon: 'analytics', b: 'See current figures from your software without typing them in again.' },
+  { k: 'Respond', t: 'Customer Operations', icon: 'user-headset', b: 'Help your staff answer customers and send quotes faster.' },
+  { k: 'Reconcile', t: 'Back Office', icon: 'receipt', b: 'Cut mistakes in your invoices, payment matching, and monthly accounts.' },
+  { k: 'Connect', t: 'Integrations', icon: 'link', b: 'Connect your software and spreadsheets so your staff can stop copying data between them.' },
+  { k: 'Delegate', t: 'AI for multi-step jobs', icon: 'robot', b: 'Use AI for jobs with several steps, with records you can check and a way for your staff to stop it.' },
 ];
 
 /** The edgy page carries its own eight FAQs (worded differently from data.ts's). */
@@ -88,39 +101,39 @@ export const homeFaq = [
 
 /** Section 1 · Hero */
 export const hero = {
-  h1: 'Fix expensive bullshit. (Use AI where it helps)',
+  h1: 'Fix expensive bullsh*t. (Use AI where it helps)',
   lede: 'Built into the systems you already run. Live in weeks.',
 };
 
 /** Section 2 · Capability scroll */
-export const capabilityStrip = { eyebrow: 'Things we do' };
+export const capabilityStrip = { eyebrow: 'What we do' };
 
 /** Section 3 · Problem */
 export const problem = {
   eyebrow: 'Problem',
-  h2: 'Your people aren’t inefficient. The shit you make them use is.',
+  h2: 'Your people aren’t inefficient. Your software is.',
   lede: 'Your team spends hours on work your software doesn’t handle, and the quotes you’ve had to fix it cost too much.',
   close: 'How long has your fix been "in pilot"?',
 };
 
-/** Section 4 · Twist the knife */
+/** Section 4 · Impact (was "Twist the knife") */
 export const knifeHead = {
-  eyebrow: 'Twist the knife',
-  h2: 'That workaround has been temporary for years.',
+  eyebrow: 'Impact',
+  h2: 'Kill your workarounds.',
   lede: 'The workaround feels cheap because nobody sends you an invoice for it.',
   close: 'Add up what those extra steps cost you each week.',
 };
 
 /** Section 5 · Solution & benefits */
 export const solution = {
-  eyebrow: 'Solution & benefits',
-  h2: 'We unf*ck how work gets done.',
+  eyebrow: 'Value',
+  h2: 'We overhaul how work gets done.',
   lede: 'You choose three jobs worth fixing with us. We build for the first and reuse what we can for the next.',
 };
 
 /** Section 6 · Social proof */
 export const socialProof = {
-  eyebrow: 'Social proof',
+  eyebrow: 'Customers',
   h2: 'Hear from customers using what we built.',
   ph: 'All three are placeholders, shape only (role, company type, number). Replace with real customer quotes before this ships.',
 };
@@ -128,40 +141,32 @@ export const socialProof = {
 /** Section 7 · How it works */
 export const howItWorks = {
   eyebrow: 'How it works',
-  h2: 'Just fix the damn thing.',
+  h2: 'Just fix the d*mn thing.',
   lede: 'You show us the work you want to fix, and we build with your team.',
 };
 
 /** Section 8 · Competitor comparison */
 export const comparisonHead = {
-  eyebrow: 'Competitor comparison',
+  eyebrow: 'Competition',
   h2: 'A lot of consultants will charge you to rename your problem.',
   lede: 'Compare the time and money each option takes. Ask who’s responsible for fixing it after launch.',
   ph: 'Numbers marked [placeholder] need a source or a real engagement behind them before publishing.',
 };
 
-/** Section 9 · Features */
+/** Section 9 · Capabilities (was "Features") */
 export const featuresHead = {
-  eyebrow: 'Features',
+  eyebrow: 'Capabilities',
   h2: 'Unsexy solutions that work ridiculously well.',
 };
 
-/** Section 10 · Why Sondri exists */
-export const why = {
-  eyebrow: 'Why Sondri exists',
-  h2: 'Let’s fix the work you have now.',
-  quote: 'We started Sondri because we saw businesses spend eighteen months trying AI without getting software they could use. You can bring us one job that needs fixing, and we’ll build software for it.',
-  line: 'Show us how you do the job today.',
-  cta: 'Get in Touch →',
-  href: '#contact',
-};
+/* Section 10 · Why Sondri exists — removed (captain, 2026-09-21). */
 
 /** Section 11 · FAQ */
 export const faqHead = { eyebrow: 'FAQ', h2: 'Things people ask before they trust us with money.' };
 
 /** Section 12 · Final CTA */
 export const finalCta = {
-  eyebrow: 'Final CTA',
+  eyebrow: 'Get in touch',
   h2: 'Stop paying smart people to babysit stupid systems.',
   lede: 'Spend thirty minutes with a founder on the job you want to fix. We’ll tell you whether we can help or whether hiring someone would suit you better.',
 };

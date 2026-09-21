@@ -1,12 +1,17 @@
 ---
-import { knife, knifeHead } from '../home-data';
+import { calculator, knifeHead } from '../home-data';
+import { money, weeklyCost, yearlyCost } from '../lib/cost';
 import { splitDot } from '../lib/dot';
 const [h2, dot] = splitDot(knifeHead.h2);
+// Server-rendered defaults: the section shows real numbers before (or without) JS.
+const [wage, hours, people] = calculator.inputs.map((i) => i.value);
+const week = weeklyCost(wage, hours, people);
+const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value) : String(i.value)) + i.unit;
 ---
 
-<!-- Twist the knife: the cost of inaction, on the teal field. Three ruled
-     columns, each a cost line with its mono marker. -->
-<section class="section section-pad on-dark">
+<!-- Impact: the cost of inaction, on the teal field. Three ruled columns,
+     each a slider, and the live total under the closing line. -->
+<section class="section section-pad on-dark" id="impact">
   <div class="wrap">
     <div class="sec-head">
       <div>
@@ -18,29 +23,108 @@ const [h2, dot] = splitDot(knifeHead.h2);
       </div>
     </div>
 
-    <div class="rule-cols cols-3 costs">
-      {knife.map((k, i) => (
-        <article data-reveal style={`transition-delay:${i * 80}ms`}>
-          <p class="label idx">{String(i + 1).padStart(2, '0')}</p>
-          <h3 class="h3">{k.t}</h3>
-          <p class="body">{k.b}</p>
-        </article>
-      ))}
-    </div>
+    <form class="calc" data-calc onsubmit="return false">
+      <div class="rule-cols cols-3 inputs">
+        {calculator.inputs.map((i) => (
+          <div class="field">
+            <p class="label idx">{i.k}</p>
+            <label class="h5" for={`calc-${i.id}`}>{i.t}</label>
+            <output class="val h3" for={`calc-${i.id}`} data-val={i.id}>{fmt(i)}</output>
+            <input
+              type="range"
+              id={`calc-${i.id}`}
+              name={i.id}
+              min={i.min}
+              max={i.max}
+              step={i.step}
+              value={i.value}
+              data-money={i.money ? '' : undefined}
+              data-unit={i.unit}
+            />
+            <p class="label range"><span>{i.money ? money(i.min) : i.min}{i.unit}</span><span>{i.money ? money(i.max) : i.max}{i.unit}</span></p>
+          </div>
+        ))}
+      </div>
 
-    <p class="close"><span class="hl">{knifeHead.close}</span></p>
+      <p class="close"><span class="hl">{knifeHead.close}</span></p>
+      <div class="total" aria-live="polite" aria-atomic="true">
+        <p class="week"><span class="sum h1" data-week>{money(week)}</span> <span class="label">{calculator.week}</span></p>
+        <p class="year"><span class="h4" data-year>{money(yearlyCost(week))}</span> <span class="label">{calculator.year}</span></p>
+      </div>
+    </form>
   </div>
 </section>
 
 <style>
-  .costs article { display: flex; flex-direction: column; gap: var(--s-16); min-height: 300px; }
+  .field { display: flex; flex-direction: column; gap: var(--s-16); }
   .idx { color: var(--accent); }
   .idx::before {
     content: ''; display: inline-block;
     width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
     background: currentColor;
   }
-  .body { color: var(--pale); font-size: 15px; line-height: 22px; max-width: 34ch; margin-top: auto; }
+  label { cursor: pointer; }
+  /* The value: gold, tabular so the line never jitters as it counts. */
+  .val { color: var(--accent); font-variant-numeric: tabular-nums; }
+  .range { display: flex; justify-content: space-between; color: var(--steel); }
+
+  /* The slider, square: a 2px rule for the track and a gold block for the
+     thumb, the same brutalist parts as the rest of the page. */
+  input[type='range'] {
+    appearance: none; -webkit-appearance: none;
+    width: 100%; height: 28px; margin: 0; background: transparent; cursor: pointer;
+  }
+  input[type='range']:focus { outline: none; }
+  input[type='range']::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+  input[type='range']::-moz-range-track { height: 2px; background: var(--line); }
+  input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 20px; height: 20px; margin-top: -9px;
+    background: var(--gold); border: 0; border-radius: 0;
+    transition: background 0.15s linear;
+  }
+  input[type='range']::-moz-range-thumb {
+    width: 20px; height: 20px;
+    background: var(--gold); border: 0; border-radius: 0;
+  }
+  input[type='range']:hover::-webkit-slider-thumb { background: var(--gold-2); }
+  input[type='range']:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--white); outline-offset: 2px; }
+  input[type='range']:focus-visible::-moz-range-thumb { outline: 2px solid var(--white); outline-offset: 2px; }
+
   .close { padding-top: var(--s-64); font-size: 20px; line-height: 1.4; max-width: 60ch; }
   @media (min-width: 900px) { .close { white-space: nowrap; max-width: none; } }
+
+  /* The total: the week in the stat size, the year beside it. Tabular
+     figures and a reserved width so the block never reflows. */
+  .total { display: flex; flex-direction: column; gap: var(--s-08); padding-top: var(--s-24); font-variant-numeric: tabular-nums; }
+  .week, .year { display: flex; align-items: baseline; gap: var(--s-16); }
+  .sum { color: var(--accent); }
+  .year .h4 { font-weight: 500; }
 </style>
+
+<script>
+  import { money, weeklyCost, yearlyCost } from '../lib/cost';
+
+  const form = document.querySelector<HTMLFormElement>('[data-calc]');
+  if (form) {
+    const inputs = [...form.querySelectorAll<HTMLInputElement>('input[type="range"]')];
+    const week = form.querySelector<HTMLElement>('[data-week]')!;
+    const year = form.querySelector<HTMLElement>('[data-year]')!;
+
+    const show = (i: HTMLInputElement) => {
+      const out = form.querySelector<HTMLElement>(`[data-val="${i.name}"]`);
+      if (!out) return;
+      const n = Number(i.value);
+      out.textContent = ('money' in i.dataset ? money(n) : String(n)) + (i.dataset.unit ?? '');
+    };
+    const update = () => {
+      const [wage, hours, people] = inputs.map((i) => Number(i.value));
+      const w = weeklyCost(wage, hours, people);
+      week.textContent = money(w);
+      year.textContent = money(yearlyCost(w));
+      inputs.forEach(show);
+    };
+    inputs.forEach((i) => i.addEventListener('input', update));
+    update();
+  }
+</script>

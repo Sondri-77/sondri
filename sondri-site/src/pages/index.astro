@@ -1,5 +1,5 @@
 ---
-/* Home = the locked 12 sections, in order (decisions.md D1). Copy comes from
+/* Home = the locked sections, in order (decisions.md D1; "Why Sondri exists" removed by the captain 2026-09-21). Copy comes from
    home-data.ts, verbatim from the workbench's approved home-edgy page (D4). */
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
@@ -11,7 +11,6 @@ import SocialProof from '../components/SocialProof.astro';
 import HowItWorks from '../components/HowItWorks.astro';
 import Comparison from '../components/Comparison.astro';
 import Features from '../components/Features.astro';
-import Why from '../components/Why.astro';
 import Faq from '../components/Faq.astro';
 import FinalCta from '../components/FinalCta.astro';
 import { homeFaq } from '../home-data';
@@ -29,7 +28,7 @@ const faqSchema = {
 ---
 
 <Base
-  title="Sondri — Fix expensive bullshit"
+  title="Sondri — Fix expensive bullsh*t"
   description="Built into the systems you already run. Live in weeks. AI where it helps, regular software where it doesn’t."
 >
   <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
@@ -42,7 +41,6 @@ const faqSchema = {
   <HowItWorks />
   <Comparison />
   <Features />
-  <Why />
   <Faq />
   <FinalCta />
 </Base>
