@@ -1,5 +1,11 @@
-/* Home copy — the locked 12 sections (decisions.md D1) in the reviewed edgy
-   voice (decisions.md D4). Every string here is verbatim from
+/* VARIANT V2 — "clean edge". Derek's reviewed edgy voice (decisions.md D4)
+   with the profanity removed and two lines eased in register. The argument,
+   the structure and the rhythm are his; only the delivery changed. Diverges
+   from the workbench, so the provenance note below no longer holds for the
+   six headings listed in the branch commit.
+
+   Home copy — the locked 12 sections (decisions.md D1) in the reviewed edgy
+   voice (decisions.md D4). Every other string here is verbatim from
    copy-workbench/src/pages/home-edgy.astro @ aef397a (after banned-copy
    rounds 1+2 and the captain's tweaks) — the PRIMARY (1/3) heading of each
    section, the eyebrow, body, lists, [placeholder] marks — with one captain
@@ -88,7 +94,7 @@ export const homeFaq = [
 
 /** Section 1 · Hero */
 export const hero = {
-  h1: 'Fix expensive bullshit. (Use AI where it helps)',
+  h1: 'Fix expensive busywork. (Use AI where it helps)',
   lede: 'Built into the systems you already run. Live in weeks.',
 };
 
@@ -98,7 +104,7 @@ export const capabilityStrip = { eyebrow: 'Things we do' };
 /** Section 3 · Problem */
 export const problem = {
   eyebrow: 'Problem',
-  h2: 'Your people aren’t inefficient. The shit you make them use is.',
+  h2: 'Your people aren’t the problem. The software you gave them is.',
   lede: 'Your team spends hours on work your software doesn’t handle, and the quotes you’ve had to fix it cost too much.',
   close: 'How long has your fix been "in pilot"?',
 };
@@ -114,7 +120,7 @@ export const knifeHead = {
 /** Section 5 · Solution & benefits */
 export const solution = {
   eyebrow: 'Solution & benefits',
-  h2: 'We unf*ck how work gets done.',
+  h2: 'We fix how the work gets done.',
   lede: 'You choose three jobs worth fixing with us. We build for the first and reuse what we can for the next.',
 };
 
@@ -128,7 +134,7 @@ export const socialProof = {
 /** Section 7 · How it works */
 export const howItWorks = {
   eyebrow: 'How it works',
-  h2: 'Just fix the damn thing.',
+  h2: 'Just fix the thing that’s broken.',
   lede: 'You show us the work you want to fix, and we build with your team.',
 };
 
@@ -143,7 +149,7 @@ export const comparisonHead = {
 /** Section 9 · Features */
 export const featuresHead = {
   eyebrow: 'Features',
-  h2: 'Unsexy solutions that work ridiculously well.',
+  h2: 'Unglamorous software that works remarkably well.',
 };
 
 /** Section 10 · Why Sondri exists */
@@ -162,6 +168,6 @@ export const faqHead = { eyebrow: 'FAQ', h2: 'Things people ask before they trus
 /** Section 12 · Final CTA */
 export const finalCta = {
   eyebrow: 'Final CTA',
-  h2: 'Stop paying smart people to babysit stupid systems.',
+  h2: 'Stop paying smart people to babysit broken systems.',
   lede: 'Spend thirty minutes with a founder on the job you want to fix. We’ll tell you whether we can help or whether hiring someone would suit you better.',
 };
