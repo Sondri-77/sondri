@@ -104,7 +104,7 @@ export const capabilityStrip = { eyebrow: 'Things we do' };
 /** Section 3 · Problem */
 export const problem = {
   eyebrow: 'Problem',
-  h2: 'Your people aren’t the problem. The software you gave them is.',
+  h2: 'Your people aren’t the bottleneck, the software is.',
   lede: 'Your team spends hours on work your software doesn’t handle, and the quotes you’ve had to fix it cost too much.',
   close: 'How long has your fix been "in pilot"?',
 };
