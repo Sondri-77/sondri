@@ -53,3 +53,7 @@ derek.dev  ──(merge/push)──►  derek.test  ──(PR)──►  dev  �
 ## Project folders
 
 - Never create a new project folder in an inferred location — ask the captain first with a proposed path. Never put project folders in shared OneDrive libraries. (captain, 2026-09-22)
+
+## UI and computer-use hours
+
+Captain rule, 2026-09-22: no UI or computer-use work 06:00-18:00 daily - no driving the captain's browser or apps (cmux-cua, codex computer use, scraping through his logged-in tabs), no UI test runs, no screenshot or visual checks. Queue those for 18:00-06:00. Code, public-web research and headless non-visual checks are fine anytime.
