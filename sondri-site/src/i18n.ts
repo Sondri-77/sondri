@@ -189,7 +189,7 @@ export const en: Copy = {
   comparison: {
     cols: ['Sondri', 'Software agency', 'Hiring in-house', 'DIY tools'],
     rows: [
-      { k: 'Time until you can use it', v: ['Weeks', 'Quarters', 'Months to hire, then months to build', 'Days to try; integration takes longer'] },
+      { k: 'Time until you can use it', v: ['6–8 weeks', '6–9 months', 'Months to hire, then months to build', 'Days to try; integration takes longer'] },
       { k: 'What you pay', v: ['Fixed price per phase, quoted before it starts', 'You pay for hours and expenses', 'Salary + benefits + management, project or not', 'Low fees; you do the work'] },
       { k: 'Who owns the code', v: ['You; runs in your systems', 'Often the vendor’s platform or license', 'You', 'Check ownership terms with your tool provider'] },
       { k: 'Commitment up front', v: ['One phase; your planning session is free', 'You sign a contract for several phases before launch', 'A full-time employee', 'No contract; maintenance is on you'] },
@@ -573,7 +573,7 @@ export const es: Copy = {
   comparison: {
     cols: ['Sondri', 'Agencia de software', 'Contratar en la empresa', 'Herramientas por su cuenta'],
     rows: [
-      { k: 'Tiempo hasta poder usarlo', v: ['Semanas', 'Trimestres', 'Meses para contratar y luego meses para construir', 'Días para probar; integrarlo toma más'] },
+      { k: 'Tiempo hasta poder usarlo', v: ['6–8 semanas', '6–9 meses', 'Meses para contratar y luego meses para construir', 'Días para probar; integrarlo toma más'] },
       { k: 'Qué paga', v: ['Precio fijo por fase, cotizado antes de empezar', 'Paga horas y gastos', 'Sueldo + prestaciones + supervisión, haya proyecto o no', 'Cuotas bajas; el trabajo lo hace usted'] },
       { k: 'Quién es dueño del código', v: ['Usted; corre en sus sistemas', 'Muchas veces la plataforma o licencia del proveedor', 'Usted', 'Revise las condiciones de propiedad con su proveedor'] },
       { k: 'Compromiso inicial', v: ['Una fase; la sesión de planeación es gratis', 'Firma un contrato por varias fases antes de arrancar', 'Un empleado de tiempo completo', 'Sin contrato; el mantenimiento corre por su cuenta'] },
