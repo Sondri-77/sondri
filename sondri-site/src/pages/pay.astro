@@ -1,0 +1,179 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Payments & deposits — Sondri"
+  description="Submit an agreed invoice deposit or custom payment for Sondri AI automation services."
+>
+  <section class="section section-pad on-dark pay-section">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow"><span class="label">/ Client Portal</span></div>
+        <h1 class="h2">Secure payment <span class="nb">portal<span class="gdot">.</span></span></h1>
+        <p class="lede">
+          Submit an agreed project deposit, retainer payment, or invoice. All transactions run
+          through encrypted Stripe Checkout with instant receipt generation.
+        </p>
+      </div>
+
+      <div class="panel pay-card" data-reveal>
+        <h2 class="h4 pay-title">Pay an invoice or deposit</h2>
+        <p class="body-s pay-b">
+          Enter your billing email, the custom amount agreed with the Sondri engineering team,
+          and your project reference.
+        </p>
+
+        <form id="formCustomPay" class="pay-form">
+          <div class="form-group">
+            <label for="cEmail" class="label">Billing email address *</label>
+            <input type="email" id="cEmail" class="form-input" placeholder="billing@company.com" required />
+          </div>
+
+          <div class="form-group">
+            <label for="cAmount" class="label">Payment amount ($ USD) *</label>
+            <input type="number" step="0.01" min="10" id="cAmount" class="form-input" placeholder="2500.00" required />
+          </div>
+
+          <div class="form-group">
+            <label for="cDesc" class="label">Invoice reference / project description *</label>
+            <input type="text" id="cDesc" class="form-input" placeholder="Deposit for AI Workflow Sprint" required />
+          </div>
+
+          <button type="submit" id="btnSubmit" class="btn btn-gold btn-full">
+            Proceed to Secure Checkout <span class="arr">→</span>
+          </button>
+        </form>
+
+        <div class="pay-note">
+          <span class="label"><span class="gdot">■</span> 256-bit encrypted · Instant PDF tax receipts · Powered by Stripe</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const WORKER_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:8787'
+    : 'https://billing.sondri.ai';
+
+  document.getElementById('formCustomPay')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btnSubmit') as HTMLButtonElement;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = 'Generating checkout...';
+    btn.disabled = true;
+
+    const client_email = (document.getElementById('cEmail') as HTMLInputElement).value;
+    const custom_amount = parseFloat((document.getElementById('cAmount') as HTMLInputElement).value);
+    const description = (document.getElementById('cDesc') as HTMLInputElement).value;
+
+    try {
+      const res = await fetch(`${WORKER_BASE}/create-checkout-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'custom',
+          client_email,
+          custom_amount,
+          description,
+          cancel_url: `${window.location.origin}/pay`,
+        }),
+      });
+
+      const json = await res.json();
+
+      if (json.success && json.data?.checkout_url) {
+        window.location.href = json.data.checkout_url;
+      } else {
+        alert(`Checkout Error: ${json.error?.message || 'Unable to generate checkout session'}`);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    } catch (err: any) {
+      alert(`Connection Error: ${err.message || 'Unable to reach payment gateway'}`);
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }
+  });
+</script>
+
+<style is:global>
+  #siteheader { background: var(--ink); }
+</style>
+
+<style>
+  .pay-section {
+    min-height: calc(100vh - var(--nav-h));
+  }
+
+  .pay-card {
+    max-width: 640px;
+    margin-top: var(--s-16);
+    padding: var(--s-40);
+    background: var(--teal-deep);
+    border: 1px solid var(--line);
+    box-shadow: 10px 10px 0 var(--gold);
+  }
+
+  .pay-title {
+    margin-bottom: var(--s-08);
+  }
+
+  .pay-b {
+    margin-bottom: var(--s-32);
+    color: var(--steel);
+  }
+
+  .pay-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-24);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-08);
+  }
+
+  .form-input {
+    background: var(--teal);
+    border: 1px solid var(--line);
+    color: var(--white);
+    font-family: var(--sans);
+    font-size: 15px;
+    padding: 14px 16px;
+    transition: border-color 0.15s linear;
+  }
+
+  .form-input:focus {
+    outline: 2px solid var(--gold);
+    outline-offset: 1px;
+    border-color: var(--gold);
+  }
+
+  .form-input::placeholder {
+    color: var(--muted);
+  }
+
+  .btn-full {
+    width: 100%;
+    justify-content: center;
+    margin-top: var(--s-08);
+  }
+
+  .pay-note {
+    margin-top: var(--s-32);
+    padding-top: var(--s-24);
+    border-top: 1px solid var(--line-soft);
+    text-align: center;
+  }
+
+  @media (max-width: 640px) {
+    .pay-card {
+      padding: var(--s-24) var(--s-16);
+    }
+  }
+</style>

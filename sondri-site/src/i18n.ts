@@ -36,6 +36,7 @@ export interface Copy {
   ui: {
     skip: string; brandHome: string; primaryNav: string; menu: string; close: string;
     contact: string; language: string; english: string; spanish: string;
+    pay: string;
   };
   announcement: { text: string; cta: string };
   nav: { label: string; href: string }[];
@@ -113,6 +114,7 @@ export const en: Copy = {
     language: 'Language',
     english: 'English',
     spanish: 'Español',
+    pay: 'Pay an Invoice',
   },
   announcement,
   nav,
@@ -505,6 +507,7 @@ export const es: Copy = {
     language: 'Idioma',
     english: 'English',
     spanish: 'Español',
+    pay: 'Pagar factura',
   },
   announcement: { text: 'Hay cupo para sesiones en el cuarto trimestre', cta: 'Reserve la suya' },
   nav: [
@@ -519,7 +522,7 @@ export const es: Copy = {
   VALUE_LINE: 'Arreglamos el trabajo que le cuesta tiempo y dinero a su equipo, con IA donde ayuda.',
   footerCols: [
     { title: 'Empresa', links: [{ label: 'Cómo funciona', href: '#how' }, { label: 'Qué construimos', href: '#features' }] },
-    { title: 'Hablemos', links: [{ label: 'Agendar sesión', href: '#book' }, { label: 'Escríbanos', href: '#contact' }, { label: 'Preguntas', href: '#faq' }] },
+    { title: 'Hablemos', links: [{ label: 'Agendar sesión', href: '#book' }, { label: 'Pagar factura', href: '/pay' }, { label: 'Escríbanos', href: '#contact' }, { label: 'Preguntas', href: '#faq' }] },
   ],
   footerLine: 'Construido en sus sistemas, y es suyo',
 

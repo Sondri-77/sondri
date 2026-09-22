@@ -2,6 +2,10 @@
   "name": "sondri-workspace",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "sondri-site",
+    "billing-worker"
+  ],
   "scripts": {
     "dev": "concurrently -n \"SITE,WORKER\" -c \"cyan,yellow\" \"npm run dev --prefix sondri-site\" \"npm run dev --prefix billing-worker\"",
     "build": "npm run build --prefix sondri-site && npm run typecheck --prefix billing-worker"

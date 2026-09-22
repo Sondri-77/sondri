@@ -1,0 +1,124 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Payment confirmed — Sondri"
+  description="Thank you for your payment to Sondri."
+>
+  <section class="section section-pad on-dark success-section">
+    <div class="wrap">
+      <div class="panel success-card">
+        <div class="status-chip">
+          <span class="chip"><span class="gdot">■</span> Payment confirmed</span>
+        </div>
+
+        <h1 class="h2 success-title">Thank you for your payment<span class="gdot">.</span></h1>
+
+        <p class="lede success-lede">
+          Your payment has been successfully processed by Stripe. A confirmation email with your
+          tax invoice and receipt has been dispatched to your email address.
+        </p>
+
+        <div id="downloadsContainer" class="action-wrapper" style="display: none;">
+          <a id="btnReceipt" href="#" target="_blank" rel="noopener" class="btn btn-gold btn-full">
+            View Official Receipt &amp; Invoice <span class="arr">→</span>
+          </a>
+        </div>
+
+        <div class="back-link">
+          <a href="/" class="btn">← Return to homepage</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const WORKER_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:8787'
+    : 'https://billing.sondri.ai';
+
+  async function loadTransactionDocs() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+
+    if (!sessionId) return;
+
+    try {
+      const res = await fetch(`${WORKER_BASE}/checkout-session/${sessionId}`);
+      const json = await res.json();
+
+      if (json.success && json.data) {
+        const { receipt_url, invoice_url, invoice_pdf } = json.data;
+        const container = document.getElementById('downloadsContainer');
+        const btnReceipt = document.getElementById('btnReceipt') as HTMLAnchorElement;
+
+        const targetUrl = receipt_url || invoice_url || invoice_pdf;
+
+        if (targetUrl && btnReceipt && container) {
+          btnReceipt.href = targetUrl;
+          container.style.display = 'block';
+        }
+      }
+    } catch (err) {
+      console.warn('Unable to load receipt link:', err);
+    }
+  }
+
+  loadTransactionDocs();
+</script>
+
+<style is:global>
+  #siteheader { background: var(--ink); }
+</style>
+
+<style>
+  .success-section {
+    min-height: calc(100vh - var(--nav-h));
+    display: flex;
+    align-items: center;
+  }
+
+  .success-card {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: var(--s-48);
+    background: var(--teal-deep);
+    border: 1px solid var(--line);
+    box-shadow: 10px 10px 0 var(--gold);
+    text-align: center;
+  }
+
+  .status-chip {
+    margin-bottom: var(--s-24);
+  }
+
+  .success-title {
+    margin-bottom: var(--s-16);
+  }
+
+  .success-lede {
+    margin-bottom: var(--s-32);
+    color: var(--pale);
+  }
+
+  .action-wrapper {
+    margin-bottom: var(--s-24);
+  }
+
+  .btn-full {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .back-link {
+    margin-top: var(--s-24);
+  }
+
+  @media (max-width: 640px) {
+    .success-card {
+      padding: var(--s-32) var(--s-16);
+    }
+  }
+</style>

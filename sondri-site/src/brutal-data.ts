@@ -72,6 +72,7 @@ export const footerCols = [
     title: 'Engage',
     links: [
       { label: 'Book discovery', href: '#book' },
+      { label: 'Pay an invoice', href: '/pay' },
       { label: 'Get in touch', href: '#contact' },
       { label: 'FAQ', href: '#faq' },
     ],
