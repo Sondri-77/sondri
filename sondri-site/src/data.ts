@@ -32,24 +32,25 @@ export const problemStats = [
   { n: '$2M+', label: 'typical systems-integrator bill before any value lands.' },
   { n: '9 mo.', label: 'average time-to-value the traditional way.' },
 ];
-/** The framework. 0 → 1 → n is the method; each phase is an engagement.
+/** The framework: three phases, each one an engagement. Numbered 1–3
+    (captain, 2026-09-22: the 0 → 1 → n labels were placeholder).
     No prices on cards — every engagement is quoted individually. Rewritten
     2026-09-21 in the site's voice (plain second person; rules.astro). */
 export const framework = [
   {
-    num: '0',
+    num: '1',
     name: 'Prove',
     does: 'We sit with the people doing the work and find the job where a fix pays off fastest.',
     gets: 'A plan with the cost and the saving for that job, and a fixed price for building it.',
   },
   {
-    num: '1',
+    num: '2',
     name: 'Production',
     does: 'We build the first fix into the software you already run, with your team checking the work as it goes.',
     gets: 'Working software on a real job, measured against the hours and money you spent before.',
   },
   {
-    num: 'n',
+    num: '3',
     name: 'Multiply',
     does: 'We keep it running, tune it, and build the next job on what is already there.',
     gets: 'Each fix after the first is quicker and cheaper to build, and you own all of it.',

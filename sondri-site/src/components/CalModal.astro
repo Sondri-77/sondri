@@ -85,4 +85,29 @@ import { CAL_LINK } from '../data';
   }
 
   document.addEventListener('DOMContentLoaded', bindCalButtons);
+
+  // Cal's own click listener opens the modal but never cancels the link, so
+  // the browser also followed the href to cal.com, and Back restored this page
+  // from the bfcache with the modal open and the body scroll-locked. The modal
+  // is the booking flow: cancel the navigation once the embed is up. A
+  // modified click (new tab/window) or a failed embed just follows the link,
+  // with Cal's listener kept out of it so no modal is left behind.
+  window.addEventListener(
+    'click',
+    (e) => {
+      const link = e.target instanceof Element ? e.target.closest('a[data-cal-link]') : null;
+      if (!link) return;
+      const modified = e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
+      if (modified || !customElements.get('cal-modal-box')) e.stopPropagation();
+      else e.preventDefault();
+    },
+    true,
+  );
+
+  // Any other way back into a bfcache'd page with the modal up: drop it.
+  window.addEventListener('pageshow', (e) => {
+    if (!e.persisted) return;
+    document.querySelectorAll('cal-modal-box').forEach((m) => m.remove());
+    document.body.style.overflow = '';
+  });
 </script>

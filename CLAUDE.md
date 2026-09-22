@@ -49,3 +49,7 @@ derek.dev  ──(merge/push)──►  derek.test  ──(PR)──►  dev  �
 - Design worktrees `sondri-new-design` and `sondri-old-design` use their own branches: `derek.new-design` and `derek.old-design`, respectively.
 - Both design worktrees follow the same commit-and-push-before-leaving / `git pull --ff-only`-on-arrival rule.
 - `bun.lock` is the tracked lockfile; `package-lock.json` is ignored.
+
+## Project folders
+
+- Never create a new project folder in an inferred location — ask the captain first with a proposed path. Never put project folders in shared OneDrive libraries. (captain, 2026-09-22)

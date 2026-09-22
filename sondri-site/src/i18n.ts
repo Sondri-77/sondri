@@ -4,8 +4,9 @@
    small-business owners in the US and Latin America: plain, usted, no
    profanity anywhere (the swears in the English headings become plain
    phrases that keep the point, e.g. "Fix expensive bullsh*t." →
-   "Arreglamos errores caros."). The `[placeholder]` token stays literal in
-   both so the site-wide grep still finds it.
+   "Arreglamos errores caros."). Placeholder copy stays out of anything a
+   visitor can see; the hidden Endorsements section (socialProof.enabled =
+   false) is the one place `[placeholder]` still lives.
    The nav, CTA and footer strings that data.ts / brutal-data.ts own are
    read from there for `en` so they stay single-sourced. src/lib/i18n.ts
    flattens a `Copy` into the `data-i18n` keys the toggle swaps by. */
@@ -73,14 +74,14 @@ export interface Copy {
   socialProof: { enabled: boolean; eyebrow: string; h2: string; ph: string };
   howItWorks: { eyebrow: string; h2: string; lede: string; does: string; gets: string; phase: string };
   framework: { num: string; name: string; does: string; gets: string }[];
-  comparisonHead: { eyebrow: string; h2: string; lede: string; ph: string };
+  comparisonHead: { eyebrow: string; h2: string; lede: string };
   featuresHead: { eyebrow: string; h2: string };
   faqHead: { eyebrow: string; h2: string };
   finalCta: { eyebrow: string; h2: string; lede: string };
   valuePanel: {
     title: string; prompt: string; before: string; after: string;
     who: Record<StepWho, string>; legend: { before: string; after: string };
-    steps: string; toggle: string; placeholder: string;
+    steps: string; toggle: string;
   };
   valueCases: ValueCase[];
   notFound: { title: string; description: string; h1: string; lede: string; back: string };
@@ -188,7 +189,7 @@ export const en: Copy = {
   comparison: {
     cols: ['Sondri', 'Software agency', 'Hiring in-house', 'DIY tools'],
     rows: [
-      { k: 'Time until you can use it', v: ['Weeks [placeholder: 6–8]', 'Quarters [placeholder: 6–9 mo.]', 'Months to hire, then months to build', 'Days to try; integration takes longer'] },
+      { k: 'Time until you can use it', v: ['Weeks', 'Quarters', 'Months to hire, then months to build', 'Days to try; integration takes longer'] },
       { k: 'What you pay', v: ['Fixed price per phase, quoted before it starts', 'You pay for hours and expenses', 'Salary + benefits + management, project or not', 'Low fees; you do the work'] },
       { k: 'Who owns the code', v: ['You; runs in your systems', 'Often the vendor’s platform or license', 'You', 'Check ownership terms with your tool provider'] },
       { k: 'Commitment up front', v: ['One phase; your planning session is free', 'You sign a contract for several phases before launch', 'A full-time employee', 'No contract; maintenance is on you'] },
@@ -322,7 +323,6 @@ export const en: Copy = {
     eyebrow: 'Competition',
     h2: 'A lot of consultants will charge you to rename your problem.',
     lede: 'Compare the time and money each option takes. Ask who’s responsible for fixing it after launch.',
-    ph: 'Numbers marked [placeholder] need a source or a real engagement behind them before publishing.',
   },
 
   /** Section 9 · Capabilities (was "Features") */
@@ -347,8 +347,8 @@ export const en: Copy = {
      brief). Each step's `who` is the mono chip on the node: `staff` is a
      person doing the step by hand, `auto` is regular software, `ai` is the step
      the AI does. `after` steps that still have `staff` on them are the checks a
-     person keeps. The savings are shape-only: every metric carries the
-     [placeholder] mark until a real engagement stands behind it. ── */
+     person keeps. The savings are illustrative, one sample job each, not
+     results from an engagement. ── */
   valuePanel: {
     title: 'Sondri / before → after',
     prompt: 'Pick a job and watch the work change.',
@@ -358,7 +358,6 @@ export const en: Copy = {
     legend: { before: 'Before', after: 'After' },
     steps: 'Before / after steps',
     toggle: 'Show steps',
-    placeholder: '[placeholder]',
   },
 
   valueCases: [
@@ -575,7 +574,7 @@ export const es: Copy = {
   comparison: {
     cols: ['Sondri', 'Agencia de software', 'Contratar en la empresa', 'Herramientas por su cuenta'],
     rows: [
-      { k: 'Tiempo hasta poder usarlo', v: ['Semanas [placeholder: 6–8]', 'Trimestres [placeholder: 6–9 meses]', 'Meses para contratar y luego meses para construir', 'Días para probar; integrarlo toma más'] },
+      { k: 'Tiempo hasta poder usarlo', v: ['Semanas', 'Trimestres', 'Meses para contratar y luego meses para construir', 'Días para probar; integrarlo toma más'] },
       { k: 'Qué paga', v: ['Precio fijo por fase, cotizado antes de empezar', 'Paga horas y gastos', 'Sueldo + prestaciones + supervisión, haya proyecto o no', 'Cuotas bajas; el trabajo lo hace usted'] },
       { k: 'Quién es dueño del código', v: ['Usted; corre en sus sistemas', 'Muchas veces la plataforma o licencia del proveedor', 'Usted', 'Revise las condiciones de propiedad con su proveedor'] },
       { k: 'Compromiso inicial', v: ['Una fase; la sesión de planeación es gratis', 'Firma un contrato por varias fases antes de arrancar', 'Un empleado de tiempo completo', 'Sin contrato; el mantenimiento corre por su cuenta'] },
@@ -689,19 +688,19 @@ export const es: Copy = {
   },
   framework: [
     {
-      num: '0',
+      num: '1',
       name: 'Probar',
       does: 'Nos sentamos con quienes hacen el trabajo y buscamos la tarea donde un arreglo se paga más rápido.',
       gets: 'Un plan con el costo y el ahorro de esa tarea, y un precio fijo por construirlo.',
     },
     {
-      num: '1',
+      num: '2',
       name: 'Producción',
       does: 'Construimos el primer arreglo dentro del software que ya usa, con su equipo revisando el trabajo sobre la marcha.',
       gets: 'Software funcionando en una tarea real, medido contra las horas y el dinero que gastaba antes.',
     },
     {
-      num: 'n',
+      num: '3',
       name: 'Multiplicar',
       does: 'Lo mantenemos funcionando, lo afinamos y construimos la siguiente tarea sobre lo que ya existe.',
       gets: 'Cada arreglo después del primero es más rápido y más barato de construir, y todo es suyo.',
@@ -712,7 +711,6 @@ export const es: Copy = {
     eyebrow: 'Competencia',
     h2: 'Muchos consultores le cobran por ponerle otro nombre a su problema.',
     lede: 'Compare el tiempo y el dinero que toma cada opción. Pregunte quién se hace responsable de arreglarlo después de arrancar.',
-    ph: 'Las cifras marcadas [placeholder] necesitan una fuente o un proyecto real detrás antes de publicarse.',
   },
 
   featuresHead: {
@@ -737,7 +735,6 @@ export const es: Copy = {
     legend: { before: 'Antes', after: 'Después' },
     steps: 'Pasos antes / después',
     toggle: 'Ver pasos',
-    placeholder: '[placeholder]',
   },
 
   valueCases: [
