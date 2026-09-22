@@ -71,7 +71,7 @@ const c = en.chatAnim;
       const text = ex[3].slice(0, Math.max(0, Math.floor((t - 4) * 30)));
       if (text !== lastText) { reply.textContent = text; lastText = text; messages.scrollTop = 10000; }
     };
-    runAnimation(root, (time, reduced) => { last = [time, reduced]; draw(time, reduced); }, 7.4);
+    runAnimation(root, (time, reduced) => { last = [time, reduced]; draw(time, reduced); }, 7.4, 8.6);
     // A language switch redraws the frame even while the window is off screen.
     document.addEventListener(EVENT, () => draw(...last));
   }

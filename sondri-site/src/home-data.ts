@@ -16,6 +16,3 @@ export const {
   howItWorks, comparisonHead, featuresHead, faqHead, finalCta, valuePanel, valueCases,
 } = en;
 
-/** The six capability verbs, one mono line under the console so the list from
-    the old tiles isn't lost. */
-export const consoleStrip = features.map((f) => f.k);
