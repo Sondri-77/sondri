@@ -1,5 +1,6 @@
 ---
 import { consolePanels, consoleStrip, featuresHead } from '../home-data';
+import { en } from '../i18n';
 import { splitDot } from '../lib/dot';
 import WorkflowBuilder from './console/WorkflowBuilder.astro';
 import AgenticChat from './console/AgenticChat.astro';
@@ -21,22 +22,22 @@ const anims = { workflow: WorkflowBuilder, chat: AgenticChat, contract: Contract
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="eyebrow"><span class="label">/ {featuresHead.eyebrow}</span></div>
-        <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
+        <div class="eyebrow"><span class="label">/ <span data-i18n="featuresHead.eyebrow">{featuresHead.eyebrow}</span></span></div>
+        <h2 class="h2"><span data-i18n="featuresHead.h2.text">{h2}</span><span class="gdot" data-i18n="featuresHead.h2.dot">{dot}</span></h2>
       </div>
     </div>
 
     <div class="console dots">
-      {consolePanels.map((p) => {
+      {consolePanels.map((p, i) => {
         const Anim = anims[p.id as keyof typeof anims];
         return (
           <article class="pane" data-pane={p.id}>
-            <h3 class="h5">{p.t}</h3>
-            <p class="line">{p.b}</p>
-            <div class="win" aria-label={p.title}>
+            <h3 class="h5" data-i18n={`consolePanels.${i}.t`}>{p.t}</h3>
+            <p class="line" data-i18n={`consolePanels.${i}.b`}>{p.b}</p>
+            <div class="win" aria-label={p.title} data-i18n-attr={`aria-label=consolePanels.${i}.title`}>
               <div class="chrome">
                 <span class="controls" aria-hidden="true"><i></i><i></i><i></i></span>
-                <span class="title">{p.title}</span>
+                <span class="title" data-i18n={`consolePanels.${i}.title`}>{p.title}</span>
               </div>
               <Anim />
             </div>
@@ -45,9 +46,9 @@ const anims = { workflow: WorkflowBuilder, chat: AgenticChat, contract: Contract
       })}
     </div>
 
-    <p class="strip label" aria-label="Capabilities">
+    <p class="strip label" aria-label={en.consoleStripLabel} data-i18n-attr="aria-label=consoleStripLabel">
       {consoleStrip.map((k, i) => (
-        <Fragment>{i > 0 && <span class="sep" aria-hidden="true"> · </span>}<span>{k}</span></Fragment>
+        <Fragment>{i > 0 && <span class="sep" aria-hidden="true"> · </span>}<span data-i18n={`features.${i}.k`}>{k}</span></Fragment>
       ))}
     </p>
   </div>

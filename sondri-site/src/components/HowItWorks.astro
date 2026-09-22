@@ -3,7 +3,7 @@ import { framework } from '../data';
 import { howItWorks } from '../home-data';
 import { splitDot } from '../lib/dot';
 const [h2, dot] = splitDot(howItWorks.h2);
-const labels = { does: 'What we do', gets: 'What you get' };
+const labels = { does: howItWorks.does, gets: howItWorks.gets };
 ---
 
 <!-- How it works = the 0 → 1 → n framework, in the playground's "Zero, one,
@@ -16,29 +16,29 @@ const labels = { does: 'What we do', gets: 'What you get' };
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="eyebrow"><span class="label">/ {howItWorks.eyebrow}</span></div>
-        <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
+        <div class="eyebrow"><span class="label">/ <span data-i18n="howItWorks.eyebrow">{howItWorks.eyebrow}</span></span></div>
+        <h2 class="h2"><span data-i18n="howItWorks.h2.text">{h2}</span><span class="gdot" data-i18n="howItWorks.h2.dot">{dot}</span></h2>
       </div>
       <div class="intro">
-        <p class="lede">{howItWorks.lede}</p>
+        <p class="lede" data-i18n="howItWorks.lede">{howItWorks.lede}</p>
       </div>
     </div>
 
     <ol class="phases">
       {framework.map((p, i) => (
         <li class="phase" data-reveal style={`transition-delay:${i * 80}ms`}>
-          <span class="num kpi" aria-label={`Phase ${p.num}`}>{p.num}</span>
+          <span class="num kpi" aria-label={`${howItWorks.phase} ${p.num}`} data-i18n-attr={`aria-label=framework.${i}.phase`}>{p.num}</span>
           <div class="cell name">
-            <p class="label">Phase {p.num}</p>
-            <h3 class="h5">{p.name}<span class="gdot">.</span></h3>
+            <p class="label" data-i18n={`framework.${i}.phase`}>{howItWorks.phase} {p.num}</p>
+            <h3 class="h5"><span data-i18n={`framework.${i}.name`}>{p.name}</span><span class="gdot">.</span></h3>
           </div>
           <div class="cell">
-            <p class="label">{labels.does}</p>
-            <p class="body">{p.does}</p>
+            <p class="label" data-i18n="howItWorks.does">{labels.does}</p>
+            <p class="body" data-i18n={`framework.${i}.does`}>{p.does}</p>
           </div>
           <div class="cell">
-            <p class="label">{labels.gets}</p>
-            <p class="body">{p.gets}</p>
+            <p class="label" data-i18n="howItWorks.gets">{labels.gets}</p>
+            <p class="body" data-i18n={`framework.${i}.gets`}>{p.gets}</p>
           </div>
         </li>
       ))}

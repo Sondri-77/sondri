@@ -2,6 +2,7 @@
 import { footerCols } from '../brutal-data';
 import { CONTACT_EMAIL, mailto } from '../data';
 import { VALUE_LINE } from '../home-data';
+import { en } from '../i18n';
 import { splitDot } from '../lib/dot';
 const [line, dot] = splitDot(VALUE_LINE);
 const year = new Date().getFullYear();
@@ -17,15 +18,15 @@ const year = new Date().getFullYear();
     <div class="rule-cols cols-3 f-grid">
       <div class="f-brand">
         <p class="label col-title">/ Sondri</p>
-        <p class="h6">{line}<span class="gdot">{dot}</span></p>
+        <p class="h6"><span data-i18n="VALUE_LINE.text">{line}</span><span class="gdot" data-i18n="VALUE_LINE.dot">{dot}</span></p>
         <a class="mail" href={mailto('Hello from sondri.ai')}>{CONTACT_EMAIL}</a>
       </div>
-      {footerCols.map((col) => (
+      {footerCols.map((col, ci) => (
         <div>
-          <p class="label col-title">/ {col.title}</p>
+          <p class="label col-title">/ <span data-i18n={`footerCols.${ci}.title`}>{col.title}</span></p>
           <ul>
-            {col.links.map((l) => (
-              <li><a href={l.href}>{l.label}</a></li>
+            {col.links.map((l, li) => (
+              <li><a href={l.href} data-i18n={`footerCols.${ci}.links.${li}.label`}>{l.label}</a></li>
             ))}
           </ul>
         </div>
@@ -34,7 +35,7 @@ const year = new Date().getFullYear();
 
     <div class="f-bottom">
       <p class="label">&copy; {year} Sondri</p>
-      <p class="label">Built in your systems, owned by you</p>
+      <p class="label" data-i18n="footerLine">{en.footerLine}</p>
     </div>
   </div>
 </footer>

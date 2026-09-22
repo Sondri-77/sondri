@@ -2,25 +2,28 @@
 /* Playground card 01 · Workflow builder, ported: the six-node map draws
    itself, nodes popping in turn, gold packets running the wires. Colours
    come from the site's tokens (the window is paper; see Console.astro). */
+import { en } from '../../i18n';
+const w = en.workflowAnim;
+const N = (i: number) => `workflowAnim.nodes.${i}`;
 ---
 
 <div class="anim win-body" data-anim="workflow" data-anim-root>
   <div class="stage">
-    <svg class="map" viewBox="0 0 320 274" role="img" aria-label="Email flows through parsing, CRM lookup, an amount check, posting and notification">
-      <text class="tag" x="4" y="21">YOUR NEXT WORKFLOW</text>
-      <text class="detail" x="4" y="38">6 steps / 1 decision / no copy-paste</text>
+    <svg class="map" viewBox="0 0 320 274" role="img" aria-label={w.aria} data-i18n-attr="aria-label=workflowAnim.aria">
+      <text class="tag" x="4" y="21" data-i18n="workflowAnim.tag">{w.tag}</text>
+      <text class="detail" x="4" y="38" data-i18n="workflowAnim.detail">{w.detail}</text>
       <path class="wire" d="M82 86H108"/><path class="draw" d="M82 86H108"/>
       <path class="wire" d="M176 86H202"/><path class="draw" d="M176 86H202"/>
       <path class="wire" d="M258 107V152"/><path class="draw" d="M258 107V152"/>
       <path class="wire" d="M258 194V237H176"/><path class="draw" d="M258 194V237H176"/>
       <path class="wire" d="M202 173H82"/><path class="draw" d="M202 173H82"/>
       <path class="wire" d="M108 237H43V194"/><path class="draw" d="M108 237H43V194"/>
-      <g class="node"><rect class="box" x="4" y="65" width="78" height="42"/><text class="lbl" x="12" y="82">TRIGGER</text><text class="detail" x="12" y="96">new email</text></g>
-      <g class="node"><rect class="box" x="108" y="65" width="68" height="42"/><text class="lbl" x="116" y="82">PARSE</text><text class="detail" x="116" y="96">extract</text></g>
-      <g class="node"><rect class="box" x="202" y="65" width="112" height="42"/><text class="lbl" x="210" y="82">LOOKUP</text><text class="detail" x="210" y="96">your CRM</text></g>
-      <g class="node"><rect class="box" x="202" y="152" width="112" height="42"/><text class="lbl" x="210" y="169">IF &gt; 5K</text><text class="detail" x="210" y="183">check amount</text></g>
-      <g class="node"><rect class="box" x="108" y="216" width="68" height="42"/><text class="lbl" x="116" y="233">POST</text><text class="detail" x="116" y="247">your ERP</text></g>
-      <g class="node"><rect class="box" x="4" y="152" width="78" height="42"/><text class="lbl" x="12" y="169">NOTIFY</text><text class="detail" x="12" y="183">your team</text></g>
+      <g class="node"><rect class="box" x="4" y="65" width="78" height="42"/><text class="lbl" x="12" y="82" data-i18n={`${N(0)}.lbl`}>{w.nodes[0].lbl}</text><text class="detail" x="12" y="96" data-i18n={`${N(0)}.detail`}>{w.nodes[0].detail}</text></g>
+      <g class="node"><rect class="box" x="108" y="65" width="68" height="42"/><text class="lbl" x="116" y="82" data-i18n={`${N(1)}.lbl`}>{w.nodes[1].lbl}</text><text class="detail" x="116" y="96" data-i18n={`${N(1)}.detail`}>{w.nodes[1].detail}</text></g>
+      <g class="node"><rect class="box" x="202" y="65" width="112" height="42"/><text class="lbl" x="210" y="82" data-i18n={`${N(2)}.lbl`}>{w.nodes[2].lbl}</text><text class="detail" x="210" y="96" data-i18n={`${N(2)}.detail`}>{w.nodes[2].detail}</text></g>
+      <g class="node"><rect class="box" x="202" y="152" width="112" height="42"/><text class="lbl" x="210" y="169" data-i18n={`${N(3)}.lbl`}>{w.nodes[3].lbl}</text><text class="detail" x="210" y="183" data-i18n={`${N(3)}.detail`}>{w.nodes[3].detail}</text></g>
+      <g class="node"><rect class="box" x="108" y="216" width="68" height="42"/><text class="lbl" x="116" y="233" data-i18n={`${N(4)}.lbl`}>{w.nodes[4].lbl}</text><text class="detail" x="116" y="247" data-i18n={`${N(4)}.detail`}>{w.nodes[4].detail}</text></g>
+      <g class="node"><rect class="box" x="4" y="152" width="78" height="42"/><text class="lbl" x="12" y="169" data-i18n={`${N(5)}.lbl`}>{w.nodes[5].lbl}</text><text class="detail" x="12" y="183" data-i18n={`${N(5)}.detail`}>{w.nodes[5].detail}</text></g>
       <rect class="packet" width="5" height="5"/><rect class="packet" width="5" height="5"/><rect class="packet" width="5" height="5"/>
       <rect class="packet" width="5" height="5"/><rect class="packet" width="5" height="5"/><rect class="packet" width="5" height="5"/>
     </svg>

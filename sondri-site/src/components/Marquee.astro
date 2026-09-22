@@ -5,12 +5,12 @@ const track = [...capabilities, ...capabilities];
 ---
 
 <section class="section strip">
-  <p class="label heading">/ {capabilityStrip.eyebrow}</p>
+  <p class="label heading">/ <span data-i18n="capabilityStrip.eyebrow">{capabilityStrip.eyebrow}</span></p>
   <div class="rail">
     <div class="track">
       {track.map((c, i) => (
         <span class="item" aria-hidden={i >= capabilities.length ? 'true' : undefined}>
-          {c}<span class="dot" aria-hidden="true">/</span>
+          <span data-i18n={`capabilities.${i % capabilities.length}`}>{c}</span><span class="dot" aria-hidden="true">/</span>
         </span>
       ))}
     </div>

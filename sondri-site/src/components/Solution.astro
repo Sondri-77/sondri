@@ -12,6 +12,7 @@ const fmt = (m: ValueMetric, n: number) =>
   m.unit === 'money' ? money(n) : m.unit === 'hours' ? `${n} h` : String(n);
 const pct = (m: ValueMetric) => Math.round((m.after / m.before) * 100);
 const idx = (i: number) => String(i + 1).padStart(2, '0');
+const ck = (n: number) => `valueCases.${n}`;
 ---
 
 <!-- Value, in Blacksmith's "Tool" grammar: the heading and lede up top left,
@@ -27,11 +28,11 @@ const idx = (i: number) => String(i + 1).padStart(2, '0');
   <div class="wrap tool">
     <div class="sec-head">
       <div>
-        <div class="eyebrow"><span class="label">/ {solution.eyebrow}</span></div>
-        <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
+        <div class="eyebrow"><span class="label">/ <span data-i18n="solution.eyebrow">{solution.eyebrow}</span></span></div>
+        <h2 class="h2"><span data-i18n="solution.h2.text">{h2}</span><span class="gdot" data-i18n="solution.h2.dot">{dot}</span></h2>
       </div>
       <div class="intro">
-        <p class="lede">{solution.lede}</p>
+        <p class="lede" data-i18n="solution.lede">{solution.lede}</p>
       </div>
     </div>
 
@@ -40,8 +41,8 @@ const idx = (i: number) => String(i + 1).padStart(2, '0');
         <li data-reveal style={`transition-delay:${i * 80}ms`}>
           <p class="label idx">{idx(i)}</p>
           <div>
-            <h3 class="h5">{b.t}<span class="gdot">.</span></h3>
-            <p class="body-s">{b.b}</p>
+            <h3 class="h5"><span data-i18n={`benefits.${i}.t`}>{b.t}</span><span class="gdot">.</span></h3>
+            <p class="body-s" data-i18n={`benefits.${i}.b`}>{b.b}</p>
           </div>
         </li>
       ))}
@@ -50,35 +51,35 @@ const idx = (i: number) => String(i + 1).padStart(2, '0');
     <div class="window panel" data-value-panel data-case={defaultCase} data-state="bars">
       <div class="bar dots" aria-hidden="true">
         <span class="lights"><i></i><i></i><i></i></span>
-        <span class="label title">Sondri / before → after</span>
+        <span class="label title" data-i18n="valuePanel.title">{valuePanel.title}</span>
       </div>
 
       <div class="field">
         <div class="pick">
-          <label class="prompt" for="value-case">{valuePanel.prompt}</label>
+          <label class="prompt" for="value-case" data-i18n="valuePanel.prompt">{valuePanel.prompt}</label>
           <div class="sel">
             <select id="value-case" data-value-select>
-              {valueCases.map((c) => (
-                <option value={c.id} selected={c.id === defaultCase}>{c.name}</option>
+              {valueCases.map((c, n) => (
+                <option value={c.id} selected={c.id === defaultCase} data-i18n={`${ck(n)}.name`}>{c.name}</option>
               ))}
             </select>
           </div>
           <!-- Reduced motion: no sequence, so a switch between the two states. -->
-          <button class="toggle label" type="button" data-value-toggle aria-pressed="false">
+          <button class="toggle label" type="button" data-value-toggle aria-pressed="false" data-i18n="valuePanel.toggle">
             {valuePanel.toggle}
           </button>
         </div>
 
         <div class="cases">
-          {valueCases.map((c) => (
+          {valueCases.map((c, n) => (
             <div class="case" data-case-id={c.id} aria-hidden={c.id === defaultCase ? undefined : 'true'}>
-              <p class="job h6">{c.job}</p>
+              <p class="job h6" data-i18n={`${ck(n)}.job`}>{c.job}</p>
 
               <div class="stage">
                 <div class="saves">
-                  {c.metrics.map((m) => (
+                  {c.metrics.map((m, mi) => (
                     <div class="metric">
-                      <p class="label"><span class="k">{m.k}</span> · {m.t} <span class="ph">{valuePanel.placeholder}</span></p>
+                      <p class="label"><span class="k" data-i18n={`${ck(n)}.metrics.${mi}.k`}>{m.k}</span> · <span data-i18n={`${ck(n)}.metrics.${mi}.t`}>{m.t}</span> <span class="ph" data-i18n="valuePanel.placeholder">{valuePanel.placeholder}</span></p>
                       <div class="track">
                         <span class="fill" style={`--w:${pct(m)}%`}><span class="kpi">{fmt(m, m.after)}</span></span>
                         <span class="was kpi">{fmt(m, m.before)}</span>
@@ -86,23 +87,23 @@ const idx = (i: number) => String(i + 1).padStart(2, '0');
                     </div>
                   ))}
                   <p class="legend label">
-                    <span><i class="sw sw-after"></i>{valuePanel.legend.after}</span>
-                    <span><i class="sw sw-before"></i>{valuePanel.legend.before}</span>
+                    <span><i class="sw sw-after"></i><span data-i18n="valuePanel.legend.after">{valuePanel.legend.after}</span></span>
+                    <span><i class="sw sw-before"></i><span data-i18n="valuePanel.legend.before">{valuePanel.legend.before}</span></span>
                   </p>
                 </div>
 
                 <details class="flow">
-                  <summary class="label">{valuePanel.steps}</summary>
+                  <summary class="label" data-i18n="valuePanel.steps">{valuePanel.steps}</summary>
                   <div class="lanes">
                     {(['before', 'after'] as const).map((lane) => (
                       <div class="lane" data-lane={lane}>
-                        <p class="hud label"><span class="hud-rule"></span>{valuePanel[lane]}</p>
+                        <p class="hud label"><span class="hud-rule"></span><span data-i18n={`valuePanel.${lane}`}>{valuePanel[lane]}</span></p>
                         <ol class="chain">
                           {c[lane].map((s, i) => (
                             <li class="node" data-who={s.who}>
                               <span class="n label">{idx(i)}</span>
-                              <span class="t">{s.t}</span>
-                              <span class="who">{valuePanel.who[s.who]}</span>
+                              <span class="t" data-i18n={`${ck(n)}.${lane}.${i}.t`}>{s.t}</span>
+                              <span class="who" data-i18n={`valuePanel.who.${s.who}`}>{valuePanel.who[s.who]}</span>
                             </li>
                           ))}
                         </ol>

@@ -2,39 +2,35 @@
 /* Playground card 09 · Contract review, ported: a read line runs down the
    agreement, clauses go green as they pass, the three risky ones get
    flagged, and the tally counts up beside the paper. */
-const clauses = [
-  '1.1 Scope: listed services', '2.1 Fees: due in 30 days', '3.1 Term: twelve months', '4.2 Renewal: automatic',
-  '5.1 Data stays yours', '6.1 Access: named users', '7.1 Changes: in writing', '8.3 Liability: no cap',
-  '9.1 Notices: by email', '10.1 Work stays yours', '11.1 Keep data private', '12.2 Exit: 30 days notice',
-  '13.4 Venue: unspecified', '14.1 Signed by both',
-];
+import { en } from '../../i18n';
+const c = en.contractAnim;
+const { clauses, flags } = c;
 const risks = [3, 7, 12];
-const flags = ['4.2 · Auto-renewal', '8.3 · No liability cap', '13.4 · Missing venue'];
 ---
 
 <div class="anim win-body" data-anim="contract" data-anim-root>
   <div class="stage">
     <div class="paper">
-      <div class="paper-head">YOUR AGREEMENT</div>
+      <div class="paper-head" data-i18n="contractAnim.head">{c.head}</div>
       <div class="view">
         <div class="readline"></div>
         <div class="clauses">
           {clauses.map((c, i) => (
             <div class:list={['clause', { risk: risks.includes(i) }]}>
-              <i class="hi"></i><span class="txt">{c}</span>
-              {risks.includes(i) && <span class="risk-chip">RISK</span>}
+              <i class="hi"></i><span class="txt" data-i18n={`contractAnim.clauses.${i}`}>{c}</span>
+              {risks.includes(i) && <span class="risk-chip" data-i18n="contractAnim.risk">{en.contractAnim.risk}</span>}
             </div>
           ))}
         </div>
       </div>
-      <div class="paper-foot">REVIEW / 14 CLAUSES</div>
+      <div class="paper-foot" data-i18n="contractAnim.foot">{c.foot}</div>
     </div>
     <div class="tally">
-      <div class="stat">CLAUSES <span class="value">0</span></div>
-      <div class="stat ok">OK <span class="value">0</span></div>
-      <div class="stat risk-total">RISK <span class="value">0</span></div>
-      <ul class="flags">{flags.map((f) => <li class="flag">{f}</li>)}</ul>
-      <p class="summary">3 clauses<br />need a look</p>
+      <div class="stat"><span data-i18n="contractAnim.statClauses">{c.statClauses}</span> <span class="value">0</span></div>
+      <div class="stat ok"><span data-i18n="contractAnim.statOk">{c.statOk}</span> <span class="value">0</span></div>
+      <div class="stat risk-total"><span data-i18n="contractAnim.statRisk">{c.statRisk}</span> <span class="value">0</span></div>
+      <ul class="flags">{flags.map((f, i) => <li class="flag" data-i18n={`contractAnim.flags.${i}`}>{f}</li>)}</ul>
+      <p class="summary"><span data-i18n="contractAnim.summary1">{c.summary1}</span><br /><span data-i18n="contractAnim.summary2">{c.summary2}</span></p>
     </div>
   </div>
 </div>

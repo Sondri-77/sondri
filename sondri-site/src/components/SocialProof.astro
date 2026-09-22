@@ -10,24 +10,24 @@ const [h2, dot] = splitDot(socialProof.h2);
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="eyebrow"><span class="label">/ {socialProof.eyebrow}</span></div>
-        <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
+        <div class="eyebrow"><span class="label">/ <span data-i18n="socialProof.eyebrow">{socialProof.eyebrow}</span></span></div>
+        <h2 class="h2"><span data-i18n="socialProof.h2.text">{h2}</span><span class="gdot" data-i18n="socialProof.h2.dot">{dot}</span></h2>
       </div>
     </div>
 
     <div class="quotes">
       {testimonials.map((t, i) => (
         <figure class="panel dots quote" data-reveal style={`transition-delay:${i * 80}ms`}>
-          <blockquote class="q">{t.q}</blockquote>
+          <blockquote class="q" data-i18n={`testimonials.${i}.q`}>{t.q}</blockquote>
           <figcaption class="who">
             <span class="avatar"><canvas class="dither-block" data-dither-block data-shape="disc" data-seed={20 + i}></canvas></span>
-            <span class="label">{t.who}</span>
+            <span class="label" data-i18n={`testimonials.${i}.who`}>{t.who}</span>
           </figcaption>
         </figure>
       ))}
     </div>
 
-    <p class="label ph">{socialProof.ph}</p>
+    <p class="label ph" data-i18n="socialProof.ph">{socialProof.ph}</p>
   </div>
 </section>
 

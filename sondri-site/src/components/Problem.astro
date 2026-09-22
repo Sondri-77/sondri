@@ -1,10 +1,11 @@
 ---
 import { problem, problemStats } from '../home-data';
 import { splitDot } from '../lib/dot';
+import { splitQuote } from '../lib/i18n';
 const [h2, dot] = splitDot(problem.h2);
 // Straight quotes in the copy string set as curly ones, and the quoted
 // phrase never breaks: the closer is one line on desktop.
-const [closeHead, closeTail] = problem.close.replace(/"([^"]+)"/, '\u201c$1\u201d').split(/(?=\u201c)/);
+const [closeHead, closeTail] = splitQuote(problem.close);
 ---
 
 <!-- ProblemStats, re-headed: the three big numbers under the workbench copy. -->
@@ -12,25 +13,25 @@ const [closeHead, closeTail] = problem.close.replace(/"([^"]+)"/, '\u201c$1\u201
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="eyebrow"><span class="label">/ {problem.eyebrow}</span></div>
-        <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
+        <div class="eyebrow"><span class="label">/ <span data-i18n="problem.eyebrow">{problem.eyebrow}</span></span></div>
+        <h2 class="h2"><span data-i18n="problem.h2.text">{h2}</span><span class="gdot" data-i18n="problem.h2.dot">{dot}</span></h2>
       </div>
       <div class="intro">
-        <p class="lede">{problem.lede}</p>
+        <p class="lede" data-i18n="problem.lede">{problem.lede}</p>
       </div>
     </div>
 
     <div class="rule-cols cols-3 stats">
       {problemStats.map((s, i) => (
         <div data-reveal style={`transition-delay:${i * 80}ms`}>
-          <p class="label n-idx">{s.k}</p>
-          <p class="n kpi">{s.n}</p>
-          <p class="body-s">{s.label}</p>
+          <p class="label n-idx" data-i18n={`problemStats.${i}.k`}>{s.k}</p>
+          <p class="n kpi" data-i18n={`problemStats.${i}.n`}>{s.n}</p>
+          <p class="body-s" data-i18n={`problemStats.${i}.label`}>{s.label}</p>
         </div>
       ))}
     </div>
 
-    <p class="h4 close">{closeHead}<span class="nb">{closeTail}</span></p>
+    <p class="h4 close"><span data-i18n="problem.close.head">{closeHead}</span><span class="nb" data-i18n="problem.close.tail">{closeTail}</span></p>
   </div>
 </section>
 

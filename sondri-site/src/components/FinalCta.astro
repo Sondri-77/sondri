@@ -9,13 +9,13 @@ const [h2, dot] = splitDot(finalCta.h2);
      (captain: the two must not run together). -->
 <section class="section on-gold" id="book">
   <div class="wrap cta">
-    <div class="eyebrow"><span class="label">/ {finalCta.eyebrow}</span></div>
-    <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
-    <p class="lede">{finalCta.lede}</p>
+    <div class="eyebrow"><span class="label">/ <span data-i18n="finalCta.eyebrow">{finalCta.eyebrow}</span></span></div>
+    <h2 class="h2"><span data-i18n="finalCta.h2.text">{h2}</span><span class="gdot" data-i18n="finalCta.h2.dot">{dot}</span></h2>
+    <p class="lede" data-i18n="finalCta.lede">{finalCta.lede}</p>
     <div class="cta-actions">
-      <a class="btn btn-gold" href={BOOK_HREF}>{CTA_PRIMARY} <span class="arr">→</span></a>
+      <a class="btn btn-gold" href={BOOK_HREF}><span data-i18n="cta">{CTA_PRIMARY}</span> <span class="arr">→</span></a>
     </div>
-    <p class="label">{RISK_REVERSAL}</p>
+    <p class="label" data-i18n="riskReversal">{RISK_REVERSAL}</p>
   </div>
 </section>
 

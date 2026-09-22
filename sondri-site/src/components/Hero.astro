@@ -29,12 +29,12 @@ const [h1, dot] = splitDot(line1);
   </div>
 
   <div class="wrap copy">
-    <h1 class="display"><span class="l">{h1}<span class="gdot">{dot}</span></span> <span class="l">{line2}</span></h1>
-    <p class="lede">{hero.lede}</p>
+    <h1 class="display"><span class="l"><span data-i18n="hero.h1.text">{h1}</span><span class="gdot" data-i18n="hero.h1.dot">{dot}</span></span> <span class="l" data-i18n="hero.h1.paren">{line2}</span></h1>
+    <p class="lede" data-i18n="hero.lede">{hero.lede}</p>
     <div class="actions">
-      <a class="btn btn-gold" href={BOOK_HREF}>{CTA_PRIMARY} <span class="arr">→</span></a>
+      <a class="btn btn-gold" href={BOOK_HREF}><span data-i18n="cta">{CTA_PRIMARY}</span> <span class="arr">→</span></a>
     </div>
-    <p class="label">{RISK_REVERSAL}</p>
+    <p class="label" data-i18n="riskReversal">{RISK_REVERSAL}</p>
   </div>
 </section>
 

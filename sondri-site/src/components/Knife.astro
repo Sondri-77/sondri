@@ -8,6 +8,8 @@ const by = Object.fromEntries(calculator.inputs.map((i) => [i.id, i])) as Record
 const [wage, hours, people] = [by.wage.value, by.hours.value, by.people.value];
 const year = money(yearlyCost(weeklyCost(wage, hours, people)));
 const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value) : String(i.value)) + i.unit;
+// The input's i18n key prefix (`calculator.inputs.2`), by its place in the data.
+const key = (i: (typeof calculator.inputs)[number]) => `calculator.inputs.${calculator.inputs.indexOf(i)}`;
 ---
 
 <!-- Impact: the cost of inaction as one sentence (playground C3). The three
@@ -18,11 +20,11 @@ const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value)
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="eyebrow"><span class="label">/ {knifeHead.eyebrow}</span></div>
-        <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
+        <div class="eyebrow"><span class="label">/ <span data-i18n="knifeHead.eyebrow">{knifeHead.eyebrow}</span></span></div>
+        <h2 class="h2"><span data-i18n="knifeHead.h2.text">{h2}</span><span class="gdot" data-i18n="knifeHead.h2.dot">{dot}</span></h2>
       </div>
       <div class="intro">
-        <p class="lede">{knifeHead.lede}</p>
+        <p class="lede" data-i18n="knifeHead.lede">{knifeHead.lede}</p>
       </div>
     </div>
 
@@ -31,9 +33,9 @@ const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value)
         {[by.people, by.hours, by.wage].map((i, n) => (
           <Fragment>
             <span class="edit" data-edit={i.id}>
-              <b class="val" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false" title={`Change ${i.t.toLowerCase()}`} data-val={i.id}>{fmt(i)}</b>
+              <b class="val" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false" title={i.change} data-val={i.id} data-i18n-attr={`title=${key(i)}.change`}>{fmt(i)}</b>
               <span class="tray">
-                <label class="label" for={`calc-${i.id}`} title={i.t}>{i.k}</label>
+                <label class="label" for={`calc-${i.id}`} title={i.t} data-i18n={`${key(i)}.k`} data-i18n-attr={`title=${key(i)}.t`}>{i.k}</label>
                 <input
                   type="range"
                   id={`calc-${i.id}`}
@@ -45,20 +47,21 @@ const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value)
                   data-money={i.money ? '' : undefined}
                   data-unit={i.unit}
                   aria-label={i.t}
+                  data-i18n-attr={`aria-label=${key(i)}.t`}
                 />
               </span>
             </span>
-            {n === 0 && <span data-people-word>{people === 1 ? 'person spends' : 'people spend'}</span>}
-            {n === 1 && ' a week at '}
-            {n === 2 && ' on the workaround. '}
+            {n === 0 && <span data-people-word>{people === 1 ? calculator.person : calculator.people}</span>}
+            {n === 1 && <span data-i18n="calculator.week">{calculator.week}</span>}
+            {n === 2 && <span data-i18n="calculator.on">{calculator.on}</span>}
           </Fragment>
         ))}
-        That’s <b class="val sum" data-year>{year}</b> a year.
+        <span data-i18n="calculator.sum">{calculator.sum}</span><b class="val sum" data-year>{year}</b><span data-i18n="calculator.yearSentence">{calculator.yearSentence}</span>
       </p>
-      <p class="label hint">{calculator.hint}</p>
+      <p class="label hint" data-i18n="calculator.hint">{calculator.hint}</p>
 
       <p class="total" aria-live="polite" aria-atomic="true">
-        <span class="figure kpi" data-year>{year}</span> <span class="label">{calculator.year}</span>
+        <span class="figure kpi" data-year>{year}</span> <span class="label" data-i18n="calculator.year">{calculator.year}</span>
       </p>
     </form>
   </div>
@@ -134,6 +137,7 @@ const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value)
 
 <script>
   import { money, weeklyCost, yearlyCost } from '../lib/cost';
+  import { EVENT, t } from '../scripts/i18n';
 
   const form = document.querySelector<HTMLFormElement>('[data-calc]');
   if (form) {
@@ -153,10 +157,12 @@ const fmt = (i: (typeof calculator.inputs)[number]) => (i.money ? money(i.value)
       const wage = Number(by('wage').value), hours = Number(by('hours').value), people = Number(by('people').value);
       const total = money(yearlyCost(weeklyCost(wage, hours, people)));
       years.forEach((y) => (y.textContent = total));
-      if (word) word.textContent = people === 1 ? 'person spends' : 'people spend';
+      // The verb agrees with the head count, in the page's language.
+      if (word) word.textContent = people === 1 ? t('calculator.person') : t('calculator.people');
       inputs.forEach(show);
     };
     inputs.forEach((i) => i.addEventListener('input', update));
+    document.addEventListener(EVENT, update);
     update();
 
     // Inline edits: click a value to open its slider tray; arrow keys on the

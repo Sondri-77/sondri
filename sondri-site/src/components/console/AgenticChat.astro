@@ -1,22 +1,24 @@
 ---
 /* Playground card 03 · Agentic chat, ported: a question types in, the agent
    thinks, calls a tool, reads the result, and types the answer back. */
+import { en } from '../../i18n';
+const c = en.chatAnim;
 ---
 
 <div class="anim win-body" data-anim="chat" data-anim-root>
   <div class="stage">
     <div class="chat">
-      <div class="bar"><span>YOUR ASSISTANT</span><span class="live">■ ONLINE</span></div>
+      <div class="bar"><span data-i18n="chatAnim.assistant">{c.assistant}</span><span class="live" data-i18n="chatAnim.online">{c.online}</span></div>
       <div class="messages">
         <div class="user"></div>
         <div class="agent">
-          <div class="who">AGENT <i class="dot"></i><i class="dot"></i><i class="dot"></i></div>
+          <div class="who"><span data-i18n="chatAnim.agent">{c.agent}</span> <i class="dot"></i><i class="dot"></i><i class="dot"></i></div>
           <div class="chip"><span class="tool"></span><span class="tick">✓</span></div>
           <div class="result"></div>
           <p class="reply"></p>
         </div>
       </div>
-      <div class="foot">ASK → LOOK UP → TAKE ACTION</div>
+      <div class="foot" data-i18n="chatAnim.foot">{c.foot}</div>
     </div>
   </div>
 </div>
@@ -43,20 +45,19 @@
 
 <script>
   import { runAnimation } from '../../scripts/console-anim';
+  import { EVENT, t } from '../../scripts/i18n';
   const root = document.querySelector<HTMLElement>('[data-anim="chat"]');
   if (root) {
-    const exchanges = [
-      ['Where is order #4471?', '⚙ lookup_order(#4471)', 'Found · out for delivery', 'Your order arrives today by 5 pm.'],
-      ['Can you approve my refund?', '⚙ check_refund(#4471)', 'Eligible · within 30 days', 'Your refund is approved. Allow 3 days.'],
-      ['Book a call for tomorrow.', '⚙ find_slot(tomorrow)', 'Available · 10:30 am', 'Your call is booked for 10:30 am.'],
-    ];
+    // The three exchanges, read in the page's language on every frame.
+    const exchange = (n: number) => [0, 1, 2, 3].map((j) => t(`chatAnim.exchanges.${n}.${j}`));
     const q = (s: string) => root.querySelector<HTMLElement>(s)!;
     const user = q('.user'), agent = q('.agent'), chip = q('.chip'), tool = q('.tool');
     const result = q('.result'), reply = q('.reply'), tick = q('.tick'), messages = q('.messages');
     const dots = [...root.querySelectorAll<HTMLElement>('.dot')];
     let lastText = '';
-    runAnimation(root, (time, reduced) => {
-      const ex = exchanges[Math.floor(time / 8.6) % 3];
+    let last: [number, boolean] = [0, false];
+    const draw = (time: number, reduced: boolean) => {
+      const ex = exchange(Math.floor(time / 8.6) % 3);
       const t = time % 8.6;
       const typed = ex[0].slice(0, Math.max(1, Math.floor(t * 30)));
       if (user.textContent !== typed) user.textContent = typed;
@@ -69,6 +70,9 @@
       if (result.textContent !== ex[2]) result.textContent = ex[2];
       const text = ex[3].slice(0, Math.max(0, Math.floor((t - 4) * 30)));
       if (text !== lastText) { reply.textContent = text; lastText = text; messages.scrollTop = 10000; }
-    }, 7.4);
+    };
+    runAnimation(root, (time, reduced) => { last = [time, reduced]; draw(time, reduced); }, 7.4);
+    // A language switch redraws the frame even while the window is off screen.
+    document.addEventListener(EVENT, () => draw(...last));
   }
 </script>

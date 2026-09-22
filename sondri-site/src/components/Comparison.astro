@@ -10,11 +10,11 @@ const [h2, dot] = splitDot(comparisonHead.h2);
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="eyebrow"><span class="label">/ {comparisonHead.eyebrow}</span></div>
-        <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
+        <div class="eyebrow"><span class="label">/ <span data-i18n="comparisonHead.eyebrow">{comparisonHead.eyebrow}</span></span></div>
+        <h2 class="h2"><span data-i18n="comparisonHead.h2.text">{h2}</span><span class="gdot" data-i18n="comparisonHead.h2.dot">{dot}</span></h2>
       </div>
       <div class="intro">
-        <p class="lede">{comparisonHead.lede}</p>
+        <p class="lede" data-i18n="comparisonHead.lede">{comparisonHead.lede}</p>
       </div>
     </div>
 
@@ -23,21 +23,21 @@ const [h2, dot] = splitDot(comparisonHead.h2);
         <thead>
           <tr>
             <th scope="col"></th>
-            {comparison.cols.map((c, i) => <th scope="col" class:list={{ own: i === 0 }}>{c}</th>)}
+            {comparison.cols.map((c, i) => <th scope="col" class:list={{ own: i === 0 }} data-i18n={`comparison.cols.${i}`}>{c}</th>)}
           </tr>
         </thead>
         <tbody>
-          {comparison.rows.map((r) => (
+          {comparison.rows.map((r, ri) => (
             <tr>
-              <th scope="row">{r.k}</th>
-              {r.v.map((cell, i) => <td class:list={{ own: i === 0 }}>{cell}</td>)}
+              <th scope="row" data-i18n={`comparison.rows.${ri}.k`}>{r.k}</th>
+              {r.v.map((cell, i) => <td class:list={{ own: i === 0 }} data-i18n={`comparison.rows.${ri}.v.${i}`}>{cell}</td>)}
             </tr>
           ))}
         </tbody>
       </table>
     </div>
 
-    <p class="label ph">{comparisonHead.ph}</p>
+    <p class="label ph" data-i18n="comparisonHead.ph">{comparisonHead.ph}</p>
   </div>
 </section>
 
