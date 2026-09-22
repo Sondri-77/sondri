@@ -151,6 +151,9 @@ export const solution = {
 
 /** Section 6 · Endorsements (was "Customers"; captain, 2026-09-21) */
 export const socialProof = {
+  /** Hidden for now (captain, 2026-09-21) - the quotes are placeholders. Flip
+      to true and the section renders again; nothing else to restore. */
+  enabled: false,
   eyebrow: 'Endorsements',
   h2: 'People who’ve watched us work.',
   ph: 'All three are placeholders, shape only (name, role, company type). Replace with real endorsements before this ships.',

@@ -13,7 +13,7 @@ import Comparison from '../components/Comparison.astro';
 import Console from '../components/Console.astro';
 import Faq from '../components/Faq.astro';
 import FinalCta from '../components/FinalCta.astro';
-import { homeFaq } from '../home-data';
+import { homeFaq, socialProof } from '../home-data';
 
 // The FAQ section lives on this page, so its structured data does too.
 const faqSchema = {
@@ -37,7 +37,7 @@ const faqSchema = {
   <Problem />
   <Knife />
   <Solution />
-  <SocialProof />
+  {socialProof.enabled && <SocialProof />}
   <HowItWorks />
   <Comparison />
   <Console />
