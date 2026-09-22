@@ -14,6 +14,7 @@ import Console from '../components/Console.astro';
 import Faq from '../components/Faq.astro';
 import FinalCta from '../components/FinalCta.astro';
 import { homeFaq, socialProof } from '../home-data';
+import { en } from '../i18n';
 
 // The FAQ section lives on this page, so its structured data does too.
 const faqSchema = {
@@ -27,10 +28,7 @@ const faqSchema = {
 };
 ---
 
-<Base
-  title="Sondri — Fix expensive bullsh*t"
-  description="Built into the systems you already run. Live in weeks. AI where it helps, regular software where it doesn’t."
->
+<Base title={en.meta.title} description={en.meta.description}>
   <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
   <Hero />
   <Marquee />

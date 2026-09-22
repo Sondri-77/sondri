@@ -11,13 +11,20 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import CalModal from '../components/CalModal.astro';
 import { CONTACT_EMAIL } from '../data';
+import { copy } from '../i18n';
+import { flatten } from '../lib/i18n';
 
 interface Props {
   title: string;
   description: string;
+  /** The i18n keys the <title> and description swap by (index's by default). */
+  titleKey?: string;
+  descriptionKey?: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, titleKey = 'meta.title', descriptionKey = 'meta.description' } = Astro.props;
+// Both dictionaries, embedded for the toggle (scripts/i18n.ts).
+const dicts = { en: flatten(copy.en), es: flatten(copy.es) };
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL('/og.png', Astro.site);
 
@@ -36,8 +43,21 @@ const orgSchema = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
+    <!-- Language, before paint: `?lang=` wins, then the saved choice, then
+         English. Spanish hides the body until scripts/i18n.ts has swapped the
+         strings, so there is no flash of English. No JS: English, as built. -->
+    <script is:inline>
+      (function () {
+        try {
+          var q = new URLSearchParams(location.search).get('lang');
+          var l = q || localStorage.getItem('sondri.lang') || 'en';
+          if (l === 'es') document.documentElement.lang = 'es', document.documentElement.classList.add('i18n-pending');
+        } catch (e) {}
+      })();
+    </script>
+    <style>html.i18n-pending body { visibility: hidden; }</style>
+    <title data-i18n={titleKey}>{title}</title>
+    <meta name="description" content={description} data-i18n-attr={`content=${descriptionKey}`} />
     <link rel="canonical" href={canonical} />
     <meta name="theme-color" content="#081f1f" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -58,16 +78,18 @@ const orgSchema = {
     <meta name="twitter:image" content={ogImage} />
 
     <script is:inline type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
+    <script is:inline type="application/json" id="i18n-data" set:html={JSON.stringify(dicts)} />
     <slot name="head" />
   </head>
   <body>
-    <a class="skip" href="#main">Skip to content</a>
+    <a class="skip" href="#main" data-i18n="ui.skip">{copy.en.ui.skip}</a>
     <Nav />
     <main id="main"><slot /></main>
     <Footer />
     <CalModal />
 
     <script>
+      import '../scripts/i18n';
       // Linear reveal, one observer, no library.
       const els = document.querySelectorAll('[data-reveal]');
       const io = new IntersectionObserver(

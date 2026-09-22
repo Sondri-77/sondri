@@ -1,14 +1,18 @@
 ---
 import Base from '../layouts/Base.astro';
+import { en } from '../i18n';
+import { splitDot } from '../lib/dot';
+const nf = en.notFound;
+const [h1, dot] = splitDot(nf.h1);
 ---
 
-<Base title="404 — Sondri" description="The page you requested does not exist.">
+<Base title={nf.title} description={nf.description} titleKey="notFound.title" descriptionKey="notFound.description">
   <section class="section section-pad on-dark lost">
     <div class="wrap">
       <div class="eyebrow"><span class="label">/ 404</span></div>
-      <h1 class="h1">Nothing here<span class="gdot">.</span></h1>
-      <p class="lede">The page you requested does not exist, or has been moved.</p>
-      <a class="btn btn-gold" href="/">Back to the front page <span class="arr">→</span></a>
+      <h1 class="h1"><span data-i18n="notFound.h1.text">{h1}</span><span class="gdot" data-i18n="notFound.h1.dot">{dot}</span></h1>
+      <p class="lede" data-i18n="notFound.lede">{nf.lede}</p>
+      <a class="btn btn-gold" href="/"><span data-i18n="notFound.back">{nf.back}</span> <span class="arr">→</span></a>
     </div>
   </section>
 </Base>

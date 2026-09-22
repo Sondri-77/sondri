@@ -1,37 +1,46 @@
 ---
 import { announcement, nav } from '../brutal-data';
 import { BOOK_HREF, CTA_PRIMARY } from '../data';
+import { en } from '../i18n';
+const { ui } = en;
 ---
 
 <div class="ann on-paper">
   <div class="wrap ann-in">
-    <span class="label"><span class="sq" aria-hidden="true"></span>{announcement.text}</span>
-    <a class="label label-gold ann-cta" href={BOOK_HREF}>{announcement.cta} →</a>
+    <span class="label"><span class="sq" aria-hidden="true"></span><span data-i18n="announcement.text">{announcement.text}</span></span>
+    <a class="label label-gold ann-cta" href={BOOK_HREF}><span data-i18n="announcement.cta">{announcement.cta}</span> →</a>
   </div>
 </div>
 
 <header class="on-dark" id="siteheader">
   <div class="wrap nav-in">
-    <a class="brand" href="/" aria-label="Sondri — home">
+    <a class="brand" href="/" aria-label={ui.brandHome} data-i18n-attr="aria-label=ui.brandHome">
       <img src="/brand/florexa-white-gold.svg" alt="Sondri" width="952" height="367" />
     </a>
 
-    <nav class="links" aria-label="Primary">
-      {nav.map((i) => <a class="link" href={i.href}>{i.label}</a>)}
+    <nav class="links" aria-label={ui.primaryNav} data-i18n-attr="aria-label=ui.primaryNav">
+      {nav.map((i, n) => <a class="link" href={i.href} data-i18n={`nav.${n}.label`}>{i.label}</a>)}
     </nav>
 
     <div class="right">
-      <a class="link log" href="#contact">Get in touch</a>
-      <a class="btn btn-white" href={BOOK_HREF}>{CTA_PRIMARY}</a>
+      <a class="link log" href="#contact" data-i18n="ui.contact">{ui.contact}</a>
+      <a class="btn btn-white" href={BOOK_HREF} data-i18n="cta">{CTA_PRIMARY}</a>
     </div>
 
-    <button id="navtoggle" class="toggle label" aria-expanded="false" aria-controls="navpanel">Menu</button>
+    <!-- EN | ES: two square mono buttons, the pressed one filled (scripts/i18n.ts). -->
+    <div class="lang" role="group" aria-label={ui.language} data-i18n-attr="aria-label=ui.language">
+      <button type="button" class="label" data-lang="en" aria-pressed="true" lang="en" aria-label={ui.english}>EN</button>
+      <span class="lang-sep" aria-hidden="true">|</span>
+      <button type="button" class="label" data-lang="es" aria-pressed="false" lang="es" aria-label={ui.spanish}>ES</button>
+    </div>
+
+    <button id="navtoggle" class="toggle label" aria-expanded="false" aria-controls="navpanel" data-i18n="ui.menu">{ui.menu}</button>
   </div>
 
   <div id="navpanel" hidden>
-    {nav.map((i) => <a class="panel-link" href={i.href}>{i.label}</a>)}
-    <a class="panel-link" href="#contact">Get in touch</a>
-    <a class="btn btn-white panel-btn" href={BOOK_HREF}>{CTA_PRIMARY}</a>
+    {nav.map((i, n) => <a class="panel-link" href={i.href} data-i18n={`nav.${n}.label`}>{i.label}</a>)}
+    <a class="panel-link" href="#contact" data-i18n="ui.contact">{ui.contact}</a>
+    <a class="btn btn-white panel-btn" href={BOOK_HREF} data-i18n="cta">{CTA_PRIMARY}</a>
   </div>
 </header>
 
@@ -81,9 +90,22 @@ import { BOOK_HREF, CTA_PRIMARY } from '../data';
   .btn-white:hover { background: var(--off); border-color: var(--off); color: var(--teal); }
   .log { margin-left: auto; }
 
+  /* The language switch: two square mono buttons on the bar's ink, a thin
+     rule between, the pressed one in the accent. Always visible, on the
+     right of the Menu button on phones. */
+  .lang { display: flex; align-items: center; gap: 6px; flex: none; }
+  .lang button {
+    background: none; border: 1px solid transparent; padding: 4px 6px;
+    color: var(--pale); cursor: pointer; line-height: 1;
+  }
+  .lang button:hover { color: var(--text-hi); border-color: var(--line); }
+  .lang button[aria-pressed='true'] { color: var(--ink); background: var(--accent); border-color: var(--accent); cursor: default; }
+  .lang button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .lang-sep { color: var(--line); font-family: var(--mono); font-size: 12px; }
+
   .toggle {
     display: none; background: none; border: 1px solid var(--line);
-    padding: 10px 18px; color: var(--text-hi); margin-left: auto;
+    padding: 10px 18px; color: var(--text-hi);
   }
 
   #navpanel { border-top: 1px solid var(--line); background: var(--ink); padding: var(--s-16) var(--pad-x) var(--s-24); }
@@ -96,11 +118,14 @@ import { BOOK_HREF, CTA_PRIMARY } from '../data';
 
   @media (max-width: 980px) {
     .links, .right { display: none; }
+    .lang { margin-left: auto; }
     .toggle { display: block; }
+    .nav-in { gap: var(--s-16); }
   }
 </style>
 
 <script>
+  import { EVENT, t as tr } from '../scripts/i18n';
   // Solidify the bar as soon as the page leaves the top.
   const header = document.getElementById('siteheader');
   const onScroll = () => header?.classList.toggle('stuck', window.scrollY > 8);
@@ -112,7 +137,11 @@ import { BOOK_HREF, CTA_PRIMARY } from '../data';
   t?.addEventListener('click', () => {
     const open = t.getAttribute('aria-expanded') === 'true';
     t.setAttribute('aria-expanded', String(!open));
-    t.textContent = open ? 'Menu' : 'Close';
+    t.textContent = open ? tr('ui.menu') : tr('ui.close');
     if (p) (p as HTMLElement).hidden = open;
+  });
+  // The label follows the language, in whichever state the panel is.
+  document.addEventListener(EVENT, () => {
+    if (t) t.textContent = t.getAttribute('aria-expanded') === 'true' ? tr('ui.close') : tr('ui.menu');
   });
 </script>
