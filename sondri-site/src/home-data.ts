@@ -159,7 +159,7 @@ export const socialProof = {
 /** Section 7 · How it works */
 export const howItWorks = {
   eyebrow: 'How it works',
-  h2: 'Just fix the d*mn thing.',
+  h2: 'Stop experimenting and start executing.',
   lede: 'You show us the work you want to fix, and we build with your team.',
 };
 

@@ -7,10 +7,11 @@ const labels = { does: 'What we do', gets: 'What you get' };
 ---
 
 <!-- How it works = the 0 → 1 → n framework, in the playground's "Zero, one,
-     many" ledger (Part B / 07, from sondri-brutal's Framework.astro): three
-     ruled rows, a huge Florexa numeral in the left column, then the phase
-     name, what we do, what you get. The numerals are KPIs, so they carry the
-     pixel face (.kpi); the phase names stay in the sans. -->
+     many" ledger (Part B / 07, from sondri-brutal's Framework.astro), turned
+     to run across: three ruled columns (0 Prove, 1 Production, n Multiply),
+     each stacking a huge Florexa numeral, the phase name, what we do, what
+     you get. The numerals are KPIs, so they carry the pixel face (.kpi); the
+     phase names stay in the sans. -->
 <section class="section section-pad" id="how">
   <div class="wrap">
     <div class="sec-head">
@@ -46,30 +47,31 @@ const labels = { does: 'What we do', gets: 'What you get' };
 </section>
 
 <style>
-  /* The ledger: a rule above, one between each row, one below; verticals
-     between the four columns only inside the rows (the playground keeps
-     them, and they make the ledger read as a table, not a list). */
-  .phases { list-style: none; border-top: 1px solid var(--line); }
-  .phase {
-    display: grid; grid-template-columns: 0.65fr 1fr 1.3fr 1.3fr;
-    border-bottom: 1px solid var(--line);
+  /* The ledger: three columns, a vertical rule between them; the four
+     stacked rows share tracks across the columns (subgrid) so the horizontal
+     rules line up and it still reads as a table, not three cards. */
+  .phases {
+    list-style: none; display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--line);
   }
-  .phase > * { padding: var(--s-32); min-width: 0; }
-  .phase > * + * { border-left: 1px solid var(--line); }
-  .num { padding-left: 0; color: var(--gold-2); font-size: 96px; }
+  .phase { display: grid; grid-row: span 4; grid-template-rows: subgrid; }
+  .phase + .phase { border-left: 1px solid var(--line); }
+  .phase > * { padding: var(--s-32); min-width: 0; border-bottom: 1px solid var(--line); }
+  .num { display: block; color: var(--gold-2); font-size: 96px; line-height: 1; }
   .cell { display: flex; flex-direction: column; gap: var(--s-16); }
   .name .h5 { margin-top: -4px; }
   .body { font-size: 15px; line-height: 22px; color: var(--pale); max-width: 34ch; }
 
   @media (max-width: 1100px) { .phase > * { padding: var(--s-24) var(--s-16); } .num { font-size: 80px; } }
-  /* Phone: the numeral owns the left column across the row; the three cells
-     stack beside it, ruled between. */
-  @media (max-width: 720px) {
-    .phase { grid-template-columns: 72px minmax(0, 1fr); }
-    .phase > * { padding: var(--s-24) 0; border-left: 0; }
-    .num { grid-row: span 3; font-size: 64px; }
-    .cell { padding-left: var(--s-24); border-left: 1px solid var(--line); }
-    .cell + .cell { border-top: 1px solid var(--line); }
+  /* Phone: the columns stack in order 0, 1, n; each column keeps its own
+     ruled rows, and its last rule separates it from the next. */
+  @media (max-width: 700px) {
+    .phases { grid-template-columns: minmax(0, 1fr); }
+    .phase { grid-template-rows: auto; grid-row: auto; }
+    .phase + .phase { border-left: 0; }
+    .phase > * { padding: var(--s-24) 0; }
+    .num { font-size: 64px; }
     .body { max-width: none; }
   }
 </style>
