@@ -1,0 +1,79 @@
+---
+import Base from '../layouts/Base.astro';
+import Btn from '../components/Btn.astro';
+import { CTA_PRIMARY, RISK_REVERSAL, problemStats, framework, capabilities, feelSteps } from '../data/copy';
+---
+
+<Base title="Sondri — Simple solutions to not-so-simple problems">
+  <section>
+    <h1>Simple solutions to not-so-simple problems.</h1>
+    <p>We build software for the work slowing your business down.</p>
+    <div class="ctas">
+      <Btn href="#">{CTA_PRIMARY} →</Btn>
+      <Btn href="/how-it-works/">See How It Works</Btn>
+    </div>
+    <p>{RISK_REVERSAL}</p>
+  </section>
+
+  <section>
+    <div class="strip">{capabilities.map((c) => <span>{c}</span>)}</div>
+  </section>
+
+  <section>
+    <h2>Still doing the work by hand after trying AI?</h2>
+    <p>You’ve tried the software, but your team still has to do the same work by hand.</p>
+    <div class="cards">
+      {problemStats.map((s) => (
+        <div class="card stat">
+          <b>{s.n}</b>
+          <span>{s.label}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2>Fix one job at a time.</h2>
+    <p>Start with one job, then decide whether to pay for the next build.</p>
+    <div class="cards">
+      {framework.map((p) => (
+        <div class="card">
+          <p>{p.num}</p>
+          <h3>{p.name}</h3>
+          <p>{p.does}</p>
+          <p>You walk away with</p>
+          <p>{p.gets}</p>
+        </div>
+      ))}
+    </div>
+    <p>You can also ask us to help you choose software and plan what to build next.</p>
+  </section>
+
+  <section>
+    <h2>Keep running your business while we build.</h2>
+    <p>You show us the work you want to fix, and we build with your team.</p>
+    <div class="cards">
+      {feelSteps.map((s) => (
+        <div class="card">
+          <p>{s.i}</p>
+          <h3>{s.t}</h3>
+          <p>{s.b}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <div class="card">
+      <p>We started Sondri because we saw businesses spend eighteen months trying AI without getting software they could use. You can bring us one job that needs fixing, and we’ll build software for it.</p>
+      <a href="/get-in-touch/">Get in Touch →</a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Your first call is free, and you keep the plan we put together.</h2>
+    <div class="ctas">
+      <Btn href="#">{CTA_PRIMARY} →</Btn>
+    </div>
+  </section>
+</Base>

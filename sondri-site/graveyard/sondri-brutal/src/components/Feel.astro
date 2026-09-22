@@ -1,0 +1,39 @@
+---
+import { feelSteps } from '../data';
+---
+
+<section class="section section-pad">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow"><span class="sq"></span><span class="label">/ What it feels like</span></div>
+        <h2 class="h2">Three steps. That is the whole process<span class="gdot">.</span></h2>
+      </div>
+      <div class="intro">
+        <p class="lede">No prep. No jargon. No deck.</p>
+      </div>
+    </div>
+
+    <div class="rule-cols cols-3 feel">
+      {feelSteps.map((s, i) => (
+        <div data-reveal style={`transition-delay:${i * 80}ms`}>
+          <p class="i">{s.i}</p>
+          <h3 class="h5">{s.t}</h3>
+          <p class="body-s">{s.b}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .feel > * { display: flex; flex-direction: column; gap: var(--s-16); min-height: 280px; }
+  .i { font-family: var(--mono); font-size: 14px; color: var(--accent); padding-bottom: var(--s-08); }
+  /* Their list marker: a filled square ahead of the mono index. */
+    .i::before {
+    content: ''; display: inline-block;
+    width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
+    background: currentColor;
+  }
+  .body-s { margin-top: auto; max-width: 32ch; }
+</style>

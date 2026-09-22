@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sondri · Solution cards</title>
+<style>
+body { margin: 0; padding: 24px; background: #081f1f; color: #e9edec; }
+h1 { margin: 0 0 24px; font: 11px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; font-weight: 400; }
+main { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+@media (max-width: 1099px) { main { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 699px) { main { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+<h1>/ PLAYGROUND · PART A · SOLUTION CARDS</h1>
+<main><section class="card c01" data-card="workflow-builder" id="c01-root" aria-label="Workflow builder">
+  <style>
+.c01 { --field: #081f1f; --gold: #fdb343; --gold-hover: #f5a71e; --text: #e9edec; --muted: #9db6b4; --line: #c9dad7; --panel: #0c2b29; --paper: #edf5f4; --success: #6ee7a8; --risk: #ff6b6b; --mono: 'JetBrains Mono', 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace; --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; box-sizing: border-box; width: 100%; min-width: 0; min-height: 320px; height: 352px; padding: 16px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 1px solid var(--text); border-radius: 0; box-shadow: 6px 6px 0 #000; color: var(--text); background-color: var(--field); background-image: radial-gradient(#1c3a39 1px, transparent 1px); background-size: 14px 14px; font-family: var(--sans); }
+.c01 .c01-chrome { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px dotted var(--muted); flex: 0 0 auto; }
+.c01 .c01-controls { display: flex; gap: 4px; flex: 0 0 auto; }
+.c01 .c01-square { width: 8px; height: 8px; box-sizing: border-box; border: 1px solid var(--text); }
+.c01 .c01-title { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; margin: 0; font-weight: 400; }
+.c01 .c01-stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; }
+.c01 .c01-caption { margin: 0; color: var(--muted); font: 10px/1.5 var(--mono); white-space: nowrap; }
+.c01 .c01-mono { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.c01 .c01-window { background: var(--panel); border: 1px solid var(--line); box-shadow: 3px 3px 0 #000; min-width: 0; box-sizing: border-box; }
+@media (prefers-reduced-motion: reduce) { .c01 .c01-stage { scroll-behavior: auto; } }
+
+.c01 .c01-map { width: 100%; height: 100%; overflow: visible; }
+.c01 .c01-wire { fill: none; stroke: #54716d; stroke-width: 1; }
+.c01 .c01-draw { fill: none; stroke: var(--gold); stroke-width: 1.5; }
+.c01 .c01-box { fill: var(--panel); stroke: var(--line); stroke-width: 1; filter: drop-shadow(3px 3px 0 #000); }
+.c01 .c01-label { fill: var(--text); font: 11px var(--mono); }
+.c01 .c01-detail { fill: var(--muted); font: 10px var(--mono); }
+.c01 .c01-tag { fill: var(--gold); font: 10px var(--mono); letter-spacing: .08em; }
+.c01 .c01-node { transform-box: fill-box; transform-origin: center; }
+.c01 .c01-packet { fill: var(--gold); }
+</style>
+  <div class="c01-chrome"><span class="c01-controls" aria-hidden="true"><i class="c01-square"></i><i class="c01-square"></i><i class="c01-square"></i></span><h2 class="c01-title">01 · Workflow builder</h2></div>
+  <div class="c01-stage"><svg class="c01-map" viewBox="0 0 320 274" role="img" aria-label="Email flows through parsing, CRM lookup, an amount check, posting and notification"><text class="c01-tag" x="4" y="21">YOUR NEXT WORKFLOW</text><text class="c01-detail" x="4" y="38">6 steps / 1 decision / no copy-paste</text><path class="c01-wire" d="M82 86H108"/><path class="c01-draw" d="M82 86H108"/><path class="c01-wire" d="M176 86H202"/><path class="c01-draw" d="M176 86H202"/><path class="c01-wire" d="M258 107V152"/><path class="c01-draw" d="M258 107V152"/><path class="c01-wire" d="M258 194V237H176"/><path class="c01-draw" d="M258 194V237H176"/><path class="c01-wire" d="M202 173H82"/><path class="c01-draw" d="M202 173H82"/><path class="c01-wire" d="M108 237H43V194"/><path class="c01-draw" d="M108 237H43V194"/><g class="c01-node"><rect class="c01-box" x="4" y="65" width="78" height="42"/><text class="c01-label" x="12" y="82">TRIGGER</text><text class="c01-detail" x="12" y="96">new email</text></g><g class="c01-node"><rect class="c01-box" x="108" y="65" width="68" height="42"/><text class="c01-label" x="116" y="82">PARSE</text><text class="c01-detail" x="116" y="96">extract</text></g><g class="c01-node"><rect class="c01-box" x="202" y="65" width="112" height="42"/><text class="c01-label" x="210" y="82">LOOKUP</text><text class="c01-detail" x="210" y="96">your CRM</text></g><g class="c01-node"><rect class="c01-box" x="202" y="152" width="112" height="42"/><text class="c01-label" x="210" y="169">IF > 5K</text><text class="c01-detail" x="210" y="183">check amount</text></g><g class="c01-node"><rect class="c01-box" x="108" y="216" width="68" height="42"/><text class="c01-label" x="116" y="233">POST</text><text class="c01-detail" x="116" y="247">your ERP</text></g><g class="c01-node"><rect class="c01-box" x="4" y="152" width="78" height="42"/><text class="c01-label" x="12" y="169">NOTIFY</text><text class="c01-detail" x="12" y="183">your team</text></g><rect class="c01-packet" width="5" height="5"/><rect class="c01-packet" width="5" height="5"/><rect class="c01-packet" width="5" height="5"/><rect class="c01-packet" width="5" height="5"/><rect class="c01-packet" width="5" height="5"/><rect class="c01-packet" width="5" height="5"/></svg></div>
+  <p class="c01-caption">You draw the flow. It runs itself.</p>
+  <script>
+  (function () {
+    function init() {
+      var root = document.getElementById('c01-root');
+      if (!root || root.dataset.inited) return;
+      root.dataset.inited = '1';
+
+      var nodes = Array.from(root.querySelectorAll('.c01-node'));
+      var edges = Array.from(root.querySelectorAll('.c01-draw'));
+      var packets = Array.from(root.querySelectorAll('.c01-packet'));
+      var lengths = edges.map(function(path) { return path.getTotalLength(); });
+      edges.forEach(function(path, i) { path.style.strokeDasharray = lengths[i]; });
+      function render(time, dt, reduced) {
+        var t = time % 9.4;
+        nodes.forEach(function(node, i) {
+          var age = t - i * .72;
+          var scale = age < 0 ? .6 : age < .15 ? .6 + age / .15 * .48 : age < .184 ? 1.08 : 1;
+          node.style.opacity = age < 0 ? '.12' : '1';
+          node.style.transform = 'scale(' + (reduced ? 1 : scale) + ')';
+        });
+        edges.forEach(function(edge, i) {
+          var start = (i < 4 ? i + 1 : 5) * .72;
+          var progress = Math.max(0, Math.min(1, (t - start) / .35));
+          edge.style.strokeDashoffset = lengths[i] * (1 - progress);
+          var travel = ((t - start) * .7 + i * .2) % 1;
+          var point = edge.getPointAtLength(Math.max(0, travel) * lengths[i]);
+          packets[i].style.opacity = t >= start && !reduced ? '1' : '0';
+          packets[i].setAttribute('transform', 'translate(' + (point.x - 2.5) + ' ' + (point.y - 2.5) + ')');
+        });
+      }
+
+
+    var motion = matchMedia('(prefers-reduced-motion: reduce)');
+    var visible = false;
+    var frame = 0;
+    var previous = 0;
+    var elapsed = 0;
+    function tick(now) {
+      frame = 0;
+      if (!root.isConnected) { observer.disconnect(); cleanup(); return; }
+      if (!visible || document.hidden || motion.matches) return;
+      var dt = previous ? Math.min((now - previous) / 1000, .05) : 0;
+      previous = now;
+      elapsed += dt;
+      render(elapsed, dt, false);
+      frame = requestAnimationFrame(tick);
+    }
+    function sync() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      previous = 0;
+      if (motion.matches) render(7.2, 0, true);
+      else if (visible && !document.hidden) frame = requestAnimationFrame(tick);
+    }
+    function cleanup() {
+      document.removeEventListener('visibilitychange', sync);
+      motion.removeEventListener('change', sync);
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      visible = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0 });
+    observer.observe(root);
+    document.addEventListener('visibilitychange', sync);
+    motion.addEventListener('change', sync);
+    render(motion.matches ? 7.2 : 0, 0, motion.matches);
+
+    }
+    if (document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init, { once: true });
+  })();
+  </script>
+</section>
+
+<section class="card c02" data-card="knowledge-graph" id="c02-root" aria-label="Knowledge graph">
+  <style>
+.c02 { --field: #081f1f; --gold: #fdb343; --gold-hover: #f5a71e; --text: #e9edec; --muted: #9db6b4; --line: #c9dad7; --panel: #0c2b29; --paper: #edf5f4; --success: #6ee7a8; --risk: #ff6b6b; --mono: 'JetBrains Mono', 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace; --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; box-sizing: border-box; width: 100%; min-width: 0; min-height: 320px; height: 352px; padding: 16px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 1px solid var(--text); border-radius: 0; box-shadow: 6px 6px 0 #000; color: var(--text); background-color: var(--field); background-image: radial-gradient(#1c3a39 1px, transparent 1px); background-size: 14px 14px; font-family: var(--sans); }
+.c02 .c02-chrome { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px dotted var(--muted); flex: 0 0 auto; }
+.c02 .c02-controls { display: flex; gap: 4px; flex: 0 0 auto; }
+.c02 .c02-square { width: 8px; height: 8px; box-sizing: border-box; border: 1px solid var(--text); }
+.c02 .c02-title { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; margin: 0; font-weight: 400; }
+.c02 .c02-stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; }
+.c02 .c02-caption { margin: 0; color: var(--muted); font: 10px/1.5 var(--mono); white-space: nowrap; }
+.c02 .c02-mono { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.c02 .c02-window { background: var(--panel); border: 1px solid var(--line); box-shadow: 3px 3px 0 #000; min-width: 0; box-sizing: border-box; }
+@media (prefers-reduced-motion: reduce) { .c02 .c02-stage { scroll-behavior: auto; } }
+
+.c02 .c02-stage { display: block; padding: 0; }
+.c02 .c02-canvas { display: block; width: 100%; height: 100%; touch-action: pan-y; }
+.c02 .c02-meta { position: absolute; left: 0; top: 15px; pointer-events: none; color: var(--muted); font: 10px var(--mono); letter-spacing: .06em; }
+.c02 .c02-hint { position: absolute; bottom: 10px; right: 0; color: var(--gold); pointer-events: none; font: 9px var(--mono); letter-spacing: .08em; }
+</style>
+  <div class="c02-chrome"><span class="c02-controls" aria-hidden="true"><i class="c02-square"></i><i class="c02-square"></i><i class="c02-square"></i></span><h2 class="c02-title">02 · Knowledge graph</h2></div>
+  <div class="c02-stage"><canvas class="c02-canvas" role="img" aria-label="Thirty connected knowledge nodes. Move your pointer to pull nearby nodes toward it."></canvas><div class="c02-meta">30 NOTES / 45 LINKS</div><div class="c02-hint">MOVE TO EXPLORE ↗</div></div>
+  <p class="c02-caption">Your knowledge, connected.</p>
+  <script>
+  (function () {
+    function init() {
+      var root = document.getElementById('c02-root');
+      if (!root || root.dataset.inited) return;
+      root.dataset.inited = '1';
+
+      var canvas = root.querySelector('.c02-canvas');
+      var ctx = canvas.getContext('2d');
+      var width = 320, height = 260, bounds;
+      var pointer = { x: 0, y: 0, active: false, strength: 0 };
+      var nodes = Array.from({length: 30}, function(_, i) {
+        var angle = i * 2.399963;
+        var radius = Math.sqrt((i + 1) / 30) * .40;
+        return { x: .5 + Math.cos(angle) * radius, y: .52 + Math.sin(angle) * radius,
+          ax: .5 + Math.cos(angle) * radius, ay: .52 + Math.sin(angle) * radius,
+          vx: 0, vy: 0, r: i < 4 ? 5 : 2.3 + (i % 3) * .45 };
+      });
+      var edges = [];
+      for (var i = 0; i < 30; i++) edges.push([i, (i + 5) % 30]);
+      for (var j = 0; j < 15; j++) edges.push([j, (j + 11) % 30]);
+      function measure() {
+        bounds = canvas.getBoundingClientRect();
+        width = bounds.width; height = bounds.height;
+        var dpr = Math.min(window.devicePixelRatio || 1, 3);
+        canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        if (typeof motion !== 'undefined') render(motion.matches ? 5.5 : elapsed, 0, motion.matches);
+      }
+      var resize = new ResizeObserver(measure);
+      resize.observe(canvas);
+      root.addEventListener('pointermove', function(event) {
+        if (motion.matches) return;
+        bounds = canvas.getBoundingClientRect();
+        pointer.x = event.clientX - bounds.left; pointer.y = event.clientY - bounds.top;
+        pointer.active = true;
+      });
+      function release() { pointer.active = false; }
+      root.addEventListener('pointerleave', release);
+      root.addEventListener('pointerup', function(event) { if (event.pointerType !== 'mouse') release(); });
+      root.addEventListener('pointercancel', release);
+      function render(time, dt, reduced) {
+        if (!ctx || !width || !height) return;
+        var step = Math.min(dt * 60, 2);
+        pointer.strength += ((pointer.active ? 1 : 0) - pointer.strength) * Math.min(1, dt * 5);
+        if (!reduced && dt) {
+          nodes.forEach(function(n, i) {
+            n.vx += ((n.ax - n.x) * .0018 + (.5 - n.x) * .00012 + Math.sin(time * .5 + i) * .000015) * step;
+            n.vy += ((n.ay - n.y) * .0018 + (.5 - n.y) * .00012 + Math.cos(time * .5 + i) * .000015) * step;
+            nodes.forEach(function(other, k) {
+              if (i === k) return;
+              var dx = n.x - other.x, dy = n.y - other.y;
+              var d2 = dx * dx + dy * dy + .001;
+              n.vx += dx / d2 * .0000014 * step;
+              n.vy += dy / d2 * .0000014 * step;
+            });
+            var px = pointer.x - n.x * width, py = pointer.y - n.y * height;
+            var distance = Math.hypot(px, py);
+            var pull = Math.max(0, 1 - distance / 140) * pointer.strength * .009;
+            n.vx += px / width * pull * step; n.vy += py / height * pull * step;
+          });
+          edges.forEach(function(edge) {
+            var a = nodes[edge[0]], b = nodes[edge[1]];
+            var dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || .01;
+            var force = (d - .23) * .00025 * step;
+            a.vx += dx / d * force; a.vy += dy / d * force;
+            b.vx -= dx / d * force; b.vy -= dy / d * force;
+          });
+          nodes.forEach(function(n) {
+            n.vx *= Math.pow(.86, step); n.vy *= Math.pow(.86, step);
+            n.x = Math.max(.07, Math.min(.93, n.x + n.vx * step));
+            n.y = Math.max(.17, Math.min(.89, n.y + n.vy * step));
+          });
+        }
+        ctx.clearRect(0, 0, width, height);
+        var lit = Math.floor(time / 4) % 30, phase = time % 4;
+        edges.forEach(function(edge) {
+          var a = nodes[edge[0]], b = nodes[edge[1]];
+          var near = Math.max(0, 1 - Math.hypot(pointer.x - (a.x + b.x) * width / 2, pointer.y - (a.y + b.y) * height / 2) / 140) * pointer.strength;
+          var signal = (edge[0] === lit || edge[1] === lit) && phase < 1.8;
+          ctx.strokeStyle = signal ? '#fdb343' : 'rgba(157,182,180,' + (.22 + near * .65) + ')';
+          ctx.lineWidth = signal ? 1.3 : .8;
+          ctx.beginPath(); ctx.moveTo(a.x * width, a.y * height); ctx.lineTo(b.x * width, b.y * height); ctx.stroke();
+          if (signal) {
+            var from = edge[0] === lit ? a : b, to = edge[0] === lit ? b : a;
+            var progress = Math.min(1, phase / 1.2);
+            ctx.fillStyle = '#fdb343';
+            ctx.fillRect((from.x + (to.x - from.x) * progress) * width - 2, (from.y + (to.y - from.y) * progress) * height - 2, 4, 4);
+          }
+        });
+        nodes.forEach(function(n, i) {
+          var neighbor = phase > 1 && phase < 2.2 && edges.some(function(e) { return (e[0] === lit && e[1] === i) || (e[1] === lit && e[0] === i); });
+          ctx.fillStyle = i === lit || neighbor ? '#fdb343' : i < 4 ? '#e9edec' : '#9db6b4';
+          ctx.beginPath(); ctx.arc(n.x * width, n.y * height, n.r, 0, Math.PI * 2); ctx.fill();
+          if (i === lit) { ctx.strokeStyle = '#fdb34366'; ctx.strokeRect(n.x * width - 9, n.y * height - 9, 18, 18); }
+        });
+        ctx.font = '10px ui-monospace, monospace';
+        var labels = [];
+        ['YOUR DOCS', 'PEOPLE', 'PROJECTS'].forEach(function(label, i) {
+          var n = nodes[i], w = label.length * 6 + 6;
+          var offsets = [[10, -19], [-w - 10, 8], [10, 12], [-w - 10, -22], [-w / 2, -40], [-w / 2, 32]];
+          var box;
+          for (var choice = 0; choice < offsets.length; choice++) {
+            box = { x: Math.max(3, Math.min(width - w - 3, n.x * width + offsets[choice][0])),
+              y: Math.max(42, Math.min(height - 32, n.y * height + offsets[choice][1])), w: w };
+            if (!labels.some(function(other) { return box.x < other.x + other.w + 5 && box.x + w + 5 > other.x && box.y < other.y + 19 && box.y + 19 > other.y; })) break;
+          }
+          labels.push(box);
+          ctx.strokeStyle = '#54716d'; ctx.lineWidth = .7;
+          ctx.beginPath(); ctx.moveTo(n.x * width, n.y * height); ctx.lineTo(box.x + w / 2, box.y + 7); ctx.stroke();
+          ctx.fillStyle = '#081f1f'; ctx.fillRect(box.x - 2, box.y - 1, w + 4, 14);
+          ctx.fillStyle = '#e9edec'; ctx.fillText(label, box.x + 3, box.y + 10);
+        });
+      }
+
+
+    var motion = matchMedia('(prefers-reduced-motion: reduce)');
+    var visible = false;
+    var frame = 0;
+    var previous = 0;
+    var elapsed = 0;
+    function tick(now) {
+      frame = 0;
+      if (!root.isConnected) { observer.disconnect(); cleanup(); return; }
+      if (!visible || document.hidden || motion.matches) return;
+      var dt = previous ? Math.min((now - previous) / 1000, .05) : 0;
+      previous = now;
+      elapsed += dt;
+      render(elapsed, dt, false);
+      frame = requestAnimationFrame(tick);
+    }
+    function sync() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      previous = 0;
+      if (motion.matches) render(5.5, 0, true);
+      else if (visible && !document.hidden) frame = requestAnimationFrame(tick);
+    }
+    function cleanup() {
+      document.removeEventListener('visibilitychange', sync);
+      motion.removeEventListener('change', sync);
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      visible = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0 });
+    observer.observe(root);
+    document.addEventListener('visibilitychange', sync);
+    motion.addEventListener('change', sync);
+    render(motion.matches ? 5.5 : 0, 0, motion.matches);
+
+    }
+    if (document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init, { once: true });
+  })();
+  </script>
+</section>
+
+<section class="card c03" data-card="agentic-chat" id="c03-root" aria-label="Agentic chat">
+  <style>
+.c03 { --field: #081f1f; --gold: #fdb343; --gold-hover: #f5a71e; --text: #e9edec; --muted: #9db6b4; --line: #c9dad7; --panel: #0c2b29; --paper: #edf5f4; --success: #6ee7a8; --risk: #ff6b6b; --mono: 'JetBrains Mono', 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace; --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; box-sizing: border-box; width: 100%; min-width: 0; min-height: 320px; height: 352px; padding: 16px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 1px solid var(--text); border-radius: 0; box-shadow: 6px 6px 0 #000; color: var(--text); background-color: var(--field); background-image: radial-gradient(#1c3a39 1px, transparent 1px); background-size: 14px 14px; font-family: var(--sans); }
+.c03 .c03-chrome { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px dotted var(--muted); flex: 0 0 auto; }
+.c03 .c03-controls { display: flex; gap: 4px; flex: 0 0 auto; }
+.c03 .c03-square { width: 8px; height: 8px; box-sizing: border-box; border: 1px solid var(--text); }
+.c03 .c03-title { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; margin: 0; font-weight: 400; }
+.c03 .c03-stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; }
+.c03 .c03-caption { margin: 0; color: var(--muted); font: 10px/1.5 var(--mono); white-space: nowrap; }
+.c03 .c03-mono { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.c03 .c03-window { background: var(--panel); border: 1px solid var(--line); box-shadow: 3px 3px 0 #000; min-width: 0; box-sizing: border-box; }
+@media (prefers-reduced-motion: reduce) { .c03 .c03-stage { scroll-behavior: auto; } }
+
+.c03 .c03-window { width: 100%; height: 246px; overflow: hidden; display: flex; flex-direction: column; }
+.c03 .c03-bar { padding: 9px 11px; border-bottom: 1px solid #36534f; display: flex; justify-content: space-between; font: 9px var(--mono); letter-spacing: .08em; color: var(--muted); }
+.c03 .c03-live { color: var(--success); }
+.c03 .c03-messages { padding: 12px; overflow: hidden; flex: 1; min-height: 0; }
+.c03 .c03-user { background: var(--paper); color: var(--field); margin: 0 0 10px auto; width: fit-content; max-width: 88%; padding: 9px 11px; font: 12px/1.5 var(--sans); min-height: 18px; box-sizing: border-box; }
+.c03 .c03-agent { border: 1px solid #45625d; padding: 9px 10px; width: 94%; box-sizing: border-box; min-height: 35px; }
+.c03 .c03-who { display: flex; gap: 5px; align-items: center; color: var(--muted); font: 9px var(--mono); letter-spacing: .08em; }
+.c03 .c03-dot { background: var(--gold); width: 3px; height: 3px; display: inline-block; }
+.c03 .c03-chip { margin-top: 8px; padding: 6px; border: 1px solid var(--gold); color: var(--gold); font: 10px var(--mono); white-space: nowrap; }
+.c03 .c03-tick { float: right; color: var(--success); }
+.c03 .c03-result { color: var(--muted); font: 10px/1.4 var(--mono); margin-top: 6px; }
+.c03 .c03-reply { font: 12px/1.5 var(--sans); margin: 7px 0 0; }
+.c03 .c03-footer { padding: 8px 11px; border-top: 1px solid #36534f; font: 9px var(--mono); color: var(--muted); }
+</style>
+  <div class="c03-chrome"><span class="c03-controls" aria-hidden="true"><i class="c03-square"></i><i class="c03-square"></i><i class="c03-square"></i></span><h2 class="c03-title">03 · Agentic chat</h2></div>
+  <div class="c03-stage"><div class="c03-window"><div class="c03-bar"><span>YOUR ASSISTANT</span><span class="c03-live">■ ONLINE</span></div><div class="c03-messages"><div class="c03-user"></div><div class="c03-agent"><div class="c03-who">AGENT <i class="c03-dot"></i><i class="c03-dot"></i><i class="c03-dot"></i></div><div class="c03-chip"><span class="c03-tool"></span><span class="c03-tick">✓</span></div><div class="c03-result"></div><p class="c03-reply"></p></div></div><div class="c03-footer">ASK → LOOK UP → TAKE ACTION</div></div></div>
+  <p class="c03-caption">You ask. Your agent takes the next step.</p>
+  <script>
+  (function () {
+    function init() {
+      var root = document.getElementById('c03-root');
+      if (!root || root.dataset.inited) return;
+      root.dataset.inited = '1';
+
+      var exchanges = [
+        ['Where is order #4471?', '⚙ lookup_order(#4471)', 'Found · out for delivery', 'Your order arrives today by 5 pm.'],
+        ['Can you approve my refund?', '⚙ check_refund(#4471)', 'Eligible · within 30 days', 'Your refund is approved. Allow 3 days.'],
+        ['Book a call for tomorrow.', '⚙ find_slot(tomorrow)', 'Available · 10:30 am', 'Your call is booked for 10:30 am.']
+      ];
+      var user = root.querySelector('.c03-user'), agent = root.querySelector('.c03-agent');
+      var chip = root.querySelector('.c03-chip'), tool = root.querySelector('.c03-tool');
+      var result = root.querySelector('.c03-result'), reply = root.querySelector('.c03-reply');
+      var toolTick = root.querySelector('.c03-tick'), dots = Array.from(root.querySelectorAll('.c03-dot'));
+      var messages = root.querySelector('.c03-messages');
+      var lastText = '';
+      function render(time, dt, reduced) {
+        var exchange = exchanges[Math.floor(time / 8.6) % 3], t = time % 8.6;
+        var typed = exchange[0].slice(0, Math.max(1, Math.floor(t * 30)));
+        if (user.textContent !== typed) user.textContent = typed;
+        agent.style.opacity = t > 1.1 ? '1' : '0';
+        dots.forEach(function(dot, i) { dot.style.opacity = t < 2.7 && !reduced ? String(.2 + .8 * Math.max(0, Math.sin(t * 7 - i))) : '0'; });
+        chip.style.display = t > 2.6 ? 'block' : 'none';
+        if (tool.textContent !== exchange[1]) tool.textContent = exchange[1];
+        toolTick.style.opacity = t > 3.5 ? '1' : '0';
+        result.style.display = t > 3.5 ? 'block' : 'none';
+        if (result.textContent !== exchange[2]) result.textContent = exchange[2];
+        var text = exchange[3].slice(0, Math.max(0, Math.floor((t - 4) * 30)));
+        if (text !== lastText) { reply.textContent = text; lastText = text; messages.scrollTop = 10000; }
+      }
+
+
+    var motion = matchMedia('(prefers-reduced-motion: reduce)');
+    var visible = false;
+    var frame = 0;
+    var previous = 0;
+    var elapsed = 0;
+    function tick(now) {
+      frame = 0;
+      if (!root.isConnected) { observer.disconnect(); cleanup(); return; }
+      if (!visible || document.hidden || motion.matches) return;
+      var dt = previous ? Math.min((now - previous) / 1000, .05) : 0;
+      previous = now;
+      elapsed += dt;
+      render(elapsed, dt, false);
+      frame = requestAnimationFrame(tick);
+    }
+    function sync() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      previous = 0;
+      if (motion.matches) render(7.4, 0, true);
+      else if (visible && !document.hidden) frame = requestAnimationFrame(tick);
+    }
+    function cleanup() {
+      document.removeEventListener('visibilitychange', sync);
+      motion.removeEventListener('change', sync);
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      visible = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0 });
+    observer.observe(root);
+    document.addEventListener('visibilitychange', sync);
+    motion.addEventListener('change', sync);
+    render(motion.matches ? 7.4 : 0, 0, motion.matches);
+
+    }
+    if (document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init, { once: true });
+  })();
+  </script>
+</section>
+
+<section class="card c04" data-card="invoice-matching" id="c04-root" aria-label="Invoice matching">
+  <style>
+.c04 { --field: #081f1f; --gold: #fdb343; --gold-hover: #f5a71e; --text: #e9edec; --muted: #9db6b4; --line: #c9dad7; --panel: #0c2b29; --paper: #edf5f4; --success: #6ee7a8; --risk: #ff6b6b; --mono: 'JetBrains Mono', 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace; --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; box-sizing: border-box; width: 100%; min-width: 0; min-height: 320px; height: 352px; padding: 16px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 1px solid var(--text); border-radius: 0; box-shadow: 6px 6px 0 #000; color: var(--text); background-color: var(--field); background-image: radial-gradient(#1c3a39 1px, transparent 1px); background-size: 14px 14px; font-family: var(--sans); }
+.c04 .c04-chrome { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px dotted var(--muted); flex: 0 0 auto; }
+.c04 .c04-controls { display: flex; gap: 4px; flex: 0 0 auto; }
+.c04 .c04-square { width: 8px; height: 8px; box-sizing: border-box; border: 1px solid var(--text); }
+.c04 .c04-title { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; margin: 0; font-weight: 400; }
+.c04 .c04-stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; }
+.c04 .c04-caption { margin: 0; color: var(--muted); font: 10px/1.5 var(--mono); white-space: nowrap; }
+.c04 .c04-mono { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.c04 .c04-window { background: var(--panel); border: 1px solid var(--line); box-shadow: 3px 3px 0 #000; min-width: 0; box-sizing: border-box; }
+@media (prefers-reduced-motion: reduce) { .c04 .c04-stage { scroll-behavior: auto; } }
+
+.c04 .c04-stage { gap: 8px; align-items: center; }
+.c04 .c04-doc { position: relative; background: var(--paper); color: var(--field); border: 1px solid var(--line); box-shadow: 3px 3px 0 #000; width: calc(50% - 4px); min-width: 0; box-sizing: border-box; padding: 12px 8px 9px; }
+.c04 .c04-kicker { color: #46645e; font: 8px var(--mono); letter-spacing: .06em; margin-bottom: 5px; }
+.c04 .c04-doc-title { margin: 0 0 12px; font: 15px var(--mono); letter-spacing: -.06em; }
+.c04 .c04-row { position: relative; display: flex; align-items: center; justify-content: space-between; height: 28px; border-top: 1px solid #becfca; gap: 3px; font: 10px var(--mono); }
+.c04 .c04-label { color: #46645e; font-size: 9px; }
+.c04 .c04-value { position: relative; z-index: 1; white-space: nowrap; }
+.c04 .c04-wash { position: absolute; inset: 1px -3px; background: #6ee7a859; opacity: 0; }
+.c04 .c04-flash { position: absolute; inset: 1px -3px; background: var(--gold); opacity: 0; }
+.c04 .c04-scan { position: absolute; top: 0; bottom: 0; width: 24px; left: 0; background: #fdb34399; opacity: 0; }
+.c04 .c04-mismatch { position: absolute; inset: 1px -3px; border: 1px solid #d64545; opacity: 0; background: #ff6b6b12; }
+.c04 .c04-status { display: block; height: 15px; font: 8px var(--mono); color: #993131; text-align: right; margin-top: 7px; }
+.c04 .c04-stamp { position: absolute; left: 50%; top: 68%; width: 216px; margin-left: -108px; margin-top: -25px; padding: 10px 4px; background: #081f1ff2; border: 3px double var(--gold); color: var(--gold); box-sizing: border-box; text-align: center; font: 26px/1.1 var(--mono); letter-spacing: -.06em; box-shadow: 4px 4px 0 #000; pointer-events: none; }
+.c04 .c04-note { position: absolute; bottom: 6px; left: 0; width: 100%; text-align: center; color: var(--gold); font: 9px var(--mono); letter-spacing: .05em; }
+</style>
+  <div class="c04-chrome"><span class="c04-controls" aria-hidden="true"><i class="c04-square"></i><i class="c04-square"></i><i class="c04-square"></i></span><h2 class="c04-title">04 · Invoice matching</h2></div>
+  <div class="c04-stage"><div class="c04-doc"><div class="c04-kicker">PURCHASE ORDER</div><h3 class="c04-doc-title">PO 10482</h3><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">Vendor</span><span class="c04-value">On file</span></div><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">PO no.</span><span class="c04-value">10482</span></div><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">Qty</span><span class="c04-value">12</span></div><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">Unit</span><span class="c04-value">$100</span></div><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">Total</span><span class="c04-value">$1,200</span></div><span class="c04-status">QTY · MISMATCH</span></div><div class="c04-doc"><div class="c04-kicker">YOUR INVOICE</div><h3 class="c04-doc-title">INV 88213</h3><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">Vendor</span><span class="c04-value">On file</span></div><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">PO no.</span><span class="c04-value">10482</span></div><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">Qty</span><span class="c04-value">10</span></div><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">Unit</span><span class="c04-value">$100</span></div><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">Total</span><span class="c04-value">$1,200</span></div><span class="c04-status">QTY · MISMATCH</span></div><div class="c04-stamp">MATCHED 4/5</div><div class="c04-note">ONE FIELD NEEDS YOUR REVIEW</div></div>
+  <p class="c04-caption">You only check what doesn’t match.</p>
+  <script>
+  (function () {
+    function init() {
+      var root = document.getElementById('c04-root');
+      if (!root || root.dataset.inited) return;
+      root.dataset.inited = '1';
+
+      var docs = Array.from(root.querySelectorAll('.c04-doc'));
+      var rows = Array.from(root.querySelectorAll('.c04-row')).map(function(row) {
+        return { wash: row.querySelector('.c04-wash'), flash: row.querySelector('.c04-flash'), scan: row.querySelector('.c04-scan'), mismatch: row.querySelector('.c04-mismatch') };
+      });
+      var status = Array.from(root.querySelectorAll('.c04-status'));
+      var stamp = root.querySelector('.c04-stamp'), note = root.querySelector('.c04-note');
+      var scanSpan = 140;
+      var resize = new ResizeObserver(function() {
+        scanSpan = docs[0].getBoundingClientRect().width - 16;
+      });
+      resize.observe(docs[0]);
+      function render(time, dt, reduced) {
+        var t = time % 9.2;
+        var enter = Math.min(1, t / .7), leave = Math.max(0, (t - 8.3) / .9);
+        docs.forEach(function(doc, i) {
+          doc.style.transform = 'translateX(' + (i ? 1 : -1) * ((1 - enter) * 110 + leave * 130) + '%)';
+          doc.style.opacity = String(Math.min(1, .3 + enter) * (1 - leave));
+        });
+        rows.forEach(function(row, i) {
+          var index = i % 5, age = t - (1.1 + index * .85);
+          var scanning = age > 0 && age < .65;
+          row.scan.style.opacity = scanning ? '1' : '0';
+          row.scan.style.transform = 'translateX(' + (Math.max(0, Math.min(1, age / .65)) * scanSpan - 24) + 'px)';
+          row.flash.style.opacity = index !== 2 && age > .65 && age < .88 ? String(1 - (age - .65) / .23) : '0';
+          row.wash.style.opacity = age > .65 && index !== 2 ? '1' : '0';
+          row.mismatch.style.opacity = age > .65 && index === 2 ? '1' : '0';
+        });
+        status.forEach(function(label) { label.style.opacity = t > 3.45 ? '1' : '0'; });
+        var slam = Math.max(0, Math.min(1, (t - 5.85) / .18));
+        stamp.style.opacity = t > 5.85 && t < 8.3 ? '1' : '0';
+        var shake = !reduced && t > 6.03 && t < 6.2 ? Math.sin(t * 130) * 2 : 0;
+        stamp.style.transform = 'translateX(' + shake + 'px) rotate(-9deg) scale(' + (1.5 - slam * .5) + ')';
+        note.style.opacity = t > 5.85 && t < 8.3 ? '1' : '0';
+      }
+
+
+    var motion = matchMedia('(prefers-reduced-motion: reduce)');
+    var visible = false;
+    var frame = 0;
+    var previous = 0;
+    var elapsed = 0;
+    function tick(now) {
+      frame = 0;
+      if (!root.isConnected) { observer.disconnect(); cleanup(); return; }
+      if (!visible || document.hidden || motion.matches) return;
+      var dt = previous ? Math.min((now - previous) / 1000, .05) : 0;
+      previous = now;
+      elapsed += dt;
+      render(elapsed, dt, false);
+      frame = requestAnimationFrame(tick);
+    }
+    function sync() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      previous = 0;
+      if (motion.matches) render(7.5, 0, true);
+      else if (visible && !document.hidden) frame = requestAnimationFrame(tick);
+    }
+    function cleanup() {
+      document.removeEventListener('visibilitychange', sync);
+      motion.removeEventListener('change', sync);
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      visible = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0 });
+    observer.observe(root);
+    document.addEventListener('visibilitychange', sync);
+    motion.addEventListener('change', sync);
+    render(motion.matches ? 7.5 : 0, 0, motion.matches);
+
+    }
+    if (document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init, { once: true });
+  })();
+  </script>
+</section>
+
+<section class="card c05" data-card="swimlane-race" id="c05-root" aria-label="Swimlane race">
+  <style>
+.c05 { --field: #081f1f; --gold: #fdb343; --gold-hover: #f5a71e; --text: #e9edec; --muted: #9db6b4; --line: #c9dad7; --panel: #0c2b29; --paper: #edf5f4; --success: #6ee7a8; --risk: #ff6b6b; --mono: 'JetBrains Mono', 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace; --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; box-sizing: border-box; width: 100%; min-width: 0; min-height: 320px; height: 352px; padding: 16px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 1px solid var(--text); border-radius: 0; box-shadow: 6px 6px 0 #000; color: var(--text); background-color: var(--field); background-image: radial-gradient(#1c3a39 1px, transparent 1px); background-size: 14px 14px; font-family: var(--sans); }
+.c05 .c05-chrome { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px dotted var(--muted); flex: 0 0 auto; }
+.c05 .c05-controls { display: flex; gap: 4px; flex: 0 0 auto; }
+.c05 .c05-square { width: 8px; height: 8px; box-sizing: border-box; border: 1px solid var(--text); }
+.c05 .c05-title { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; margin: 0; font-weight: 400; }
+.c05 .c05-stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; }
+.c05 .c05-caption { margin: 0; color: var(--muted); font: 10px/1.5 var(--mono); white-space: nowrap; }
+.c05 .c05-mono { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.c05 .c05-window { background: var(--panel); border: 1px solid var(--line); box-shadow: 3px 3px 0 #000; min-width: 0; box-sizing: border-box; }
+@media (prefers-reduced-motion: reduce) { .c05 .c05-stage { scroll-behavior: auto; } }
+
+.c05 .c05-stage { flex-direction: column; justify-content: center; align-items: stretch; gap: 22px; }
+.c05 .c05-lane { min-width: 0; }
+.c05 .c05-heading { display: flex; justify-content: space-between; align-items: center; font: 10px var(--mono); letter-spacing: .08em; margin-bottom: 13px; }
+.c05 .c05-time { font: 15px var(--mono); font-variant-numeric: tabular-nums; }
+.c05 .c05-track { position: relative; height: 62px; margin: 0 5px; }
+.c05 .c05-rail { position: absolute; height: 1px; background: #54716d; top: 5px; left: 0; right: 0; }
+.c05 .c05-stations { display: flex; justify-content: space-between; position: relative; }
+.c05 .c05-stop { width: 15%; display: flex; flex-direction: column; align-items: center; gap: 11px; }
+.c05 .c05-stop:first-child { align-items: flex-start; }
+.c05 .c05-stop:last-child { align-items: flex-end; }
+.c05 .c05-mark { display: block; width: 9px; height: 9px; background: var(--field); border: 1px solid var(--muted); }
+.c05 .c05-label { font: 9px/1.45 var(--sans); color: var(--muted); text-align: center; }
+.c05 .c05-token { position: absolute; top: 0; left: 0; width: 11px; height: 11px; background: var(--text); box-shadow: 0 0 0 3px var(--field); }
+.c05 .c05-auto .c05-heading { color: var(--gold); }
+.c05 .c05-auto .c05-token { background: var(--gold); }
+.c05 .c05-auto .c05-rail { background: #fdb34366; }
+.c05 .c05-saving { align-self: flex-end; margin-top: -33px; padding: 6px 10px; color: var(--field); background: var(--gold); font: 19px var(--mono); box-shadow: 3px 3px 0 #000; }
+</style>
+  <div class="c05-chrome"><span class="c05-controls" aria-hidden="true"><i class="c05-square"></i><i class="c05-square"></i><i class="c05-square"></i></span><h2 class="c05-title">05 · Swimlane race</h2></div>
+  <div class="c05-stage"><div class="c05-lane c05-manual"><div class="c05-heading"><span>MANUAL</span><span class="c05-time">00:00.0</span></div><div class="c05-track"><div class="c05-rail"></div><div class="c05-stations"><div class="c05-stop"><i class="c05-mark"></i><span class="c05-label">Open<br>email</span></div><div class="c05-stop"><i class="c05-mark"></i><span class="c05-label">Read<br>PDF</span></div><div class="c05-stop"><i class="c05-mark"></i><span class="c05-label">Type into<br>ERP</span></div><div class="c05-stop"><i class="c05-mark"></i><span class="c05-label">Check<br>price</span></div><div class="c05-stop"><i class="c05-mark"></i><span class="c05-label">Ask<br>approval</span></div><div class="c05-stop"><i class="c05-mark"></i><span class="c05-label">File<br>it</span></div></div><div class="c05-token"></div></div></div><div class="c05-lane c05-auto"><div class="c05-heading"><span>AUTOMATED</span><span class="c05-time">00:00.0</span></div><div class="c05-track"><div class="c05-rail"></div><div class="c05-stations"><div class="c05-stop"><i class="c05-mark"></i><span class="c05-label">Receive</span></div><div class="c05-stop"><i class="c05-mark"></i><span class="c05-label">Done</span></div></div><div class="c05-token"></div></div></div><div class="c05-saving">−72%</div></div>
+  <p class="c05-caption">You get the same result. Hours back.</p>
+  <script>
+  (function () {
+    function init() {
+      var root = document.getElementById('c05-root');
+      if (!root || root.dataset.inited) return;
+      root.dataset.inited = '1';
+
+      var tracks = Array.from(root.querySelectorAll('.c05-track'));
+      var tokens = Array.from(root.querySelectorAll('.c05-token'));
+      var timers = Array.from(root.querySelectorAll('.c05-time'));
+      var saving = root.querySelector('.c05-saving');
+      var spans = [280, 280];
+      var positions = [];
+      var resize = new ResizeObserver(function() {
+        tracks.forEach(function(track, i) {
+          var bounds = track.getBoundingClientRect();
+          spans[i] = bounds.width - 11;
+          positions[i] = Array.from(track.querySelectorAll('.c05-mark')).map(function(mark) { return mark.getBoundingClientRect().left - bounds.left; });
+        });
+        if (motion.matches) render(8, 0, true);
+      });
+      tracks.forEach(function(track) { resize.observe(track); });
+      function clock(value) { return '00:' + value.toFixed(1).padStart(4, '0'); }
+      function render(time) {
+        var t = time % 9.7;
+        var manual = Math.min(7.4, t), auto = Math.min(2.1, t);
+        var segment = manual / 7.4 * 5;
+        var part = Math.max(0, Math.min(1, (segment % 1 - .42) / .58));
+        var index = Math.min(4, Math.floor(segment));
+        var stops = positions[0] || [0, spans[0] * .2, spans[0] * .4, spans[0] * .6, spans[0] * .8, spans[0]];
+        var x = manual >= 7.4 ? spans[0] : stops[index] + (stops[index + 1] - stops[index]) * part;
+        tokens[0].style.transform = 'translateX(' + x + 'px)';
+        tokens[1].style.transform = 'translateX(' + Math.max(0, Math.min(1, (auto - .25) / 1.85)) * spans[1] + 'px)';
+        timers[0].textContent = clock(manual); timers[1].textContent = clock(auto);
+        saving.style.opacity = t >= 7.4 ? '1' : '0';
+        saving.style.transform = 'translateY(' + (t >= 7.4 ? 0 : 8) + 'px)';
+      }
+
+
+    var motion = matchMedia('(prefers-reduced-motion: reduce)');
+    var visible = false;
+    var frame = 0;
+    var previous = 0;
+    var elapsed = 0;
+    function tick(now) {
+      frame = 0;
+      if (!root.isConnected) { observer.disconnect(); cleanup(); return; }
+      if (!visible || document.hidden || motion.matches) return;
+      var dt = previous ? Math.min((now - previous) / 1000, .05) : 0;
+      previous = now;
+      elapsed += dt;
+      render(elapsed, dt, false);
+      frame = requestAnimationFrame(tick);
+    }
+    function sync() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      previous = 0;
+      if (motion.matches) render(8, 0, true);
+      else if (visible && !document.hidden) frame = requestAnimationFrame(tick);
+    }
+    function cleanup() {
+      document.removeEventListener('visibilitychange', sync);
+      motion.removeEventListener('change', sync);
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      visible = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0 });
+    observer.observe(root);
+    document.addEventListener('visibilitychange', sync);
+    motion.addEventListener('change', sync);
+    render(motion.matches ? 8 : 0, 0, motion.matches);
+
+    }
+    if (document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init, { once: true });
+  })();
+  </script>
+</section>
+
+<section class="card c06" data-card="agent-terminal" id="c06-root" aria-label="Agent terminal">
+  <style>
+.c06 { --field: #081f1f; --gold: #fdb343; --gold-hover: #f5a71e; --text: #e9edec; --muted: #9db6b4; --line: #c9dad7; --panel: #0c2b29; --paper: #edf5f4; --success: #6ee7a8; --risk: #ff6b6b; --mono: 'JetBrains Mono', 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace; --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; box-sizing: border-box; width: 100%; min-width: 0; min-height: 320px; height: 352px; padding: 16px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 1px solid var(--text); border-radius: 0; box-shadow: 6px 6px 0 #000; color: var(--text); background-color: var(--field); background-image: radial-gradient(#1c3a39 1px, transparent 1px); background-size: 14px 14px; font-family: var(--sans); }
+.c06 .c06-chrome { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px dotted var(--muted); flex: 0 0 auto; }
+.c06 .c06-controls { display: flex; gap: 4px; flex: 0 0 auto; }
+.c06 .c06-square { width: 8px; height: 8px; box-sizing: border-box; border: 1px solid var(--text); }
+.c06 .c06-title { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; margin: 0; font-weight: 400; }
+.c06 .c06-stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; }
+.c06 .c06-caption { margin: 0; color: var(--muted); font: 10px/1.5 var(--mono); white-space: nowrap; }
+.c06 .c06-mono { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.c06 .c06-window { background: var(--panel); border: 1px solid var(--line); box-shadow: 3px 3px 0 #000; min-width: 0; box-sizing: border-box; }
+@media (prefers-reduced-motion: reduce) { .c06 .c06-stage { scroll-behavior: auto; } }
+
+.c06 .c06-window { position: relative; width: 100%; height: 246px; overflow: hidden; }
+.c06 .c06-bar { padding: 9px 10px; background: #10332f; border-bottom: 1px solid #36534f; color: var(--muted); font: 9px var(--mono); letter-spacing: .08em; display: flex; justify-content: space-between; }
+.c06 .c06-viewport { position: absolute; inset: 32px 0 0; overflow: hidden; }
+.c06 .c06-output { position: absolute; top: 10px; left: 10px; right: 8px; }
+.c06 .c06-line { min-height: 27px; font: 10px/1.65 var(--mono); color: var(--text); overflow-wrap: anywhere; white-space: pre-wrap; }
+.c06 .c06-line:nth-child(1) { color: var(--gold); }
+.c06 .c06-line:nth-child(2) { color: var(--muted); }
+.c06 .c06-line:nth-child(7) { color: var(--success); }
+.c06 .c06-cursor { display: inline-block; width: 6px; height: 11px; vertical-align: -1px; background: var(--gold); }
+.c06 .c06-scanlines { position: absolute; inset: 32px 0 0; pointer-events: none; background: repeating-linear-gradient(transparent 0 3px, #00000012 3px 4px); }
+</style>
+  <div class="c06-chrome"><span class="c06-controls" aria-hidden="true"><i class="c06-square"></i><i class="c06-square"></i><i class="c06-square"></i></span><h2 class="c06-title">06 · Agent terminal</h2></div>
+  <div class="c06-stage"><div class="c06-window"><div class="c06-bar"><span>INVOICE-AGENT</span><span>RUN / 0042</span></div><div class="c06-viewport"><div class="c06-output"><div class="c06-line"></div><div class="c06-line"></div><div class="c06-line"></div><div class="c06-line"></div><div class="c06-line"></div><div class="c06-line"></div><div class="c06-line"></div><div class="c06-line"></div></div></div><div class="c06-scanlines"></div></div></div>
+  <p class="c06-caption">You set the task. Watch the work.</p>
+  <script>
+  (function () {
+    function init() {
+      var root = document.getElementById('c06-root');
+      if (!root || root.dataset.inited) return;
+      root.dataset.inited = '1';
+
+      var lines = ['$ run invoice-agent', '› thinking', '› read_sheet("Q3 invoices")  ✓ 42 rows', '› match_po(…)  ✓ 40 matched, 2 flagged', '› post_invoice(…) ×40  ✓', '› notify("ap@…")  ✓', 'done · 42 invoices · 6 min', '$ '];
+      var starts = [0, .8, 1.8, 3, 4.4, 5.4, 6.4, 7.3];
+      var elements = Array.from(root.querySelectorAll('.c06-line'));
+      var output = root.querySelector('.c06-output');
+      var cursor = document.createElement('span'); cursor.className = 'c06-cursor';
+      var content = elements.map(function(element) { var text = document.createTextNode(''); element.append(text); return text; });
+      var sizes = [];
+      var resize = new ResizeObserver(function() {
+        sizes = elements.map(function(element) { return element.getBoundingClientRect().height; });
+        if (motion.matches) render(8.5, 0, true);
+      });
+      elements.forEach(function(element) { resize.observe(element); });
+      function render(time, dt, reduced) {
+        var t = time % 9.8, active = 0;
+        elements.forEach(function(element, i) {
+          var age = t - starts[i];
+          var text = age >= 0 ? lines[i].slice(0, Math.floor(age * 48) + 1) : '';
+          if (i === 1 && t >= .8 && t < 1.8 && !reduced) text += '.'.repeat(Math.floor(t * 4) % 4);
+          if (content[i].nodeValue !== text) content[i].nodeValue = text;
+          element.style.opacity = age >= 0 ? '1' : '0';
+          if (age >= 0) active = i;
+        });
+        if (cursor.parentElement !== elements[active]) elements[active].append(cursor);
+        cursor.style.opacity = reduced || Math.floor(t * 2.4) % 2 === 0 ? '1' : '0';
+        var consumed = sizes.slice(0, active + 1).reduce(function(sum, height) { return sum + height; }, 0);
+        var shift = Math.max(0, consumed - 188);
+        output.style.transform = 'translateY(-' + shift + 'px)';
+      }
+
+
+    var motion = matchMedia('(prefers-reduced-motion: reduce)');
+    var visible = false;
+    var frame = 0;
+    var previous = 0;
+    var elapsed = 0;
+    function tick(now) {
+      frame = 0;
+      if (!root.isConnected) { observer.disconnect(); cleanup(); return; }
+      if (!visible || document.hidden || motion.matches) return;
+      var dt = previous ? Math.min((now - previous) / 1000, .05) : 0;
+      previous = now;
+      elapsed += dt;
+      render(elapsed, dt, false);
+      frame = requestAnimationFrame(tick);
+    }
+    function sync() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      previous = 0;
+      if (motion.matches) render(8.5, 0, true);
+      else if (visible && !document.hidden) frame = requestAnimationFrame(tick);
+    }
+    function cleanup() {
+      document.removeEventListener('visibilitychange', sync);
+      motion.removeEventListener('change', sync);
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      visible = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0 });
+    observer.observe(root);
+    document.addEventListener('visibilitychange', sync);
+    motion.addEventListener('change', sync);
+    render(motion.matches ? 8.5 : 0, 0, motion.matches);
+
+    }
+    if (document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init, { once: true });
+  })();
+  </script>
+</section>
+
+<section class="card c07" data-card="ticket-queue" id="c07-root" aria-label="Ticket queue">
+  <style>
+.c07 { --field: #081f1f; --gold: #fdb343; --gold-hover: #f5a71e; --text: #e9edec; --muted: #9db6b4; --line: #c9dad7; --panel: #0c2b29; --paper: #edf5f4; --success: #6ee7a8; --risk: #ff6b6b; --mono: 'JetBrains Mono', 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace; --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; box-sizing: border-box; width: 100%; min-width: 0; min-height: 320px; height: 352px; padding: 16px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 1px solid var(--text); border-radius: 0; box-shadow: 6px 6px 0 #000; color: var(--text); background-color: var(--field); background-image: radial-gradient(#1c3a39 1px, transparent 1px); background-size: 14px 14px; font-family: var(--sans); }
+.c07 .c07-chrome { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px dotted var(--muted); flex: 0 0 auto; }
+.c07 .c07-controls { display: flex; gap: 4px; flex: 0 0 auto; }
+.c07 .c07-square { width: 8px; height: 8px; box-sizing: border-box; border: 1px solid var(--text); }
+.c07 .c07-title { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; margin: 0; font-weight: 400; }
+.c07 .c07-stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; }
+.c07 .c07-caption { margin: 0; color: var(--muted); font: 10px/1.5 var(--mono); white-space: nowrap; }
+.c07 .c07-mono { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.c07 .c07-window { background: var(--panel); border: 1px solid var(--line); box-shadow: 3px 3px 0 #000; min-width: 0; box-sizing: border-box; }
+@media (prefers-reduced-motion: reduce) { .c07 .c07-stage { scroll-behavior: auto; } }
+
+.c07 .c07-stage { align-items: center; gap: 14px; }
+.c07 .c07-queue { flex: 1; height: 248px; overflow: hidden; position: relative; }
+.c07 .c07-bar { height: 30px; padding: 0 8px; display: flex; justify-content: space-between; align-items: center; background: var(--panel); position: relative; z-index: 2; border-bottom: 1px solid var(--gold); color: var(--gold); font: 9px var(--mono); letter-spacing: .08em; }
+.c07 .c07-check { color: var(--success); }
+.c07 .c07-list { padding: 0 7px; }
+.c07 .c07-row { height: 21px; display: flex; align-items: center; gap: 6px; white-space: nowrap; font: 9px var(--mono); border-bottom: 1px solid #294842; }
+.c07 .c07-number { color: var(--muted); font-size: 8px; }
+.c07 .c07-text { overflow: hidden; text-overflow: ellipsis; }
+.c07 .c07-fade { position: absolute; inset: auto 0 0; height: 25px; background: linear-gradient(transparent, var(--field)); pointer-events: none; }
+.c07 .c07-tally { flex: 0 0 92px; text-align: center; }
+.c07 .c07-count { color: var(--gold); font: 64px/1 var(--mono); letter-spacing: -.08em; font-variant-numeric: tabular-nums; margin-right: 5px; }
+.c07 .c07-label { margin-top: 9px; color: var(--muted); font: 9px var(--mono); letter-spacing: .08em; }
+.c07 .c07-clear { margin-top: 16px; min-height: 28px; color: var(--success); font: 10px/1.5 var(--mono); letter-spacing: .04em; }
+</style>
+  <div class="c07-chrome"><span class="c07-controls" aria-hidden="true"><i class="c07-square"></i><i class="c07-square"></i><i class="c07-square"></i></span><h2 class="c07-title">07 · Ticket queue</h2></div>
+  <div class="c07-stage"><div class="c07-window c07-queue"><div class="c07-bar"><span>■ AGENT</span><span class="c07-check">✓ RESOLVED</span></div><div class="c07-list"><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div></div><div class="c07-fade"></div></div><div class="c07-tally"><div class="c07-count">48</div><div class="c07-label">REMAINING</div><div class="c07-clear">QUEUE<br>CLEAR</div></div></div>
+  <p class="c07-caption">Your queue gets shorter. Then disappears.</p>
+  <script>
+  (function () {
+    function init() {
+      var root = document.getElementById('c07-root');
+      if (!root || root.dataset.inited) return;
+      root.dataset.inited = '1';
+
+      var subjects = ['reset password', 'invoice copy', 'update address', 'order status', 'change plan', 'refund request', 'access request', 'delivery date', 'billing query', 'account unlock'];
+      var rows = Array.from(root.querySelectorAll('.c07-row')).map(function(row) { return { el: row, id: row.querySelector('.c07-number'), text: row.querySelector('.c07-text') }; });
+      var list = root.querySelector('.c07-list'), count = root.querySelector('.c07-count');
+      var clear = root.querySelector('.c07-clear'), check = root.querySelector('.c07-check');
+      var previousResolved = -1;
+      function render(time, dt, reduced) {
+        var t = time % 9.8;
+        var progress = Math.min(48, Math.pow(Math.min(1, t / 7.6), 1.2) * 48);
+        var resolved = Math.floor(progress), fraction = progress - resolved;
+        var refill = t > 9.1 ? Math.min(1, (t - 9.1) / .7) : 0;
+        if (refill) resolved = 0;
+        count.textContent = String(48 - resolved);
+        if (resolved !== previousResolved) {
+          rows.forEach(function(row, i) {
+            row.id.textContent = '#' + (5031 + resolved + i);
+            row.text.textContent = subjects[(resolved + i) % subjects.length];
+          });
+          previousResolved = resolved;
+        }
+        list.style.transform = 'translateY(' + (refill ? (1 - refill) * 235 : -fraction * 21) + 'px)';
+        rows.forEach(function(row, i) {
+          row.el.style.opacity = resolved + i >= 48 ? '0' : i === 0 && !refill ? String(1 - fraction) : '1';
+          row.el.style.transform = i === 0 && !refill ? 'translateX(-' + fraction * 90 + 'px)' : 'none';
+        });
+        check.style.opacity = reduced || fraction > .45 || resolved === 48 ? '1' : '.2';
+        clear.style.opacity = resolved === 48 ? '1' : '0';
+      }
+
+
+    var motion = matchMedia('(prefers-reduced-motion: reduce)');
+    var visible = false;
+    var frame = 0;
+    var previous = 0;
+    var elapsed = 0;
+    function tick(now) {
+      frame = 0;
+      if (!root.isConnected) { observer.disconnect(); cleanup(); return; }
+      if (!visible || document.hidden || motion.matches) return;
+      var dt = previous ? Math.min((now - previous) / 1000, .05) : 0;
+      previous = now;
+      elapsed += dt;
+      render(elapsed, dt, false);
+      frame = requestAnimationFrame(tick);
+    }
+    function sync() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      previous = 0;
+      if (motion.matches) render(8.2, 0, true);
+      else if (visible && !document.hidden) frame = requestAnimationFrame(tick);
+    }
+    function cleanup() {
+      document.removeEventListener('visibilitychange', sync);
+      motion.removeEventListener('change', sync);
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      visible = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0 });
+    observer.observe(root);
+    document.addEventListener('visibilitychange', sync);
+    motion.addEventListener('change', sync);
+    render(motion.matches ? 8.2 : 0, 0, motion.matches);
+
+    }
+    if (document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init, { once: true });
+  })();
+  </script>
+</section>
+
+<section class="card c08" data-card="integration-map" id="c08-root" aria-label="Integration map">
+  <style>
+.c08 { --field: #081f1f; --gold: #fdb343; --gold-hover: #f5a71e; --text: #e9edec; --muted: #9db6b4; --line: #c9dad7; --panel: #0c2b29; --paper: #edf5f4; --success: #6ee7a8; --risk: #ff6b6b; --mono: 'JetBrains Mono', 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace; --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; box-sizing: border-box; width: 100%; min-width: 0; min-height: 320px; height: 352px; padding: 16px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 1px solid var(--text); border-radius: 0; box-shadow: 6px 6px 0 #000; color: var(--text); background-color: var(--field); background-image: radial-gradient(#1c3a39 1px, transparent 1px); background-size: 14px 14px; font-family: var(--sans); }
+.c08 .c08-chrome { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px dotted var(--muted); flex: 0 0 auto; }
+.c08 .c08-controls { display: flex; gap: 4px; flex: 0 0 auto; }
+.c08 .c08-square { width: 8px; height: 8px; box-sizing: border-box; border: 1px solid var(--text); }
+.c08 .c08-title { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; margin: 0; font-weight: 400; }
+.c08 .c08-stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; }
+.c08 .c08-caption { margin: 0; color: var(--muted); font: 10px/1.5 var(--mono); white-space: nowrap; }
+.c08 .c08-mono { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.c08 .c08-window { background: var(--panel); border: 1px solid var(--line); box-shadow: 3px 3px 0 #000; min-width: 0; box-sizing: border-box; }
+@media (prefers-reduced-motion: reduce) { .c08 .c08-stage { scroll-behavior: auto; } }
+
+.c08 .c08-map { width: 100%; height: 100%; }
+.c08 .c08-wire { fill: none; stroke: #65827c; stroke-width: 1; }
+.c08 .c08-system { fill: var(--panel); stroke: var(--line); filter: drop-shadow(3px 3px 0 #000); }
+.c08 .c08-glyph { fill: var(--muted); shape-rendering: crispEdges; }
+.c08 .c08-label { fill: var(--text); font: 10px var(--mono); letter-spacing: .02em; }
+.c08 .c08-hub { fill: var(--field); stroke: var(--gold); stroke-width: 1.5; filter: drop-shadow(4px 4px 0 #000); }
+.c08 .c08-hub-flash { fill: var(--gold); }
+.c08 .c08-hub-text { fill: var(--gold); font: 14px var(--mono); letter-spacing: .08em; }
+.c08 .c08-packet { fill: var(--gold); }
+.c08 .c08-status { fill: var(--muted); font: 9px var(--mono); letter-spacing: .06em; }
+</style>
+  <div class="c08-chrome"><span class="c08-controls" aria-hidden="true"><i class="c08-square"></i><i class="c08-square"></i><i class="c08-square"></i></span><h2 class="c08-title">08 · Integration map</h2></div>
+  <div class="c08-stage"><svg class="c08-map" viewBox="0 0 320 258" role="img" aria-label="Your ERP, spreadsheet, email, CRM and phone exchange data through a central hub"><path class="c08-wire" d="M74 54H128V101"/><path class="c08-wire" d="M246 54H192V101"/><path class="c08-wire" d="M73 164H113V135H128"/><path class="c08-wire" d="M247 164H207V135H192"/><path class="c08-wire" d="M160 216V161"/><rect class="c08-system" x="15" y="24" width="100" height="39"/><rect class="c08-glyph" x="23" y="35" width="2" height="2"/><rect class="c08-glyph" x="25" y="35" width="2" height="2"/><rect class="c08-glyph" x="27" y="35" width="2" height="2"/><rect class="c08-glyph" x="29" y="35" width="2" height="2"/><rect class="c08-glyph" x="31" y="35" width="2" height="2"/><rect class="c08-glyph" x="33" y="35" width="2" height="2"/><rect class="c08-glyph" x="35" y="35" width="2" height="2"/><rect class="c08-glyph" x="37" y="35" width="2" height="2"/><rect class="c08-glyph" x="23" y="37" width="2" height="2"/><rect class="c08-glyph" x="37" y="37" width="2" height="2"/><rect class="c08-glyph" x="23" y="39" width="2" height="2"/><rect class="c08-glyph" x="27" y="39" width="2" height="2"/><rect class="c08-glyph" x="29" y="39" width="2" height="2"/><rect class="c08-glyph" x="33" y="39" width="2" height="2"/><rect class="c08-glyph" x="37" y="39" width="2" height="2"/><rect class="c08-glyph" x="23" y="41" width="2" height="2"/><rect class="c08-glyph" x="37" y="41" width="2" height="2"/><rect class="c08-glyph" x="23" y="43" width="2" height="2"/><rect class="c08-glyph" x="27" y="43" width="2" height="2"/><rect class="c08-glyph" x="29" y="43" width="2" height="2"/><rect class="c08-glyph" x="33" y="43" width="2" height="2"/><rect class="c08-glyph" x="37" y="43" width="2" height="2"/><rect class="c08-glyph" x="23" y="45" width="2" height="2"/><rect class="c08-glyph" x="37" y="45" width="2" height="2"/><rect class="c08-glyph" x="23" y="47" width="2" height="2"/><rect class="c08-glyph" x="27" y="47" width="2" height="2"/><rect class="c08-glyph" x="29" y="47" width="2" height="2"/><rect class="c08-glyph" x="33" y="47" width="2" height="2"/><rect class="c08-glyph" x="37" y="47" width="2" height="2"/><rect class="c08-glyph" x="23" y="49" width="2" height="2"/><rect class="c08-glyph" x="25" y="49" width="2" height="2"/><rect class="c08-glyph" x="27" y="49" width="2" height="2"/><rect class="c08-glyph" x="29" y="49" width="2" height="2"/><rect class="c08-glyph" x="31" y="49" width="2" height="2"/><rect class="c08-glyph" x="33" y="49" width="2" height="2"/><rect class="c08-glyph" x="35" y="49" width="2" height="2"/><rect class="c08-glyph" x="37" y="49" width="2" height="2"/><text class="c08-label" x="45" y="48">ERP</text><rect class="c08-system" x="205" y="24" width="100" height="39"/><rect class="c08-glyph" x="213" y="35" width="2" height="2"/><rect class="c08-glyph" x="215" y="35" width="2" height="2"/><rect class="c08-glyph" x="217" y="35" width="2" height="2"/><rect class="c08-glyph" x="219" y="35" width="2" height="2"/><rect class="c08-glyph" x="221" y="35" width="2" height="2"/><rect class="c08-glyph" x="223" y="35" width="2" height="2"/><rect class="c08-glyph" x="225" y="35" width="2" height="2"/><rect class="c08-glyph" x="227" y="35" width="2" height="2"/><rect class="c08-glyph" x="213" y="37" width="2" height="2"/><rect class="c08-glyph" x="219" y="37" width="2" height="2"/><rect class="c08-glyph" x="227" y="37" width="2" height="2"/><rect class="c08-glyph" x="213" y="39" width="2" height="2"/><rect class="c08-glyph" x="215" y="39" width="2" height="2"/><rect class="c08-glyph" x="217" y="39" width="2" height="2"/><rect class="c08-glyph" x="219" y="39" width="2" height="2"/><rect class="c08-glyph" x="221" y="39" width="2" height="2"/><rect class="c08-glyph" x="223" y="39" width="2" height="2"/><rect class="c08-glyph" x="225" y="39" width="2" height="2"/><rect class="c08-glyph" x="227" y="39" width="2" height="2"/><rect class="c08-glyph" x="213" y="41" width="2" height="2"/><rect class="c08-glyph" x="219" y="41" width="2" height="2"/><rect class="c08-glyph" x="227" y="41" width="2" height="2"/><rect class="c08-glyph" x="213" y="43" width="2" height="2"/><rect class="c08-glyph" x="215" y="43" width="2" height="2"/><rect class="c08-glyph" x="217" y="43" width="2" height="2"/><rect class="c08-glyph" x="219" y="43" width="2" height="2"/><rect class="c08-glyph" x="221" y="43" width="2" height="2"/><rect class="c08-glyph" x="223" y="43" width="2" height="2"/><rect class="c08-glyph" x="225" y="43" width="2" height="2"/><rect class="c08-glyph" x="227" y="43" width="2" height="2"/><rect class="c08-glyph" x="213" y="45" width="2" height="2"/><rect class="c08-glyph" x="219" y="45" width="2" height="2"/><rect class="c08-glyph" x="227" y="45" width="2" height="2"/><rect class="c08-glyph" x="213" y="47" width="2" height="2"/><rect class="c08-glyph" x="219" y="47" width="2" height="2"/><rect class="c08-glyph" x="227" y="47" width="2" height="2"/><rect class="c08-glyph" x="213" y="49" width="2" height="2"/><rect class="c08-glyph" x="215" y="49" width="2" height="2"/><rect class="c08-glyph" x="217" y="49" width="2" height="2"/><rect class="c08-glyph" x="219" y="49" width="2" height="2"/><rect class="c08-glyph" x="221" y="49" width="2" height="2"/><rect class="c08-glyph" x="223" y="49" width="2" height="2"/><rect class="c08-glyph" x="225" y="49" width="2" height="2"/><rect class="c08-glyph" x="227" y="49" width="2" height="2"/><text class="c08-label" x="235" y="48" textLength="64" lengthAdjust="spacingAndGlyphs">SPREADSHEET</text><rect class="c08-system" x="15" y="144" width="96" height="39"/><rect class="c08-glyph" x="23" y="155" width="2" height="2"/><rect class="c08-glyph" x="25" y="155" width="2" height="2"/><rect class="c08-glyph" x="27" y="155" width="2" height="2"/><rect class="c08-glyph" x="29" y="155" width="2" height="2"/><rect class="c08-glyph" x="31" y="155" width="2" height="2"/><rect class="c08-glyph" x="33" y="155" width="2" height="2"/><rect class="c08-glyph" x="35" y="155" width="2" height="2"/><rect class="c08-glyph" x="37" y="155" width="2" height="2"/><rect class="c08-glyph" x="23" y="157" width="2" height="2"/><rect class="c08-glyph" x="25" y="157" width="2" height="2"/><rect class="c08-glyph" x="35" y="157" width="2" height="2"/><rect class="c08-glyph" x="37" y="157" width="2" height="2"/><rect class="c08-glyph" x="23" y="159" width="2" height="2"/><rect class="c08-glyph" x="27" y="159" width="2" height="2"/><rect class="c08-glyph" x="33" y="159" width="2" height="2"/><rect class="c08-glyph" x="37" y="159" width="2" height="2"/><rect class="c08-glyph" x="23" y="161" width="2" height="2"/><rect class="c08-glyph" x="29" y="161" width="2" height="2"/><rect class="c08-glyph" x="31" y="161" width="2" height="2"/><rect class="c08-glyph" x="37" y="161" width="2" height="2"/><rect class="c08-glyph" x="23" y="163" width="2" height="2"/><rect class="c08-glyph" x="37" y="163" width="2" height="2"/><rect class="c08-glyph" x="23" y="165" width="2" height="2"/><rect class="c08-glyph" x="37" y="165" width="2" height="2"/><rect class="c08-glyph" x="23" y="167" width="2" height="2"/><rect class="c08-glyph" x="37" y="167" width="2" height="2"/><rect class="c08-glyph" x="23" y="169" width="2" height="2"/><rect class="c08-glyph" x="25" y="169" width="2" height="2"/><rect class="c08-glyph" x="27" y="169" width="2" height="2"/><rect class="c08-glyph" x="29" y="169" width="2" height="2"/><rect class="c08-glyph" x="31" y="169" width="2" height="2"/><rect class="c08-glyph" x="33" y="169" width="2" height="2"/><rect class="c08-glyph" x="35" y="169" width="2" height="2"/><rect class="c08-glyph" x="37" y="169" width="2" height="2"/><text class="c08-label" x="45" y="168">EMAIL</text><rect class="c08-system" x="209" y="144" width="96" height="39"/><rect class="c08-glyph" x="221" y="155" width="2" height="2"/><rect class="c08-glyph" x="223" y="155" width="2" height="2"/><rect class="c08-glyph" x="225" y="155" width="2" height="2"/><rect class="c08-glyph" x="227" y="155" width="2" height="2"/><rect class="c08-glyph" x="221" y="157" width="2" height="2"/><rect class="c08-glyph" x="227" y="157" width="2" height="2"/><rect class="c08-glyph" x="221" y="159" width="2" height="2"/><rect class="c08-glyph" x="223" y="159" width="2" height="2"/><rect class="c08-glyph" x="225" y="159" width="2" height="2"/><rect class="c08-glyph" x="227" y="159" width="2" height="2"/><rect class="c08-glyph" x="219" y="163" width="2" height="2"/><rect class="c08-glyph" x="221" y="163" width="2" height="2"/><rect class="c08-glyph" x="223" y="163" width="2" height="2"/><rect class="c08-glyph" x="225" y="163" width="2" height="2"/><rect class="c08-glyph" x="227" y="163" width="2" height="2"/><rect class="c08-glyph" x="229" y="163" width="2" height="2"/><rect class="c08-glyph" x="217" y="165" width="2" height="2"/><rect class="c08-glyph" x="219" y="165" width="2" height="2"/><rect class="c08-glyph" x="229" y="165" width="2" height="2"/><rect class="c08-glyph" x="231" y="165" width="2" height="2"/><rect class="c08-glyph" x="217" y="167" width="2" height="2"/><rect class="c08-glyph" x="231" y="167" width="2" height="2"/><rect class="c08-glyph" x="217" y="169" width="2" height="2"/><rect class="c08-glyph" x="219" y="169" width="2" height="2"/><rect class="c08-glyph" x="221" y="169" width="2" height="2"/><rect class="c08-glyph" x="223" y="169" width="2" height="2"/><rect class="c08-glyph" x="225" y="169" width="2" height="2"/><rect class="c08-glyph" x="227" y="169" width="2" height="2"/><rect class="c08-glyph" x="229" y="169" width="2" height="2"/><rect class="c08-glyph" x="231" y="169" width="2" height="2"/><text class="c08-label" x="239" y="168">CRM</text><rect class="c08-system" x="112" y="216" width="96" height="39"/><rect class="c08-glyph" x="124" y="227" width="2" height="2"/><rect class="c08-glyph" x="126" y="227" width="2" height="2"/><rect class="c08-glyph" x="128" y="227" width="2" height="2"/><rect class="c08-glyph" x="130" y="227" width="2" height="2"/><rect class="c08-glyph" x="124" y="229" width="2" height="2"/><rect class="c08-glyph" x="130" y="229" width="2" height="2"/><rect class="c08-glyph" x="124" y="231" width="2" height="2"/><rect class="c08-glyph" x="130" y="231" width="2" height="2"/><rect class="c08-glyph" x="124" y="233" width="2" height="2"/><rect class="c08-glyph" x="130" y="233" width="2" height="2"/><rect class="c08-glyph" x="124" y="235" width="2" height="2"/><rect class="c08-glyph" x="130" y="235" width="2" height="2"/><rect class="c08-glyph" x="124" y="237" width="2" height="2"/><rect class="c08-glyph" x="130" y="237" width="2" height="2"/><rect class="c08-glyph" x="124" y="239" width="2" height="2"/><rect class="c08-glyph" x="126" y="239" width="2" height="2"/><rect class="c08-glyph" x="128" y="239" width="2" height="2"/><rect class="c08-glyph" x="130" y="239" width="2" height="2"/><rect class="c08-glyph" x="126" y="241" width="2" height="2"/><rect class="c08-glyph" x="128" y="241" width="2" height="2"/><text class="c08-label" x="142" y="240">PHONE</text><rect class="c08-hub" x="128" y="101" width="64" height="60"/><rect class="c08-hub-flash" x="133" y="106" width="54" height="50"/><text class="c08-hub-text" x="146" y="136">HUB</text><text class="c08-status" x="123" y="193">5 CONNECTED</text><rect class="c08-packet" width="5" height="5"/><rect class="c08-packet" width="5" height="5"/><rect class="c08-packet" width="5" height="5"/><rect class="c08-packet" width="5" height="5"/><rect class="c08-packet" width="5" height="5"/><rect class="c08-packet" width="5" height="5"/><rect class="c08-packet" width="5" height="5"/><rect class="c08-packet" width="5" height="5"/><rect class="c08-packet" width="5" height="5"/><rect class="c08-packet" width="5" height="5"/></svg></div>
+  <p class="c08-caption">Your tools, finally talking.</p>
+  <script>
+  (function () {
+    function init() {
+      var root = document.getElementById('c08-root');
+      if (!root || root.dataset.inited) return;
+      root.dataset.inited = '1';
+
+      var wires = Array.from(root.querySelectorAll('.c08-wire'));
+      var packets = Array.from(root.querySelectorAll('.c08-packet'));
+      var lengths = wires.map(function(wire) { return wire.getTotalLength(); });
+      var flash = root.querySelector('.c08-hub-flash');
+      function render(time, dt, reduced) {
+        var brightest = 0;
+        packets.forEach(function(packet, i) {
+          var wire = i % 5;
+          var phase = (time / 2.8 + i * .173) % 1;
+          var progress = i < 5 ? phase : 1 - phase;
+          var point = wires[wire].getPointAtLength(progress * lengths[wire]);
+          packet.setAttribute('transform', 'translate(' + (point.x - 2.5) + ' ' + (point.y - 2.5) + ')');
+          if (i < 5) brightest = Math.max(brightest, Math.max(0, (phase - .87) / .13));
+        });
+        flash.style.opacity = String(reduced ? .12 : brightest * .32);
+      }
+
+
+    var motion = matchMedia('(prefers-reduced-motion: reduce)');
+    var visible = false;
+    var frame = 0;
+    var previous = 0;
+    var elapsed = 0;
+    function tick(now) {
+      frame = 0;
+      if (!root.isConnected) { observer.disconnect(); cleanup(); return; }
+      if (!visible || document.hidden || motion.matches) return;
+      var dt = previous ? Math.min((now - previous) / 1000, .05) : 0;
+      previous = now;
+      elapsed += dt;
+      render(elapsed, dt, false);
+      frame = requestAnimationFrame(tick);
+    }
+    function sync() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      previous = 0;
+      if (motion.matches) render(4.4, 0, true);
+      else if (visible && !document.hidden) frame = requestAnimationFrame(tick);
+    }
+    function cleanup() {
+      document.removeEventListener('visibilitychange', sync);
+      motion.removeEventListener('change', sync);
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      visible = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0 });
+    observer.observe(root);
+    document.addEventListener('visibilitychange', sync);
+    motion.addEventListener('change', sync);
+    render(motion.matches ? 4.4 : 0, 0, motion.matches);
+
+    }
+    if (document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init, { once: true });
+  })();
+  </script>
+</section>
+
+<section class="card c09" data-card="contract-review" id="c09-root" aria-label="Contract review">
+  <style>
+.c09 { --field: #081f1f; --gold: #fdb343; --gold-hover: #f5a71e; --text: #e9edec; --muted: #9db6b4; --line: #c9dad7; --panel: #0c2b29; --paper: #edf5f4; --success: #6ee7a8; --risk: #ff6b6b; --mono: 'JetBrains Mono', 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace; --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; box-sizing: border-box; width: 100%; min-width: 0; min-height: 320px; height: 352px; padding: 16px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 1px solid var(--text); border-radius: 0; box-shadow: 6px 6px 0 #000; color: var(--text); background-color: var(--field); background-image: radial-gradient(#1c3a39 1px, transparent 1px); background-size: 14px 14px; font-family: var(--sans); }
+.c09 .c09-chrome { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px dotted var(--muted); flex: 0 0 auto; }
+.c09 .c09-controls { display: flex; gap: 4px; flex: 0 0 auto; }
+.c09 .c09-square { width: 8px; height: 8px; box-sizing: border-box; border: 1px solid var(--text); }
+.c09 .c09-title { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; margin: 0; font-weight: 400; }
+.c09 .c09-stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; }
+.c09 .c09-caption { margin: 0; color: var(--muted); font: 10px/1.5 var(--mono); white-space: nowrap; }
+.c09 .c09-mono { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.c09 .c09-window { background: var(--panel); border: 1px solid var(--line); box-shadow: 3px 3px 0 #000; min-width: 0; box-sizing: border-box; }
+@media (prefers-reduced-motion: reduce) { .c09 .c09-stage { scroll-behavior: auto; } }
+
+.c09 .c09-stage { gap: 10px; align-items: center; }
+.c09 .c09-paper { position: relative; flex: 1; min-width: 0; height: 242px; background: var(--paper); color: var(--field); box-shadow: 3px 3px 0 #000; border: 1px solid var(--line); box-sizing: border-box; }
+.c09 .c09-paper-head { padding: 11px 8px; border-bottom: 1px solid #b9cfca; font: 10px var(--mono); letter-spacing: .05em; }
+.c09 .c09-view { position: absolute; inset: 34px 0 28px; overflow: hidden; }
+.c09 .c09-readline { position: absolute; top: 96px; left: 0; right: 0; border-top: 1px solid #f5a71e; z-index: 2; }
+.c09 .c09-readline::before { content: '›'; position: absolute; left: 1px; top: -9px; color: #945900; font: 14px var(--mono); }
+.c09 .c09-clauses { padding: 0 7px; }
+.c09 .c09-clause { height: 24px; position: relative; display: flex; align-items: center; gap: 3px; white-space: nowrap; font: 9px/1.4 var(--sans); }
+.c09 .c09-clause-text { overflow: hidden; text-overflow: ellipsis; }
+.c09 .c09-highlight { position: absolute; left: 0; right: 0; bottom: 1px; height: 2px; background: #3b9f6a; opacity: 0; }
+.c09 .c09-risk .c09-highlight { height: 20px; background: #fdb34377; border-bottom: 1px solid #d64d42; }
+.c09 .c09-clause-text { position: relative; }
+.c09 .c09-risk-chip { position: absolute; right: 0; top: 6px; padding: 1px 2px; font: 7px var(--mono); background: #8c382c; color: #fff; opacity: 0; }
+.c09 .c09-paper-foot { position: absolute; bottom: 0; left: 0; right: 0; padding: 8px; border-top: 1px solid #b9cfca; font: 8px var(--mono); color: #46645e; }
+.c09 .c09-tally { flex: 0 0 100px; align-self: center; }
+.c09 .c09-stat { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #36534f; padding: 6px 0; font: 9px var(--mono); letter-spacing: .04em; }
+.c09 .c09-value { font: 20px var(--mono); color: var(--text); }
+.c09 .c09-ok .c09-value { color: var(--success); }
+.c09 .c09-risk-total .c09-value { color: var(--gold); }
+.c09 .c09-flags { padding: 9px 0 0; margin: 0; list-style: none; }
+.c09 .c09-flag { font: 9px/1.6 var(--sans); color: var(--gold); }
+.c09 .c09-summary { font: 11px/1.5 var(--sans); color: var(--text); margin: 10px 0 0; }
+</style>
+  <div class="c09-chrome"><span class="c09-controls" aria-hidden="true"><i class="c09-square"></i><i class="c09-square"></i><i class="c09-square"></i></span><h2 class="c09-title">09 · Contract review</h2></div>
+  <div class="c09-stage"><div class="c09-paper"><div class="c09-paper-head">YOUR AGREEMENT</div><div class="c09-view"><div class="c09-readline"></div><div class="c09-clauses"><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">1.1 Scope: listed services</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">2.1 Fees: due in 30 days</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">3.1 Term: twelve months</span></div><div class="c09-clause c09-risk"><i class="c09-highlight"></i><span class="c09-clause-text">4.2 Renewal: automatic</span><span class="c09-risk-chip">RISK</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">5.1 Data stays yours</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">6.1 Access: named users</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">7.1 Changes: in writing</span></div><div class="c09-clause c09-risk"><i class="c09-highlight"></i><span class="c09-clause-text">8.3 Liability: no cap</span><span class="c09-risk-chip">RISK</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">9.1 Notices: by email</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">10.1 Work stays yours</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">11.1 Keep data private</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">12.2 Exit: 30 days notice</span></div><div class="c09-clause c09-risk"><i class="c09-highlight"></i><span class="c09-clause-text">13.4 Venue: unspecified</span><span class="c09-risk-chip">RISK</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">14.1 Signed by both</span></div></div></div><div class="c09-paper-foot">REVIEW / 14 CLAUSES</div></div><div class="c09-tally"><div class="c09-stat">CLAUSES <span class="c09-value">0</span></div><div class="c09-stat c09-ok">OK <span class="c09-value">0</span></div><div class="c09-stat c09-risk-total">RISK <span class="c09-value">0</span></div><ul class="c09-flags"><li class="c09-flag">4.2 · Auto-renewal</li><li class="c09-flag">8.3 · No liability cap</li><li class="c09-flag">13.4 · Missing venue</li></ul><p class="c09-summary">3 clauses<br>need a look</p></div></div>
+  <p class="c09-caption">You see the clauses that need a look.</p>
+  <script>
+  (function () {
+    function init() {
+      var root = document.getElementById('c09-root');
+      if (!root || root.dataset.inited) return;
+      root.dataset.inited = '1';
+
+      var stack = root.querySelector('.c09-clauses');
+      var clauses = Array.from(root.querySelectorAll('.c09-clause'));
+      var highlights = Array.from(root.querySelectorAll('.c09-highlight'));
+      var chips = Array.from(root.querySelectorAll('.c09-risk-chip'));
+      var values = Array.from(root.querySelectorAll('.c09-value'));
+      var flags = Array.from(root.querySelectorAll('.c09-flag'));
+      var summary = root.querySelector('.c09-summary');
+      var risks = [3, 7, 12];
+      function render(time) {
+        var t = time % 9.6;
+        var progress = Math.min(14, Math.max(0, (t - .35) / .48));
+        var done = Math.min(14, Math.floor(progress));
+        var flagged = risks.filter(function(index) { return index < done; }).length;
+        stack.style.transform = 'translateY(' + (84 - Math.min(13, progress) * 24) + 'px)';
+        highlights.forEach(function(highlight, i) { highlight.style.opacity = i < done ? '1' : '0'; });
+        chips.forEach(function(chip, i) { chip.style.opacity = risks[i] < done ? '1' : '0'; });
+        values[0].textContent = done; values[1].textContent = done - flagged; values[2].textContent = flagged;
+        flags.forEach(function(flag, i) { flag.style.opacity = risks[i] < done ? '1' : '.12'; });
+        summary.style.opacity = done === 14 ? '1' : '0';
+      }
+
+
+    var motion = matchMedia('(prefers-reduced-motion: reduce)');
+    var visible = false;
+    var frame = 0;
+    var previous = 0;
+    var elapsed = 0;
+    function tick(now) {
+      frame = 0;
+      if (!root.isConnected) { observer.disconnect(); cleanup(); return; }
+      if (!visible || document.hidden || motion.matches) return;
+      var dt = previous ? Math.min((now - previous) / 1000, .05) : 0;
+      previous = now;
+      elapsed += dt;
+      render(elapsed, dt, false);
+      frame = requestAnimationFrame(tick);
+    }
+    function sync() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      previous = 0;
+      if (motion.matches) render(8, 0, true);
+      else if (visible && !document.hidden) frame = requestAnimationFrame(tick);
+    }
+    function cleanup() {
+      document.removeEventListener('visibilitychange', sync);
+      motion.removeEventListener('change', sync);
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      visible = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0 });
+    observer.observe(root);
+    document.addEventListener('visibilitychange', sync);
+    motion.addEventListener('change', sync);
+    render(motion.matches ? 8 : 0, 0, motion.matches);
+
+    }
+    if (document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init, { once: true });
+  })();
+  </script>
+</section>
+</main>
+</body>
+</html>

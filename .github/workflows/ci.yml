@@ -16,29 +16,26 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Install Root Dependencies
-        run: npm install
+        run: bun install --frozen-lockfile
 
       - name: Install Billing Worker Dependencies
-        run: npm --prefix billing-worker install
+        run: bun install --frozen-lockfile --cwd billing-worker
 
       - name: Install Website Dependencies
-        run: npm --prefix sondri-site install
+        run: bun install --frozen-lockfile --cwd sondri-site
 
       - name: Run Billing Worker Typecheck
-        run: npm --prefix billing-worker run typecheck
+        run: bun run --cwd billing-worker typecheck
 
       - name: Run Billing Worker Unit Tests
-        run: npm --prefix billing-worker run test
+        run: bun run --cwd billing-worker test
 
       - name: Run Astro Website Typecheck & Diagnostics
-        run: npx --prefix sondri-site astro check
+        run: bun run --cwd sondri-site check
 
       - name: Verify Production Website Build
-        run: npm --prefix sondri-site run build
+        run: bun run --cwd sondri-site build

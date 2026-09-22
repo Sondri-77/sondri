@@ -1,0 +1,63 @@
+---
+import { heroSupport } from '../v2-data';
+---
+
+<!-- Their `home_intro`: a full colour field carrying one large statement, two
+     supporting notes, and the stairs cutting its bottom edge. -->
+<section class="intro px my-grid on-teal" id="about">
+  <div class="statement">
+    <p class="fs-46" data-reveal>
+      Our architects sit with your operators, find the three workflows where automation pays
+      fastest, and put the first one into production inside the systems you already run — in weeks,
+      for a price agreed before the work starts.
+    </p>
+  </div>
+
+  <ul class="notes">
+    {heroSupport.map((t) => (
+      <li data-reveal>
+        <span class="tick" aria-hidden="true"></span>
+        <p class="my-text">{t}</p>
+      </li>
+    ))}
+  </ul>
+
+  <div class="stairs my-grid" aria-hidden="true">
+    <div class="stair stair-1"></div>
+    <div class="stair stair-2"></div>
+    <div class="stair stair-3"></div>
+  </div>
+</section>
+
+<style>
+  .intro {
+    position: relative;
+    min-height: 100vh;
+    align-content: start;
+    padding-top: var(--s-60);
+    padding-bottom: 260px;
+  }
+  @media (min-width: 1024px) {
+    .intro { padding-top: var(--s-80); padding-bottom: 320px; }
+  }
+
+  .statement { grid-column: 1 / -1; }
+  @media (min-width: 1024px) { .statement { grid-column: 1 / 11; } }
+
+  .notes {
+    grid-column: 1 / -1;
+    list-style: none;
+    display: grid;
+    gap: var(--s-40);
+    margin-top: var(--s-66);
+  }
+  @media (min-width: 1024px) {
+    .notes { grid-column: 7 / -1; grid-template-columns: 1fr 1fr; column-gap: var(--gutter); margin-top: var(--s-100); }
+  }
+  .tick { display: block; width: 28px; height: 1px; background: var(--white); margin-bottom: var(--s-20); }
+  .notes p { max-width: 42ch; }
+
+  .stairs { display: grid; }
+
+  @media (min-height: 2000px) { .intro { min-height: 0; } }
+</style>

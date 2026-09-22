@@ -1,0 +1,72 @@
+---
+import { comparison } from '../home-data';
+---
+
+<!-- The options table. Mono column heads, the Sondri column set on teal so
+     it reads as the plate, hairlines between rows only (nothing full-bleed). -->
+<section class="cmp px" id="compare">
+  <div class="index label">
+    <span>Competitor comparison</span>
+    <span aria-hidden="true">[SND.6]</span>
+  </div>
+
+  <div class="my-grid body">
+    <div class="head">
+      <h2 class="t-md" data-reveal>{comparison.h2}</h2>
+    </div>
+    <div class="copy">
+      <p class="fs-24" data-reveal>{comparison.body}</p>
+    </div>
+  </div>
+
+  <div class="scroll" data-reveal>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          {comparison.cols.map((c, i) => <th scope="col" class:list={['label', { us: i === 0 }]}>{c}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {comparison.rows.map((r) => (
+          <tr>
+            <th scope="row" class="label k">{r.k}</th>
+            {r.v.map((cell, i) => <td class:list={['my-text', { us: i === 0 }]}>{cell}</td>)}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <p class="label ph">{comparison.ph}</p>
+</section>
+
+<style>
+  .cmp { padding-top: var(--s-50); padding-bottom: var(--s-80); }
+  @media (min-width: 1024px) { .cmp { padding-bottom: var(--s-130); } }
+  .index { display: flex; justify-content: space-between; }
+
+  .body { margin-top: var(--s-66); row-gap: var(--s-40); }
+  .head { grid-column: 1 / -1; }
+  .copy { grid-column: 1 / -1; }
+  .copy p { max-width: 46ch; }
+  @media (min-width: 1024px) {
+    .head { grid-column: 1 / 8; }
+    .copy { grid-column: 7 / -1; }
+  }
+
+  .scroll { margin-top: var(--s-60); overflow-x: auto; }
+  table { width: 100%; min-width: 860px; border-collapse: collapse; table-layout: fixed; }
+  th, td { text-align: left; vertical-align: top; padding: var(--s-20) var(--s-15); }
+  thead th { padding-top: 0; padding-bottom: var(--s-15); }
+  thead th:first-child, tbody th { width: 18%; }
+  tbody th { font-weight: 400; color: var(--muted); line-height: 1.4; }
+  tbody tr { border-top: 1px solid var(--line-soft); }
+  tbody tr:last-child { border-bottom: 1px solid var(--line-soft); }
+  .us { background: var(--teal); color: var(--white); }
+  thead .us { padding-top: var(--s-15); }
+  tbody tr:last-child .us { padding-bottom: var(--s-30); }
+  .my-text { line-height: 1.4; }
+
+  .ph { margin-top: var(--s-40); color: var(--muted); line-height: 1.5; }
+</style>

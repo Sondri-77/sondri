@@ -2,25 +2,17 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-// Canonical site URL. Currently served from workers.dev; swap to the
-// custom domain (e.g. https://sondri.ai) once DNS is attached.
+// Canonical site URL. Set SITE_URL to build against another host.
 const SITE = process.env.SITE_URL ?? 'https://sondri.ai';
 
+// One page. Old routes are redirected to `/` by `public/_redirects`, which
+// Cloudflare's static assets honour with a real 301 — Astro's `redirects`
+// option would emit meta-refresh pages instead.
 export default defineConfig({
   site: SITE,
   output: 'static',
   trailingSlash: 'ignore',
-  // Old pages removed in the restructure; keep indexed URLs alive.
-  redirects: {
-    '/for-customers/': '/how-it-works/',
-    '/design-system/': '/',
-  },
-  integrations: [
-    sitemap({
-      // Confirmation page — not a destination worth indexing.
-      filter: (page) => !page.includes('/success/'),
-    }),
-  ],
+  integrations: [sitemap()],
   build: {
     format: 'directory',
     inlineStylesheets: 'auto',

@@ -1,0 +1,60 @@
+---
+import { faq } from '../data';
+import { questionTags } from '../v2-data';
+---
+
+<!-- Their `latest_news`: title with a bracket link, then rows of
+     index / category / headline, each on a hairline. -->
+<section class="news px my-grid" id="questions">
+  <div class="head">
+    <h2 class="t-md">Questions we get</h2>
+    <a class="brk" href="#book"><span class="arr">→</span> Ask your own</a>
+  </div>
+
+  <div class="rows">
+    {faq.map((f, i) => (
+      <details class="row" data-reveal>
+        <summary>
+          <span class="label n">{String(i + 1).padStart(2, '0')}</span>
+          <span class="label cat">{questionTags[i]}</span>
+          <span class="t-sm q">{f.q}</span>
+          <span class="sign" aria-hidden="true"></span>
+        </summary>
+        <p class="my-text a">{f.a}</p>
+      </details>
+    ))}
+  </div>
+</section>
+
+<style>
+  .news { overflow: hidden; padding-top: var(--s-50); padding-bottom: var(--s-60); }
+  @media (min-width: 1024px) { .news { padding-bottom: var(--s-100); } }
+
+  .head { grid-column: 1 / -1; display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-20); }
+
+  .rows { grid-column: 1 / -1; margin-top: var(--s-50); border-top: 1px solid var(--line); }
+  .row { border-bottom: 1px solid var(--line); }
+
+  summary {
+    display: grid; grid-template-columns: 46px 110px 1fr 20px;
+    gap: var(--s-20); align-items: center;
+    padding-block: var(--s-26); cursor: pointer; list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary > * { min-width: 0; }
+  .cat { color: var(--muted); }
+  summary:hover .q { opacity: 0.6; }
+
+  .sign { position: relative; width: 14px; height: 14px; }
+  .sign::before, .sign::after { content: ''; position: absolute; left: 0; top: 6.5px; width: 14px; height: 1px; background: currentColor; }
+  .sign::after { transform: rotate(90deg); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  .row[open] .sign::after { transform: rotate(0deg); }
+
+  .a { padding: 0 0 var(--s-26) 176px; max-width: 86ch; }
+
+  @media (max-width: 1023px) {
+    summary { grid-template-columns: 40px 1fr 20px; }
+    .cat { display: none; }
+    .a { padding-left: 60px; }
+  }
+</style>

@@ -1,0 +1,77 @@
+---
+import { howItWorks } from '../home-data';
+---
+
+<!-- The process anatomy: a pair of vertical rules running the full height
+     behind columns 5–8, a sticky title on the left, and a stack of white
+     cards on the right. -->
+<section class="proc px" id="how">
+  <div class="vrules my-grid" aria-hidden="true"><div class="pair"></div></div>
+
+  <div class="index label">
+    <span>How it works</span>
+    <span aria-hidden="true">[SND.5]</span>
+  </div>
+
+  <div class="my-grid body">
+    <div class="left my-grid">
+      <div class="title-col">
+        <div class="sticky">
+          <h2 class="t-md">{howItWorks.h2}</h2>
+        </div>
+      </div>
+      <div class="note">
+        <div class="sticky">
+          <p class="my-text">{howItWorks.body}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cards">
+      {howItWorks.steps.map((s, i) => (
+        <article class="card" data-reveal style={`transition-delay:${i * 60}ms`}>
+          <div class="card-head">
+            <h3 class="t-sm">{s.t}</h3>
+            <span class="t-sm num">{s.i}</span>
+          </div>
+          <p class="my-text">{s.b}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .proc { position: relative; overflow: hidden; z-index: 1; padding-top: var(--s-50); padding-bottom: var(--s-60); }
+  @media (min-width: 1024px) { .proc { padding-bottom: var(--s-160); } }
+
+  .vrules { z-index: -1; }
+  .pair { display: none; }
+  @media (min-width: 1024px) {
+    .pair { display: block; grid-column: 5 / 9; grid-row: 1 / -1; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+  }
+
+  .index { display: flex; justify-content: space-between; }
+
+  .body { margin-top: var(--s-50); }
+  @media (min-width: 1024px) { .body { margin-top: 90px; } }
+
+  .left { grid-column: 1 / -1; align-content: start; }
+  @media (min-width: 1024px) { .left { grid-column: 1 / 7; grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+
+  .title-col { grid-column: 1 / -1; }
+  .note { grid-column: 2 / -1; margin-top: var(--s-46); }
+  @media (min-width: 1024px) { .note { grid-column: 2 / 5; padding-right: 55px; } }
+
+  .sticky { position: sticky; top: 110px; }
+
+  .cards { grid-column: 1 / -1; margin-top: var(--s-66); display: flex; flex-direction: column; gap: 1.25em; }
+  @media (min-width: 1024px) { .cards { grid-column: 7 / -1; margin-top: 0; gap: 2em; } }
+
+  .card { background: var(--white); color: var(--teal); padding: 10px 16px 20px; border: 1px solid var(--line); }
+  @media (min-width: 1024px) { .card { width: 66.6%; padding: 10px 22px 22px; } }
+
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s-20); padding-bottom: 10px; border-bottom: 1px solid var(--line-soft); }
+  .num { padding-right: 8px; }
+  .card p { margin-top: var(--s-26); padding-right: 12%; }
+</style>

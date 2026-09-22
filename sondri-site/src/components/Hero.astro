@@ -1,0 +1,133 @@
+---
+import { BOOK_HREF, CTA_PRIMARY, RISK_REVERSAL } from '../data';
+import { hero } from '../home-data';
+import { splitDot } from '../lib/dot';
+import HeroCarousel from './HeroCarousel.astro';
+// The H1 sets as two lines on desktop: the claim, then the parenthetical.
+// The copy string stays verbatim; the break falls before the "(".
+const [line1, line2] = hero.h1.split(/ (?=\()/);
+const [h1, dot] = splitDot(line1);
+---
+
+<!-- The v2 study's treated photo hero (hero-fx.ts: luminance → gradient-map
+     ramp → Bayer dither + grain; the cursor trail, pixel-trail.ts, is
+     composited into the dither canvas under all of it and has no layer of its
+     own), carrying brutal's copy block: display headline, lede, the pill, the
+     mono risk line. The right column (captain, 2026-09-21) is one framed
+     window cycling the three solution animations, no captions (HeroCarousel).
+     No lockup here — that lives in the nav and footer. -->
+<section class="hero on-dark" data-hero>
+  <div class="bg" aria-hidden="true">
+    <img
+      data-dither-src
+      src="/img/hero-industrial.jpg"
+      alt=""
+      width="2400"
+      height="1194"
+      fetchpriority="high"
+    />
+    <canvas data-dither></canvas>
+    <div class="noise"></div>
+    <div class="veil"></div>
+  </div>
+
+  <div class="wrap cols">
+    <div class="copy">
+      <h1 class="display"><span class="l"><span data-i18n="hero.h1.text">{h1}</span><span class="gdot" data-i18n="hero.h1.dot">{dot}</span></span> <span class="l" data-i18n="hero.h1.paren">{line2}</span></h1>
+      <p class="lede" data-i18n="hero.lede">{hero.lede}</p>
+      <div class="actions">
+        <a class="btn btn-gold" href={BOOK_HREF}><span data-i18n="cta">{CTA_PRIMARY}</span> <span class="arr">→</span></a>
+      </div>
+      <p class="label" data-i18n="riskReversal">{RISK_REVERSAL}</p>
+    </div>
+    <HeroCarousel />
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: calc(100svh - var(--nav-h) - 40px);
+    display: flex; align-items: center;
+    overflow: hidden;
+    background: var(--teal-deep);
+    color: var(--white);
+  }
+
+  .bg { position: absolute; inset: 0; overflow: hidden; }
+  /* The source photo never paints — the canvas draws its dithered form. */
+  .bg img { position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
+  .bg canvas {
+    width: 100%; height: 100%;
+    image-rendering: pixelated;
+    display: block;
+  }
+
+  /* The grain, composited over the dither. Static — generated once by the
+     SVG filter and never moved (captain: no flicker, no ticking). */
+  .noise {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  /* Keeps the type legible over the brightest part of the sky. */
+  .veil {
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(180deg, rgba(3, 25, 25, 0.42) 0%, rgba(3, 25, 25, 0) 34%, rgba(3, 25, 25, 0.62) 100%);
+  }
+
+  /* Two columns from 1100px up — the copy on the page's content edge (same
+     wrap as the nav and the section headers), the window on the right at
+     ~45% — both vertically centred by the hero's flex. Below that the window
+     drops under the copy at full width. Symmetric block padding keeps the
+     centre true. */
+  .cols {
+    position: relative; width: 100%;
+    display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-48);
+    align-items: center;
+    padding-block: var(--s-64);
+  }
+  .copy {
+    min-width: 0;
+    display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-24);
+    text-align: left;
+  }
+  .lede { max-width: 44ch; color: var(--white); }
+  .actions { display: flex; flex-wrap: wrap; gap: var(--s-16); padding-top: var(--s-08); }
+  .label { color: var(--muted-inv); }
+
+  /* Florexa, the brand's pixel display face. Sized so the claim line fits
+     the copy column beside the window; the v2 study's 6.6vw / 100px is
+     what it runs at when the window sits below. */
+  .display {
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(44px, 6.6vw, 100px); line-height: 1.02;
+    letter-spacing: 0; text-transform: uppercase;
+    color: var(--white);
+  }
+  /* Exactly two line boxes from tablet up; phones wrap naturally. */
+  @media (min-width: 900px) {
+    .display .l { display: block; white-space: nowrap; }
+  }
+  @media (min-width: 1100px) {
+    .cols { grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); gap: var(--s-64); }
+    .display { font-size: clamp(44px, 4.3vw, 66px); }
+  }
+
+  @media (max-width: 640px) {
+    .cols { padding-block: var(--s-48); gap: var(--s-40); }
+    .copy { gap: var(--s-16); }
+  }
+  /* Absurdly tall viewports (screenshot tooling, kiosk displays) shouldn't get
+     a 3-metre hero. */
+  @media (min-height: 2000px) { .hero { min-height: 780px; } }
+</style>
+
+<script>
+  import { initHeroFx } from '../scripts/hero-fx';
+  const el = document.querySelector<HTMLElement>('[data-hero]');
+  if (el) initHeroFx(el);
+</script>

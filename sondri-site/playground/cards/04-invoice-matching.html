@@ -1,0 +1,114 @@
+<section class="card c04" data-card="invoice-matching" id="c04-root" aria-label="Invoice matching">
+  <style>
+.c04 { --field: #081f1f; --gold: #fdb343; --gold-hover: #f5a71e; --text: #e9edec; --muted: #9db6b4; --line: #c9dad7; --panel: #0c2b29; --paper: #edf5f4; --success: #6ee7a8; --risk: #ff6b6b; --mono: 'JetBrains Mono', 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace; --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; box-sizing: border-box; width: 100%; min-width: 0; min-height: 320px; height: 352px; padding: 16px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 1px solid var(--text); border-radius: 0; box-shadow: 6px 6px 0 #000; color: var(--text); background-color: var(--field); background-image: radial-gradient(#1c3a39 1px, transparent 1px); background-size: 14px 14px; font-family: var(--sans); }
+.c04 .c04-chrome { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px dotted var(--muted); flex: 0 0 auto; }
+.c04 .c04-controls { display: flex; gap: 4px; flex: 0 0 auto; }
+.c04 .c04-square { width: 8px; height: 8px; box-sizing: border-box; border: 1px solid var(--text); }
+.c04 .c04-title { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; margin: 0; font-weight: 400; }
+.c04 .c04-stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; }
+.c04 .c04-caption { margin: 0; color: var(--muted); font: 10px/1.5 var(--mono); white-space: nowrap; }
+.c04 .c04-mono { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.c04 .c04-window { background: var(--panel); border: 1px solid var(--line); box-shadow: 3px 3px 0 #000; min-width: 0; box-sizing: border-box; }
+@media (prefers-reduced-motion: reduce) { .c04 .c04-stage { scroll-behavior: auto; } }
+
+.c04 .c04-stage { gap: 8px; align-items: center; }
+.c04 .c04-doc { position: relative; background: var(--paper); color: var(--field); border: 1px solid var(--line); box-shadow: 3px 3px 0 #000; width: calc(50% - 4px); min-width: 0; box-sizing: border-box; padding: 12px 8px 9px; }
+.c04 .c04-kicker { color: #46645e; font: 8px var(--mono); letter-spacing: .06em; margin-bottom: 5px; }
+.c04 .c04-doc-title { margin: 0 0 12px; font: 15px var(--mono); letter-spacing: -.06em; }
+.c04 .c04-row { position: relative; display: flex; align-items: center; justify-content: space-between; height: 28px; border-top: 1px solid #becfca; gap: 3px; font: 10px var(--mono); }
+.c04 .c04-label { color: #46645e; font-size: 9px; }
+.c04 .c04-value { position: relative; z-index: 1; white-space: nowrap; }
+.c04 .c04-wash { position: absolute; inset: 1px -3px; background: #6ee7a859; opacity: 0; }
+.c04 .c04-flash { position: absolute; inset: 1px -3px; background: var(--gold); opacity: 0; }
+.c04 .c04-scan { position: absolute; top: 0; bottom: 0; width: 24px; left: 0; background: #fdb34399; opacity: 0; }
+.c04 .c04-mismatch { position: absolute; inset: 1px -3px; border: 1px solid #d64545; opacity: 0; background: #ff6b6b12; }
+.c04 .c04-status { display: block; height: 15px; font: 8px var(--mono); color: #993131; text-align: right; margin-top: 7px; }
+.c04 .c04-stamp { position: absolute; left: 50%; top: 68%; width: 216px; margin-left: -108px; margin-top: -25px; padding: 10px 4px; background: #081f1ff2; border: 3px double var(--gold); color: var(--gold); box-sizing: border-box; text-align: center; font: 26px/1.1 var(--mono); letter-spacing: -.06em; box-shadow: 4px 4px 0 #000; pointer-events: none; }
+.c04 .c04-note { position: absolute; bottom: 6px; left: 0; width: 100%; text-align: center; color: var(--gold); font: 9px var(--mono); letter-spacing: .05em; }
+</style>
+  <div class="c04-chrome"><span class="c04-controls" aria-hidden="true"><i class="c04-square"></i><i class="c04-square"></i><i class="c04-square"></i></span><h2 class="c04-title">04 · Invoice matching</h2></div>
+  <div class="c04-stage"><div class="c04-doc"><div class="c04-kicker">PURCHASE ORDER</div><h3 class="c04-doc-title">PO 10482</h3><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">Vendor</span><span class="c04-value">On file</span></div><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">PO no.</span><span class="c04-value">10482</span></div><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">Qty</span><span class="c04-value">12</span></div><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">Unit</span><span class="c04-value">$100</span></div><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">Total</span><span class="c04-value">$1,200</span></div><span class="c04-status">QTY · MISMATCH</span></div><div class="c04-doc"><div class="c04-kicker">YOUR INVOICE</div><h3 class="c04-doc-title">INV 88213</h3><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">Vendor</span><span class="c04-value">On file</span></div><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">PO no.</span><span class="c04-value">10482</span></div><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">Qty</span><span class="c04-value">10</span></div><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">Unit</span><span class="c04-value">$100</span></div><div class="c04-row"><i class="c04-wash"></i><i class="c04-flash"></i><i class="c04-scan"></i><i class="c04-mismatch"></i><span class="c04-label">Total</span><span class="c04-value">$1,200</span></div><span class="c04-status">QTY · MISMATCH</span></div><div class="c04-stamp">MATCHED 4/5</div><div class="c04-note">ONE FIELD NEEDS YOUR REVIEW</div></div>
+  <p class="c04-caption">You only check what doesn’t match.</p>
+  <script>
+  (function () {
+    function init() {
+      var root = document.getElementById('c04-root');
+      if (!root || root.dataset.inited) return;
+      root.dataset.inited = '1';
+
+      var docs = Array.from(root.querySelectorAll('.c04-doc'));
+      var rows = Array.from(root.querySelectorAll('.c04-row')).map(function(row) {
+        return { wash: row.querySelector('.c04-wash'), flash: row.querySelector('.c04-flash'), scan: row.querySelector('.c04-scan'), mismatch: row.querySelector('.c04-mismatch') };
+      });
+      var status = Array.from(root.querySelectorAll('.c04-status'));
+      var stamp = root.querySelector('.c04-stamp'), note = root.querySelector('.c04-note');
+      var scanSpan = 140;
+      var resize = new ResizeObserver(function() {
+        scanSpan = docs[0].getBoundingClientRect().width - 16;
+      });
+      resize.observe(docs[0]);
+      function render(time, dt, reduced) {
+        var t = time % 9.2;
+        var enter = Math.min(1, t / .7), leave = Math.max(0, (t - 8.3) / .9);
+        docs.forEach(function(doc, i) {
+          doc.style.transform = 'translateX(' + (i ? 1 : -1) * ((1 - enter) * 110 + leave * 130) + '%)';
+          doc.style.opacity = String(Math.min(1, .3 + enter) * (1 - leave));
+        });
+        rows.forEach(function(row, i) {
+          var index = i % 5, age = t - (1.1 + index * .85);
+          var scanning = age > 0 && age < .65;
+          row.scan.style.opacity = scanning ? '1' : '0';
+          row.scan.style.transform = 'translateX(' + (Math.max(0, Math.min(1, age / .65)) * scanSpan - 24) + 'px)';
+          row.flash.style.opacity = index !== 2 && age > .65 && age < .88 ? String(1 - (age - .65) / .23) : '0';
+          row.wash.style.opacity = age > .65 && index !== 2 ? '1' : '0';
+          row.mismatch.style.opacity = age > .65 && index === 2 ? '1' : '0';
+        });
+        status.forEach(function(label) { label.style.opacity = t > 3.45 ? '1' : '0'; });
+        var slam = Math.max(0, Math.min(1, (t - 5.85) / .18));
+        stamp.style.opacity = t > 5.85 && t < 8.3 ? '1' : '0';
+        var shake = !reduced && t > 6.03 && t < 6.2 ? Math.sin(t * 130) * 2 : 0;
+        stamp.style.transform = 'translateX(' + shake + 'px) rotate(-9deg) scale(' + (1.5 - slam * .5) + ')';
+        note.style.opacity = t > 5.85 && t < 8.3 ? '1' : '0';
+      }
+
+
+    var motion = matchMedia('(prefers-reduced-motion: reduce)');
+    var visible = false;
+    var frame = 0;
+    var previous = 0;
+    var elapsed = 0;
+    function tick(now) {
+      frame = 0;
+      if (!root.isConnected) { observer.disconnect(); cleanup(); return; }
+      if (!visible || document.hidden || motion.matches) return;
+      var dt = previous ? Math.min((now - previous) / 1000, .05) : 0;
+      previous = now;
+      elapsed += dt;
+      render(elapsed, dt, false);
+      frame = requestAnimationFrame(tick);
+    }
+    function sync() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      previous = 0;
+      if (motion.matches) render(7.5, 0, true);
+      else if (visible && !document.hidden) frame = requestAnimationFrame(tick);
+    }
+    function cleanup() {
+      document.removeEventListener('visibilitychange', sync);
+      motion.removeEventListener('change', sync);
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      visible = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0 });
+    observer.observe(root);
+    document.addEventListener('visibilitychange', sync);
+    motion.addEventListener('change', sync);
+    render(motion.matches ? 7.5 : 0, 0, motion.matches);
+
+    }
+    if (document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init, { once: true });
+  })();
+  </script>
+</section>

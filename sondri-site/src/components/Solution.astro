@@ -1,0 +1,381 @@
+---
+import { benefits, solution, valueCases, valuePanel } from '../home-data';
+import type { ValueMetric } from '../home-data';
+import { money } from '../lib/cost';
+import { splitDot } from '../lib/dot';
+const [h2, dot] = splitDot(solution.h2);
+
+// The first case is the one the server renders open, so the panel reads
+// without JS; the script only swaps which case is showing.
+const defaultCase = valueCases[0].id;
+const fmt = (m: ValueMetric, n: number) =>
+  m.unit === 'money' ? money(n) : m.unit === 'hours' ? `${n} h` : String(n);
+const pct = (m: ValueMetric) => Math.round((m.after / m.before) * 100);
+const idx = (i: number) => String(i + 1).padStart(2, '0');
+const ck = (n: number) => `valueCases.${n}`;
+---
+
+<!-- Value, in Blacksmith's "Tool" grammar: the heading and lede up top left,
+     the three value points as a numbered, ruled list under them, and beside
+     the list a framed window holding the before/after panel on paper.
+     The window runs a sequence: the workflow plays through (the after chain
+     lighting rung by rung and finishing first, the manual one crawling),
+     then the same stage swaps to three savings bars that grow from zero and
+     hold. Both states sit in one grid cell, so the window is sized for the
+     taller and never moves between them. Without JS the bars' end state
+     renders and the steps sit in a <details> underneath. -->
+<section class="section section-pad" id="framework">
+  <div class="wrap tool">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow"><span class="label">/ <span data-i18n="solution.eyebrow">{solution.eyebrow}</span></span></div>
+        <h2 class="h2"><span data-i18n="solution.h2.text">{h2}</span><span class="gdot" data-i18n="solution.h2.dot">{dot}</span></h2>
+      </div>
+      <div class="intro">
+        <p class="lede" data-i18n="solution.lede">{solution.lede}</p>
+      </div>
+    </div>
+
+    <ol class="points">
+      {benefits.map((b, i) => (
+        <li data-reveal style={`transition-delay:${i * 80}ms`}>
+          <p class="label idx">{idx(i)}</p>
+          <div>
+            <h3 class="h5"><span data-i18n={`benefits.${i}.t`}>{b.t}</span><span class="gdot">.</span></h3>
+            <p class="body-s" data-i18n={`benefits.${i}.b`}>{b.b}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <div class="window panel" data-value-panel data-case={defaultCase} data-state="bars">
+      <div class="bar dots" aria-hidden="true">
+        <span class="lights"><i></i><i></i><i></i></span>
+        <span class="label title" data-i18n="valuePanel.title">{valuePanel.title}</span>
+      </div>
+
+      <div class="field">
+        <div class="pick">
+          <label class="prompt" for="value-case" data-i18n="valuePanel.prompt">{valuePanel.prompt}</label>
+          <div class="sel">
+            <select id="value-case" data-value-select>
+              {valueCases.map((c, n) => (
+                <option value={c.id} selected={c.id === defaultCase} data-i18n={`${ck(n)}.name`}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+          <!-- Reduced motion: no sequence, so a switch between the two states. -->
+          <button class="toggle label" type="button" data-value-toggle aria-pressed="false" data-i18n="valuePanel.toggle">
+            {valuePanel.toggle}
+          </button>
+        </div>
+
+        <div class="cases">
+          {valueCases.map((c, n) => (
+            <div class="case" data-case-id={c.id} aria-hidden={c.id === defaultCase ? undefined : 'true'}>
+              <p class="job h6" data-i18n={`${ck(n)}.job`}>{c.job}</p>
+
+              <div class="stage">
+                <div class="saves">
+                  {c.metrics.map((m, mi) => (
+                    <div class="metric">
+                      <p class="label"><span class="k" data-i18n={`${ck(n)}.metrics.${mi}.k`}>{m.k}</span> · <span data-i18n={`${ck(n)}.metrics.${mi}.t`}>{m.t}</span> <span class="ph" data-i18n="valuePanel.placeholder">{valuePanel.placeholder}</span></p>
+                      <div class="track">
+                        <span class="fill" style={`--w:${pct(m)}%`}><span class="kpi">{fmt(m, m.after)}</span></span>
+                        <span class="was kpi">{fmt(m, m.before)}</span>
+                      </div>
+                    </div>
+                  ))}
+                  <p class="legend label">
+                    <span><i class="sw sw-after"></i><span data-i18n="valuePanel.legend.after">{valuePanel.legend.after}</span></span>
+                    <span><i class="sw sw-before"></i><span data-i18n="valuePanel.legend.before">{valuePanel.legend.before}</span></span>
+                  </p>
+                </div>
+
+                <details class="flow">
+                  <summary class="label" data-i18n="valuePanel.steps">{valuePanel.steps}</summary>
+                  <div class="lanes">
+                    {(['before', 'after'] as const).map((lane) => (
+                      <div class="lane" data-lane={lane}>
+                        <p class="hud label"><span class="hud-rule"></span><span data-i18n={`valuePanel.${lane}`}>{valuePanel[lane]}</span></p>
+                        <ol class="chain">
+                          {c[lane].map((s, i) => (
+                            <li class="node" data-who={s.who}>
+                              <span class="n label">{idx(i)}</span>
+                              <span class="t" data-i18n={`${ck(n)}.${lane}.${i}.t`}>{s.t}</span>
+                              <span class="who" data-i18n={`valuePanel.who.${s.who}`}>{valuePanel.who[s.who]}</span>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ── The two columns: head + list on the left, the window on the right,
+       the window's top on the list's top the way Blacksmith sets it. ── */
+  .tool { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); column-gap: var(--s-64); }
+  .tool .sec-head { grid-column: 1; }
+  .tool .sec-head .h2 { max-width: none; }
+  .points { grid-column: 1; list-style: none; align-self: start; }
+  .window { grid-column: 2; grid-row: 2; align-self: start; }
+  @media (max-width: 1100px) { .tool { column-gap: var(--s-40); } }
+  @media (max-width: 900px) {
+    .tool { grid-template-columns: 1fr; }
+    .tool .sec-head, .points, .window { grid-column: 1; grid-row: auto; }
+    .window { margin-top: var(--s-48); margin-right: var(--shadow-x); }
+  }
+
+  /* The numbered list: "■ 01" in its own column, rules between rows. */
+  .points li {
+    display: grid; grid-template-columns: 72px 1fr; column-gap: var(--s-24);
+    padding-block: var(--s-32);
+    border-top: 1px solid var(--line);
+  }
+  .points li:last-child { border-bottom: 1px solid var(--line); }
+  .points li > div { display: flex; flex-direction: column; gap: var(--s-08); }
+  .idx { color: var(--text-hi); padding-top: 6px; }
+  .idx::before {
+    content: ''; display: inline-block;
+    width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
+    background: currentColor;
+  }
+  .body-s { max-width: 40ch; font-size: 15px; line-height: 22px; }
+  @media (max-width: 640px) { .points li { grid-template-columns: 1fr; row-gap: var(--s-16); } }
+
+  /* ── The window: paper, halftone title bar with the three lights, the
+       hard ink offset, gold only as the signal. ── */
+  .window { --shadow-x: 12px; }
+  .bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; border-bottom: 1px solid var(--line);
+  }
+  .lights { display: inline-flex; gap: 6px; }
+  .lights i { width: 9px; height: 9px; background: var(--gold); }
+  .title { color: var(--text-hi); }
+  .field { padding: var(--s-16) var(--s-24) var(--s-24); }
+  @media (max-width: 640px) { .field { padding: var(--s-16); } }
+
+  /* The pick, on one line: mono prompt, then the select in the page's
+       button clothes — square, ink rule, hard gold offset, our own chevron. */
+  .pick {
+    display: flex; align-items: center; gap: var(--s-16);
+    padding-bottom: var(--s-16); margin-bottom: var(--s-16);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .prompt { font-size: 14px; line-height: 18px; color: var(--text-hi); flex: 1; }
+  .sel { position: relative; --shadow-x: 4px; margin-right: var(--shadow-x); flex: 0 1 260px; }
+  .sel select {
+    appearance: none; -webkit-appearance: none;
+    width: 100%; padding: 9px 40px 9px 14px;
+    background: var(--paper); color: var(--text-hi);
+    border: 1px solid var(--line); box-shadow: var(--shadow-x) var(--shadow-x) 0 var(--gold);
+    font-family: var(--mono); font-size: 13px; line-height: 16px; letter-spacing: 0.04em;
+    text-transform: uppercase; cursor: pointer;
+  }
+  .sel select:hover { background: var(--tint); }
+  .sel select:focus-visible { outline: 2px solid var(--text-hi); outline-offset: 2px; }
+  .sel::after {
+    content: ''; position: absolute; right: 16px; top: 50%;
+    width: 7px; height: 7px; margin-top: -5px;
+    border-right: 2px solid var(--text-hi); border-bottom: 2px solid var(--text-hi);
+    transform: rotate(45deg); pointer-events: none;
+  }
+  @media (max-width: 640px) {
+    .pick { flex-wrap: wrap; }
+    .prompt { flex-basis: 100%; }
+    .sel { flex: 1 1 auto; }
+  }
+
+  /* Every case is in the DOM, stacked in the one grid cell, so the window
+       is as tall as its tallest case and never moves when the pick changes. */
+  .cases { display: grid; }
+  .case { grid-area: 1 / 1; visibility: hidden; display: flex; flex-direction: column; gap: var(--s-16); }
+  [data-case='service'] [data-case-id='service'],
+  [data-case='accounting'] [data-case-id='accounting'],
+  [data-case='sales'] [data-case-id='sales'],
+  [data-case='legal'] [data-case-id='legal'] { visibility: visible; }
+  .job { color: var(--text-hi); font-size: 17px; }
+
+  /* ── The stage. Without JS it's a column: the bars, then the steps folded
+       under a <details>. With JS both states sit in the one cell and the
+       panel's data-state says which one shows. ── */
+  .stage { display: grid; row-gap: var(--s-16); }
+  .flow > summary { cursor: pointer; color: var(--text-hi); padding-bottom: var(--s-08); }
+  [data-js] .stage > * { grid-area: 1 / 1; visibility: hidden; }
+  /* The bars are the shorter state, so they sit centred in the stage's height. */
+  [data-js] .saves { align-self: center; }
+  [data-js] .flow > summary { display: none; }
+  /* Only the showing case's state turns visible: visibility inherits, but an
+       explicit visible on a child would punch through a hidden case. */
+  [data-js][data-state='flow'] .case:not([aria-hidden='true']) .flow,
+  [data-js][data-state='bars'] .case:not([aria-hidden='true']) .saves { visibility: visible; }
+
+  /* ── The lanes: the manual chain beside the automated one, two tight
+       columns of compact rows. ── */
+  .lanes { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-16); align-items: start; }
+  /* On a phone the lanes stack; the stage takes the height, the bars sit centred in it. */
+  @media (max-width: 560px) { .lanes { grid-template-columns: 1fr; } }
+  /* The old stage's HUD readout: a short gold rule and a tracked mono line. */
+  .hud { display: flex; align-items: center; gap: 8px; color: var(--text-hi); letter-spacing: 0.1em; padding-bottom: 10px; }
+  .hud-rule { width: 20px; height: 2px; background: var(--gold); flex: none; }
+  [data-lane='before'] .hud { color: var(--steel); }
+  [data-lane='before'] .hud-rule { background: var(--steel); height: 1px; }
+
+  .chain { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .node {
+    display: grid; grid-template-columns: auto 1fr auto; align-items: start; gap: 8px;
+    padding: 5px 8px;
+    background: var(--paper); border: 1px solid var(--line-soft);
+    font-size: 12px; line-height: 16px; color: var(--pale);
+    transition: background 0.2s linear, color 0.2s linear, border-color 0.2s linear;
+  }
+  .node .n { color: inherit; opacity: 0.7; }
+  .node .who {
+    font-family: var(--mono); font-size: 9px; line-height: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 1px 4px; border: 1px solid currentColor;
+  }
+  .node[data-who='auto'] .who { background: var(--teal); border-color: var(--teal); color: var(--white); }
+  .node[data-who='ai'] .who { background: var(--gold); border-color: var(--gold); color: var(--teal); }
+  /* The manual chain never lines up: the shards before the halo. */
+  [data-lane='before'] .chain { padding-right: 10px; }
+  [data-lane='before'] .node:nth-child(even) { transform: translateX(10px); }
+  [data-lane='before'] .node:nth-child(3n) { transform: translateX(5px); }
+  [data-lane='before'] .node { border-style: dashed; }
+  /* The automated chain stands on gold-edged rungs. */
+  [data-lane='after'] .node { border-bottom: 2px solid var(--gold); }
+
+  /* The run: the script lights each step in turn (.lit) and marks the
+       manual steps it has passed (.done). With no JS, or reduced motion,
+       the chains render in their finished state. */
+  [data-lane='after'] .node.lit,
+  [data-value-panel]:not([data-js]) [data-lane='after'] .node,
+  [data-js][data-still] [data-lane='after'] .node {
+    background: var(--gold); color: var(--teal); border-color: var(--gold);
+  }
+  [data-lane='after'] .node.lit .who,
+  [data-value-panel]:not([data-js]) [data-lane='after'] .node .who,
+  [data-js][data-still] [data-lane='after'] .node .who {
+    background: var(--teal); border-color: var(--teal); color: var(--gold);
+  }
+  [data-lane='before'] .node.lit { background: var(--tint); color: var(--text-hi); border-color: var(--line); border-style: solid; }
+  [data-lane='before'] .node.done { color: var(--steel); }
+
+  /* ── The savings: Blacksmith's comparison bars, gold for after inside
+       the outlined before, the two figures at the ends. With JS the fills
+       start at nothing and grow when the stage turns to them. ── */
+  .saves { display: flex; flex-direction: column; gap: 14px; }
+  .metric { display: flex; flex-direction: column; gap: 6px; }
+  .metric .k { color: var(--text-hi); }
+  .ph { color: var(--steel); text-transform: none; letter-spacing: 0; }
+  .track {
+    position: relative; display: flex; align-items: stretch; height: 40px;
+    border: 1px solid var(--line);
+    font-family: var(--mono); font-size: 13px; letter-spacing: 0.02em; font-variant-numeric: tabular-nums;
+  }
+  /* The figures at the bar ends are KPIs, so they set in Florexa a step up from the mono. */
+  .track .kpi { font-size: 18px; }
+  .fill {
+    display: flex; align-items: center; justify-content: flex-end;
+    width: var(--w); min-width: 4.5em; padding-right: 10px;
+    background: var(--gold); color: var(--teal);
+    border-right: 1px solid var(--line);
+    transition: width 0.9s linear;
+  }
+  [data-js][data-state='flow'] .fill { width: 0; min-width: 0; transition: none; }
+  .was { display: flex; align-items: center; margin-left: auto; padding-right: 10px; color: var(--text-hi); }
+  .legend { display: flex; gap: var(--s-24); }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .sw { width: 12px; height: 12px; border: 1px solid var(--line); }
+  .sw-after { background: var(--gold); border-color: var(--gold); }
+
+  /* Reduced motion: the bars stand still, and the toggle swaps the steps in. */
+  .toggle { display: none; }
+  @media (prefers-reduced-motion: reduce) {
+    [data-js] .toggle {
+      display: inline-block; padding: 9px 12px; cursor: pointer;
+      background: var(--paper); color: var(--text-hi); border: 1px solid var(--line);
+    }
+    [data-js] .toggle[aria-pressed='true'] { background: var(--teal); color: var(--white); }
+    .node, .fill { transition: none; }
+  }
+</style>
+
+<script>
+  // The panel is server-rendered in its bars end state. The script owns the
+  // sequence: light the workflow through, swap to the bars, hold, loop —
+  // restarted on a new pick, paused while the window is off screen. Under
+  // reduced motion there's no run, just the toggle between the two states.
+  const panel = document.querySelector<HTMLElement>('[data-value-panel]');
+  const select = panel?.querySelector<HTMLSelectElement>('[data-value-select]');
+  const toggle = panel?.querySelector<HTMLButtonElement>('[data-value-toggle]');
+  if (panel && select && toggle) {
+    panel.dataset.js = '';
+    panel.querySelectorAll('details').forEach((d) => (d.open = true));
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (still) panel.dataset.still = '';
+
+    const AFTER_STEP = 420; // ms between rungs on the automated chain
+    const BEFORE_STEP = 780; // ms between steps on the manual one
+    const BARS_GROW = 900; // matches the fill's width transition
+    const BARS_HOLD = 4000;
+
+    let timers: number[] = [];
+    const clear = () => { timers.forEach(clearTimeout); timers = []; };
+    const at = (ms: number, fn: () => void) => timers.push(window.setTimeout(fn, ms));
+    const current = () => panel.querySelector<HTMLElement>(`[data-case-id="${select.value}"]`);
+
+    const show = () => {
+      panel.dataset.case = select.value;
+      panel.querySelectorAll<HTMLElement>('[data-case-id]').forEach((c) => {
+        if (c.dataset.caseId === select.value) c.removeAttribute('aria-hidden');
+        else c.setAttribute('aria-hidden', 'true');
+      });
+    };
+
+    const run = () => {
+      clear();
+      const c = current();
+      if (!c) return;
+      const lane = (name: string) => [...c.querySelectorAll<HTMLElement>(`[data-lane='${name}'] .node`)];
+      const before = lane('before');
+      const after = lane('after');
+      [...before, ...after].forEach((n) => n.classList.remove('lit', 'done'));
+      panel.dataset.state = 'flow';
+
+      after.forEach((n, i) => at(300 + i * AFTER_STEP, () => n.classList.add('lit')));
+      before.forEach((n, i) =>
+        at(300 + i * BEFORE_STEP, () => {
+          before[i - 1]?.classList.replace('lit', 'done');
+          n.classList.add('lit');
+        }),
+      );
+      const flowEnd = 300 + (before.length - 1) * BEFORE_STEP + 1000;
+      at(flowEnd, () => (panel.dataset.state = 'bars'));
+      at(flowEnd + BARS_GROW + BARS_HOLD, run);
+    };
+
+    if (still) {
+      panel.dataset.state = 'bars';
+      toggle.addEventListener('click', () => {
+        const steps = panel.dataset.state !== 'flow';
+        panel.dataset.state = steps ? 'flow' : 'bars';
+        toggle.setAttribute('aria-pressed', String(steps));
+      });
+      select.addEventListener('change', show);
+    } else {
+      select.addEventListener('change', () => { show(); run(); });
+      new IntersectionObserver(([e]) => (e.isIntersecting ? run() : clear()), { threshold: 0.2 }).observe(panel);
+    }
+    show();
+  }
+</script>

@@ -1,0 +1,54 @@
+---
+import { solution } from '../home-data';
+---
+
+<!-- 0 → 1 → n at the display size, the paragraph beside it, then the three
+     benefits in the intro's two-column-note anatomy stretched to three. -->
+<section class="sol px" id="solution">
+  <div class="index label">
+    <span>Solution &amp; benefits</span>
+    <span aria-hidden="true">[SND.3]</span>
+  </div>
+
+  <div class="my-grid body">
+    <h2 class="my-title head" data-reveal>{solution.h2}</h2>
+    <div class="copy">
+      <p class="fs-24" data-reveal>{solution.body}</p>
+    </div>
+  </div>
+
+  <ul class="my-grid benefits">
+    {solution.benefits.map((b, i) => (
+      <li data-reveal style={`transition-delay:${i * 70}ms`}>
+        <span class="label">{String(i + 1).padStart(2, '0')}</span>
+        <h3 class="t-sm">{b.t}.</h3>
+        <p class="my-text">{b.b}</p>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .sol { padding-top: var(--s-50); padding-bottom: var(--s-80); }
+  @media (min-width: 1024px) { .sol { padding-top: var(--s-80); padding-bottom: var(--s-130); } }
+  .index { display: flex; justify-content: space-between; }
+
+  .body { margin-top: var(--s-66); row-gap: var(--s-40); align-items: end; }
+  .head { grid-column: 1 / -1; white-space: nowrap; }
+  .copy { grid-column: 1 / -1; }
+  .copy p { max-width: 46ch; }
+  @media (min-width: 1024px) {
+    .head { grid-column: 1 / 7; }
+    .copy { grid-column: 7 / -1; }
+  }
+
+  .benefits { list-style: none; margin-top: var(--s-66); row-gap: var(--s-50); }
+  @media (min-width: 1024px) { .benefits { margin-top: var(--s-130); } }
+  .benefits li { grid-column: 1 / -1; display: flex; flex-direction: column; gap: var(--s-20); }
+  @media (min-width: 1024px) {
+    .benefits li:nth-child(1) { grid-column: 1 / 5; }
+    .benefits li:nth-child(2) { grid-column: 5 / 9; }
+    .benefits li:nth-child(3) { grid-column: 9 / -1; }
+  }
+  .benefits p { max-width: 40ch; }
+</style>

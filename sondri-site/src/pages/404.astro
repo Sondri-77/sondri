@@ -1,26 +1,29 @@
 ---
-import BaseV2 from '../layouts/BaseV2.astro';
+import Base from '../layouts/Base.astro';
+import { en } from '../i18n';
+import { splitDot } from '../lib/dot';
+const nf = en.notFound;
+const [h1, dot] = splitDot(nf.h1);
 ---
 
-<BaseV2
-  title="404 — Sondri"
-  description="Signal lost. The page you requested does not exist."
->
-  <section class="lost hero-ink">
-    <canvas class="glyph-field" data-variant="calm" aria-hidden="true"></canvas>
-    <div class="hero-scrim" aria-hidden="true"></div>
+<Base title={nf.title} description={nf.description} titleKey="notFound.title" descriptionKey="notFound.description">
+  <section class="section section-pad on-dark lost">
     <div class="wrap">
-      <h1 class="anim a2">404<span class="gdot hero-dot">.</span></h1>
-      <p class="lede anim a3">The page you requested does not exist, or has been moved.</p>
-      <div class="anim a4">
-        <a class="btn btn-gold" href="/">← Return Home</a>
-      </div>
+      <div class="eyebrow"><span class="label">/ 404</span></div>
+      <h1 class="h1"><span data-i18n="notFound.h1.text">{h1}</span><span class="gdot" data-i18n="notFound.h1.dot">{dot}</span></h1>
+      <p class="lede" data-i18n="notFound.lede">{nf.lede}</p>
+      <a class="btn btn-gold" href="/"><span data-i18n="notFound.back">{nf.back}</span> <span class="arr">→</span></a>
     </div>
   </section>
-</BaseV2>
+</Base>
+
+<style is:global>
+  /* No hero under the bar here — solid ink from the start. */
+  #siteheader { background: var(--ink); }
+</style>
 
 <style>
-  .lost { padding: 140px 0 160px; min-height: 60vh; }
-  .lost h1 { font-size: clamp(80px, 12vw, 160px); line-height: 1; margin-bottom: 12px; }
-  .lost .lede { margin-bottom: 36px; }
+  .lost { min-height: 70vh; }
+  .lost .h1 { margin-block: var(--s-24); }
+  .lost .lede { max-width: 48ch; margin-bottom: var(--s-32); }
 </style>

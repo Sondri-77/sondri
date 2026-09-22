@@ -1,0 +1,6 @@
+---
+/** Button / CTA: a plain bordered box with the label. */
+interface Props { href: string }
+const { href } = Astro.props;
+---
+<a class="btn" href={href}><slot /></a>
