@@ -56,4 +56,4 @@ derek.dev  ──(merge/push)──►  derek.test  ──(PR)──►  dev  �
 
 ## UI and computer-use hours
 
-Captain rule, 2026-09-22: no UI or computer-use work 06:00-18:00 daily - no driving the captain's browser or apps (cmux-cua, codex computer use, scraping through his logged-in tabs), no UI test runs, no screenshot or visual checks. Queue those for 18:00-06:00. Code, public-web research and headless non-visual checks are fine anytime.
+Captain rule, 2026-09-22: no UI or computer-use work 06:00-18:00 daily - no driving the captain's browser or apps (cmux-cua, codex computer use, scraping through his logged-in tabs), no UI test runs, no screenshot or visual checks. Queue those for 18:00-06:00. Code, public-web research and headless non-visual checks are fine anytime. Exceptions: the captain explicitly says so, or mid-task you ask him 'this requires computer use - now or defer?' and he answers now.
