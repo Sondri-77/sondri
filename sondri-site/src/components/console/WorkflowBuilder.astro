@@ -1,7 +1,7 @@
 ---
 /* Playground card 01 · Workflow builder, ported: the six-node map draws
    itself, nodes popping in turn, gold packets running the wires. Colours
-   come from the site's tokens (the window is the .on-dark field). */
+   come from the site's tokens (the window is paper; see Console.astro). */
 ---
 
 <div class="anim win-body" data-anim="workflow" data-anim-root>
@@ -30,12 +30,12 @@
 <style>
   .stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; }
   .map { width: 100%; height: 100%; overflow: visible; }
-  .wire { fill: none; stroke: #54716d; stroke-width: 1; }
+  .wire { fill: none; stroke: var(--teal-soft); stroke-width: 1; }
   .draw { fill: none; stroke: var(--gold); stroke-width: 1.5; }
-  .box { fill: var(--win-panel); stroke: var(--mist); stroke-width: 1; filter: drop-shadow(3px 3px 0 #000); }
-  .lbl { fill: var(--white); font: 11px var(--mono); }
-  .detail { fill: var(--muted-inv); font: 10px var(--mono); }
-  .tag { fill: var(--gold); font: 10px var(--mono); letter-spacing: 0.08em; }
+  .box { fill: var(--win-panel); stroke: var(--teal); stroke-width: 1; filter: drop-shadow(3px 3px 0 var(--teal)); }
+  .lbl { fill: var(--teal); font: 11px var(--mono); }
+  .detail { fill: var(--win-mute); font: 10px var(--mono); }
+  .tag { fill: var(--win-gold-ink); font: 10px var(--mono); letter-spacing: 0.08em; }
   .node { transform-box: fill-box; transform-origin: center; }
   .packet { fill: var(--gold); }
 </style>

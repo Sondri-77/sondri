@@ -25,20 +25,20 @@
   .stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; }
   .chat {
     width: 100%; height: 246px; overflow: hidden; display: flex; flex-direction: column;
-    background: var(--win-panel); border: 1px solid var(--mist); box-shadow: 3px 3px 0 #000;
+    background: var(--win-panel); border: 1px solid var(--teal); box-shadow: 3px 3px 0 var(--teal);
   }
-  .bar { padding: 9px 11px; border-bottom: 1px solid #36534f; display: flex; justify-content: space-between; font: 9px var(--mono); letter-spacing: 0.08em; color: var(--muted-inv); }
+  .bar { padding: 9px 11px; border-bottom: 1px solid var(--win-rule); display: flex; justify-content: space-between; font: 9px var(--mono); letter-spacing: 0.08em; color: var(--win-mute); }
   .live { color: var(--win-ok); }
   .messages { padding: 12px; overflow: hidden; flex: 1; min-height: 0; }
-  .user { background: var(--off); color: var(--teal); margin: 0 0 10px auto; width: fit-content; max-width: 88%; padding: 9px 11px; font: 12px/1.5 var(--sans); min-height: 18px; }
-  .agent { border: 1px solid #45625d; padding: 9px 10px; width: 94%; min-height: 35px; }
-  .who { display: flex; gap: 5px; align-items: center; color: var(--muted-inv); font: 9px var(--mono); letter-spacing: 0.08em; }
+  .user { background: var(--teal); color: var(--white); margin: 0 0 10px auto; width: fit-content; max-width: 88%; padding: 9px 11px; font: 12px/1.5 var(--sans); min-height: 18px; }
+  .agent { border: 1px solid var(--win-rule); background: var(--white); padding: 9px 10px; width: 94%; min-height: 35px; }
+  .who { display: flex; gap: 5px; align-items: center; color: var(--win-mute); font: 9px var(--mono); letter-spacing: 0.08em; }
   .dot { background: var(--gold); width: 3px; height: 3px; display: inline-block; }
-  .chip { margin-top: 8px; padding: 6px; border: 1px solid var(--gold); color: var(--gold); font: 10px var(--mono); white-space: nowrap; }
+  .chip { margin-top: 8px; padding: 6px; border: 1px solid var(--gold); background: rgba(253, 179, 67, 0.18); color: var(--win-gold-ink); font: 10px var(--mono); white-space: nowrap; }
   .tick { float: right; color: var(--win-ok); }
-  .result { color: var(--muted-inv); font: 10px/1.4 var(--mono); margin-top: 6px; }
-  .reply { font: 12px/1.5 var(--sans); margin: 7px 0 0; color: var(--white); }
-  .foot { padding: 8px 11px; border-top: 1px solid #36534f; font: 9px var(--mono); color: var(--muted-inv); }
+  .result { color: var(--win-mute); font: 10px/1.4 var(--mono); margin-top: 6px; }
+  .reply { font: 12px/1.5 var(--sans); margin: 7px 0 0; color: var(--teal); }
+  .foot { padding: 8px 11px; border-top: 1px solid var(--win-rule); font: 9px var(--mono); color: var(--win-mute); }
 </style>
 
 <script>

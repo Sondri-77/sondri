@@ -41,11 +41,11 @@ const flags = ['4.2 · Auto-renewal', '8.3 · No liability cap', '13.4 · Missin
 
 <style>
   .stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; gap: 10px; }
-  .paper { position: relative; flex: 1; min-width: 0; height: 242px; background: var(--off); color: var(--teal); box-shadow: 3px 3px 0 #000; border: 1px solid var(--mist); }
+  .paper { position: relative; flex: 1; min-width: 0; height: 242px; background: var(--win-panel); color: var(--teal); box-shadow: 3px 3px 0 var(--teal); border: 1px solid var(--teal); }
   .paper-head { padding: 11px 8px; border-bottom: 1px solid #b9cfca; font: 10px var(--mono); letter-spacing: 0.05em; }
   .view { position: absolute; inset: 34px 0 28px; overflow: hidden; }
   .readline { position: absolute; top: 96px; left: 0; right: 0; border-top: 1px solid var(--gold-2); z-index: 2; }
-  .readline::before { content: '›'; position: absolute; left: 1px; top: -9px; color: #945900; font: 14px var(--mono); }
+  .readline::before { content: '›'; position: absolute; left: 1px; top: -9px; color: var(--win-gold-ink); font: 14px var(--mono); }
   .clauses { padding: 0 7px; }
   .clause { height: 24px; position: relative; display: flex; align-items: center; gap: 3px; white-space: nowrap; font: 9px/1.4 var(--sans); }
   .txt { position: relative; overflow: hidden; text-overflow: ellipsis; }
@@ -54,13 +54,13 @@ const flags = ['4.2 · Auto-renewal', '8.3 · No liability cap', '13.4 · Missin
   .risk-chip { position: absolute; right: 0; top: 6px; padding: 1px 2px; font: 7px var(--mono); background: #8c382c; color: #fff; opacity: 0; }
   .paper-foot { position: absolute; bottom: 0; left: 0; right: 0; padding: 8px; border-top: 1px solid #b9cfca; font: 8px var(--mono); color: #46645e; }
   .tally { flex: 0 0 100px; align-self: center; }
-  .stat { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #36534f; padding: 6px 0; font: 9px var(--mono); letter-spacing: 0.04em; color: var(--muted-inv); }
-  .value { font: 20px var(--mono); color: var(--white); }
+  .stat { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--win-rule); padding: 6px 0; font: 9px var(--mono); letter-spacing: 0.04em; color: var(--win-mute); }
+  .value { font: 20px var(--mono); color: var(--teal); }
   .ok .value { color: var(--win-ok); }
-  .risk-total .value { color: var(--gold); }
+  .risk-total .value { color: var(--win-gold-ink); }
   .flags { padding: 9px 0 0; margin: 0; list-style: none; }
-  .flag { font: 9px/1.6 var(--sans); color: var(--gold); }
-  .summary { font: 11px/1.5 var(--sans); color: var(--white); margin: 10px 0 0; }
+  .flag { font: 9px/1.6 var(--sans); color: var(--win-gold-ink); }
+  .summary { font: 11px/1.5 var(--sans); color: var(--teal); margin: 10px 0 0; }
 </style>
 
 <script>
