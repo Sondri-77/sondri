@@ -347,8 +347,7 @@ export const en: Copy = {
      brief). Each step's `who` is the mono chip on the node: `staff` is a
      person doing the step by hand, `auto` is regular software, `ai` is the step
      the AI does. `after` steps that still have `staff` on them are the checks a
-     person keeps. The savings are illustrative, one sample job each, not
-     results from an engagement. ── */
+     person keeps. The savings are real results, one job each (captain, 2026-09-22). ── */
   valuePanel: {
     title: 'Sondri / before → after',
     prompt: 'Pick a job and watch the work change.',
@@ -688,19 +687,19 @@ export const es: Copy = {
   },
   framework: [
     {
-      num: '1',
+      num: '0',
       name: 'Probar',
       does: 'Nos sentamos con quienes hacen el trabajo y buscamos la tarea donde un arreglo se paga más rápido.',
       gets: 'Un plan con el costo y el ahorro de esa tarea, y un precio fijo por construirlo.',
     },
     {
-      num: '2',
+      num: '1',
       name: 'Producción',
       does: 'Construimos el primer arreglo dentro del software que ya usa, con su equipo revisando el trabajo sobre la marcha.',
       gets: 'Software funcionando en una tarea real, medido contra las horas y el dinero que gastaba antes.',
     },
     {
-      num: '3',
+      num: 'n',
       name: 'Multiplicar',
       does: 'Lo mantenemos funcionando, lo afinamos y construimos la siguiente tarea sobre lo que ya existe.',
       gets: 'Cada arreglo después del primero es más rápido y más barato de construir, y todo es suyo.',
