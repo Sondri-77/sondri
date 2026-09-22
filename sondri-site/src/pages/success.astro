@@ -1,24 +1,21 @@
 ---
-import BaseV2 from '../layouts/BaseV2.astro';
+import Base from '../layouts/Base.astro';
 ---
 
-<BaseV2
+<Base
   title="Payment confirmed — Sondri"
   description="Thank you for your payment to Sondri."
 >
-  <section class="success-section">
+  <section class="section section-pad on-dark success-section">
     <div class="wrap">
-      <div class="card success-card">
-        <div class="status-badge">
-          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-          <span>Payment confirmed</span>
+      <div class="panel success-card">
+        <div class="status-chip">
+          <span class="chip"><span class="gdot">■</span> Payment confirmed</span>
         </div>
 
-        <h1 class="success-title">Thank you for your payment<span class="gdot">.</span></h1>
+        <h1 class="h2 success-title">Thank you for your payment<span class="gdot">.</span></h1>
 
-        <p class="body-s success-lede">
+        <p class="lede success-lede">
           Your payment has been successfully processed by Stripe. A confirmation email with your
           tax invoice and receipt has been dispatched to your email address.
         </p>
@@ -29,91 +26,99 @@ import BaseV2 from '../layouts/BaseV2.astro';
           </a>
         </div>
 
-        <a href="/" class="link-home">← Return to the Sondri homepage</a>
+        <div class="back-link">
+          <a href="/" class="btn">← Return to homepage</a>
+        </div>
       </div>
     </div>
   </section>
+</Base>
 
-  <script>
-    const WORKER_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'http://localhost:8787'
-      : 'https://billing.sondri.ai';
+<script>
+  const WORKER_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:8787'
+    : 'https://billing.sondri.ai';
 
-    async function loadTransactionDocs() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const sessionId = urlParams.get('session_id');
+  async function loadTransactionDocs() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
 
-      if (!sessionId) return;
+    if (!sessionId) return;
 
-      try {
-        const res = await fetch(`${WORKER_BASE}/checkout-session/${sessionId}`);
-        const json = await res.json();
+    try {
+      const res = await fetch(`${WORKER_BASE}/checkout-session/${sessionId}`);
+      const json = await res.json();
 
-        if (json.success && json.data) {
-          const { receipt_url, invoice_url, invoice_pdf } = json.data;
-          const container = document.getElementById('downloadsContainer');
-          const btnReceipt = document.getElementById('btnReceipt') as HTMLAnchorElement;
+      if (json.success && json.data) {
+        const { receipt_url, invoice_url, invoice_pdf } = json.data;
+        const container = document.getElementById('downloadsContainer');
+        const btnReceipt = document.getElementById('btnReceipt') as HTMLAnchorElement;
 
-          const targetUrl = receipt_url || invoice_url || invoice_pdf;
+        const targetUrl = receipt_url || invoice_url || invoice_pdf;
 
-          if (targetUrl && btnReceipt && container) {
-            btnReceipt.href = targetUrl;
-            container.style.display = 'block';
-          }
+        if (targetUrl && btnReceipt && container) {
+          btnReceipt.href = targetUrl;
+          container.style.display = 'block';
         }
-      } catch (err) {
-        console.warn('Unable to load receipt link:', err);
       }
+    } catch (err) {
+      console.warn('Unable to load receipt link:', err);
     }
+  }
 
-    loadTransactionDocs();
-  </script>
+  loadTransactionDocs();
+</script>
 
-  <style>
-    .success-section { padding: 130px 0 110px; }
+<style is:global>
+  #siteheader { background: var(--ink); }
+</style>
 
+<style>
+  .success-section {
+    min-height: calc(100vh - var(--nav-h));
+    display: flex;
+    align-items: center;
+  }
+
+  .success-card {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: var(--s-48);
+    background: var(--teal-deep);
+    border: 1px solid var(--line);
+    box-shadow: 10px 10px 0 var(--gold);
+    text-align: center;
+  }
+
+  .status-chip {
+    margin-bottom: var(--s-24);
+  }
+
+  .success-title {
+    margin-bottom: var(--s-16);
+  }
+
+  .success-lede {
+    margin-bottom: var(--s-32);
+    color: var(--pale);
+  }
+
+  .action-wrapper {
+    margin-bottom: var(--s-24);
+  }
+
+  .btn-full {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .back-link {
+    margin-top: var(--s-24);
+  }
+
+  @media (max-width: 640px) {
     .success-card {
-      max-width: 580px;
-      margin: 0 auto;
-      padding: 48px;
-      text-align: center;
+      padding: var(--s-32) var(--s-16);
     }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 16px;
-      background: rgba(253, 179, 67, 0.14);
-      border: 1px solid var(--gold-2);
-      border-radius: var(--r-pill);
-      color: var(--gold);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 24px;
-    }
-    .check-icon { width: 14px; height: 14px; color: var(--gold-2); }
-
-    .success-title { font-size: clamp(26px, 4vw, 34px); line-height: 1.2; margin-bottom: 14px; }
-    .success-lede { margin-bottom: 32px; }
-
-    .action-wrapper { margin-bottom: 24px; }
-    .btn-full { width: 100%; justify-content: center; }
-
-    .link-home {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--steel);
-      text-decoration: none;
-      transition: color var(--dur-micro) var(--ease);
-    }
-    .link-home:hover { color: #fff; }
-
-    @media (max-width: 640px) {
-      .success-section { padding: 88px 0 72px; }
-      .success-card { padding: 32px 22px; }
-    }
-  </style>
-</BaseV2>
+  }
+</style>

@@ -1,0 +1,76 @@
+---
+import { comparison, comparisonHead } from '../home-data';
+import { splitDot } from '../lib/dot';
+const [h2, dot] = splitDot(comparisonHead.h2);
+---
+
+<!-- Matrix's table grammar — one rule per row, no outer box, no verticals,
+     the Sondri column set in the high colour — on the workbench's four options. -->
+<section class="section section-pad on-off" id="compare">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow"><span class="label">/ <span data-i18n="comparisonHead.eyebrow">{comparisonHead.eyebrow}</span></span></div>
+        <h2 class="h2"><span data-i18n="comparisonHead.h2.text">{h2}</span><span class="gdot" data-i18n="comparisonHead.h2.dot">{dot}</span></h2>
+      </div>
+      <div class="intro">
+        <p class="lede" data-i18n="comparisonHead.lede">{comparisonHead.lede}</p>
+      </div>
+    </div>
+
+    <div class="scroll">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            {comparison.cols.map((c, i) => <th scope="col" class:list={{ own: i === 0 }} data-i18n={`comparison.cols.${i}`}>{c}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {comparison.rows.map((r, ri) => (
+            <tr>
+              <th scope="row" data-i18n={`comparison.rows.${ri}.k`}>{r.k}</th>
+              {r.v.map((cell, i) => <td class:list={{ own: i === 0 }} data-i18n={`comparison.rows.${ri}.v.${i}`}>{cell}</td>)}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p class="label ph" data-i18n="comparisonHead.ph">{comparisonHead.ph}</p>
+  </div>
+</section>
+
+<style>
+  /* Always a scroll box, never a clip: the table sets its own floor width and
+     the wrapper scrolls sideways when the viewport is narrower than that. */
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* border-collapse would drop the sticky column's rules in Chrome; separate + zero spacing draws the same grammar. */
+  .matrix { width: 100%; min-width: 820px; border-collapse: separate; border-spacing: 0; }
+  th, td { text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); padding: var(--s-24) var(--s-24) var(--s-24) 0; font-size: 15px; line-height: 22px; color: var(--pale); font-weight: 400; }
+  thead th { font-family: var(--mono); font-size: 13px; letter-spacing: 0.02em; text-transform: uppercase; color: var(--text-hi); padding-block: var(--s-16); border-top: 1px solid var(--line); }
+  /* Row labels: a fixed floor width and pinned to the left edge of the scroll
+     box, so a horizontal scroll (or a narrow viewport) moves the values, never
+     the label. Own background so the values slide under it. */
+  tbody th, thead th:first-child {
+    position: sticky; left: 0; z-index: 1; background: var(--surface); box-shadow: 1px 0 0 var(--surface); /* covers the subpixel seam */
+    min-width: 200px; width: 22%; overflow-wrap: anywhere;
+  }
+  tbody th { font-family: var(--mono); font-size: 13px; letter-spacing: 0.02em; text-transform: uppercase; color: var(--text-hi); }
+  /* The Sondri column carries the gold: the full accent on the head, a tint
+     on the body, teal text on both (9.5:1 and 13.6:1). */
+  .own { color: var(--text-hi); font-weight: 500; background: color-mix(in srgb, var(--gold) 28%, var(--surface)); padding-inline: var(--s-16); }
+  thead .own { font-weight: 500; background: var(--gold); }
+  /* The column after the gold gets the gutter the tint took. */
+  .own + th, .own + td { padding-left: var(--s-16); }
+  /* The Sondri column carries the accent square, the way the matrix's group heads did. */
+  thead .own::before {
+    content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px; background: var(--text-hi);
+  }
+  .ph { padding-top: var(--s-32); max-width: 70ch; }
+  @media (max-width: 900px) {
+    th, td { padding: var(--s-16) var(--s-16) var(--s-16) 0; font-size: 14px; }
+    tbody th, thead th:first-child { min-width: 160px; padding-right: var(--s-16); }
+    .own { padding-inline: var(--s-16); }
+  }
+</style>

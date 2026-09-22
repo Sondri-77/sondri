@@ -1,57 +1,52 @@
 # Sondri website
 
-Production marketing site for Sondri, built from the design-system prototype
-(`../design-system/Sondri Site.dc.html`).
+The production marketing site: one page, the brutalist design reviewed on the
+`sondri-brutal` study (decisions.md D5), plus a custom 404.
 
-**Live:** https://sondri.sondri.workers.dev
+**Live:** https://sondri.ai (Cloudflare Workers static assets, worker `sondri`)
 
 ## Stack
 
-- **[Astro 5](https://astro.build)** — static multi-page site, zero client framework runtime.
-- **Cloudflare Workers static assets** — global CDN hosting (account `Sondri Cockpit` / `ce4bcc9130b13b4acc8c5e597ba93f3a`).
-- Vanilla TypeScript for the canvas dither engine and progressive enhancements (no runtime deps shipped).
+- **[Astro 5](https://astro.build)** — static build, no client framework.
+- **Cloudflare Workers static assets** — `wrangler.jsonc` pins account
+  `ce4bcc9130b13b4acc8c5e597ba93f3a`, the `sondri` worker and the custom domains.
+- Vanilla TypeScript for the hero canvas (gradient-map dither + pixel trail).
 
 ## Commands
 
 ```bash
-npm install        # install deps
-npm run dev        # local dev server (http://localhost:4321)
-npm run build      # build static site to ./dist
-npm run preview    # serve the built ./dist locally
-npm run check      # astro check (TypeScript + template diagnostics)
-npm run deploy     # build + wrangler deploy to Cloudflare
+bun install        # install deps (bun.lock is the tracked lockfile)
+bun run dev        # dev server (http://localhost:4321; compose service `synthesis`)
+bun run check      # astro check (TypeScript + template diagnostics)
+bun run build      # static site → ./dist
+bun run preview    # serve ./dist
+bun run deploy     # build + wrangler deploy
 ```
 
-## Deploying
-
-Auth is via wrangler OAuth (`npx wrangler login`, already done for smokeduncan@gmail.com).
-`wrangler.jsonc` pins the account id and the `sondri` workers.dev subdomain, so
-`npm run deploy` publishes to https://sondri.sondri.workers.dev.
-
-To attach a custom domain (e.g. `sondri.ai`), add a `routes` entry to
-`wrangler.jsonc` once the zone is on this Cloudflare account, then set
-`SITE_URL=https://sondri.ai` before building so canonical/OG/sitemap URLs match.
+`bunx wrangler dev --local` serves `dist/` the way Cloudflare does, including
+`public/_redirects` and the 404 page.
 
 ## Structure
 
 ```
 src/
-  data.ts              # all site copy, ported verbatim from the prototype
-  styles/global.css    # design tokens (CSS custom properties), base, keyframes
-  layouts/Base.astro   # <head>/SEO/OG, nav + footer + cookie, script wiring
-  components/          # Nav, Footer, CookieArtifact
-  scripts/
-    dither.ts          # Bayer-dither canvas engine (hero/puppet/orb/ridge/gold + robot silhouettes)
-    enhance.ts         # scroll reveals, neon-sign phrase cycling, consent persistence, mobile nav
-  pages/              # index, how-it-works, industries, for-customers, about, design-system, 404, robots.txt
+  data.ts            # shared copy: contact, booking link, CTAs (also read by copy-workbench)
+  home-data.ts       # the home page's 12 sections, approved copy (D4)
+  brutal-data.ts     # nav, announcement bar, footer columns
+  layouts/Base.astro # <head> (canonical, sitemap, OG, Organization schema), Nav, Footer, reveal
+  components/        # Hero … FinalCta (12 sections), Nav, Footer, CalModal
+  scripts/           # hero-fx, pixel-trail, dither-block
+  styles/brutal.css  # tokens and the layout system
+  pages/             # index, 404, robots.txt
+public/
+  _redirects         # old routes → / (301), honoured by Cloudflare static assets
+  icons/             # Pixel Icon Library, CC BY 4.0 — see NOTICES.md
 ```
 
-## Notes for future work
+## Routes
 
-- The dither engine (`scripts/dither.ts`) is a faithful port of the prototype's
-  `dither()`: Bayer 4×4 threshold, vertical drip streaks, SDF-based animated
-  robot silhouettes, ~30fps rAF loop, visible-canvas culling, and a
-  `prefers-reduced-motion` fallback (static frame + interval-based sign cycling).
-- Contact CTAs are `mailto:founder@sondri.ai` — the only channel the design
-  defines. Swap for a real form/booking link when one exists.
-- Design docs: `docs/superpowers/specs/2026-07-02-sondri-website-design.md`.
+`/` and `/404`. Everything that used to be a page (`/about`, `/how-it-works`,
+`/get-in-touch`, `/pay`, `/success`, `/styleguide`, `/for-customers`,
+`/design-system`) redirects to `/`; unknown paths get the 404 page
+(`not_found_handling: 404-page`). Booking opens the Cal.com embed
+(`CalModal`) on every `cal.com/sondri/discovery` link.

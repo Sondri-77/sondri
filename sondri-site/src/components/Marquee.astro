@@ -1,0 +1,32 @@
+---
+import { capabilities, capabilityStrip } from '../home-data';
+// Two copies so the loop is seamless; the second is hidden from a11y.
+const track = [...capabilities, ...capabilities];
+---
+
+<section class="section strip">
+  <p class="label heading">/ <span data-i18n="capabilityStrip.eyebrow">{capabilityStrip.eyebrow}</span></p>
+  <div class="rail">
+    <div class="track">
+      {track.map((c, i) => (
+        <span class="item" aria-hidden={i >= capabilities.length ? 'true' : undefined}>
+          <span data-i18n={`capabilities.${i % capabilities.length}`}>{c}</span><span class="dot" aria-hidden="true">/</span>
+        </span>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .strip { padding-block: var(--s-32); overflow: hidden; }
+  .heading { text-align: center; padding-bottom: var(--s-24); }
+  .rail { display: flex; width: 100%; }
+  .track { display: flex; flex: 0 0 auto; gap: var(--s-40); padding-right: var(--s-40); animation: slide 42s linear infinite; }
+  .item {
+    color: var(--text-hi); white-space: nowrap; display: inline-flex; gap: var(--s-40);
+    font-family: var(--mono); font-size: 14px; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .dot { color: var(--accent); }
+  @keyframes slide { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .track { animation: none; } }
+</style>

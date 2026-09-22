@@ -1,0 +1,88 @@
+---
+/* Playground card 09 · Contract review, ported: a read line runs down the
+   agreement, clauses go green as they pass, the three risky ones get
+   flagged, and the tally counts up beside the paper. */
+import { en } from '../../i18n';
+const c = en.contractAnim;
+const { clauses, flags } = c;
+const risks = [3, 7, 12];
+---
+
+<div class="anim win-body" data-anim="contract" data-anim-root>
+  <div class="stage">
+    <div class="paper">
+      <div class="paper-head" data-i18n="contractAnim.head">{c.head}</div>
+      <div class="view">
+        <div class="readline"></div>
+        <div class="clauses">
+          {clauses.map((c, i) => (
+            <div class:list={['clause', { risk: risks.includes(i) }]}>
+              <i class="hi"></i><span class="txt" data-i18n={`contractAnim.clauses.${i}`}>{c}</span>
+              {risks.includes(i) && <span class="risk-chip" data-i18n="contractAnim.risk">{en.contractAnim.risk}</span>}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div class="paper-foot" data-i18n="contractAnim.foot">{c.foot}</div>
+    </div>
+    <div class="tally">
+      <div class="stat"><span data-i18n="contractAnim.statClauses">{c.statClauses}</span> <span class="value">0</span></div>
+      <div class="stat ok"><span data-i18n="contractAnim.statOk">{c.statOk}</span> <span class="value">0</span></div>
+      <div class="stat risk-total"><span data-i18n="contractAnim.statRisk">{c.statRisk}</span> <span class="value">0</span></div>
+      <ul class="flags">{flags.map((f, i) => <li class="flag" data-i18n={`contractAnim.flags.${i}`}>{f}</li>)}</ul>
+      <p class="summary"><span data-i18n="contractAnim.summary1">{c.summary1}</span><br /><span data-i18n="contractAnim.summary2">{c.summary2}</span></p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; gap: 10px; }
+  .paper { position: relative; flex: 1; min-width: 0; height: 242px; background: var(--win-panel); color: var(--teal); box-shadow: 3px 3px 0 var(--teal); border: 1px solid var(--teal); }
+  .paper-head { padding: 11px 8px; border-bottom: 1px solid #b9cfca; font: 10px var(--mono); letter-spacing: 0.05em; }
+  .view { position: absolute; inset: 34px 0 28px; overflow: hidden; }
+  .readline { position: absolute; top: 96px; left: 0; right: 0; border-top: 1px solid var(--gold-2); z-index: 2; }
+  .readline::before { content: '›'; position: absolute; left: 1px; top: -9px; color: var(--win-gold-ink); font: 14px var(--mono); }
+  .clauses { padding: 0 7px; }
+  .clause { height: 24px; position: relative; display: flex; align-items: center; gap: 3px; white-space: nowrap; font: 9px/1.4 var(--sans); }
+  .txt { position: relative; overflow: hidden; text-overflow: ellipsis; }
+  .hi { position: absolute; left: 0; right: 0; bottom: 1px; height: 2px; background: #3b9f6a; opacity: 0; }
+  .risk .hi { height: 20px; background: #fdb34377; border-bottom: 1px solid #d64d42; }
+  .risk-chip { position: absolute; right: 0; top: 6px; padding: 1px 2px; font: 7px var(--mono); background: #8c382c; color: #fff; opacity: 0; }
+  .paper-foot { position: absolute; bottom: 0; left: 0; right: 0; padding: 8px; border-top: 1px solid #b9cfca; font: 8px var(--mono); color: #46645e; }
+  .tally { flex: 0 0 100px; align-self: center; }
+  .stat { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--win-rule); padding: 6px 0; font: 9px var(--mono); letter-spacing: 0.04em; color: var(--win-mute); }
+  .value { font: 20px var(--mono); color: var(--teal); }
+  .ok .value { color: var(--win-ok); }
+  .risk-total .value { color: var(--win-gold-ink); }
+  .flags { padding: 9px 0 0; margin: 0; list-style: none; }
+  .flag { font: 9px/1.6 var(--sans); color: var(--win-gold-ink); }
+  .summary { font: 11px/1.5 var(--sans); color: var(--teal); margin: 10px 0 0; }
+</style>
+
+<script>
+  import { runAnimation } from '../../scripts/console-anim';
+  const root = document.querySelector<HTMLElement>('[data-anim="contract"]');
+  if (root) {
+    const stack = root.querySelector<HTMLElement>('.clauses')!;
+    const his = [...root.querySelectorAll<HTMLElement>('.hi')];
+    const chips = [...root.querySelectorAll<HTMLElement>('.risk-chip')];
+    const values = [...root.querySelectorAll<HTMLElement>('.value')];
+    const flags = [...root.querySelectorAll<HTMLElement>('.flag')];
+    const summary = root.querySelector<HTMLElement>('.summary')!;
+    const risks = [3, 7, 12];
+    runAnimation(root, (time) => {
+      const t = time % 9.6;
+      const progress = Math.min(14, Math.max(0, (t - 0.35) / 0.48));
+      const done = Math.min(14, Math.floor(progress));
+      const flagged = risks.filter((i) => i < done).length;
+      stack.style.transform = `translateY(${84 - Math.min(13, progress) * 24}px)`;
+      his.forEach((h, i) => (h.style.opacity = i < done ? '1' : '0'));
+      chips.forEach((c, i) => (c.style.opacity = risks[i] < done ? '1' : '0'));
+      values[0].textContent = String(done);
+      values[1].textContent = String(done - flagged);
+      values[2].textContent = String(flagged);
+      flags.forEach((f, i) => (f.style.opacity = risks[i] < done ? '1' : '.12'));
+      summary.style.opacity = done === 14 ? '1' : '0';
+    }, 8, 9.6);
+  }
+</script>

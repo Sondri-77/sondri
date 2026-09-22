@@ -1,0 +1,68 @@
+---
+import { bedrock } from '../data';
+---
+
+<!-- Their `testimonials`: a lighter field, mono index, one quote at a time,
+     attribution left and an NN / NN counter with two square controls. -->
+<section class="tst px" id="principles">
+  <div class="index label">
+    <span>Principles</span>
+    <span aria-hidden="true">[SND.3]</span>
+  </div>
+
+  <div class="my-grid body">
+    <div class="stage">
+      {bedrock.map((b, i) => (
+        <blockquote class:list={['quote', { on: i === 0 }]} data-q={i}>
+          <p class="fs-46">&ldquo;{b.t}. {b.b}&rdquo;</p>
+          <footer>
+            <p class="label">Sondri operating principle</p>
+            <p class="label dim">{String(i + 1).padStart(2, '0')} — {b.t}</p>
+          </footer>
+        </blockquote>
+      ))}
+    </div>
+  </div>
+
+  <div class="controls">
+    <p class="label"><span id="q-now">01</span> / {String(bedrock.length).padStart(2, '0')}</p>
+    <div class="btns">
+      <button class="ctl" id="q-prev" aria-label="Previous principle">←</button>
+      <button class="ctl" id="q-next" aria-label="Next principle">→</button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .tst { background: var(--off); padding-top: var(--s-50); padding-bottom: var(--s-60); }
+  .index { display: flex; justify-content: space-between; }
+
+  .body { margin-top: var(--s-66); }
+  .stage { position: relative; grid-column: 1 / -1; min-height: 300px; }
+  @media (min-width: 1024px) { .stage { grid-column: 2 / 11; min-height: 320px; } }
+
+  .quote { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+  .quote.on { opacity: 1; visibility: visible; }
+  .quote footer { margin-top: var(--s-40); display: flex; flex-direction: column; gap: 8px; }
+  .dim { color: var(--muted); }
+
+  .controls { display: flex; align-items: center; justify-content: space-between; margin-top: var(--s-60); border-top: 1px solid var(--line); padding-top: var(--s-20); }
+  .btns { display: flex; gap: var(--s-08); }
+  .ctl { width: 46px; height: 46px; border: 1px solid var(--line); background: none; color: var(--teal); cursor: pointer; font-size: 15px; transition: background 0.2s ease-in-out, color 0.2s ease-in-out; }
+  .ctl:hover { background: var(--teal); color: var(--white); }
+
+  @media (max-width: 700px) { .stage { min-height: 420px; } }
+</style>
+
+<script>
+  const quotes = Array.from(document.querySelectorAll<HTMLElement>('[data-q]'));
+  const now = document.getElementById('q-now');
+  let i = 0;
+  const go = (next: number) => {
+    i = (next + quotes.length) % quotes.length;
+    quotes.forEach((q, n) => q.classList.toggle('on', n === i));
+    if (now) now.textContent = String(i + 1).padStart(2, '0');
+  };
+  document.getElementById('q-prev')?.addEventListener('click', () => go(i - 1));
+  document.getElementById('q-next')?.addEventListener('click', () => go(i + 1));
+</script>

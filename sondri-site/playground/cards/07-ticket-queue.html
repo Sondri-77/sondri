@@ -1,0 +1,106 @@
+<section class="card c07" data-card="ticket-queue" id="c07-root" aria-label="Ticket queue">
+  <style>
+.c07 { --field: #081f1f; --gold: #fdb343; --gold-hover: #f5a71e; --text: #e9edec; --muted: #9db6b4; --line: #c9dad7; --panel: #0c2b29; --paper: #edf5f4; --success: #6ee7a8; --risk: #ff6b6b; --mono: 'JetBrains Mono', 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace; --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; box-sizing: border-box; width: 100%; min-width: 0; min-height: 320px; height: 352px; padding: 16px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 1px solid var(--text); border-radius: 0; box-shadow: 6px 6px 0 #000; color: var(--text); background-color: var(--field); background-image: radial-gradient(#1c3a39 1px, transparent 1px); background-size: 14px 14px; font-family: var(--sans); }
+.c07 .c07-chrome { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px dotted var(--muted); flex: 0 0 auto; }
+.c07 .c07-controls { display: flex; gap: 4px; flex: 0 0 auto; }
+.c07 .c07-square { width: 8px; height: 8px; box-sizing: border-box; border: 1px solid var(--text); }
+.c07 .c07-title { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; margin: 0; font-weight: 400; }
+.c07 .c07-stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; }
+.c07 .c07-caption { margin: 0; color: var(--muted); font: 10px/1.5 var(--mono); white-space: nowrap; }
+.c07 .c07-mono { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.c07 .c07-window { background: var(--panel); border: 1px solid var(--line); box-shadow: 3px 3px 0 #000; min-width: 0; box-sizing: border-box; }
+@media (prefers-reduced-motion: reduce) { .c07 .c07-stage { scroll-behavior: auto; } }
+
+.c07 .c07-stage { align-items: center; gap: 14px; }
+.c07 .c07-queue { flex: 1; height: 248px; overflow: hidden; position: relative; }
+.c07 .c07-bar { height: 30px; padding: 0 8px; display: flex; justify-content: space-between; align-items: center; background: var(--panel); position: relative; z-index: 2; border-bottom: 1px solid var(--gold); color: var(--gold); font: 9px var(--mono); letter-spacing: .08em; }
+.c07 .c07-check { color: var(--success); }
+.c07 .c07-list { padding: 0 7px; }
+.c07 .c07-row { height: 21px; display: flex; align-items: center; gap: 6px; white-space: nowrap; font: 9px var(--mono); border-bottom: 1px solid #294842; }
+.c07 .c07-number { color: var(--muted); font-size: 8px; }
+.c07 .c07-text { overflow: hidden; text-overflow: ellipsis; }
+.c07 .c07-fade { position: absolute; inset: auto 0 0; height: 25px; background: linear-gradient(transparent, var(--field)); pointer-events: none; }
+.c07 .c07-tally { flex: 0 0 92px; text-align: center; }
+.c07 .c07-count { color: var(--gold); font: 64px/1 var(--mono); letter-spacing: -.08em; font-variant-numeric: tabular-nums; margin-right: 5px; }
+.c07 .c07-label { margin-top: 9px; color: var(--muted); font: 9px var(--mono); letter-spacing: .08em; }
+.c07 .c07-clear { margin-top: 16px; min-height: 28px; color: var(--success); font: 10px/1.5 var(--mono); letter-spacing: .04em; }
+</style>
+  <div class="c07-chrome"><span class="c07-controls" aria-hidden="true"><i class="c07-square"></i><i class="c07-square"></i><i class="c07-square"></i></span><h2 class="c07-title">07 · Ticket queue</h2></div>
+  <div class="c07-stage"><div class="c07-window c07-queue"><div class="c07-bar"><span>■ AGENT</span><span class="c07-check">✓ RESOLVED</span></div><div class="c07-list"><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div><div class="c07-row"><span class="c07-number"></span><span class="c07-text"></span></div></div><div class="c07-fade"></div></div><div class="c07-tally"><div class="c07-count">48</div><div class="c07-label">REMAINING</div><div class="c07-clear">QUEUE<br>CLEAR</div></div></div>
+  <p class="c07-caption">Your queue gets shorter. Then disappears.</p>
+  <script>
+  (function () {
+    function init() {
+      var root = document.getElementById('c07-root');
+      if (!root || root.dataset.inited) return;
+      root.dataset.inited = '1';
+
+      var subjects = ['reset password', 'invoice copy', 'update address', 'order status', 'change plan', 'refund request', 'access request', 'delivery date', 'billing query', 'account unlock'];
+      var rows = Array.from(root.querySelectorAll('.c07-row')).map(function(row) { return { el: row, id: row.querySelector('.c07-number'), text: row.querySelector('.c07-text') }; });
+      var list = root.querySelector('.c07-list'), count = root.querySelector('.c07-count');
+      var clear = root.querySelector('.c07-clear'), check = root.querySelector('.c07-check');
+      var previousResolved = -1;
+      function render(time, dt, reduced) {
+        var t = time % 9.8;
+        var progress = Math.min(48, Math.pow(Math.min(1, t / 7.6), 1.2) * 48);
+        var resolved = Math.floor(progress), fraction = progress - resolved;
+        var refill = t > 9.1 ? Math.min(1, (t - 9.1) / .7) : 0;
+        if (refill) resolved = 0;
+        count.textContent = String(48 - resolved);
+        if (resolved !== previousResolved) {
+          rows.forEach(function(row, i) {
+            row.id.textContent = '#' + (5031 + resolved + i);
+            row.text.textContent = subjects[(resolved + i) % subjects.length];
+          });
+          previousResolved = resolved;
+        }
+        list.style.transform = 'translateY(' + (refill ? (1 - refill) * 235 : -fraction * 21) + 'px)';
+        rows.forEach(function(row, i) {
+          row.el.style.opacity = resolved + i >= 48 ? '0' : i === 0 && !refill ? String(1 - fraction) : '1';
+          row.el.style.transform = i === 0 && !refill ? 'translateX(-' + fraction * 90 + 'px)' : 'none';
+        });
+        check.style.opacity = reduced || fraction > .45 || resolved === 48 ? '1' : '.2';
+        clear.style.opacity = resolved === 48 ? '1' : '0';
+      }
+
+
+    var motion = matchMedia('(prefers-reduced-motion: reduce)');
+    var visible = false;
+    var frame = 0;
+    var previous = 0;
+    var elapsed = 0;
+    function tick(now) {
+      frame = 0;
+      if (!root.isConnected) { observer.disconnect(); cleanup(); return; }
+      if (!visible || document.hidden || motion.matches) return;
+      var dt = previous ? Math.min((now - previous) / 1000, .05) : 0;
+      previous = now;
+      elapsed += dt;
+      render(elapsed, dt, false);
+      frame = requestAnimationFrame(tick);
+    }
+    function sync() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      previous = 0;
+      if (motion.matches) render(8.2, 0, true);
+      else if (visible && !document.hidden) frame = requestAnimationFrame(tick);
+    }
+    function cleanup() {
+      document.removeEventListener('visibilitychange', sync);
+      motion.removeEventListener('change', sync);
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      visible = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0 });
+    observer.observe(root);
+    document.addEventListener('visibilitychange', sync);
+    motion.addEventListener('change', sync);
+    render(motion.matches ? 8.2 : 0, 0, motion.matches);
+
+    }
+    if (document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init, { once: true });
+  })();
+  </script>
+</section>

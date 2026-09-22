@@ -1,0 +1,27 @@
+---
+import { BOOK_HREF, CTA_PRIMARY, RISK_REVERSAL } from '../data';
+import { finalCta } from '../home-data';
+---
+
+<!-- The closing field, ahead of the footer on the same teal. -->
+<section class="cta px my-grid on-teal" id="book">
+  <div class="cta-title">
+    <h2 class="t-md" data-reveal>{finalCta.h2}</h2>
+  </div>
+  <div class="cta-body">
+    <p class="fs-24" data-reveal>{finalCta.body}</p>
+    <a class="btn btn-inv" href={BOOK_HREF}>{CTA_PRIMARY} <span class="arr" aria-hidden="true">→</span></a>
+    <p class="label">{RISK_REVERSAL}</p>
+  </div>
+</section>
+
+<style>
+  .cta { padding-block: var(--s-100) var(--s-80); row-gap: var(--s-50); }
+  .cta-title { grid-column: 1 / -1; }
+  @media (min-width: 1024px) { .cta-title { grid-column: 1 / 8; } }
+  .cta-body { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-30); }
+  .cta-body p { max-width: 40ch; }
+  @media (min-width: 1024px) { .cta-body { grid-column: 8 / -1; align-self: end; } }
+  .arr { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  .btn:hover .arr { transform: translateX(4px); }
+</style>

@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import Btn from '../components/Btn.astro';
+import { timeline, teamModel, faq, CTA_PRIMARY, RISK_REVERSAL } from '../data/copy';
+---
+
+<Base title="How It Works — Sondri">
+  <section>
+    <h1>How we get your software into use.</h1>
+    <p>You work with our senior team to plan the software, and our specialists build it into the systems you use.</p>
+  </section>
+
+  <section>
+    <div class="cards">
+      {timeline.map((t) => (
+        <div class="card">
+          <p>{t.wk.toLowerCase()}</p>
+          <h3>{t.title}</h3>
+          <p>{t.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2>Who you’ll work with.</h2>
+    <div class="cards">
+      {teamModel.map((m) => (
+        <div class="card">
+          <h3>{m.title}</h3>
+          <p>{m.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2>Questions you may have.</h2>
+    {faq.map((f) => (
+      <details>
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </section>
+
+  <section>
+    <h2>Let’s look at the work slowing your team down.</h2>
+    <div class="ctas">
+      <Btn href="#">{CTA_PRIMARY} →</Btn>
+      <Btn href="/get-in-touch/">Get in Touch</Btn>
+    </div>
+    <p>{RISK_REVERSAL}</p>
+  </section>
+</Base>

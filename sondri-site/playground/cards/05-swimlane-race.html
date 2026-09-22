@@ -1,0 +1,113 @@
+<section class="card c05" data-card="swimlane-race" id="c05-root" aria-label="Swimlane race">
+  <style>
+.c05 { --field: #081f1f; --gold: #fdb343; --gold-hover: #f5a71e; --text: #e9edec; --muted: #9db6b4; --line: #c9dad7; --panel: #0c2b29; --paper: #edf5f4; --success: #6ee7a8; --risk: #ff6b6b; --mono: 'JetBrains Mono', 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace; --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; box-sizing: border-box; width: 100%; min-width: 0; min-height: 320px; height: 352px; padding: 16px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 1px solid var(--text); border-radius: 0; box-shadow: 6px 6px 0 #000; color: var(--text); background-color: var(--field); background-image: radial-gradient(#1c3a39 1px, transparent 1px); background-size: 14px 14px; font-family: var(--sans); }
+.c05 .c05-chrome { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px dotted var(--muted); flex: 0 0 auto; }
+.c05 .c05-controls { display: flex; gap: 4px; flex: 0 0 auto; }
+.c05 .c05-square { width: 8px; height: 8px; box-sizing: border-box; border: 1px solid var(--text); }
+.c05 .c05-title { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; margin: 0; font-weight: 400; }
+.c05 .c05-stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; }
+.c05 .c05-caption { margin: 0; color: var(--muted); font: 10px/1.5 var(--mono); white-space: nowrap; }
+.c05 .c05-mono { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.c05 .c05-window { background: var(--panel); border: 1px solid var(--line); box-shadow: 3px 3px 0 #000; min-width: 0; box-sizing: border-box; }
+@media (prefers-reduced-motion: reduce) { .c05 .c05-stage { scroll-behavior: auto; } }
+
+.c05 .c05-stage { flex-direction: column; justify-content: center; align-items: stretch; gap: 22px; }
+.c05 .c05-lane { min-width: 0; }
+.c05 .c05-heading { display: flex; justify-content: space-between; align-items: center; font: 10px var(--mono); letter-spacing: .08em; margin-bottom: 13px; }
+.c05 .c05-time { font: 15px var(--mono); font-variant-numeric: tabular-nums; }
+.c05 .c05-track { position: relative; height: 62px; margin: 0 5px; }
+.c05 .c05-rail { position: absolute; height: 1px; background: #54716d; top: 5px; left: 0; right: 0; }
+.c05 .c05-stations { display: flex; justify-content: space-between; position: relative; }
+.c05 .c05-stop { width: 15%; display: flex; flex-direction: column; align-items: center; gap: 11px; }
+.c05 .c05-stop:first-child { align-items: flex-start; }
+.c05 .c05-stop:last-child { align-items: flex-end; }
+.c05 .c05-mark { display: block; width: 9px; height: 9px; background: var(--field); border: 1px solid var(--muted); }
+.c05 .c05-label { font: 9px/1.45 var(--sans); color: var(--muted); text-align: center; }
+.c05 .c05-token { position: absolute; top: 0; left: 0; width: 11px; height: 11px; background: var(--text); box-shadow: 0 0 0 3px var(--field); }
+.c05 .c05-auto .c05-heading { color: var(--gold); }
+.c05 .c05-auto .c05-token { background: var(--gold); }
+.c05 .c05-auto .c05-rail { background: #fdb34366; }
+.c05 .c05-saving { align-self: flex-end; margin-top: -33px; padding: 6px 10px; color: var(--field); background: var(--gold); font: 19px var(--mono); box-shadow: 3px 3px 0 #000; }
+</style>
+  <div class="c05-chrome"><span class="c05-controls" aria-hidden="true"><i class="c05-square"></i><i class="c05-square"></i><i class="c05-square"></i></span><h2 class="c05-title">05 · Swimlane race</h2></div>
+  <div class="c05-stage"><div class="c05-lane c05-manual"><div class="c05-heading"><span>MANUAL</span><span class="c05-time">00:00.0</span></div><div class="c05-track"><div class="c05-rail"></div><div class="c05-stations"><div class="c05-stop"><i class="c05-mark"></i><span class="c05-label">Open<br>email</span></div><div class="c05-stop"><i class="c05-mark"></i><span class="c05-label">Read<br>PDF</span></div><div class="c05-stop"><i class="c05-mark"></i><span class="c05-label">Type into<br>ERP</span></div><div class="c05-stop"><i class="c05-mark"></i><span class="c05-label">Check<br>price</span></div><div class="c05-stop"><i class="c05-mark"></i><span class="c05-label">Ask<br>approval</span></div><div class="c05-stop"><i class="c05-mark"></i><span class="c05-label">File<br>it</span></div></div><div class="c05-token"></div></div></div><div class="c05-lane c05-auto"><div class="c05-heading"><span>AUTOMATED</span><span class="c05-time">00:00.0</span></div><div class="c05-track"><div class="c05-rail"></div><div class="c05-stations"><div class="c05-stop"><i class="c05-mark"></i><span class="c05-label">Receive</span></div><div class="c05-stop"><i class="c05-mark"></i><span class="c05-label">Done</span></div></div><div class="c05-token"></div></div></div><div class="c05-saving">−72%</div></div>
+  <p class="c05-caption">You get the same result. Hours back.</p>
+  <script>
+  (function () {
+    function init() {
+      var root = document.getElementById('c05-root');
+      if (!root || root.dataset.inited) return;
+      root.dataset.inited = '1';
+
+      var tracks = Array.from(root.querySelectorAll('.c05-track'));
+      var tokens = Array.from(root.querySelectorAll('.c05-token'));
+      var timers = Array.from(root.querySelectorAll('.c05-time'));
+      var saving = root.querySelector('.c05-saving');
+      var spans = [280, 280];
+      var positions = [];
+      var resize = new ResizeObserver(function() {
+        tracks.forEach(function(track, i) {
+          var bounds = track.getBoundingClientRect();
+          spans[i] = bounds.width - 11;
+          positions[i] = Array.from(track.querySelectorAll('.c05-mark')).map(function(mark) { return mark.getBoundingClientRect().left - bounds.left; });
+        });
+        if (motion.matches) render(8, 0, true);
+      });
+      tracks.forEach(function(track) { resize.observe(track); });
+      function clock(value) { return '00:' + value.toFixed(1).padStart(4, '0'); }
+      function render(time) {
+        var t = time % 9.7;
+        var manual = Math.min(7.4, t), auto = Math.min(2.1, t);
+        var segment = manual / 7.4 * 5;
+        var part = Math.max(0, Math.min(1, (segment % 1 - .42) / .58));
+        var index = Math.min(4, Math.floor(segment));
+        var stops = positions[0] || [0, spans[0] * .2, spans[0] * .4, spans[0] * .6, spans[0] * .8, spans[0]];
+        var x = manual >= 7.4 ? spans[0] : stops[index] + (stops[index + 1] - stops[index]) * part;
+        tokens[0].style.transform = 'translateX(' + x + 'px)';
+        tokens[1].style.transform = 'translateX(' + Math.max(0, Math.min(1, (auto - .25) / 1.85)) * spans[1] + 'px)';
+        timers[0].textContent = clock(manual); timers[1].textContent = clock(auto);
+        saving.style.opacity = t >= 7.4 ? '1' : '0';
+        saving.style.transform = 'translateY(' + (t >= 7.4 ? 0 : 8) + 'px)';
+      }
+
+
+    var motion = matchMedia('(prefers-reduced-motion: reduce)');
+    var visible = false;
+    var frame = 0;
+    var previous = 0;
+    var elapsed = 0;
+    function tick(now) {
+      frame = 0;
+      if (!root.isConnected) { observer.disconnect(); cleanup(); return; }
+      if (!visible || document.hidden || motion.matches) return;
+      var dt = previous ? Math.min((now - previous) / 1000, .05) : 0;
+      previous = now;
+      elapsed += dt;
+      render(elapsed, dt, false);
+      frame = requestAnimationFrame(tick);
+    }
+    function sync() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      previous = 0;
+      if (motion.matches) render(8, 0, true);
+      else if (visible && !document.hidden) frame = requestAnimationFrame(tick);
+    }
+    function cleanup() {
+      document.removeEventListener('visibilitychange', sync);
+      motion.removeEventListener('change', sync);
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      visible = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0 });
+    observer.observe(root);
+    document.addEventListener('visibilitychange', sync);
+    motion.addEventListener('change', sync);
+    render(motion.matches ? 8 : 0, 0, motion.matches);
+
+    }
+    if (document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init, { once: true });
+  })();
+  </script>
+</section>

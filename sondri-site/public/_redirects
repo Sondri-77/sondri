@@ -1,0 +1,16 @@
+# Routes that no longer exist — the site is one page. Cloudflare static assets
+# serve these as 301s; anything else unknown gets the 404 page.
+/about              /  301
+/about/             /  301
+/how-it-works       /  301
+/how-it-works/      /  301
+/get-in-touch       /  301
+/get-in-touch/      /  301
+/styleguide         /  301
+/styleguide/        /  301
+/for-customers      /  301
+/for-customers/     /  301
+/design-system      /  301
+/design-system/     /  301
+/industries         /  301
+/industries/        /  301

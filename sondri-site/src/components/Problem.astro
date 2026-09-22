@@ -1,0 +1,53 @@
+---
+import { problem, problemStats } from '../home-data';
+import { splitDot } from '../lib/dot';
+import { splitQuote } from '../lib/i18n';
+const [h2, dot] = splitDot(problem.h2);
+// Straight quotes in the copy string set as curly ones, and the quoted
+// phrase never breaks: the closer is one line on desktop.
+const [closeHead, closeTail] = splitQuote(problem.close);
+---
+
+<!-- ProblemStats, re-headed: the three big numbers under the workbench copy. -->
+<section class="section section-pad on-off">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow"><span class="label">/ <span data-i18n="problem.eyebrow">{problem.eyebrow}</span></span></div>
+        <h2 class="h2"><span data-i18n="problem.h2.text">{h2}</span><span class="gdot" data-i18n="problem.h2.dot">{dot}</span></h2>
+      </div>
+      <div class="intro">
+        <p class="lede" data-i18n="problem.lede">{problem.lede}</p>
+      </div>
+    </div>
+
+    <div class="rule-cols cols-3 stats">
+      {problemStats.map((s, i) => (
+        <div data-reveal style={`transition-delay:${i * 80}ms`}>
+          <p class="label n-idx" data-i18n={`problemStats.${i}.k`}>{s.k}</p>
+          <p class="n kpi" data-i18n={`problemStats.${i}.n`}>{s.n}</p>
+          <p class="body-s" data-i18n={`problemStats.${i}.label`}>{s.label}</p>
+        </div>
+      ))}
+    </div>
+
+    <p class="h4 close"><span data-i18n="problem.close.head">{closeHead}</span><span class="nb" data-i18n="problem.close.tail">{closeTail}</span></p>
+  </div>
+</section>
+
+<style>
+  .stats > * { display: flex; flex-direction: column; gap: var(--s-16); min-height: 260px; }
+  /* The number, in Florexa (.kpi): the pixel face wants a touch more size than the sans did. */
+  .n { font-size: clamp(56px, 6vw, 88px); color: var(--accent); margin-top: auto; }
+  .n-idx { color: var(--text-hi); }
+  /* Their list marker: a filled square ahead of the mono index. */
+  .n-idx::before {
+    content: ''; display: inline-block;
+    width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
+    background: currentColor;
+  }
+  .body-s { max-width: 32ch; }
+  .close { padding-top: var(--s-64); max-width: 40ch; }
+  @media (min-width: 900px) { .close { white-space: nowrap; max-width: none; } }
+  .nb { white-space: nowrap; }
+</style>

@@ -1,0 +1,28 @@
+---
+import { BOOK_HREF, CTA_PRIMARY, RISK_REVERSAL } from '../data';
+import { finalCta } from '../home-data';
+import { splitDot } from '../lib/dot';
+const [h2, dot] = splitDot(finalCta.h2);
+---
+
+<!-- The close, on the gold field: its own block ahead of the teal footer
+     (captain: the two must not run together). -->
+<section class="section on-gold" id="book">
+  <div class="wrap cta">
+    <div class="eyebrow"><span class="label">/ <span data-i18n="finalCta.eyebrow">{finalCta.eyebrow}</span></span></div>
+    <h2 class="h2"><span data-i18n="finalCta.h2.text">{h2}</span><span class="gdot" data-i18n="finalCta.h2.dot">{dot}</span></h2>
+    <p class="lede" data-i18n="finalCta.lede">{finalCta.lede}</p>
+    <div class="cta-actions">
+      <a class="btn btn-gold" href={BOOK_HREF}><span data-i18n="cta">{CTA_PRIMARY}</span> <span class="arr">→</span></a>
+    </div>
+    <p class="label" data-i18n="riskReversal">{RISK_REVERSAL}</p>
+  </div>
+</section>
+
+<style>
+  .cta { padding-block: var(--s-96); display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-32); }
+  .cta .eyebrow { margin-bottom: 0; }
+  .cta .h2 { max-width: 20ch; }
+  .lede { max-width: 48ch; }
+  .cta-actions { display: flex; flex-wrap: wrap; gap: var(--s-16); }
+</style>

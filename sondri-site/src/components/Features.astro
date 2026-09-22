@@ -1,0 +1,44 @@
+---
+import { features, featuresHead } from '../home-data';
+import { en } from '../i18n';
+import { splitDot } from '../lib/dot';
+import Mark from './Mark.astro';
+const [h2, dot] = splitDot(featuresHead.h2);
+---
+
+<!-- Capabilities: six things we build in a 3×2 ruled grid, each with its
+     dithered mark and pixel icon. (Restored, captain 2026-09-21 — the three
+     animation windows moved up into the hero.) -->
+<section class="section section-pad" id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow"><span class="label">/ <span data-i18n="featuresHead.eyebrow">{featuresHead.eyebrow}</span></span></div>
+        <h2 class="h2"><span data-i18n="featuresHead.h2.text">{h2}</span><span class="gdot" data-i18n="featuresHead.h2.dot">{dot}</span></h2>
+      </div>
+    </div>
+
+    <div class="rule-cols cols-3 grid" aria-label={en.consoleStripLabel} data-i18n-attr="aria-label=consoleStripLabel">
+      {features.map((f, i) => (
+        <article data-reveal style={`transition-delay:${(i % 3) * 80}ms`}>
+          <Mark icon={f.icon} seed={40 + i} />
+          <p class="label idx" data-i18n={`features.${i}.k`}>{f.k}</p>
+          <h3 class="h5"><span data-i18n={`features.${i}.t`}>{f.t}</span><span class="gdot">.</span></h3>
+          <p class="body-s" data-i18n={`features.${i}.b`}>{f.b}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid { row-gap: var(--s-48); }
+  .grid article { display: flex; flex-direction: column; gap: var(--s-16); }
+  .idx { color: var(--text-hi); }
+  .idx::before {
+    content: ''; display: inline-block;
+    width: 7px; height: 7px; margin-right: 10px; vertical-align: 1px;
+    background: currentColor;
+  }
+  .body-s { max-width: 34ch; font-size: 15px; line-height: 22px; }
+</style>

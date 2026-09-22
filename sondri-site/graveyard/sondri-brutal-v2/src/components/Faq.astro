@@ -1,0 +1,61 @@
+---
+import { faq } from '../data';
+import { questionTags } from '../v2-data';
+import { extraFaq, faqIntro } from '../home-data';
+const all = [...faq, ...extraFaq];
+---
+
+<!-- Their `latest_news`: title, then rows of index / category / question,
+     each on a hairline. -->
+<section class="news px my-grid" id="faq">
+  <div class="head">
+    <h2 class="t-md">{faqIntro}</h2>
+  </div>
+
+  <div class="rows">
+    {all.map((f, i) => (
+      <details class="row" data-reveal>
+        <summary>
+          <span class="label n">{String(i + 1).padStart(2, '0')}</span>
+          <span class="label cat">{questionTags[i]}</span>
+          <span class="t-sm q">{f.q}</span>
+          <span class="sign" aria-hidden="true"></span>
+        </summary>
+        <p class="my-text a">{f.a}</p>
+      </details>
+    ))}
+  </div>
+</section>
+
+<style>
+  .news { overflow: hidden; padding-top: var(--s-50); padding-bottom: var(--s-80); }
+  @media (min-width: 1024px) { .news { padding-top: var(--s-80); padding-bottom: var(--s-130); } }
+
+  .head { grid-column: 1 / -1; }
+
+  .rows { grid-column: 1 / -1; margin-top: var(--s-50); }
+  .row { border-top: 1px solid var(--line); }
+
+  summary {
+    display: grid; grid-template-columns: 46px 130px 1fr 20px;
+    gap: var(--s-20); align-items: center;
+    padding-block: var(--s-26); cursor: pointer; list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary > * { min-width: 0; }
+  .cat { color: var(--muted); }
+  summary:hover .q { opacity: 0.6; }
+
+  .sign { position: relative; width: 14px; height: 14px; }
+  .sign::before, .sign::after { content: ''; position: absolute; left: 0; top: 6.5px; width: 14px; height: 1px; background: currentColor; }
+  .sign::after { transform: rotate(90deg); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  .row[open] .sign::after { transform: rotate(0deg); }
+
+  .a { padding: 0 0 var(--s-26) 196px; max-width: 86ch; }
+
+  @media (max-width: 1023px) {
+    summary { grid-template-columns: 40px 1fr 20px; }
+    .cat { display: none; }
+    .a { padding-left: 60px; }
+  }
+</style>

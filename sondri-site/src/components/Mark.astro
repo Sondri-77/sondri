@@ -1,0 +1,33 @@
+---
+/* The tile mark: a dithered block (dither-block.ts, the hero's ramp + Bayer)
+   with a Pixel Icon Library glyph where its lit blob used to be. Used by the
+   Capabilities grid and the Value cards, so every mark on the page is drawn
+   the same way. */
+interface Props {
+  /** File name in public/icons/ (see NOTICES.md). */
+  icon: string;
+  seed: number;
+}
+const { icon, seed } = Astro.props;
+---
+
+<div class="mark panel">
+  <canvas class="dither-block" data-dither-block data-shape="flat" data-seed={seed}></canvas>
+  <span class="icon" style={`--icon:url(/icons/${icon}.svg)`} aria-hidden="true"></span>
+</div>
+
+<style>
+  .mark { position: relative; width: 96px; height: 64px; --shadow-x: 6px; margin-bottom: var(--s-08); }
+  /* A 24-grid glyph at exactly 2 CSS px per cell (48px), centred on the
+     block's light source (its vertical midpoint). The SVG is a mask so the
+     colour is the same white the blob quantised to; integer size + offset keep
+     every cell on the pixel grid at 1x and 2x, with nothing to anti-alias. */
+  .icon {
+    position: absolute; left: 24px; top: 8px; width: 48px; height: 48px;
+    background: var(--white);
+    -webkit-mask: var(--icon) center / 48px 48px no-repeat;
+    mask: var(--icon) center / 48px 48px no-repeat;
+    image-rendering: pixelated;
+    pointer-events: none;
+  }
+</style>

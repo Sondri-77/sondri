@@ -1,0 +1,171 @@
+/* Sondri — brutalist study v2.
+   A close copy of the Outsource Consultants (Nuxt) design, rebuilt on Sondri's
+   dark teal + white instead of their blue + mercury.
+
+   Their system, kept intact:
+   - a 12-column grid with a 15px gutter ("my-grid"), used by every section
+   - structural 1px vertical rules drawn *through* sections, not around them
+   - display type at 160px, weight 500, line-height 0.9375, tracking 0
+   - GT America Mono labels, uppercase, 12px
+   - bracket links: [ LEARN MORE ]
+   - the stairs: three stepped blocks cutting the bottom edge of a colour field
+   - square corners, everywhere
+
+   Ours: Florexa for display and the wordmark, Inter Tight for body copy,
+   DM Mono for labels. */
+
+@font-face {
+  font-family: 'Florexa';
+  src: url('/fonts/florexa.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Two colours. Their blue/mercury pair, in Sondri's teal and white. */
+  --teal: #081f1f;
+  --teal-deep: #031919;
+  --white: #ffffff;
+  --off: #f2f6f5;     /* the faint tint their white-on-mercury sections used */
+  --muted: #4d6b6a;   /* teal at reading weight on white */
+  --muted-inv: #9db6b4;
+
+  --line: var(--teal);
+  --line-soft: rgba(8, 31, 31, 0.18);
+  --line-inv: rgba(255, 255, 255, 0.4);
+
+  --gutter: 15px;
+  --s-08: 8px;  --s-10: 10px; --s-15: 15px; --s-20: 20px; --s-26: 26px;
+  --s-30: 30px; --s-40: 40px; --s-46: 46px; --s-50: 50px; --s-60: 60px;
+  --s-66: 66px; --s-80: 80px; --s-100: 100px; --s-130: 130px; --s-160: 160px;
+
+  --display: 'Florexa', 'Inter Tight Variable', system-ui, sans-serif;
+  --sans: 'Inter Tight Variable', 'Inter Tight', system-ui, sans-serif;
+  --mono: 'DM Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; border-radius: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  background: var(--white);
+  color: var(--teal);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+::selection { background: var(--teal); color: var(--white); }
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+
+/* ── The grid ───────────────────────────────────────── */
+
+/* Every section is padded by the gutter and lays its content on 12 columns. */
+.px { padding-inline: var(--gutter); }
+.my-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+}
+@media (max-width: 1023px) {
+  .my-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+.skip {
+  position: absolute; left: -9999px; top: 0; z-index: 100;
+  background: var(--teal); color: var(--white); padding: 12px 20px;
+  font: 400 14px/1 var(--mono); text-transform: uppercase;
+}
+.skip:focus { left: 0; }
+
+/* ── Type ───────────────────────────────────────────── */
+
+/* The 160px display line. Florexa is a pixel face, so it gets a touch more
+   line-height than their 0.9375 and no optical tracking. */
+.my-title {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(52px, 10.4vw, 150px);
+  line-height: 1.02;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.t-md { font-family: var(--display); font-size: clamp(34px, 4.4vw, 68px); line-height: 1.04; text-transform: uppercase; font-weight: 400; }
+.t-sm { font-family: var(--sans); font-size: clamp(24px, 2.1vw, 30px); line-height: 1; letter-spacing: -0.01em; font-weight: 400; }
+
+.my-text { font-size: 15px; line-height: 1.35; }
+.fs-24 { font-size: clamp(19px, 1.7vw, 24px); line-height: 1.15; }
+.fs-46 { font-size: clamp(26px, 3.2vw, 46px); line-height: 1.05; letter-spacing: -0.01em; }
+
+/* GT America Mono's job. */
+.label {
+  font-family: var(--mono);
+  font-size: 12px; line-height: 1;
+  letter-spacing: 0; text-transform: uppercase;
+}
+
+/* [ LEARN MORE ] */
+.brk {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--mono); font-size: 12px; line-height: 1;
+  text-transform: uppercase; text-decoration: none; color: inherit;
+}
+.brk::before { content: '['; }
+.brk::after { content: ']'; }
+.brk .arr { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.brk:hover .arr { transform: translateX(4px); }
+
+/* Their pill button: solid field, inverted on hover. */
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 15px 22px; border: 1px solid currentColor;
+  font-family: var(--mono); font-size: 12px; line-height: 1;
+  text-transform: uppercase; text-decoration: none; cursor: pointer;
+  background: transparent; color: inherit;
+  transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+.btn:hover { background: var(--teal); color: var(--white); }
+.btn-solid { background: var(--teal); color: var(--white); border-color: var(--teal); }
+.btn-solid:hover { background: transparent; color: var(--teal); }
+.on-teal .btn:hover, .btn-inv:hover { background: var(--white); color: var(--teal); }
+
+/* ── Rules ──────────────────────────────────────────── */
+
+.rule-t { border-top: 1px solid var(--line); }
+.rule-b { border-bottom: 1px solid var(--line); }
+
+/* A vertical rule dropped through a section on the 12-col grid. */
+.vrules { position: absolute; inset: 0; pointer-events: none; }
+.vrule { border-left: 1px solid var(--line); }
+
+/* ── The stairs ─────────────────────────────────────── */
+
+/* Three stepped blocks that eat the bottom edge of a colour field. */
+.stairs { position: absolute; left: 0; bottom: -1px; width: 100%; pointer-events: none; }
+.stair { height: 130px; background: var(--white); grid-column: 1 / 7; margin-left: calc(var(--gutter) * -1); }
+@media (min-width: 1024px) { .stair { height: 140px; } }
+.stair-1 { width: calc(33.3333% + var(--gutter)); }
+.stair-2 { width: calc(66.6666% + var(--gutter)); }
+.stair-3 { width: calc(100% + var(--gutter)); }
+@media (max-width: 1023px) { .stair { height: 90px; } }
+
+/* ── Motion ─────────────────────────────────────────── */
+
+/* Their reveal: mask up from the baseline, cubic-bezier(.4,0,.2,1). */
+[data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+[data-reveal].in { opacity: 1; transform: none; }
+
+/* Lines grow from their anchored edge. */
+[data-line] { transform: scaleY(0); transform-origin: var(--origin, top); transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1); }
+[data-line].in { transform: scaleY(1); }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal], [data-line] { opacity: 1; transform: none; transition: none; }
+}
+
+.on-teal { background: var(--teal); color: var(--white); }
+.on-teal .label, .on-teal .my-text { color: var(--white); }

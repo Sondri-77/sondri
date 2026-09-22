@@ -1,0 +1,74 @@
+---
+import { footerCols } from '../brutal-data';
+import { CONTACT_EMAIL, mailto } from '../data';
+import { VALUE_LINE } from '../home-data';
+import { en } from '../i18n';
+import { splitDot } from '../lib/dot';
+const [line, dot] = splitDot(VALUE_LINE);
+const year = new Date().getFullYear();
+---
+
+<!-- The lockup lives in the nav and here — the page turns over on the
+     oversized pixel wordmark, on the teal field the final CTA opened. -->
+<footer class="on-dark" id="contact">
+  <div class="wrap wordmark-band">
+    <img src="/brand/florexa-white-gold.svg" alt="Sondri" width="952" height="367" />
+  </div>
+  <div class="wrap">
+    <div class="rule-cols cols-3 f-grid">
+      <div class="f-brand">
+        <p class="label col-title">/ Sondri</p>
+        <p class="h6"><span data-i18n="VALUE_LINE.text">{line}</span><span class="gdot" data-i18n="VALUE_LINE.dot">{dot}</span></p>
+        <a class="mail" href={mailto('Hello from sondri.ai')}>{CONTACT_EMAIL}</a>
+      </div>
+      {footerCols.map((col, ci) => (
+        <div>
+          <p class="label col-title">/ <span data-i18n={`footerCols.${ci}.title`}>{col.title}</span></p>
+          <ul>
+            {col.links.map((l, li) => (
+              <li><a href={l.href} data-i18n={`footerCols.${ci}.links.${li}.label`}>{l.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <div class="f-bottom">
+      <p class="label">&copy; {year} Sondri</p>
+      <a class="label pay-link" href="/pay" data-i18n="ui.pay">{en.ui.pay} →</a>
+      <p class="label" data-i18n="footerLine">{en.footerLine}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .wordmark-band { padding-block: var(--s-64) var(--s-96); overflow: hidden; }
+  .wordmark-band img { height: clamp(110px, 17vw, 230px); width: auto; }
+
+  .f-grid { padding-top: 0; }
+  .f-brand .h6 { max-width: 30ch; margin-top: var(--s-08); }
+  .mail {
+    display: inline-block; margin-top: var(--s-24);
+    font-family: var(--mono); font-size: 14px; letter-spacing: 0.04em;
+    text-transform: uppercase; text-decoration: none; color: var(--accent);
+    border-bottom: 1px solid currentColor;
+  }
+
+  /* Their footer column head: the "/ NAME" kicker with a rule under it. */
+  .col-title { color: var(--text-hi); padding-bottom: var(--s-16); }
+
+  ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  ul a {
+    font-family: var(--mono); font-size: 14px; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--pale); text-decoration: none;
+  }
+  ul a:hover { color: var(--text-hi); }
+
+  .f-bottom {
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--s-16);
+    margin-top: var(--s-96); padding-block: var(--s-24);
+  }
+  .pay-link { text-decoration: none; color: var(--steel); transition: color 0.15s linear; }
+  .pay-link:hover { color: var(--gold); }
+
+</style>

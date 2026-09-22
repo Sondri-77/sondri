@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import Btn from '../components/Btn.astro';
+import { mailto } from '../data/copy';
+---
+
+<Base title="About — Sondri">
+  <section>
+    <h1>Meet the people building your software.</h1>
+    <p>You work with our senior team and the specialists who build your software. We’re hiring our first ten people.</p>
+    <div class="ctas">
+      <Btn href="#">Book a Free Call →</Btn>
+    </div>
+  </section>
+
+  <section>
+    <h2>Why we started Sondri.</h2>
+    <p>You should be able to get software built for your business on a small-business budget. We build it into the systems you use and check how much time and money it saves you.</p>
+    <p>Help us build it. <a href={mailto('Founding-team application')}>Careers →</a></p>
+  </section>
+</Base>

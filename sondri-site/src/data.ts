@@ -32,26 +32,27 @@ export const problemStats = [
   { n: '$2M+', label: 'typical systems-integrator bill before any value lands.' },
   { n: '9 mo.', label: 'average time-to-value the traditional way.' },
 ];
-/** The framework. 0 → 1 → n is the philosophy; each phase is an engagement.
-    No prices on cards — every engagement is quoted individually. */
+/** The framework. 0 → 1 → n is the method; each phase is an engagement.
+    No prices on cards — every engagement is quoted individually. Rewritten
+    2026-09-21 in the site's voice (plain second person; rules.astro). */
 export const framework = [
   {
     num: '0',
     name: 'Prove',
-    does: 'We sit with your operators and find the three workflows where AI pays fastest.',
-    gets: 'A board-ready roadmap with hard ROI on each use case.',
+    does: 'We sit with the people doing the work and find the job where a fix pays off fastest.',
+    gets: 'A plan with the cost and the saving for that job, and a fixed price for building it.',
   },
   {
     num: '1',
     name: 'Production',
-    does: 'Your first solution goes live inside the systems you already run — designed by our architects, built by vetted specialists.',
-    gets: 'Working software in a real workflow, measured against an agreed baseline.',
+    does: 'We build the first fix into the software you already run, with your team checking the work as it goes.',
+    gets: 'Working software on a real job, measured against the hours and money you spent before.',
   },
   {
     num: 'n',
     name: 'Multiply',
-    does: 'We operate, tune, and improve — and ship new use cases on a steady cadence, on the foundation already built.',
-    gets: 'A compounding portfolio of solutions, each faster and cheaper than the last.',
+    does: 'We keep it running, tune it, and build the next job on what is already there.',
+    gets: 'Each fix after the first is quicker and cheaper to build, and you own all of it.',
   },
 ];
 

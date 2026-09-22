@@ -1,0 +1,51 @@
+---
+import { faqHead, homeFaq } from '../home-data';
+import { splitDot } from '../lib/dot';
+const [h2, dot] = splitDot(faqHead.h2);
+---
+
+<section class="section section-pad" id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow"><span class="label">/ {faqHead.eyebrow}</span></div>
+        <h2 class="h2">{h2}<span class="gdot">{dot}</span></h2>
+      </div>
+    </div>
+
+    <div class="items">
+      {homeFaq.map((f) => (
+        <details>
+          <summary>
+            <span class="q h6">{f.q}</span>
+            <span class="sign" aria-hidden="true"></span>
+          </summary>
+          <p class="a">{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .items { border-top: 1px solid var(--line); }
+  details { border-bottom: 1px solid var(--line); }
+  summary {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--s-24);
+    padding: var(--s-24) 0; cursor: pointer; list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary:hover .q { color: var(--accent); }
+
+  /* Plus / minus drawn with two rules — no icon font. */
+  .sign { position: relative; width: 14px; height: 14px; flex: 0 0 14px; }
+  .sign::before, .sign::after {
+    content: ''; position: absolute; background: var(--accent);
+    left: 0; top: 6px; width: 14px; height: 1px;
+  }
+  .sign::after { transform: rotate(90deg); transition: transform 0.15s linear; }
+  details[open] .sign::after { transform: rotate(0deg); }
+
+  .a { padding-bottom: var(--s-24); max-width: 62ch; color: var(--pale); font-size: 15px; }
+
+</style>

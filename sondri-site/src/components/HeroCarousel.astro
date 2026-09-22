@@ -1,0 +1,137 @@
+---
+/* The hero's feature content (captain, 2026-09-21): the three solution
+   animations — workflow builder, agentic chat, contract review — in one
+   framed window that cycles through them like a carousel. No headings, no
+   captions; the animations speak for themselves. The window is the Console
+   chrome on paper: dotted title bar with three squares, ink frame, teal hard
+   shadow. The title bar carries only the mono "01 / 03" counter. */
+import WorkflowBuilder from './console/WorkflowBuilder.astro';
+import AgenticChat from './console/AgenticChat.astro';
+import ContractReview from './console/ContractReview.astro';
+const slides = [WorkflowBuilder, AgenticChat, ContractReview];
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<div class="carousel" data-carousel>
+  <div class="win" role="region" aria-roledescription="carousel" aria-label="Sondri solutions">
+    <div class="chrome">
+      <span class="controls" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="title"><span data-count>01</span> / {pad(slides.length)}</span>
+    </div>
+    <div class="slides">
+      {slides.map((Slide, i) => (
+        <div class="slide" data-slide class:list={{ 'is-active': i === 0 }} {...(i === 0 ? {} : { 'data-anim-paused': '' })}>
+          <Slide />
+        </div>
+      ))}
+    </div>
+  </div>
+  <div class="dots-nav" role="tablist" aria-label="Slide">
+    {slides.map((_, i) => (
+      <button class="dot" type="button" role="tab" data-dot aria-label={`Slide ${i + 1}`} aria-selected={i === 0 ? 'true' : 'false'}></button>
+    ))}
+  </div>
+</div>
+
+<style>
+  .carousel { position: relative; width: 100%; min-width: 0; }
+
+  /* The Console window on paper (see console/*.astro for the --win-* tones:
+     the inner panel tint, the pass green, gold-as-text). */
+  .win {
+    --win-panel: var(--off); --win-ok: #1f7a4d; --win-gold-ink: #945900;
+    --win-rule: var(--line-soft); --win-mute: var(--muted);
+    height: 372px; padding: 16px; overflow: hidden;
+    display: flex; flex-direction: column;
+    border: 1px solid var(--teal); box-shadow: 6px 6px 0 var(--gold);
+    background-color: var(--white);
+    background-image: radial-gradient(var(--mist) 1px, transparent 1px); background-size: 14px 14px;
+    color: var(--teal); font-family: var(--sans);
+  }
+  .chrome { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px dotted var(--muted); flex: 0 0 auto; }
+  .controls { display: flex; gap: 4px; }
+  .controls i { width: 8px; height: 8px; border: 1px solid var(--teal); }
+  .title { font: 11px/1.4 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* Slides stack in the window's body; one is visible. The fade is linear
+     (brutalism doesn't ease) and visibility follows it, so a hidden slide
+     takes no clicks and holds no focus. */
+  .slides { position: relative; flex: 1; min-height: 0; }
+  .slide {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.3s linear, visibility 0s linear 0.3s;
+  }
+  .slide.is-active { opacity: 1; visibility: visible; transition-delay: 0s; }
+  .slide :global(.win-body) { display: flex; flex-direction: column; flex: 1; min-height: 0; min-width: 0; }
+
+  /* Square indicators under the frame, clear of the hard shadow. */
+  .dots-nav { display: flex; gap: 8px; justify-content: flex-end; padding-top: 22px; }
+  .dot {
+    width: 10px; height: 10px; padding: 0; margin: 0; cursor: pointer;
+    border: 1px solid var(--white); background: transparent;
+  }
+  .dot[aria-selected='true'] { background: var(--gold); border-color: var(--gold); }
+  .dot:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) { .slide { transition: none; } }
+  @media (max-width: 640px) { .win { height: 340px; padding: 12px; } }
+</style>
+
+<script>
+  import { ANIM_EVENT } from '../scripts/console-anim';
+  const root = document.querySelector<HTMLElement>('[data-carousel]');
+  if (root && !root.dataset.inited) {
+    root.dataset.inited = '1';
+    const slides = [...root.querySelectorAll<HTMLElement>('[data-slide]')];
+    const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-dot]')];
+    const count = root.querySelector<HTMLElement>('[data-count]')!;
+    const motion = matchMedia('(prefers-reduced-motion: reduce)');
+    const FALLBACK = 8;
+    let current = 0;
+    let shown = 0; // seconds the current slide has been running
+    let hovered = false;
+    let onScreen = false;
+
+    /** One slide's stay: its animation's loop length, so the story completes. */
+    const stay = (i: number) => {
+      const anim = slides[i].querySelector<HTMLElement>('[data-anim-root]');
+      return Number(anim?.dataset.loop) || FALLBACK;
+    };
+
+    const show = (i: number) => {
+      current = (i + slides.length) % slides.length;
+      shown = 0;
+      slides.forEach((s, j) => {
+        const active = j === current;
+        s.classList.toggle('is-active', active);
+        if (active) s.removeAttribute('data-anim-paused');
+        else s.setAttribute('data-anim-paused', '');
+      });
+      dots.forEach((d, j) => d.setAttribute('aria-selected', String(j === current)));
+      count.textContent = String(current + 1).padStart(2, '0');
+      const anim = slides[current].querySelector('[data-anim-root]');
+      document.dispatchEvent(new CustomEvent(ANIM_EVENT, { detail: { restart: anim } }));
+    };
+
+    dots.forEach((d, i) => d.addEventListener('click', () => show(i)));
+    root.addEventListener('mouseenter', () => (hovered = true));
+    root.addEventListener('mouseleave', () => (hovered = false));
+    root.addEventListener('focusin', () => (hovered = true));
+    root.addEventListener('focusout', () => (hovered = false));
+    new IntersectionObserver((entries) => (onScreen = entries[0].isIntersecting), { threshold: 0.2 }).observe(root);
+
+    // The clock only runs while the slide is actually playing; under reduced
+    // motion the first slide stays, still, and the dots still switch.
+    const STEP = 200;
+    let previous = performance.now();
+    setInterval(() => {
+      const now = performance.now();
+      const dt = (now - previous) / 1000;
+      previous = now;
+      if (hovered || !onScreen || document.hidden || motion.matches) return;
+      shown += dt;
+      if (shown >= stay(current)) show(current + 1);
+    }, STEP);
+  }
+</script>

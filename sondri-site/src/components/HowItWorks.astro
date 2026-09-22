@@ -1,0 +1,77 @@
+---
+import { framework } from '../data';
+import { howItWorks } from '../home-data';
+import { splitDot } from '../lib/dot';
+const [h2, dot] = splitDot(howItWorks.h2);
+const labels = { does: howItWorks.does, gets: howItWorks.gets };
+---
+
+<!-- How it works = the 0 → 1 → n framework, in the playground's "Zero, one,
+     many" ledger (Part B / 07, from sondri-brutal's Framework.astro), turned
+     to run across: three ruled columns (0 Prove, 1 Production, n Multiply),
+     each stacking a huge Florexa numeral, the phase name, what we do, what
+     you get. The numerals are KPIs, so they carry the pixel face (.kpi); the
+     phase names stay in the sans. -->
+<section class="section section-pad" id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow"><span class="label">/ <span data-i18n="howItWorks.eyebrow">{howItWorks.eyebrow}</span></span></div>
+        <h2 class="h2"><span data-i18n="howItWorks.h2.text">{h2}</span><span class="gdot" data-i18n="howItWorks.h2.dot">{dot}</span></h2>
+      </div>
+      <div class="intro">
+        <p class="lede" data-i18n="howItWorks.lede">{howItWorks.lede}</p>
+      </div>
+    </div>
+
+    <ol class="phases">
+      {framework.map((p, i) => (
+        <li class="phase" data-reveal style={`transition-delay:${i * 80}ms`}>
+          <span class="num kpi" aria-label={`${howItWorks.phase} ${p.num}`} data-i18n-attr={`aria-label=framework.${i}.phase`}>{p.num}</span>
+          <div class="cell name">
+            <p class="label" data-i18n={`framework.${i}.phase`}>{howItWorks.phase} {p.num}</p>
+            <h3 class="h5"><span data-i18n={`framework.${i}.name`}>{p.name}</span><span class="gdot">.</span></h3>
+          </div>
+          <div class="cell">
+            <p class="label" data-i18n="howItWorks.does">{labels.does}</p>
+            <p class="body" data-i18n={`framework.${i}.does`}>{p.does}</p>
+          </div>
+          <div class="cell">
+            <p class="label" data-i18n="howItWorks.gets">{labels.gets}</p>
+            <p class="body" data-i18n={`framework.${i}.gets`}>{p.gets}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  /* The ledger: three columns, a vertical rule between them; the four
+     stacked rows share tracks across the columns (subgrid) so the horizontal
+     rules line up and it still reads as a table, not three cards. */
+  .phases {
+    list-style: none; display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--line);
+  }
+  .phase { display: grid; grid-row: span 4; grid-template-rows: subgrid; }
+  .phase + .phase { border-left: 1px solid var(--line); }
+  .phase > * { padding: var(--s-32); min-width: 0; border-bottom: 1px solid var(--line); }
+  .num { display: block; color: var(--gold-2); font-size: 96px; line-height: 1; }
+  .cell { display: flex; flex-direction: column; gap: var(--s-16); }
+  .name .h5 { margin-top: -4px; }
+  .body { font-size: 15px; line-height: 22px; color: var(--pale); max-width: 34ch; }
+
+  @media (max-width: 1100px) { .phase > * { padding: var(--s-24) var(--s-16); } .num { font-size: 80px; } }
+  /* Phone: the columns stack in order 0, 1, n; each column keeps its own
+     ruled rows, and its last rule separates it from the next. */
+  @media (max-width: 700px) {
+    .phases { grid-template-columns: minmax(0, 1fr); }
+    .phase { grid-template-rows: auto; grid-row: auto; }
+    .phase + .phase { border-left: 0; }
+    .phase > * { padding: var(--s-24) 0; }
+    .num { font-size: 64px; }
+    .body { max-width: none; }
+  }
+</style>

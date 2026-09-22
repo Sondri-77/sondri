@@ -18,17 +18,17 @@ Sondri is an AI-driven platform built for forward-deployed engineering, business
 Run development server directly from the root directory:
 
 ```bash
-# Install root & site dependencies
-npm install --prefix sondri-site
+# Install site dependencies (bun.lock is the tracked lockfile)
+bun install --cwd sondri-site
 
-# Start local dev server (http://localhost:4321)
-npm run dev
+# Start local dev server (http://localhost:4321) — or `docker compose up -d synthesis`
+bun run --cwd sondri-site dev
 
 # Check TypeScript & Astro template diagnostics
-npm run check
+bun run --cwd sondri-site check
 
 # Build static bundle for production
-npm run build
+bun run --cwd sondri-site build
 ```
 
 ---
@@ -37,14 +37,16 @@ npm run build
 
 ```
 Sondri/
-├── sondri-site/             # Production Marketing Web Application (Astro 5 + TypeScript)
+├── sondri-site/             # Production marketing site: one page + 404 (Astro 5 + TypeScript)
 │   ├── src/
-│   │   ├── components/      # Nav, Footer, Cookie & UI components
-│   │   ├── layouts/         # Base layout, SEO head metadata, script loader
-│   │   ├── pages/           # Site routes (Home, How It Works, Industries, etc.)
-│   │   └── scripts/         # Custom Bayer 4x4 dither canvas engine & enhancers
+│   │   ├── components/      # The 12 home sections, Nav, Footer, CalModal
+│   │   ├── layouts/         # Base layout: SEO head metadata, nav, footer
+│   │   ├── pages/           # index, 404, robots.txt
+│   │   └── scripts/         # Hero canvas: gradient-map dither + pixel trail
+│   ├── graveyard/           # Retired pages and the sondri-brutal / -v2 design studies
 │   ├── astro.config.mjs     # Astro configuration
 │   └── wrangler.jsonc       # Cloudflare Workers configuration
+├── copy-workbench/          # Copy tool (http://localhost:4350), reads sondri-site/src/data.ts
 ├── design-system/           # HTML prototypes, visual specifications & animations
 │   ├── Sondri Site.dc.html  # Interactive HTML site design spec
 │   └── rocket-scene.jsx     # Three.js animation prototype

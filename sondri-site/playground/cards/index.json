@@ -1,0 +1,56 @@
+[
+  {
+    "file": "01-workflow-builder.html",
+    "id": "c01",
+    "title": "Workflow builder",
+    "summary": "You draw a flow that carries work from email to action."
+  },
+  {
+    "file": "02-knowledge-graph.html",
+    "id": "c02",
+    "title": "Knowledge graph",
+    "summary": "You explore the links between your notes, people and projects."
+  },
+  {
+    "file": "03-agentic-chat.html",
+    "id": "c03",
+    "title": "Agentic chat",
+    "summary": "You ask a question and your agent follows through."
+  },
+  {
+    "file": "04-invoice-matching.html",
+    "id": "c04",
+    "title": "Invoice matching",
+    "summary": "You compare an invoice with its purchase order and catch a mismatch."
+  },
+  {
+    "file": "05-swimlane-race.html",
+    "id": "c05",
+    "title": "Swimlane race",
+    "summary": "You watch the same task finish with fewer manual steps."
+  },
+  {
+    "file": "06-agent-terminal.html",
+    "id": "c06",
+    "title": "Agent terminal",
+    "summary": "You follow your invoice agent as it completes each step."
+  },
+  {
+    "file": "07-ticket-queue.html",
+    "id": "c07",
+    "title": "Ticket queue",
+    "summary": "You watch your agent resolve a queue of routine requests."
+  },
+  {
+    "file": "08-integration-map.html",
+    "id": "c08",
+    "title": "Integration map",
+    "summary": "You connect five tools through one shared hub."
+  },
+  {
+    "file": "09-contract-review.html",
+    "id": "c09",
+    "title": "Contract review",
+    "summary": "You find the three clauses in your agreement that need a look."
+  }
+]

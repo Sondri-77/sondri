@@ -1,0 +1,34 @@
+---
+import Base from '../layouts/Base.astro';
+const rules = [
+  "\"actually\"",
+  "not this it's that / you don't need, you need",
+  "...that knows what it's doing",
+  "bad metaphors and weird personification",
+  "you don't do... you do...",
+  "3 short choppy sentences (e.g. \"Licenses are bought. A few people are experimenting. Leadership is asking what it's actually doing for the business.\")",
+  "bullshit about goals, outcomes, results, etc.",
+  "operating system, operating models, operating, operating, operating",
+  "...earns its place/keep/actually earns...",
+  "kind of",
+  "to be honest",
+  "no this, no that, just thing..."
+];
+const slopTest = "Plus the general test: any line that reads as generic AI slop (empty intensifiers, \"seamless\", \"unlock\", \"empower\", \"elevate\", \"in today's fast-paced world\", tricolons for their own sake, rhetorical contrast for its own sake) gets rewritten.";
+---
+
+<Base title="Copy rules — Sondri">
+  <section>
+    <h1>Rules</h1>
+    <ol>{rules.map((rule) => <li>{rule}</li>)}</ol>
+    <p>{slopTest}</p>
+  </section>
+  <section>
+    <h2>Voice</h2>
+    <ul>
+      <li>Audience: blue-collar / small-business owners, no-frills. Speak TO them, not AT them. Second person, plain, like you'd say it across a counter.</li>
+      <li>Banned: snarky-marketer reveals and drum-roll lines - "Here's the bill.", "Here's the thing.", "Spoiler:", "Plot twist:", "Let that sink in." and anything that performs cleverness at the reader.</li>
+      <li>Example fix, Twist the knife intro: slop "The workaround feels cheap because nobody sends an invoice for it. Here's the bill." → right "The workaround feels cheap because nobody sends you an invoice for it."</li>
+    </ul>
+  </section>
+</Base>

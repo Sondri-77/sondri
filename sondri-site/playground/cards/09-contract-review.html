@@ -1,0 +1,108 @@
+<section class="card c09" data-card="contract-review" id="c09-root" aria-label="Contract review">
+  <style>
+.c09 { --field: #081f1f; --gold: #fdb343; --gold-hover: #f5a71e; --text: #e9edec; --muted: #9db6b4; --line: #c9dad7; --panel: #0c2b29; --paper: #edf5f4; --success: #6ee7a8; --risk: #ff6b6b; --mono: 'JetBrains Mono', 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace; --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; box-sizing: border-box; width: 100%; min-width: 0; min-height: 320px; height: 352px; padding: 16px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 1px solid var(--text); border-radius: 0; box-shadow: 6px 6px 0 #000; color: var(--text); background-color: var(--field); background-image: radial-gradient(#1c3a39 1px, transparent 1px); background-size: 14px 14px; font-family: var(--sans); }
+.c09 .c09-chrome { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px dotted var(--muted); flex: 0 0 auto; }
+.c09 .c09-controls { display: flex; gap: 4px; flex: 0 0 auto; }
+.c09 .c09-square { width: 8px; height: 8px; box-sizing: border-box; border: 1px solid var(--text); }
+.c09 .c09-title { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; margin: 0; font-weight: 400; }
+.c09 .c09-stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; }
+.c09 .c09-caption { margin: 0; color: var(--muted); font: 10px/1.5 var(--mono); white-space: nowrap; }
+.c09 .c09-mono { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.c09 .c09-window { background: var(--panel); border: 1px solid var(--line); box-shadow: 3px 3px 0 #000; min-width: 0; box-sizing: border-box; }
+@media (prefers-reduced-motion: reduce) { .c09 .c09-stage { scroll-behavior: auto; } }
+
+.c09 .c09-stage { gap: 10px; align-items: center; }
+.c09 .c09-paper { position: relative; flex: 1; min-width: 0; height: 242px; background: var(--paper); color: var(--field); box-shadow: 3px 3px 0 #000; border: 1px solid var(--line); box-sizing: border-box; }
+.c09 .c09-paper-head { padding: 11px 8px; border-bottom: 1px solid #b9cfca; font: 10px var(--mono); letter-spacing: .05em; }
+.c09 .c09-view { position: absolute; inset: 34px 0 28px; overflow: hidden; }
+.c09 .c09-readline { position: absolute; top: 96px; left: 0; right: 0; border-top: 1px solid #f5a71e; z-index: 2; }
+.c09 .c09-readline::before { content: '›'; position: absolute; left: 1px; top: -9px; color: #945900; font: 14px var(--mono); }
+.c09 .c09-clauses { padding: 0 7px; }
+.c09 .c09-clause { height: 24px; position: relative; display: flex; align-items: center; gap: 3px; white-space: nowrap; font: 9px/1.4 var(--sans); }
+.c09 .c09-clause-text { overflow: hidden; text-overflow: ellipsis; }
+.c09 .c09-highlight { position: absolute; left: 0; right: 0; bottom: 1px; height: 2px; background: #3b9f6a; opacity: 0; }
+.c09 .c09-risk .c09-highlight { height: 20px; background: #fdb34377; border-bottom: 1px solid #d64d42; }
+.c09 .c09-clause-text { position: relative; }
+.c09 .c09-risk-chip { position: absolute; right: 0; top: 6px; padding: 1px 2px; font: 7px var(--mono); background: #8c382c; color: #fff; opacity: 0; }
+.c09 .c09-paper-foot { position: absolute; bottom: 0; left: 0; right: 0; padding: 8px; border-top: 1px solid #b9cfca; font: 8px var(--mono); color: #46645e; }
+.c09 .c09-tally { flex: 0 0 100px; align-self: center; }
+.c09 .c09-stat { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #36534f; padding: 6px 0; font: 9px var(--mono); letter-spacing: .04em; }
+.c09 .c09-value { font: 20px var(--mono); color: var(--text); }
+.c09 .c09-ok .c09-value { color: var(--success); }
+.c09 .c09-risk-total .c09-value { color: var(--gold); }
+.c09 .c09-flags { padding: 9px 0 0; margin: 0; list-style: none; }
+.c09 .c09-flag { font: 9px/1.6 var(--sans); color: var(--gold); }
+.c09 .c09-summary { font: 11px/1.5 var(--sans); color: var(--text); margin: 10px 0 0; }
+</style>
+  <div class="c09-chrome"><span class="c09-controls" aria-hidden="true"><i class="c09-square"></i><i class="c09-square"></i><i class="c09-square"></i></span><h2 class="c09-title">09 · Contract review</h2></div>
+  <div class="c09-stage"><div class="c09-paper"><div class="c09-paper-head">YOUR AGREEMENT</div><div class="c09-view"><div class="c09-readline"></div><div class="c09-clauses"><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">1.1 Scope: listed services</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">2.1 Fees: due in 30 days</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">3.1 Term: twelve months</span></div><div class="c09-clause c09-risk"><i class="c09-highlight"></i><span class="c09-clause-text">4.2 Renewal: automatic</span><span class="c09-risk-chip">RISK</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">5.1 Data stays yours</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">6.1 Access: named users</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">7.1 Changes: in writing</span></div><div class="c09-clause c09-risk"><i class="c09-highlight"></i><span class="c09-clause-text">8.3 Liability: no cap</span><span class="c09-risk-chip">RISK</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">9.1 Notices: by email</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">10.1 Work stays yours</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">11.1 Keep data private</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">12.2 Exit: 30 days notice</span></div><div class="c09-clause c09-risk"><i class="c09-highlight"></i><span class="c09-clause-text">13.4 Venue: unspecified</span><span class="c09-risk-chip">RISK</span></div><div class="c09-clause"><i class="c09-highlight"></i><span class="c09-clause-text">14.1 Signed by both</span></div></div></div><div class="c09-paper-foot">REVIEW / 14 CLAUSES</div></div><div class="c09-tally"><div class="c09-stat">CLAUSES <span class="c09-value">0</span></div><div class="c09-stat c09-ok">OK <span class="c09-value">0</span></div><div class="c09-stat c09-risk-total">RISK <span class="c09-value">0</span></div><ul class="c09-flags"><li class="c09-flag">4.2 · Auto-renewal</li><li class="c09-flag">8.3 · No liability cap</li><li class="c09-flag">13.4 · Missing venue</li></ul><p class="c09-summary">3 clauses<br>need a look</p></div></div>
+  <p class="c09-caption">You see the clauses that need a look.</p>
+  <script>
+  (function () {
+    function init() {
+      var root = document.getElementById('c09-root');
+      if (!root || root.dataset.inited) return;
+      root.dataset.inited = '1';
+
+      var stack = root.querySelector('.c09-clauses');
+      var clauses = Array.from(root.querySelectorAll('.c09-clause'));
+      var highlights = Array.from(root.querySelectorAll('.c09-highlight'));
+      var chips = Array.from(root.querySelectorAll('.c09-risk-chip'));
+      var values = Array.from(root.querySelectorAll('.c09-value'));
+      var flags = Array.from(root.querySelectorAll('.c09-flag'));
+      var summary = root.querySelector('.c09-summary');
+      var risks = [3, 7, 12];
+      function render(time) {
+        var t = time % 9.6;
+        var progress = Math.min(14, Math.max(0, (t - .35) / .48));
+        var done = Math.min(14, Math.floor(progress));
+        var flagged = risks.filter(function(index) { return index < done; }).length;
+        stack.style.transform = 'translateY(' + (84 - Math.min(13, progress) * 24) + 'px)';
+        highlights.forEach(function(highlight, i) { highlight.style.opacity = i < done ? '1' : '0'; });
+        chips.forEach(function(chip, i) { chip.style.opacity = risks[i] < done ? '1' : '0'; });
+        values[0].textContent = done; values[1].textContent = done - flagged; values[2].textContent = flagged;
+        flags.forEach(function(flag, i) { flag.style.opacity = risks[i] < done ? '1' : '.12'; });
+        summary.style.opacity = done === 14 ? '1' : '0';
+      }
+
+
+    var motion = matchMedia('(prefers-reduced-motion: reduce)');
+    var visible = false;
+    var frame = 0;
+    var previous = 0;
+    var elapsed = 0;
+    function tick(now) {
+      frame = 0;
+      if (!root.isConnected) { observer.disconnect(); cleanup(); return; }
+      if (!visible || document.hidden || motion.matches) return;
+      var dt = previous ? Math.min((now - previous) / 1000, .05) : 0;
+      previous = now;
+      elapsed += dt;
+      render(elapsed, dt, false);
+      frame = requestAnimationFrame(tick);
+    }
+    function sync() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      previous = 0;
+      if (motion.matches) render(8, 0, true);
+      else if (visible && !document.hidden) frame = requestAnimationFrame(tick);
+    }
+    function cleanup() {
+      document.removeEventListener('visibilitychange', sync);
+      motion.removeEventListener('change', sync);
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      visible = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0 });
+    observer.observe(root);
+    document.addEventListener('visibilitychange', sync);
+    motion.addEventListener('change', sync);
+    render(motion.matches ? 8 : 0, 0, motion.matches);
+
+    }
+    if (document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init, { once: true });
+  })();
+  </script>
+</section>

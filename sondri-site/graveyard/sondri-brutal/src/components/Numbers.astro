@@ -1,0 +1,21 @@
+---
+import { numbers } from '../brutal-data';
+---
+
+<section class="section band on-dark">
+  <div class="wrap rule-cols cols-3">
+    {numbers.map((n) => (
+      <div class="cell" data-reveal>
+        <p class="n">{n.n}</p>
+        <p class="label">{n.label}</p>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .band .wrap { padding-block: var(--s-80); }
+  .cell { display: flex; flex-direction: column; gap: var(--s-16); align-items: flex-start; }
+  .n { font-size: clamp(48px, 5vw, 76px); line-height: 1; letter-spacing: -0.0625em; color: var(--text-hi); font-weight: 600; }
+  .label { max-width: 26ch; }
+</style>

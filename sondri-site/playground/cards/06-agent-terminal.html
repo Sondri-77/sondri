@@ -1,0 +1,104 @@
+<section class="card c06" data-card="agent-terminal" id="c06-root" aria-label="Agent terminal">
+  <style>
+.c06 { --field: #081f1f; --gold: #fdb343; --gold-hover: #f5a71e; --text: #e9edec; --muted: #9db6b4; --line: #c9dad7; --panel: #0c2b29; --paper: #edf5f4; --success: #6ee7a8; --risk: #ff6b6b; --mono: 'JetBrains Mono', 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace; --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; box-sizing: border-box; width: 100%; min-width: 0; min-height: 320px; height: 352px; padding: 16px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 1px solid var(--text); border-radius: 0; box-shadow: 6px 6px 0 #000; color: var(--text); background-color: var(--field); background-image: radial-gradient(#1c3a39 1px, transparent 1px); background-size: 14px 14px; font-family: var(--sans); }
+.c06 .c06-chrome { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px dotted var(--muted); flex: 0 0 auto; }
+.c06 .c06-controls { display: flex; gap: 4px; flex: 0 0 auto; }
+.c06 .c06-square { width: 8px; height: 8px; box-sizing: border-box; border: 1px solid var(--text); }
+.c06 .c06-title { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; margin: 0; font-weight: 400; }
+.c06 .c06-stage { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; padding: 12px 0; }
+.c06 .c06-caption { margin: 0; color: var(--muted); font: 10px/1.5 var(--mono); white-space: nowrap; }
+.c06 .c06-mono { font: 11px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.c06 .c06-window { background: var(--panel); border: 1px solid var(--line); box-shadow: 3px 3px 0 #000; min-width: 0; box-sizing: border-box; }
+@media (prefers-reduced-motion: reduce) { .c06 .c06-stage { scroll-behavior: auto; } }
+
+.c06 .c06-window { position: relative; width: 100%; height: 246px; overflow: hidden; }
+.c06 .c06-bar { padding: 9px 10px; background: #10332f; border-bottom: 1px solid #36534f; color: var(--muted); font: 9px var(--mono); letter-spacing: .08em; display: flex; justify-content: space-between; }
+.c06 .c06-viewport { position: absolute; inset: 32px 0 0; overflow: hidden; }
+.c06 .c06-output { position: absolute; top: 10px; left: 10px; right: 8px; }
+.c06 .c06-line { min-height: 27px; font: 10px/1.65 var(--mono); color: var(--text); overflow-wrap: anywhere; white-space: pre-wrap; }
+.c06 .c06-line:nth-child(1) { color: var(--gold); }
+.c06 .c06-line:nth-child(2) { color: var(--muted); }
+.c06 .c06-line:nth-child(7) { color: var(--success); }
+.c06 .c06-cursor { display: inline-block; width: 6px; height: 11px; vertical-align: -1px; background: var(--gold); }
+.c06 .c06-scanlines { position: absolute; inset: 32px 0 0; pointer-events: none; background: repeating-linear-gradient(transparent 0 3px, #00000012 3px 4px); }
+</style>
+  <div class="c06-chrome"><span class="c06-controls" aria-hidden="true"><i class="c06-square"></i><i class="c06-square"></i><i class="c06-square"></i></span><h2 class="c06-title">06 · Agent terminal</h2></div>
+  <div class="c06-stage"><div class="c06-window"><div class="c06-bar"><span>INVOICE-AGENT</span><span>RUN / 0042</span></div><div class="c06-viewport"><div class="c06-output"><div class="c06-line"></div><div class="c06-line"></div><div class="c06-line"></div><div class="c06-line"></div><div class="c06-line"></div><div class="c06-line"></div><div class="c06-line"></div><div class="c06-line"></div></div></div><div class="c06-scanlines"></div></div></div>
+  <p class="c06-caption">You set the task. Watch the work.</p>
+  <script>
+  (function () {
+    function init() {
+      var root = document.getElementById('c06-root');
+      if (!root || root.dataset.inited) return;
+      root.dataset.inited = '1';
+
+      var lines = ['$ run invoice-agent', '› thinking', '› read_sheet("Q3 invoices")  ✓ 42 rows', '› match_po(…)  ✓ 40 matched, 2 flagged', '› post_invoice(…) ×40  ✓', '› notify("ap@…")  ✓', 'done · 42 invoices · 6 min', '$ '];
+      var starts = [0, .8, 1.8, 3, 4.4, 5.4, 6.4, 7.3];
+      var elements = Array.from(root.querySelectorAll('.c06-line'));
+      var output = root.querySelector('.c06-output');
+      var cursor = document.createElement('span'); cursor.className = 'c06-cursor';
+      var content = elements.map(function(element) { var text = document.createTextNode(''); element.append(text); return text; });
+      var sizes = [];
+      var resize = new ResizeObserver(function() {
+        sizes = elements.map(function(element) { return element.getBoundingClientRect().height; });
+        if (motion.matches) render(8.5, 0, true);
+      });
+      elements.forEach(function(element) { resize.observe(element); });
+      function render(time, dt, reduced) {
+        var t = time % 9.8, active = 0;
+        elements.forEach(function(element, i) {
+          var age = t - starts[i];
+          var text = age >= 0 ? lines[i].slice(0, Math.floor(age * 48) + 1) : '';
+          if (i === 1 && t >= .8 && t < 1.8 && !reduced) text += '.'.repeat(Math.floor(t * 4) % 4);
+          if (content[i].nodeValue !== text) content[i].nodeValue = text;
+          element.style.opacity = age >= 0 ? '1' : '0';
+          if (age >= 0) active = i;
+        });
+        if (cursor.parentElement !== elements[active]) elements[active].append(cursor);
+        cursor.style.opacity = reduced || Math.floor(t * 2.4) % 2 === 0 ? '1' : '0';
+        var consumed = sizes.slice(0, active + 1).reduce(function(sum, height) { return sum + height; }, 0);
+        var shift = Math.max(0, consumed - 188);
+        output.style.transform = 'translateY(-' + shift + 'px)';
+      }
+
+
+    var motion = matchMedia('(prefers-reduced-motion: reduce)');
+    var visible = false;
+    var frame = 0;
+    var previous = 0;
+    var elapsed = 0;
+    function tick(now) {
+      frame = 0;
+      if (!root.isConnected) { observer.disconnect(); cleanup(); return; }
+      if (!visible || document.hidden || motion.matches) return;
+      var dt = previous ? Math.min((now - previous) / 1000, .05) : 0;
+      previous = now;
+      elapsed += dt;
+      render(elapsed, dt, false);
+      frame = requestAnimationFrame(tick);
+    }
+    function sync() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      previous = 0;
+      if (motion.matches) render(8.5, 0, true);
+      else if (visible && !document.hidden) frame = requestAnimationFrame(tick);
+    }
+    function cleanup() {
+      document.removeEventListener('visibilitychange', sync);
+      motion.removeEventListener('change', sync);
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      visible = entries[0].isIntersecting;
+      sync();
+    }, { threshold: 0 });
+    observer.observe(root);
+    document.addEventListener('visibilitychange', sync);
+    motion.addEventListener('change', sync);
+    render(motion.matches ? 8.5 : 0, 0, motion.matches);
+
+    }
+    if (document.readyState !== 'loading') init(); else document.addEventListener('DOMContentLoaded', init, { once: true });
+  })();
+  </script>
+</section>
