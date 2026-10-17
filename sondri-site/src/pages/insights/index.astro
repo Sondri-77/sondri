@@ -1,0 +1,68 @@
+---
+/* Insights: the blog index. The newest post leads wide; the rest sit in a
+   three-up grid under it. English only — the title/description keys don't
+   exist in the dictionaries, so the ES toggle leaves them alone. */
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import { getPosts } from '../../lib/insights';
+
+const posts = await getPosts();
+const [lead, ...rest] = posts;
+
+const title = 'Insights — Sondri';
+const description = 'What we build and how it works: write-ups of the software and automation Sondri delivers.';
+---
+
+<Base title={title} description={description} titleKey="insights.title" descriptionKey="insights.description">
+  <section class="section on-dark head">
+    <div class="wrap">
+      <div class="eyebrow"><span class="label">/ Insights</span></div>
+      <h1 class="h1">Insights<span class="gdot">.</span></h1>
+      <p class="lede">What we build and how it works. Each post takes one solution and covers the problem, what we shipped, and the decisions behind it.</p>
+    </div>
+  </section>
+
+  <section class="section section-pad dots-bg">
+    <div class="wrap">
+      {lead ? (
+        <>
+          <PostCard post={lead} feature />
+          {rest.length > 0 && (
+            <div class="grid">
+              {rest.map((p) => <PostCard post={p} />)}
+            </div>
+          )}
+        </>
+      ) : (
+        <p class="lede">First posts are on the way.</p>
+      )}
+    </div>
+  </section>
+
+  <FinalCta />
+</Base>
+
+<style is:global>
+  /* No hero under the bar here — solid ink from the start. */
+  #siteheader { background: var(--ink); }
+</style>
+
+<style>
+  .head { padding-block: var(--s-80) var(--s-96); }
+  .head .h1 { margin-bottom: var(--s-24); }
+  .head .lede { max-width: 56ch; }
+
+  .grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-24); margin-top: var(--s-24);
+  }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Tessera's index sits on a faint dot field; ours is the brand halftone. */
+  .dots-bg {
+    background-color: var(--off);
+    background-image: radial-gradient(var(--line-soft) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+</style>

@@ -515,13 +515,14 @@ export const es: Copy = {
     { label: 'Método', href: '#framework' },
     { label: 'Comparar', href: '#compare' },
     { label: 'Preguntas', href: '#faq' },
+    { label: 'Blog', href: '/insights/' },
   ],
   cta: 'Agende una sesión gratis',
   riskReversal: 'Gratis. Sin compromiso.',
 
   VALUE_LINE: 'Arreglamos el trabajo que le cuesta tiempo y dinero a su equipo, con IA donde ayuda.',
   footerCols: [
-    { title: 'Empresa', links: [{ label: 'Cómo funciona', href: '#how' }, { label: 'Qué construimos', href: '#features' }] },
+    { title: 'Empresa', links: [{ label: 'Cómo funciona', href: '#how' }, { label: 'Qué construimos', href: '#features' }, { label: 'Blog', href: '/insights/' }] },
     { title: 'Hablemos', links: [{ label: 'Agendar sesión', href: '#book' }, { label: 'Pagar factura', href: '/pay' }, { label: 'Escríbanos', href: '#contact' }, { label: 'Preguntas', href: '#faq' }] },
   ],
   footerLine: 'Construido en sus sistemas, y es suyo',

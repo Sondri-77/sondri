@@ -12,6 +12,7 @@ export const nav = [
   { label: 'Framework', href: '#framework' },
   { label: 'Compare', href: '#compare' },
   { label: 'FAQ', href: '#faq' },
+  { label: 'Insights', href: '/insights/' },
 ];
 
 /** Hero terminal — a workflow, before and after. */
@@ -66,6 +67,7 @@ export const footerCols = [
     links: [
       { label: 'How it works', href: '#how' },
       { label: 'What we build', href: '#features' },
+      { label: 'Insights', href: '/insights/' },
     ],
   },
   {

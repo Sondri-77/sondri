@@ -1,0 +1,55 @@
+---
+/* One post on the Insights index: category, title, excerpt, date · author.
+   `feature` lays the lead post out wide, title at h3. */
+import type { CollectionEntry } from 'astro:content';
+import { fmtDate, readMins } from '../lib/insights';
+
+interface Props { post: CollectionEntry<'insights'>; feature?: boolean }
+const { post, feature = false } = Astro.props;
+const { title, excerpt, category, date, author } = post.data;
+---
+
+<a class:list={['card', { feature }]} href={`/insights/${post.id}/`} data-reveal>
+  <div class="top">
+    <span class="chip">{category}</span>
+    <span class="label">{readMins(post.body)} min read</span>
+  </div>
+  <h3 class:list={[feature ? 'h3' : 'h5', 'title']}>{title}</h3>
+  <p class="excerpt">{excerpt}</p>
+  <p class="label meta"><time datetime={date.toISOString()}>{fmtDate(date)}</time> · {author}</p>
+  {feature && <span class="label read">Read the post <span class="arr">→</span></span>}
+</a>
+
+<style>
+  /* Their panel at rest is just the outline; the hard offset block arrives on
+     hover, so the grid stays quiet until something is pointed at. */
+  .card {
+    display: flex; flex-direction: column; gap: var(--s-16);
+    padding: var(--s-32); min-height: 300px;
+    border: 1px solid var(--line-soft); background: var(--paper);
+    text-decoration: none; color: inherit;
+    transition: border-color 0.15s linear, box-shadow 0.15s linear, transform 0.15s linear;
+  }
+  .card:hover, .card:focus-visible {
+    border-color: var(--line);
+    box-shadow: var(--shadow-x) var(--shadow-x) 0 var(--shadow-col);
+    transform: translate(-2px, -2px);
+    outline: none;
+  }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: var(--s-16); margin-bottom: var(--s-08); }
+  .title { max-width: 32ch; }
+  .excerpt { color: var(--steel); line-height: 1.5; }
+  .meta { margin-top: auto; padding-top: var(--s-16); }
+
+  .feature { min-height: 0; padding: var(--s-48); }
+  .feature .title { max-width: 24ch; }
+  .feature .excerpt { font-size: 18px; line-height: 28px; max-width: 60ch; color: var(--pale); }
+  .read { color: var(--text-hi); }
+  .read .arr { display: inline-block; transition: transform 0.15s linear; }
+  .card:hover .read .arr { transform: translateX(3px); }
+
+  @media (max-width: 640px) {
+    .card, .feature { padding: var(--s-24); }
+  }
+  @media (prefers-reduced-motion: reduce) { .card, .card:hover { transition: none; transform: none; } }
+</style>

@@ -2,7 +2,9 @@
 import { announcement, nav } from '../brutal-data';
 import { BOOK_HREF, CTA_PRIMARY } from '../data';
 import { en } from '../i18n';
+import { sectionHref } from '../lib/href';
 const { ui } = en;
+const at = (h: string) => sectionHref(h, Astro.url.pathname);
 ---
 
 <div class="ann on-paper">
@@ -19,7 +21,7 @@ const { ui } = en;
     </a>
 
     <nav class="links" aria-label={ui.primaryNav} data-i18n-attr="aria-label=ui.primaryNav">
-      {nav.map((i, n) => <a class="link" href={i.href} data-i18n={`nav.${n}.label`}>{i.label}</a>)}
+      {nav.map((i, n) => <a class="link" href={at(i.href)} data-i18n={`nav.${n}.label`}>{i.label}</a>)}
     </nav>
 
     <div class="right">
@@ -38,7 +40,7 @@ const { ui } = en;
   </div>
 
   <div id="navpanel" hidden>
-    {nav.map((i, n) => <a class="panel-link" href={i.href} data-i18n={`nav.${n}.label`}>{i.label}</a>)}
+    {nav.map((i, n) => <a class="panel-link" href={at(i.href)} data-i18n={`nav.${n}.label`}>{i.label}</a>)}
     <a class="panel-link" href="#contact" data-i18n="ui.contact">{ui.contact}</a>
     <a class="btn btn-white panel-btn" href={BOOK_HREF} data-i18n="cta">{CTA_PRIMARY}</a>
   </div>
