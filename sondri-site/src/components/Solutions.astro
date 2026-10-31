@@ -23,7 +23,6 @@ const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="eyebrow"><span class="label">/ <span data-i18n="solutionsHead.eyebrow">{t.eyebrow}</span></span></div>
         <h2 class="h2"><span data-i18n="solutionsHead.h2.text">{h2}</span><span class="gdot" data-i18n="solutionsHead.h2.dot">{dot}</span></h2>
       </div>
       <div class="intro">
@@ -34,7 +33,6 @@ const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
     <!-- By industry: one tab per row of the matrix with something built. -->
     {tabs.length > 0 && (
       <div class="tabs" data-tabs>
-        <p class="label sub" data-i18n="solutionsHead.byIndustry">{t.byIndustry}</p>
         <div class="tablist" role="tablist" aria-label={t.byIndustry}>
           {tabs.map((tab, i) => (
             <button class="tab" role="tab" id={`tab-${tab.id}`} aria-controls={`panel-${tab.id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-i18n={`solutionIndustries.${tab.id}`}>
@@ -90,7 +88,6 @@ const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
     )}
 
     <!-- By solution area: the matrix's columns, across every industry. -->
-    <p class="label sub areas-sub" data-i18n="solutionsHead.byArea">{t.byArea}</p>
     <div class="area-grid">
       {areas.map((a, i) => {
         const proof = solutions.filter((s) => s.data.areas.includes(a.id));
@@ -122,8 +119,6 @@ const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
 </section>
 
 <style>
-  .sub { color: var(--steel); margin-bottom: var(--s-16); }
-  .areas-sub { margin-top: var(--s-80); }
 
   /* Tabs: a row of mono labels over one panel. The selected tab takes the ink
      fill; the rest are outlines. */
@@ -165,7 +160,7 @@ const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
   .other a { color: var(--text-hi); font-weight: 600; text-decoration-color: var(--gold-2); text-decoration-thickness: 2px; text-underline-offset: 3px; }
 
   /* Areas: a 2 × 2 of outlined cards, each led by the workaround it removes. */
-  .area-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-24); }
+  .area-grid { margin-top: var(--s-80); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-24); }
   .area {
     display: flex; flex-direction: column; gap: var(--s-16); padding: var(--s-40);
     border: 1px solid var(--line-soft); background: var(--white);
