@@ -10,10 +10,9 @@ export const announcement = {
 export const nav = [
   { label: 'How it works', href: '#how' },
   { label: 'Framework', href: '#framework' },
+  { label: 'Solutions', href: '#solutions' },
   { label: 'Compare', href: '#compare' },
   { label: 'FAQ', href: '#faq' },
-  { label: 'Solutions', href: '/solutions/' },
-  { label: 'Insights', href: '/insights/' },
 ];
 
 /** Hero terminal — a workflow, before and after. */
@@ -68,7 +67,7 @@ export const footerCols = [
     links: [
       { label: 'How it works', href: '#how' },
       { label: 'What we build', href: '#features' },
-      { label: 'Solutions', href: '/solutions/' },
+      { label: 'Solutions', href: '#solutions' },
       { label: 'Insights', href: '/insights/' },
     ],
   },

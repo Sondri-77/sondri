@@ -9,7 +9,7 @@ import { splitDot } from './dot';
 
 export type Dict = Record<string, string>;
 
-const HEADS = ['problem', 'knifeHead', 'solution', 'socialProof', 'howItWorks', 'comparisonHead', 'featuresHead', 'faqHead', 'finalCta'] as const;
+const HEADS = ['problem', 'knifeHead', 'solution', 'socialProof', 'howItWorks', 'comparisonHead', 'featuresHead', 'faqHead', 'finalCta', 'solutionsHead'] as const;
 
 /** Straight quotes set as curly ones, and the quoted phrase never breaks. */
 export const splitQuote = (s: string): [string, string] => {

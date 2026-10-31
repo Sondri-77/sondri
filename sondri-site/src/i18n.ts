@@ -11,6 +11,7 @@
    flattens a `Copy` into the `data-i18n` keys the toggle swaps by. */
 import { CTA_PRIMARY, RISK_REVERSAL, framework } from './data';
 import { announcement, footerCols, nav } from './brutal-data';
+import { areas, industries, type IndustryId } from './lib/matrix';
 
 export type Lang = 'en' | 'es';
 
@@ -78,6 +79,13 @@ export interface Copy {
   featuresHead: { eyebrow: string; h2: string };
   faqHead: { eyebrow: string; h2: string };
   finalCta: { eyebrow: string; h2: string; lede: string };
+  solutionsHead: {
+    eyebrow: string; h2: string; lede: string; byIndustry: string; byArea: string; whatItDoes: string;
+    areasLabel: string; see: string; readBuild: string; other: string; otherCta: string;
+    workaround: string; built: string; talk: string;
+  };
+  solutionIndustries: Record<IndustryId, string>;
+  solutionAreas: { name: string; workaround: string; builds: string; items: string[] }[];
   valuePanel: {
     title: string; prompt: string; before: string; after: string;
     who: Record<StepWho, string>; legend: { before: string; after: string };
@@ -463,6 +471,25 @@ export const en: Copy = {
     },
   ],
 
+  solutionsHead: {
+    eyebrow: 'Solutions',
+    h2: 'Real software. Already running.',
+    lede: 'Software that removes the expensive workarounds in a business. Pick your industry to see what we’ve already built, or start from the kind of work you want off your team’s plate.',
+    byIndustry: 'By industry',
+    byArea: 'By solution area',
+    whatItDoes: 'What it does',
+    areasLabel: 'Solution areas',
+    see: 'See',
+    readBuild: 'Read the build',
+    other: 'Don’t see your industry? Most of what we build travels.',
+    otherCta: 'Tell us about your workaround',
+    workaround: 'The workaround',
+    built: 'Built:',
+    talk: 'Talk to us about it',
+  },
+  /** Single-sourced from the matrix (src/lib/matrix.ts). */
+  solutionIndustries: Object.fromEntries(industries.map((i) => [i.id, i.name])) as Record<IndustryId, string>,
+  solutionAreas: areas.map((a) => ({ name: a.name, workaround: a.workaround, builds: a.builds, items: [...a.items] })),
   notFound: {
     title: '404 — Sondri',
     description: 'The page you requested does not exist.',
@@ -513,17 +540,16 @@ export const es: Copy = {
   nav: [
     { label: 'Cómo funciona', href: '#how' },
     { label: 'Método', href: '#framework' },
+    { label: 'Soluciones', href: '#solutions' },
     { label: 'Comparar', href: '#compare' },
     { label: 'Preguntas', href: '#faq' },
-    { label: 'Soluciones', href: '/solutions/' },
-    { label: 'Blog', href: '/insights/' },
   ],
   cta: 'Agende una sesión gratis',
   riskReversal: 'Gratis. Sin compromiso.',
 
   VALUE_LINE: 'Arreglamos el trabajo que le cuesta tiempo y dinero a su equipo, con IA donde ayuda.',
   footerCols: [
-    { title: 'Empresa', links: [{ label: 'Cómo funciona', href: '#how' }, { label: 'Qué construimos', href: '#features' }, { label: 'Soluciones', href: '/solutions/' }, { label: 'Blog', href: '/insights/' }] },
+    { title: 'Empresa', links: [{ label: 'Cómo funciona', href: '#how' }, { label: 'Qué construimos', href: '#features' }, { label: 'Soluciones', href: '#solutions' }, { label: 'Blog', href: '/insights/' }] },
     { title: 'Hablemos', links: [{ label: 'Agendar sesión', href: '#book' }, { label: 'Pagar factura', href: '/pay' }, { label: 'Escríbanos', href: '#contact' }, { label: 'Preguntas', href: '#faq' }] },
   ],
   footerLine: 'Construido en sus sistemas, y es suyo',
@@ -845,6 +871,49 @@ export const es: Copy = {
     },
   ],
 
+  solutionsHead: {
+    eyebrow: 'Soluciones',
+    h2: 'Software real. Ya funcionando.',
+    lede: 'Programas que eliminan los parches caros de un negocio. Elija su industria para ver lo que ya construimos, o empiece por el trabajo que quiere quitarle a su equipo.',
+    byIndustry: 'Por industria',
+    byArea: 'Por área',
+    whatItDoes: 'Qué hace',
+    areasLabel: 'Áreas de solución',
+    see: 'Ver',
+    readBuild: 'Cómo lo construimos',
+    other: '¿No ve su industria? Casi todo lo que construimos se adapta.',
+    otherCta: 'Cuéntenos su problema',
+    workaround: 'El parche',
+    built: 'Construido:',
+    talk: 'Hablemos de esto',
+  },
+  solutionIndustries: { 'real-estate': 'Bienes raíces', medical: 'Salud', events: 'Eventos', tourism: 'Turismo', legal: 'Legal' },
+  solutionAreas: [
+    {
+      name: 'Inteligencia de mercado y generación de clientes',
+      workaround: 'Horas en mapas lentos y hojas de cálculo decidiendo dónde buscar y a quién llamar.',
+      builds: 'Mapas, datos de cada terreno y precios basados en ventas comparables en una sola pantalla, para que el equipo trabaje primero las mejores oportunidades.',
+      items: ['Mapas y búsqueda de terrenos', 'Prospectos por prioridad', 'Precios con ventas comparables'],
+    },
+    {
+      name: 'Crecimiento y visibilidad',
+      workaround: 'Pagarle a una agencia por reportes, o no publicar nada.',
+      builds: 'Búsqueda, visibilidad en motores de respuesta, su sitio web y un motor de contenido que lo mantiene al día.',
+      items: ['SEO', 'AEO', 'Sitio web', 'Contenido'],
+    },
+    {
+      name: 'Automatización de ventas',
+      workaround: 'Tratos detenidos en correos, hojas de cálculo y notas adhesivas.',
+      builds: 'Embudos, seguimientos y traspasos que avanzan sin que alguien tenga que perseguirlos.',
+      items: ['Embudo', 'Seguimientos', 'Traspasos'],
+    },
+    {
+      name: 'Modelos y contexto',
+      workaround: 'IA genérica que no conoce su negocio, así que nadie confía en sus respuestas.',
+      builds: 'Bases de conocimiento, motores de contexto y modelos ajustados con sus propios datos y reglas.',
+      items: ['Bases de conocimiento', 'Motores de contexto', 'Ajuste de modelos'],
+    },
+  ],
   notFound: {
     title: '404 — Sondri',
     description: 'La página que busca no existe.',

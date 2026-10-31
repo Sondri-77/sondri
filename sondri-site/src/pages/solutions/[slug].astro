@@ -38,7 +38,7 @@ const serviceSchema = {
   <article>
     <header class="section on-dark head">
       <div class="wrap">
-        <a class="label back" href="/solutions/">← All solutions</a>
+        <a class="label back" href="/#solutions">← All solutions</a>
         <div class="kick">
           <span class="chip">{industryName(industry)}</span>
           {draft && <span class="chip draft">Draft</span>}
@@ -96,7 +96,7 @@ const serviceSchema = {
               <dd>{audience}</dd>
               <dt class="label">Solution areas</dt>
               <dd>
-                <ul>{areas.map((a) => <li><a href={`/solutions/#area-${a}`}>{areaName(a)}</a></li>)}</ul>
+                <ul>{areas.map((a) => <li><a href={`/#area-${a}`}>{areaName(a)}</a></li>)}</ul>
               </dd>
               {postLive && (
                 <>
