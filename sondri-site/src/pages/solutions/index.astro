@@ -1,0 +1,264 @@
+---
+/* Solutions: the matrix, as the public sees it. Tessera's three layers —
+   industry tabs that each tell one built story, the solution areas across
+   every industry, then how we work. The grid itself never shows: an industry
+   gets a tab only once it has a published solution (src/lib/solutions.ts).
+   English only, like Insights. */
+import Base from '../../layouts/Base.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import { areaName, areas, getSolutions, industryName, industryTabs } from '../../lib/solutions';
+import { getPosts } from '../../lib/insights';
+import { BOOK_HREF } from '../../data';
+
+const solutions = await getSolutions();
+const tabs = industryTabs(solutions);
+const posts = new Set((await getPosts()).map((p) => p.id));
+
+const title = 'Solutions — Sondri';
+const description =
+  'Software that removes the expensive workarounds in a business, by industry and by solution area: market intelligence, growth, sales automation, and modeling.';
+---
+
+<Base title={title} description={description} titleKey="solutions.title" descriptionKey="solutions.description">
+  <section class="section on-dark head">
+    <div class="wrap">
+      <div class="eyebrow"><span class="label">/ Solutions</span></div>
+      <h1 class="h1">Solutions<span class="gdot">.</span></h1>
+      <p class="lede">
+        Software that removes the expensive workarounds in a business. Start with your industry to see what we’ve
+        built, or with the kind of work you want off your team’s plate.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── By industry: one tab per row of the matrix with something built ── -->
+  <section class="section section-pad dots-bg" id="industries">
+    <div class="wrap">
+      <div class="eyebrow"><span class="label">/ By industry</span></div>
+      <h2 class="h2 sec-title">Built for your industry<span class="gdot">.</span></h2>
+
+      <div class="tabs" data-tabs>
+        {tabs.length > 0 && <div class="tablist" role="tablist" aria-label="Industries">
+          {tabs.map((t, i) => (
+            <button
+              class="tab"
+              role="tab"
+              id={`tab-${t.id}`}
+              aria-controls={`panel-${t.id}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+            >
+              {t.name}
+            </button>
+          ))}
+        </div>}
+
+        {tabs.map((t, i) => (
+          <div class="tabpanel" role="tabpanel" id={`panel-${t.id}`} aria-labelledby={`tab-${t.id}`} data-hidden={i !== 0 ? '' : undefined}>
+            {t.solutions.map((s) => (
+              <article class="story">
+                <div class="story-main">
+                  <p class="label">{industryName(s.data.industry)} · {s.data.audience}</p>
+                  <h3 class="h3">{s.data.name}</h3>
+                  <p class="tagline">{s.data.tagline}</p>
+                  <p class="summary">{s.data.summary}</p>
+                  <div class="actions">
+                    <a class="btn btn-gold" href={`/solutions/${s.id}/`}>See {s.data.name} <span class="arr">→</span></a>
+                    {s.data.post && posts.has(s.data.post) && (
+                      <a class="btn" href={`/insights/${s.data.post}/`}>Read the build <span class="arr">→</span></a>
+                    )}
+                  </div>
+                </div>
+                <div class="story-side panel">
+                  <p class="label side-title">/ What it does</p>
+                  <ul class="highlights">
+                    {s.data.highlights.map((h) => <li>{h}</li>)}
+                  </ul>
+                  <p class="label side-title">/ Solution areas</p>
+                  <div class="chips">
+                    {s.data.areas.map((a) => <a class="chip" href={`#area-${a}`}>{areaName(a)}</a>)}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        ))}
+
+        <p class="other">
+          Don’t see your industry? Most of what we build travels.
+          <a href={BOOK_HREF}>Tell us about your workaround <span class="arr">→</span></a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── By solution area: the matrix's columns, across every industry ── -->
+  <section class="section section-pad" id="areas">
+    <div class="wrap">
+      <div class="eyebrow"><span class="label">/ By solution area</span></div>
+      <h2 class="h2 sec-title">Four kinds of work we take off your plate<span class="gdot">.</span></h2>
+
+      <div class="area-grid">
+        {areas.map((a, i) => {
+          const proof = solutions.filter((s) => s.data.areas.includes(a.id));
+          return (
+            <article class="area" id={`area-${a.id}`}>
+              <p class="label num">{String(i + 1).padStart(2, '0')}</p>
+              <h3 class="h4">{a.name}</h3>
+              <div class="workaround">
+                <p class="label">The workaround</p>
+                <p>{a.workaround}</p>
+              </div>
+              <p class="builds">{a.builds}</p>
+              <div class="chips">{a.items.map((it) => <span class="chip chip-quiet">{it}</span>)}</div>
+              <p class="label proof">
+                {proof.length > 0 ? (
+                  <>Built: {proof.map((s, j) => (
+                    <>{j > 0 && ', '}<a href={`/solutions/${s.id}/`}>{s.data.name}</a> ({industryName(s.data.industry)})</>
+                  ))}</>
+                ) : (
+                  <a href={BOOK_HREF}>Talk to us about it <span class="arr">→</span></a>
+                )}
+              </p>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How we work: how we deliver, beside the grid ── -->
+  <section class="section section-pad on-dark" id="how-we-work">
+    <div class="wrap">
+      <div class="eyebrow"><span class="label">/ How we work</span></div>
+      <h2 class="h2 sec-title">Every engagement starts with discovery<span class="gdot">.</span></h2>
+      <div class="how-grid">
+        <div class="how">
+          <p class="label num">01</p>
+          <h3 class="h5">Discovery</h3>
+          <p>A free session with the people doing the work. We map the workaround, put a cost on it, and scope what to build first.</p>
+        </div>
+        <div class="how">
+          <p class="label num">02</p>
+          <h3 class="h5">Consulting &amp; solutioning</h3>
+          <p>When you need a plan before a build: which work to automate, which tools to keep, and where AI actually helps.</p>
+        </div>
+        <div class="how">
+          <p class="label num">03</p>
+          <h3 class="h5">Build &amp; run</h3>
+          <p>We build inside the systems you already run, at a fixed price per phase. You own the code, and we stay on to support it.</p>
+        </div>
+      </div>
+      <a class="btn how-link" href="/#how">See how it works <span class="arr">→</span></a>
+    </div>
+  </section>
+
+  <FinalCta />
+</Base>
+
+<style is:global>
+  /* No hero under the bar here — solid ink from the start. */
+  #siteheader { background: var(--ink); }
+</style>
+
+<style>
+  .head { padding-block: var(--s-80) var(--s-96); }
+  .head .h1 { margin-bottom: var(--s-24); }
+  .head .lede { max-width: 58ch; }
+  .sec-title { max-width: 22ch; margin-bottom: var(--s-48); }
+
+  .dots-bg {
+    background-color: var(--off);
+    background-image: radial-gradient(var(--line-soft) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+
+  /* Tabs: a row of mono labels over one panel. The selected tab takes the ink
+     fill; the rest are outlines. */
+  .tablist { display: flex; flex-wrap: wrap; gap: var(--s-08); margin-bottom: var(--s-24); }
+  .tab {
+    font-family: var(--mono); font-size: 14px; line-height: 16px; letter-spacing: 0.04em;
+    text-transform: uppercase; padding: 14px 24px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--paper); color: var(--text-hi);
+  }
+  .tab[aria-selected='true'] { background: var(--ink); color: var(--gold); border-color: var(--ink); }
+  .tab:focus-visible { outline: 2px solid var(--gold-2); outline-offset: 2px; }
+  .tabpanel[hidden] { display: none; }
+
+  .story {
+    display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: var(--s-48);
+    padding: var(--s-48); background: var(--paper); border: 1px solid var(--line);
+  }
+  .story-main { display: flex; flex-direction: column; gap: var(--s-16); }
+  .story-main .label { color: var(--steel); }
+  .tagline { font-size: 22px; line-height: 1.35; color: var(--text-hi); letter-spacing: -0.02em; max-width: 34ch; }
+  .summary { color: var(--pale); font-size: 18px; line-height: 28px; max-width: 56ch; }
+  .actions { display: flex; flex-wrap: wrap; gap: var(--s-16); margin-top: var(--s-16); }
+  .story-side { padding: var(--s-32); align-self: start; }
+  .side-title { color: var(--text-hi); margin-bottom: var(--s-16); }
+  .side-title + .chips { margin-top: 0; }
+  .highlights { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: var(--s-32); }
+  .highlights li { position: relative; padding-left: 20px; color: var(--pale); line-height: 1.5; }
+  .highlights li::before { content: '■'; position: absolute; left: 0; top: 1px; font-size: 10px; color: var(--gold-2); }
+  .chips { display: flex; flex-wrap: wrap; gap: var(--s-08); }
+  a.chip { text-decoration: none; }
+  .chip-quiet { background: var(--tint); color: var(--text-hi); }
+  .other { margin-top: var(--s-32); color: var(--pale); }
+  .other a { color: var(--text-hi); font-weight: 600; text-decoration-color: var(--gold-2); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+
+  /* Areas: a 2 × 2 of outlined cards, each led by the workaround it removes. */
+  .area-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-24); }
+  .area {
+    display: flex; flex-direction: column; gap: var(--s-16); padding: var(--s-40);
+    border: 1px solid var(--line-soft); background: var(--paper);
+    transition: border-color 0.15s linear, box-shadow 0.15s linear, transform 0.15s linear;
+  }
+  .area:hover { border-color: var(--line); box-shadow: var(--shadow-x) var(--shadow-x) 0 var(--shadow-col); transform: translate(-2px, -2px); }
+  .num { color: var(--steel); }
+  .workaround { border-left: 4px solid var(--gold); padding-left: var(--s-16); }
+  .workaround .label { color: var(--steel); margin-bottom: 4px; }
+  .workaround p:last-child { color: var(--text-hi); line-height: 1.5; }
+  .builds { color: var(--pale); line-height: 1.6; }
+  .proof { margin-top: auto; padding-top: var(--s-16); border-top: 1px solid var(--line-soft); color: var(--steel); }
+  .proof a { color: var(--text-hi); }
+
+  .how-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-32); margin-bottom: var(--s-48); }
+  .how { display: flex; flex-direction: column; gap: var(--s-16); border-top: 1px solid var(--line); padding-top: var(--s-24); }
+  .how p:last-child { color: var(--pale); line-height: 1.6; }
+
+  @media (max-width: 960px) {
+    .story { grid-template-columns: minmax(0, 1fr); padding: var(--s-32); gap: var(--s-32); }
+    .area-grid, .how-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .story, .area { padding: var(--s-24); }
+  }
+  @media (prefers-reduced-motion: reduce) { .area, .area:hover { transition: none; transform: none; } }
+</style>
+
+<script>
+  // Tabs: hidden panels are only hidden once this runs, so without JS every
+  // industry's story shows in a row. Arrow keys move between tabs.
+  document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+    panels.forEach((p) => { if (p.hasAttribute('data-hidden')) p.hidden = true; });
+    const select = (i: number) => {
+      tabs.forEach((t, j) => {
+        t.setAttribute('aria-selected', String(i === j));
+        t.tabIndex = i === j ? 0 : -1;
+      });
+      panels.forEach((p, j) => (p.hidden = i !== j));
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(i));
+      t.addEventListener('keydown', (e) => {
+        const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!step) return;
+        const n = (i + step + tabs.length) % tabs.length;
+        select(n);
+        tabs[n].focus();
+      });
+    });
+  });
+</script>

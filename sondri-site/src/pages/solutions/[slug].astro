@@ -1,0 +1,156 @@
+---
+/* One solution: dark head (industry, areas, name, tagline, summary), what it
+   does, the Markdown body beside an at-a-glance rail, then the closing CTA. */
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import { areaName, getSolutions, industryName } from '../../lib/solutions';
+import { getPosts } from '../../lib/insights';
+import { BOOK_HREF, CTA_PRIMARY } from '../../data';
+import '../../styles/prose.css';
+
+export async function getStaticPaths() {
+  const solutions = await getSolutions();
+  return solutions.map((s) => ({ params: { slug: s.id }, props: { solution: s } }));
+}
+
+const { solution } = Astro.props;
+const { name, tagline, summary, audience, industry, areas, highlights, post, media, draft } = solution.data;
+const { Content } = await render(solution);
+const postLive = post ? (await getPosts()).some((p) => p.id === post) : false;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const serviceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name,
+  description: summary,
+  serviceType: areas.map(areaName),
+  audience: { '@type': 'Audience', audienceType: audience },
+  provider: { '@type': 'Organization', name: 'Sondri', url: 'https://sondri.ai' },
+  url: canonical.href,
+};
+---
+
+<Base title={`${name} — Solutions — Sondri`} description={summary} titleKey="solutions.page.title" descriptionKey="solutions.page.description">
+  <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(serviceSchema)} />
+
+  <article>
+    <header class="section on-dark head">
+      <div class="wrap">
+        <a class="label back" href="/solutions/">← All solutions</a>
+        <div class="kick">
+          <span class="chip">{industryName(industry)}</span>
+          {draft && <span class="chip draft">Draft</span>}
+        </div>
+        <h1 class="h2 title">{name}<span class="gdot">.</span></h1>
+        <p class="tagline">{tagline}</p>
+        <p class="lede">{summary}</p>
+        <div class="actions">
+          <a class="btn btn-gold" href={BOOK_HREF}>{CTA_PRIMARY} <span class="arr">→</span></a>
+          {postLive && <a class="btn" href={`/insights/${post}/`}>Read the build <span class="arr">→</span></a>}
+        </div>
+      </div>
+    </header>
+
+    {media && (
+      <section class="section demo-sec">
+        <div class="wrap">
+          <figure class="demo">
+            <div class="demo-frame">
+              <video controls playsinline preload="none" poster={media.poster} aria-label={media.alt}>
+                <source src={media.src} type="video/mp4" />
+              </video>
+            </div>
+            <figcaption class="label">/ Watch the demo{media.caption && <> · {media.caption}</>} · captions in the video</figcaption>
+          </figure>
+        </div>
+      </section>
+    )}
+
+    <section class="section highlights-sec">
+      <div class="wrap">
+        <ol class="highlights">
+          {highlights.map((h, i) => (
+            <li>
+              <span class="label">{String(i + 1).padStart(2, '0')}</span>
+              <p>{h}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <div class="section section-pad">
+      <div class="wrap">
+        <div class="layout">
+          <div class="prose">
+            <Content />
+          </div>
+          <aside class="glance" aria-label="At a glance">
+            <p class="label glance-title">/ At a glance</p>
+            <dl>
+              <dt class="label">Industry</dt>
+              <dd>{industryName(industry)}</dd>
+              <dt class="label">Built for</dt>
+              <dd>{audience}</dd>
+              <dt class="label">Solution areas</dt>
+              <dd>
+                <ul>{areas.map((a) => <li><a href={`/solutions/#area-${a}`}>{areaName(a)}</a></li>)}</ul>
+              </dd>
+              {postLive && (
+                <>
+                  <dt class="label">Write-up</dt>
+                  <dd><a href={`/insights/${post}/`}>Read the build →</a></dd>
+                </>
+              )}
+            </dl>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <FinalCta />
+</Base>
+
+<style is:global>
+  #siteheader { background: var(--ink); }
+</style>
+
+<style>
+  .head { padding-block: var(--s-64) var(--s-80); }
+  .back { display: inline-block; text-decoration: none; color: var(--pale); margin-bottom: var(--s-40); }
+  .back:hover { color: var(--gold); }
+  .kick { display: flex; flex-wrap: wrap; gap: var(--s-08); margin-bottom: var(--s-24); }
+  .draft { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
+  .title { margin-bottom: var(--s-16); }
+  .tagline { font-size: clamp(22px, 2.2vw, 28px); line-height: 1.3; letter-spacing: -0.02em; color: var(--text-hi); max-width: 36ch; margin-bottom: var(--s-24); }
+  .head .lede { max-width: 60ch; margin-bottom: var(--s-40); }
+  .actions { display: flex; flex-wrap: wrap; gap: var(--s-16); }
+
+  .demo-sec { padding-block: var(--s-64) 0; }
+  /* The demo: the site's panel grammar, a 1px outline and a hard offset block. */
+  .demo-frame { border: 1px solid var(--line); background: var(--ink); aspect-ratio: 16 / 9; box-shadow: var(--shadow-x) var(--shadow-x) 0 var(--shadow-col); }
+  .demo video { display: block; width: 100%; height: 100%; object-fit: contain; }
+  .demo figcaption { margin-top: calc(var(--s-16) + var(--shadow-x)); color: var(--steel); }
+
+  /* What it does: a numbered strip right under the head, ruled above each item. */
+  .highlights-sec { padding-block: var(--s-64) 0; }
+  .highlights { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--s-32); }
+  .highlights li { border-top: 1px solid var(--line); padding-top: var(--s-16); display: flex; flex-direction: column; gap: var(--s-08); }
+  .highlights .label { color: var(--steel); }
+  .highlights p { color: var(--text-hi); line-height: 1.5; }
+
+  .layout { display: grid; grid-template-columns: minmax(0, 68ch) 280px; justify-content: space-between; gap: var(--s-64); }
+  .glance { position: sticky; top: calc(var(--nav-h) + var(--s-32)); align-self: start; border-top: 1px solid var(--line); padding-top: var(--s-24); }
+  .glance-title { color: var(--text-hi); margin-bottom: var(--s-24); }
+  .glance dt { color: var(--steel); margin-bottom: 4px; }
+  .glance dd { color: var(--text-hi); margin-bottom: var(--s-24); line-height: 1.5; }
+  .glance ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .glance a { color: var(--text-hi); text-decoration-color: var(--gold-2); text-underline-offset: 3px; }
+  @media (max-width: 1080px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+    .glance { position: static; }
+  }
+</style>

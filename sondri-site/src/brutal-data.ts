@@ -12,6 +12,7 @@ export const nav = [
   { label: 'Framework', href: '#framework' },
   { label: 'Compare', href: '#compare' },
   { label: 'FAQ', href: '#faq' },
+  { label: 'Solutions', href: '/solutions/' },
   { label: 'Insights', href: '/insights/' },
 ];
 
@@ -67,6 +68,7 @@ export const footerCols = [
     links: [
       { label: 'How it works', href: '#how' },
       { label: 'What we build', href: '#features' },
+      { label: 'Solutions', href: '/solutions/' },
       { label: 'Insights', href: '/insights/' },
     ],
   },

@@ -1,0 +1,42 @@
+/* Long-form Markdown bodies (Insights posts, solution pages). Plex at
+   reading size, headings on the site's scale and tracking, rules and tables
+   in the brutal grammar: hairlines, no boxes. */
+.prose { max-width: 68ch; color: var(--teal-mid); font-size: 18px; line-height: 1.7; }
+.prose > * + * { margin-top: var(--s-24); }
+.prose h2 {
+  margin-top: var(--s-64); font-size: clamp(28px, 2.8vw, 36px); line-height: 1.15;
+  font-weight: 600; letter-spacing: -0.0625em; color: var(--text-hi);
+}
+.prose h3 {
+  margin-top: var(--s-40); font-size: 22px; line-height: 1.25;
+  font-weight: 600; letter-spacing: -0.04em; color: var(--text-hi);
+}
+.prose h2 + *, .prose h3 + * { margin-top: var(--s-16); }
+.prose strong { color: var(--text-hi); font-weight: 600; }
+.prose a { color: var(--text-hi); text-decoration-color: var(--gold-2); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.prose ul, .prose ol { padding-left: 1.25em; }
+.prose li + li { margin-top: var(--s-08); }
+.prose ul li::marker { color: var(--gold-2); content: '■  '; font-size: 0.7em; }
+.prose ol li::marker { font-family: var(--mono); font-size: 0.8em; color: var(--steel); }
+.prose blockquote {
+  border-left: 4px solid var(--gold); padding: var(--s-08) 0 var(--s-08) var(--s-24);
+  font-size: 22px; line-height: 1.45; color: var(--text-hi); letter-spacing: -0.02em;
+}
+.prose hr { border: 0; border-top: 1px solid var(--line-soft); margin-block: var(--s-64); }
+.prose code {
+  font-family: var(--mono); font-size: 0.85em;
+  background: var(--off); padding: 1px 6px;
+}
+.prose pre { background: var(--teal); color: var(--white); padding: var(--s-24); overflow-x: auto; font-size: 14px; line-height: 1.6; }
+.prose pre code { background: none; padding: 0; }
+.prose img { width: 100%; height: auto; border: 1px solid var(--line-soft); }
+.prose table { width: 100%; border-collapse: collapse; font-size: 16px; line-height: 1.5; }
+.prose h2, .prose h3 { scroll-margin-top: calc(var(--nav-h) + var(--s-24)); }
+.prose th {
+  text-align: left; font-family: var(--mono); font-size: 12px; font-weight: 500;
+  letter-spacing: 0.02em; text-transform: uppercase; color: var(--steel);
+  padding: 0 var(--s-16) var(--s-08) 0; border-bottom: 1px solid var(--line);
+}
+.prose td { padding: var(--s-16) var(--s-16) var(--s-16) 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+.prose td:first-child { color: var(--text-hi); font-weight: 500; }
+@media (max-width: 640px) { .prose { font-size: 17px; } }
