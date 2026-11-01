@@ -1,0 +1,98 @@
+---
+/* One Insights post: dark head (category, title, excerpt, meta), the
+   Markdown body at a reading measure, then the site's closing CTA. */
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import { fmtDate, getPosts, readMins } from '../../lib/insights';
+import '../../styles/prose.css';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { title, excerpt, category, date, author, draft } = post.data;
+const { Content, headings } = await render(post);
+const toc = headings.filter((h) => h.depth === 2);
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description: excerpt,
+  datePublished: date.toISOString(),
+  author: { '@type': 'Organization', name: author },
+  publisher: { '@type': 'Organization', name: 'Sondri', url: 'https://sondri.ai' },
+  mainEntityOfPage: canonical.href,
+};
+---
+
+<Base title={`${title} — Sondri`} description={excerpt} titleKey="insights.post.title" descriptionKey="insights.post.description">
+  <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+
+  <article>
+    <header class="section on-dark head">
+      <div class="wrap">
+        <a class="label back" href="/insights/">← All insights</a>
+        <div class="kick">
+          <span class="chip">{category}</span>
+          {draft && <span class="chip draft">Draft</span>}
+        </div>
+        <h1 class="h2 title">{title}</h1>
+        <p class="lede">{excerpt}</p>
+        <p class="label meta">
+          <time datetime={date.toISOString()}>{fmtDate(date)}</time> · {author} · {readMins(post.body)} min read
+        </p>
+      </div>
+    </header>
+
+    <div class="section section-pad">
+      <div class="wrap">
+        <div class="layout">
+          <div class="prose">
+            <Content />
+          </div>
+          {toc.length > 1 && (
+            <nav class="toc" aria-label="In this post">
+              <p class="label toc-title">/ In this post</p>
+              <ol>
+                {toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+              </ol>
+            </nav>
+          )}
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <FinalCta />
+</Base>
+
+<style is:global>
+  #siteheader { background: var(--ink); }
+</style>
+
+<style>
+  .head { padding-block: var(--s-64) var(--s-80); }
+  .back { display: inline-block; text-decoration: none; color: var(--pale); margin-bottom: var(--s-40); }
+  .back:hover { color: var(--gold); }
+  .kick { display: flex; gap: var(--s-08); margin-bottom: var(--s-24); }
+  .draft { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
+  .title { max-width: 22ch; margin-bottom: var(--s-24); }
+  .head .lede { max-width: 60ch; margin-bottom: var(--s-32); }
+  .meta { color: var(--pale); }
+
+  /* Body left at a reading measure; the contents rail sticks on the right. */
+  .layout { display: grid; grid-template-columns: minmax(0, 68ch) 260px; justify-content: space-between; gap: var(--s-64); }
+  .toc { position: sticky; top: calc(var(--nav-h) + var(--s-32)); align-self: start; border-top: 1px solid var(--line); padding-top: var(--s-24); }
+  .toc-title { color: var(--text-hi); margin-bottom: var(--s-16); }
+  .toc ol { list-style: none; display: flex; flex-direction: column; gap: 12px; counter-reset: toc; }
+  .toc li { counter-increment: toc; display: grid; grid-template-columns: 28px 1fr; }
+  .toc li::before { content: counter(toc, decimal-leading-zero); font: 12px/22px var(--mono); color: var(--steel); }
+  .toc a { color: var(--pale); text-decoration: none; font-size: 15px; line-height: 22px; }
+  .toc a:hover { color: var(--text-hi); text-decoration: underline; text-decoration-color: var(--gold-2); text-underline-offset: 3px; }
+  @media (max-width: 1080px) { .layout { grid-template-columns: minmax(0, 1fr); } .toc { display: none; } }
+</style>

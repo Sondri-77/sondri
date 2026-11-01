@@ -1,0 +1,215 @@
+---
+/* Solutions: the matrix as the public sees it, one section of the home
+   scroll. Industry tabs (only industries with a published solution, from
+   src/lib/solutions.ts) each tell one built story and link to that
+   solution's own page; then the solution areas across every industry. The
+   story text comes from the solution's Markdown and stays English. */
+import { getSolutions, industryTabs } from '../lib/solutions';
+import { getPosts } from '../lib/insights';
+import { areas } from '../lib/matrix';
+import { BOOK_HREF } from '../data';
+import { en } from '../i18n';
+import { splitDot } from '../lib/dot';
+
+const t = en.solutionsHead;
+const [h2, dot] = splitDot(t.h2);
+const solutions = await getSolutions();
+const tabs = industryTabs(solutions);
+const posts = new Set((await getPosts()).map((p) => p.id));
+const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
+---
+
+<section class="section section-pad" id="solutions">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <h2 class="h2"><span data-i18n="solutionsHead.h2.text">{h2}</span><span class="gdot" data-i18n="solutionsHead.h2.dot">{dot}</span></h2>
+      </div>
+      <div class="intro">
+        <p class="lede" data-i18n="solutionsHead.lede">{t.lede}</p>
+      </div>
+    </div>
+
+    <!-- By industry: one tab per row of the matrix with something built. -->
+    {tabs.length > 0 && (
+      <div class="tabs" data-tabs>
+        <div class="tablist" role="tablist" aria-label={t.byIndustry}>
+          {tabs.map((tab, i) => (
+            <button class="tab" role="tab" id={`tab-${tab.id}`} aria-controls={`panel-${tab.id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-i18n={`solutionIndustries.${tab.id}`}>
+              {en.solutionIndustries[tab.id]}
+            </button>
+          ))}
+        </div>
+
+        {tabs.map((tab, i) => (
+          <div class="tabpanel" role="tabpanel" id={`panel-${tab.id}`} aria-labelledby={`tab-${tab.id}`} data-hidden={i !== 0 ? '' : undefined}>
+            {tab.solutions.map((s) => (
+              <article class="story">
+                <div class="story-main">
+                  <p class="label">{s.data.audience}</p>
+                  <h3 class="h3">{s.data.name}<span class="gdot">.</span></h3>
+                  <p class="tagline">{s.data.tagline}</p>
+                  <p class="summary">{s.data.summary}</p>
+                  <div class="actions">
+                    <a class="btn btn-gold" href={`/solutions/${s.id}/`}><span data-i18n="solutionsHead.see">{t.see}</span> {s.data.name} <span class="arr">→</span></a>
+                    {s.data.post && posts.has(s.data.post) && (
+                      <a class="btn" href={`/insights/${s.data.post}/`}><span data-i18n="solutionsHead.readBuild">{t.readBuild}</span> <span class="arr">→</span></a>
+                    )}
+                  </div>
+                </div>
+                <div class="story-side panel">
+                  {s.data.media && (
+                    <a class="thumb" href={`/solutions/${s.id}/`} aria-label={`${t.see} ${s.data.name}`}>
+                      <img src={s.data.media.poster} alt="" width="1280" height="720" loading="lazy" decoding="async" />
+                      <span class="play" aria-hidden="true">▶</span>
+                    </a>
+                  )}
+                  <p class="label side-title">/ <span data-i18n="solutionsHead.whatItDoes">{t.whatItDoes}</span></p>
+                  <ul class="highlights">
+                    {s.data.highlights.map((h) => <li>{h}</li>)}
+                  </ul>
+                  <p class="label side-title">/ <span data-i18n="solutionsHead.areasLabel">{t.areasLabel}</span></p>
+                  <div class="chips">
+                    {s.data.areas.map((a) => (
+                      <a class="chip" href={`#area-${a}`} data-i18n={`solutionAreas.${areaIndex(a)}.name`}>{en.solutionAreas[areaIndex(a)].name}</a>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        ))}
+
+        <p class="other">
+          <span data-i18n="solutionsHead.other">{t.other}</span>
+          <a href={BOOK_HREF}><span data-i18n="solutionsHead.otherCta">{t.otherCta}</span> <span class="arr">→</span></a>
+        </p>
+      </div>
+    )}
+
+    <!-- By solution area: the matrix's columns, across every industry. -->
+    <div class="area-grid">
+      {areas.map((a, i) => {
+        const proof = solutions.filter((s) => s.data.areas.includes(a.id));
+        const c = en.solutionAreas[i];
+        return (
+          <article class="area" id={`area-${a.id}`} data-reveal style={`transition-delay:${(i % 2) * 80}ms`}>
+            <p class="label num">{String(i + 1).padStart(2, '0')}</p>
+            <h3 class="h5"><span data-i18n={`solutionAreas.${i}.name`}>{c.name}</span><span class="gdot">.</span></h3>
+            <div class="workaround">
+              <p class="label" data-i18n="solutionsHead.workaround">{t.workaround}</p>
+              <p data-i18n={`solutionAreas.${i}.workaround`}>{c.workaround}</p>
+            </div>
+            <p class="builds" data-i18n={`solutionAreas.${i}.builds`}>{c.builds}</p>
+            <div class="chips">{c.items.map((it, j) => <span class="chip chip-quiet" data-i18n={`solutionAreas.${i}.items.${j}`}>{it}</span>)}</div>
+            <p class="label proof">
+              {proof.length > 0 ? (
+                <><span data-i18n="solutionsHead.built">{t.built}</span> {proof.map((s, j) => (
+                  <>{j > 0 && ', '}<a href={`/solutions/${s.id}/`}>{s.data.name}</a></>
+                ))}</>
+              ) : (
+                <a href={BOOK_HREF}><span data-i18n="solutionsHead.talk">{t.talk}</span> <span class="arr">→</span></a>
+              )}
+            </p>
+          </article>
+        );
+      })}
+    </div>
+  </div>
+</section>
+
+<style>
+
+  /* Tabs: a row of mono labels over one panel. The selected tab takes the ink
+     fill; the rest are outlines. */
+  .tablist { display: flex; flex-wrap: wrap; gap: var(--s-08); margin-bottom: var(--s-24); }
+  .tab {
+    font-family: var(--mono); font-size: 14px; line-height: 16px; letter-spacing: 0.04em;
+    text-transform: uppercase; padding: 14px 24px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--white); color: var(--text-hi);
+  }
+  .tab[aria-selected='true'] { background: var(--ink); color: var(--gold); border-color: var(--ink); }
+  .tab:focus-visible { outline: 2px solid var(--gold-2); outline-offset: 2px; }
+  .tabpanel[hidden] { display: none; }
+
+  .story {
+    display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: var(--s-48);
+    padding: var(--s-48); background: var(--white); border: 1px solid var(--line);
+  }
+  .story-main { display: flex; flex-direction: column; gap: var(--s-16); }
+  .story-main .label { color: var(--steel); }
+  .tagline { font-size: 22px; line-height: 1.35; color: var(--text-hi); letter-spacing: -0.02em; max-width: 34ch; }
+  .summary { color: var(--pale); font-size: 18px; line-height: 28px; max-width: 56ch; }
+  .actions { display: flex; flex-wrap: wrap; gap: var(--s-16); margin-top: var(--s-16); }
+  .story-side { padding: var(--s-32); align-self: start; background: var(--white); }
+  .thumb { position: relative; display: block; margin-bottom: var(--s-24); border: 1px solid var(--line); background: var(--ink); aspect-ratio: 16 / 9; overflow: hidden; }
+  .thumb img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s linear; }
+  .thumb:hover img { transform: scale(1.02); }
+  .play {
+    position: absolute; left: var(--s-16); bottom: var(--s-16); width: 44px; height: 44px;
+    display: grid; place-items: center; background: var(--gold); color: var(--teal); font-size: 14px;
+  }
+  .side-title { color: var(--text-hi); margin-bottom: var(--s-16); }
+  .highlights { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: var(--s-32); }
+  .highlights li { position: relative; padding-left: 20px; color: var(--pale); line-height: 1.5; }
+  .highlights li::before { content: '■'; position: absolute; left: 0; top: 1px; font-size: 10px; color: var(--gold-2); }
+  .chips { display: flex; flex-wrap: wrap; gap: var(--s-08); }
+  a.chip { text-decoration: none; }
+  .chip-quiet { background: var(--tint); color: var(--text-hi); }
+  .other { margin-top: var(--s-32); color: var(--pale); }
+  .other a { color: var(--text-hi); font-weight: 600; text-decoration-color: var(--gold-2); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+
+  /* Areas: a 2 × 2 of outlined cards, each led by the workaround it removes. */
+  .area-grid { margin-top: var(--s-80); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-24); }
+  .area {
+    display: flex; flex-direction: column; gap: var(--s-16); padding: var(--s-40);
+    border: 1px solid var(--line-soft); background: var(--white);
+    transition: border-color 0.15s linear, box-shadow 0.15s linear, transform 0.15s linear, opacity 0.4s ease;
+  }
+  .area:hover { border-color: var(--line); box-shadow: var(--shadow-x) var(--shadow-x) 0 var(--shadow-col); transform: translate(-2px, -2px); }
+  .num { color: var(--steel); }
+  .workaround { border-left: 4px solid var(--gold); padding-left: var(--s-16); }
+  .workaround .label { color: var(--steel); margin-bottom: 4px; }
+  .workaround p:last-child { color: var(--text-hi); line-height: 1.5; }
+  .builds { color: var(--pale); line-height: 1.6; }
+  .proof { margin-top: auto; padding-top: var(--s-16); border-top: 1px solid var(--line-soft); color: var(--steel); }
+  .proof a { color: var(--text-hi); }
+
+  @media (max-width: 960px) {
+    .story { grid-template-columns: minmax(0, 1fr); padding: var(--s-32); gap: var(--s-32); }
+    .area-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .story, .area { padding: var(--s-24); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .area, .area:hover, .thumb img { transition: none; transform: none; }
+  }
+</style>
+
+<script>
+  // Tabs: hidden panels are only hidden once this runs, so without JS every
+  // industry's story shows in a row. Arrow keys move between tabs.
+  document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+    panels.forEach((p) => { if (p.hasAttribute('data-hidden')) p.hidden = true; });
+    const select = (i: number) => {
+      tabs.forEach((t, j) => {
+        t.setAttribute('aria-selected', String(i === j));
+        t.tabIndex = i === j ? 0 : -1;
+      });
+      panels.forEach((p, j) => (p.hidden = i !== j));
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(i));
+      t.addEventListener('keydown', (e) => {
+        const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!step) return;
+        const n = (i + step + tabs.length) % tabs.length;
+        select(n);
+        tabs[n].focus();
+      });
+    });
+  });
+</script>

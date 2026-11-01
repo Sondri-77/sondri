@@ -4,8 +4,10 @@ import { CONTACT_EMAIL, mailto } from '../data';
 import { VALUE_LINE } from '../home-data';
 import { en } from '../i18n';
 import { splitDot } from '../lib/dot';
+import { sectionHref } from '../lib/href';
 const [line, dot] = splitDot(VALUE_LINE);
 const year = new Date().getFullYear();
+const at = (h: string) => sectionHref(h, Astro.url.pathname);
 ---
 
 <!-- The lockup lives in the nav and here — the page turns over on the
@@ -26,7 +28,7 @@ const year = new Date().getFullYear();
           <p class="label col-title">/ <span data-i18n={`footerCols.${ci}.title`}>{col.title}</span></p>
           <ul>
             {col.links.map((l, li) => (
-              <li><a href={l.href} data-i18n={`footerCols.${ci}.links.${li}.label`}>{l.label}</a></li>
+              <li><a href={at(l.href)} data-i18n={`footerCols.${ci}.links.${li}.label`}>{l.label}</a></li>
             ))}
           </ul>
         </div>

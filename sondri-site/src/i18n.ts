@@ -11,6 +11,7 @@
    flattens a `Copy` into the `data-i18n` keys the toggle swaps by. */
 import { CTA_PRIMARY, RISK_REVERSAL, framework } from './data';
 import { announcement, footerCols, nav } from './brutal-data';
+import { areas, industries, type IndustryId } from './lib/matrix';
 
 export type Lang = 'en' | 'es';
 
@@ -78,6 +79,13 @@ export interface Copy {
   featuresHead: { eyebrow: string; h2: string };
   faqHead: { eyebrow: string; h2: string };
   finalCta: { eyebrow: string; h2: string; lede: string };
+  solutionsHead: {
+    eyebrow: string; h2: string; lede: string; byIndustry: string; byArea: string; whatItDoes: string;
+    areasLabel: string; see: string; readBuild: string; other: string; otherCta: string;
+    workaround: string; built: string; talk: string;
+  };
+  solutionIndustries: Record<IndustryId, string>;
+  solutionAreas: { name: string; workaround: string; builds: string; items: string[] }[];
   valuePanel: {
     title: string; prompt: string; before: string; after: string;
     who: Record<StepWho, string>; legend: { before: string; after: string };
@@ -100,7 +108,7 @@ const features = [
 
 export const en: Copy = {
   meta: {
-    title: 'Sondri — Fix expensive bullsh*t',
+    title: 'Sondri — Fix expensive workarounds',
     description: 'Built into the systems you already run. Live in weeks. AI where it helps, regular software where it doesn’t.',
     lang: 'en',
   },
@@ -268,7 +276,7 @@ export const en: Copy = {
 
   /** Section 1 · Hero */
   hero: {
-    h1: 'Fix expensive bullsh*t. (Use AI where it helps)',
+    h1: 'Fix expensive workarounds. (Use AI where it helps)',
     lede: 'Built into the systems you already run. Live in weeks.',
   },
 
@@ -463,6 +471,25 @@ export const en: Copy = {
     },
   ],
 
+  solutionsHead: {
+    eyebrow: 'Solutions',
+    h2: 'Real software. Already running.',
+    lede: 'Software that removes the expensive workarounds in a business. Pick your industry to see what we’ve already built, or start from the kind of work you want off your team’s plate.',
+    byIndustry: 'By industry',
+    byArea: 'By solution area',
+    whatItDoes: 'What it does',
+    areasLabel: 'Solution areas',
+    see: 'See',
+    readBuild: 'Read the build',
+    other: 'Don’t see your industry? Most of what we build travels.',
+    otherCta: 'Tell us about your workaround',
+    workaround: 'The workaround',
+    built: 'Built:',
+    talk: 'Talk to us about it',
+  },
+  /** Single-sourced from the matrix (src/lib/matrix.ts). */
+  solutionIndustries: Object.fromEntries(industries.map((i) => [i.id, i.name])) as Record<IndustryId, string>,
+  solutionAreas: areas.map((a) => ({ name: a.name, workaround: a.workaround, builds: a.builds, items: [...a.items] })),
   notFound: {
     title: '404 — Sondri',
     description: 'The page you requested does not exist.',
@@ -475,32 +502,32 @@ export const en: Copy = {
 /* ────────────────────────────── Spanish ──────────────────────────────
    Usted throughout (the safe register for business across the US and
    Latin America); "parche" for "workaround"; USD stays USD. The English
-   swears map to: "Fix expensive bullsh*t." → "Arreglamos errores caros.",
+   headlines map to: "Fix expensive workarounds." → "Eliminamos parches caros.",
    "Kill your workarounds." → "Elimine los parches.", "We overhaul how
-   work gets done." → "Rehacemos cómo se hace el trabajo.", "Stop paying
+   work gets done." → "Rehacemos la forma en que se trabaja.", "Stop paying
    smart people to babysit stupid systems." → "Deje de pagar a gente capaz
    para cuidar sistemas torpes.", "Unsexy solutions that work ridiculously
    well." → "Soluciones poco vistosas que funcionan increíblemente bien." */
 
 const featuresEs = [
-  { k: 'Automatizar', t: 'Automatización de flujos', icon: 'cog', b: 'Automatice los pasos que le quitan el día, con su equipo revisando lo que necesita aprobación.' },
+  { k: 'Automatizar', t: 'Automatización de flujos de trabajo', icon: 'cog', b: 'Automatice los pasos que le quitan el día; su equipo solo revisa lo que requiere aprobación.' },
   { k: 'Reportar', t: 'Datos e informes', icon: 'analytics', b: 'Vea las cifras actuales de su software sin volver a teclearlas.' },
-  { k: 'Responder', t: 'Atención al cliente', icon: 'user-headset', b: 'Ayude a su equipo a responder a los clientes y enviar cotizaciones más rápido.' },
+  { k: 'Responder', t: 'Atención al cliente', icon: 'user-headset', b: 'Ayude a su equipo a responder a los clientes y a enviar cotizaciones más rápido.' },
   { k: 'Conciliar', t: 'Administración', icon: 'receipt', b: 'Reduzca los errores en facturas, conciliación de pagos y cierres mensuales.' },
   { k: 'Conectar', t: 'Integraciones', icon: 'link', b: 'Conecte su software y sus hojas de cálculo para que su equipo deje de copiar datos de un lado a otro.' },
-  { k: 'Delegar', t: 'IA para trabajos de varios pasos', icon: 'robot', b: 'Use IA en trabajos de varios pasos, con registros que puede revisar y una forma de que su equipo la detenga.' },
+  { k: 'Delegar', t: 'IA para trabajos de varios pasos', icon: 'robot', b: 'Use IA en trabajos de varios pasos, con registros que usted puede revisar y la opción de que su equipo la detenga.' },
 ];
 
 export const es: Copy = {
   meta: {
-    title: 'Sondri — Arreglamos errores caros',
-    description: 'Integrado en los sistemas que ya usa. En marcha en semanas. IA donde ayuda, software normal donde no.',
+    title: 'Sondri — Eliminamos parches caros',
+    description: 'Integrado en los sistemas que ya usa. En marcha en semanas. IA donde ayuda y software convencional donde no.',
     lang: 'es',
   },
   ui: {
     skip: 'Ir al contenido',
     brandHome: 'Sondri — inicio',
-    primaryNav: 'Principal',
+    primaryNav: 'Navegación principal',
     menu: 'Menú',
     close: 'Cerrar',
     contact: 'Escríbanos',
@@ -509,22 +536,23 @@ export const es: Copy = {
     spanish: 'Español',
     pay: 'Pagar factura',
   },
-  announcement: { text: 'Hay cupo para sesiones en el cuarto trimestre', cta: 'Reserve la suya' },
+  announcement: { text: 'Abrimos sesiones de diagnóstico para el cuarto trimestre', cta: 'Reserve la suya' },
   nav: [
     { label: 'Cómo funciona', href: '#how' },
     { label: 'Método', href: '#framework' },
+    { label: 'Soluciones', href: '#solutions' },
     { label: 'Comparar', href: '#compare' },
     { label: 'Preguntas', href: '#faq' },
   ],
-  cta: 'Agende una sesión gratis',
+  cta: 'Agende una sesión gratuita',
   riskReversal: 'Gratis. Sin compromiso.',
 
   VALUE_LINE: 'Arreglamos el trabajo que le cuesta tiempo y dinero a su equipo, con IA donde ayuda.',
   footerCols: [
-    { title: 'Empresa', links: [{ label: 'Cómo funciona', href: '#how' }, { label: 'Qué construimos', href: '#features' }] },
+    { title: 'Empresa', links: [{ label: 'Cómo funciona', href: '#how' }, { label: 'Qué construimos', href: '#features' }, { label: 'Soluciones', href: '#solutions' }, { label: 'Blog', href: '/insights/' }] },
     { title: 'Hablemos', links: [{ label: 'Agendar sesión', href: '#book' }, { label: 'Pagar factura', href: '/pay' }, { label: 'Escríbanos', href: '#contact' }, { label: 'Preguntas', href: '#faq' }] },
   ],
-  footerLine: 'Construido en sus sistemas, y es suyo',
+  footerLine: 'Construido en sus sistemas y de su propiedad',
 
   problemStats: [
     { k: 'Adopción', n: '88%', label: 'de las pruebas de IA en empresas grandes nunca llegan al uso diario.' },
@@ -533,7 +561,7 @@ export const es: Copy = {
   ],
 
   capabilities: [
-    'Automatización de flujos',
+    'Automatización de flujos de trabajo',
     'Datos e informes',
     'Atención al cliente',
     'Administración',
@@ -545,13 +573,13 @@ export const es: Copy = {
     inputs: [
       { id: 'wage', k: 'Salario por hora', t: 'Salario por hora', change: 'Cambiar el salario por hora', unit: '/h', min: 15, max: 150, step: 1, value: 35, money: true },
       { id: 'hours', k: 'Horas a la semana', t: 'Horas por semana, por persona', change: 'Cambiar las horas por semana, por persona', unit: ' h', min: 1, max: 40, step: 1, value: 5, money: false },
-      { id: 'people', k: 'Personas', t: 'Personas que hacen el parche', change: 'Cambiar las personas que hacen el parche', unit: '', min: 1, max: 50, step: 1, value: 4, money: false },
+      { id: 'people', k: 'Personas', t: 'Personas que dedican tiempo al parche', change: 'Cambiar cuántas personas dedican tiempo al parche', unit: '', min: 1, max: 50, step: 1, value: 4, money: false },
     ],
     person: 'persona dedica',
     people: 'personas dedican',
-    week: ' a la semana, a ',
-    on: ' en el parche. ',
-    sum: 'Son ',
+    week: ' a la semana al parche, a ',
+    on: '. ',
+    sum: 'Eso suma ',
     yearSentence: ' al año.',
     year: 'al año',
     hint: 'Haga clic en un número para cambiarlo. Las flechas del teclado también sirven.',
@@ -564,23 +592,23 @@ export const es: Copy = {
   ],
 
   testimonials: [
-    { q: '[placeholder] "Tenían una versión funcionando frente a mi gerente de operaciones en la segunda semana. Todas las demás firmas querían empezar con una fase de estrategia."', who: '[placeholder] Dana Whitlock · Dueña, contratista regional de climatización' },
+    { q: '[placeholder] "En la segunda semana ya le estaban mostrando una versión que funcionaba a mi gerente de operaciones. Todas las demás firmas querían empezar con una fase de estrategia."', who: '[placeholder] Dana Whitlock · Dueña, contratista regional de climatización' },
     { q: '[placeholder] "La mayoría de las empresas pequeñas van a llegar a la IA por el software que ya tienen. Sondri la construye así, y no he visto a nadie más hacerlo."', who: '[placeholder] Marcus Oyelaran · Asesor, ex director de sistemas de una distribuidora de alimentos' },
     { q: '[placeholder] "Hacer este trabajo a mano cuesta más cada año y hacerlo con IA cuesta menos. Esperar ya es la opción cara, y ellos se lo dicen sin rodeos."', who: '[placeholder] Priya Natarajan · Socia, despacho contable para pequeñas empresas' },
   ],
 
   steps: [
-    { i: '01', t: 'Cuéntenos qué va lento', b: 'Dedique treinta minutos a describir el trabajo que lo frena. Puede venir sin preparar nada.' },
+    { i: '01', t: 'Cuéntenos qué le quita tiempo', b: 'Dedique treinta minutos a describir el trabajo que lo frena. Puede venir sin preparar nada.' },
     { i: '02', t: 'Lo construimos en sus sistemas', b: 'Usted sigue con su negocio mientras construimos con el software y los datos que ya tiene.' },
-    { i: '03', t: 'Revise qué cambió', b: 'Compare las horas y el dinero que se iban en la tarea antes y después.' },
+    { i: '03', t: 'Revise qué cambió', b: 'Compare las horas y el dinero que consumía la tarea, antes y después.' },
   ],
 
   comparison: {
-    cols: ['Sondri', 'Agencia de software', 'Contratar en la empresa', 'Herramientas por su cuenta'],
+    cols: ['Sondri', 'Agencia de software', 'Contratar personal propio', 'Herramientas por su cuenta'],
     rows: [
-      { k: 'Tiempo hasta poder usarlo', v: ['Semanas [placeholder: 6–8]', 'Trimestres [placeholder: 6–9 meses]', 'Meses para contratar y luego meses para construir', 'Días para probar; integrarlo toma más'] },
-      { k: 'Qué paga', v: ['Precio fijo por fase, cotizado antes de empezar', 'Paga horas y gastos', 'Sueldo + prestaciones + supervisión, haya proyecto o no', 'Cuotas bajas; el trabajo lo hace usted'] },
-      { k: 'Quién es dueño del código', v: ['Usted; corre en sus sistemas', 'Muchas veces la plataforma o licencia del proveedor', 'Usted', 'Revise las condiciones de propiedad con su proveedor'] },
+      { k: 'Tiempo hasta poder usarlo', v: ['Semanas [placeholder: 6–8]', 'Trimestres [placeholder: 6–9 meses]', 'Meses para contratar y luego meses para construir', 'Días para probar; integrarlo lleva más tiempo'] },
+      { k: 'Lo que paga', v: ['Precio fijo por fase, cotizado antes de empezar', 'Paga horas y gastos', 'Sueldo + prestaciones + supervisión, haya proyecto o no', 'Cuotas bajas; el trabajo lo hace usted'] },
+      { k: 'Quién es dueño del código', v: ['Usted; corre en sus sistemas', 'Muchas veces queda en la plataforma o licencia del proveedor', 'Usted', 'Revise las condiciones de propiedad con su proveedor'] },
       { k: 'Compromiso inicial', v: ['Una fase; la sesión de planeación es gratis', 'Firma un contrato por varias fases antes de arrancar', 'Un empleado de tiempo completo', 'Sin contrato; el mantenimiento corre por su cuenta'] },
       { k: 'Después de arrancar', v: ['Lo mantenemos y construimos el siguiente flujo', 'Paga los cambios o asume el mantenimiento', 'Depende de si esa persona se queda', 'Usted lo arregla cuando el flujo cambia'] },
     ],
@@ -589,9 +617,9 @@ export const es: Copy = {
   features: featuresEs,
 
   consolePanels: [
-    { id: 'workflow', title: '01 · Constructor de flujos', t: 'Dibuje el flujo. Corre solo.', b: 'Un correo, una factura o un pedido pasa por cada paso por sí solo. Su equipo solo ve los que requieren una decisión.' },
-    { id: 'chat', title: '02 · Chat con agente', t: 'Pregunte, y da el siguiente paso.', b: 'Su equipo pregunta con palabras sencillas. El asistente lo busca en sus sistemas y hace el trabajo.' },
-    { id: 'contract', title: '03 · Revisión de contratos', t: 'Cada cláusula leída, las riesgosas marcadas.', b: 'La IA revisa el contrato completo contra sus términos y le señala al abogado las cláusulas que hay que mirar.' },
+    { id: 'workflow', title: '01 · Constructor de flujos', t: 'Dibuje el flujo. Corre solo.', b: 'Un correo, una factura o un pedido recorre cada paso por sí solo. Su equipo solo ve los que requieren una decisión.' },
+    { id: 'chat', title: '02 · Chat con agente', t: 'Usted pregunta y el agente da el siguiente paso.', b: 'Su equipo pregunta con palabras sencillas. El asistente busca en sus sistemas y hace el trabajo.' },
+    { id: 'contract', title: '03 · Revisión de contratos', t: 'Cada cláusula leída, las riesgosas marcadas.', b: 'La IA compara el contrato completo con sus términos y le señala al abogado las cláusulas que hay que revisar.' },
   ],
   consoleStripLabel: 'Capacidades',
 
@@ -614,9 +642,9 @@ export const es: Copy = {
     agent: 'AGENTE',
     foot: 'PREGUNTAR → BUSCAR → ACTUAR',
     exchanges: [
-      ['¿Dónde está el pedido #4471?', '⚙ buscar_pedido(#4471)', 'Encontrado · en reparto', 'Su pedido llega hoy antes de las 5 pm.'],
-      ['¿Pueden aprobar mi reembolso?', '⚙ revisar_reembolso(#4471)', 'Aplica · dentro de 30 días', 'Su reembolso está aprobado. Tarda 3 días.'],
-      ['Agende una llamada para mañana.', '⚙ buscar_horario(mañana)', 'Disponible · 10:30 am', 'Su llamada queda para mañana a las 10:30 am.'],
+      ['¿Dónde está el pedido #4471?', '⚙ buscar_pedido(#4471)', 'Encontrado · en reparto', 'Su pedido llega hoy antes de las 5 p. m.'],
+      ['¿Pueden aprobar mi reembolso?', '⚙ revisar_reembolso(#4471)', 'Aplica · dentro de 30 días', 'Su reembolso está aprobado. Llega en 3 días.'],
+      ['Agende una llamada para mañana.', '⚙ buscar_horario(mañana)', 'Disponible · 10:30 a. m.', 'Su llamada queda para mañana a las 10:30 a. m.'],
     ],
   },
   contractAnim: {
@@ -625,7 +653,7 @@ export const es: Copy = {
     clauses: [
       '1.1 Alcance: servicios listados', '2.1 Pago: a 30 días', '3.1 Plazo: doce meses', '4.2 Renovación: automática',
       '5.1 Sus datos son suyos', '6.1 Acceso: usuarios designados', '7.1 Cambios: por escrito', '8.3 Responsabilidad: sin tope',
-      '9.1 Avisos: por correo', '10.1 El trabajo es suyo', '11.1 Datos confidenciales', '12.2 Salida: aviso de 30 días',
+      '9.1 Avisos: por correo', '10.1 El trabajo es suyo', '11.1 Datos confidenciales', '12.2 Terminación: aviso de 30 días',
       '13.4 Jurisdicción: sin definir', '14.1 Firmado por ambos',
     ],
     risk: 'RIESGO',
@@ -639,17 +667,17 @@ export const es: Copy = {
 
   homeFaq: [
     { q: '¿Nuestros datos salen de nuestros sistemas?', a: 'Su software corre en sus sistemas, donde usted controla los accesos y las aprobaciones y puede revisar el registro de lo que pasó.' },
-    { q: '¿Sobre qué construyen?', a: 'Nos conectamos al software de gestión, las hojas de cálculo y los sistemas de pago que ya usa. Puede ejecutar el código sin una plataforma ni una licencia de Sondri.' },
-    { q: '¿Quién es dueño de lo que construyen?', a: 'Usted es dueño del código y de las instrucciones para usarlo, incluidas las conexiones con su otro software.' },
+    { q: '¿Con qué sistemas trabajan?', a: 'Nos conectamos al software de gestión, las hojas de cálculo y los sistemas de pago que ya usa. Puede ejecutar el código sin una plataforma ni una licencia de Sondri.' },
+    { q: '¿Quién es dueño de lo que construyen?', a: 'Usted es dueño del código y de las instrucciones para usarlo, incluidas las conexiones con el resto de su software.' },
     { q: '¿Cuánto cuesta?', a: 'Cotizamos un precio fijo antes de cada fase. Usted decide si paga la siguiente.' },
-    { q: '¿Y si no ahorra lo que acordamos?', a: 'Acordamos con usted el ahorro en tiempo o en dinero antes de empezar. Si el software no lo alcanza, se queda con el plan y las mediciones y no nos debe nada más.' },
-    { q: '¿Qué tan rápido podemos empezar?', a: 'La primera llamada es gratis, el plan toma días y el software funcionando llega en semanas.' },
-    { q: '¿Por qué no contratar una agencia, o a alguien en la empresa?', a: 'Compare el costo y el tiempo de contratar a alguien o a una agencia con nuestro precio por una fase. El código que construimos es suyo, puede pedirnos que lo mantengamos, y si contratar le conviene más, se lo diremos.' },
-    { q: '¿Usan IA para todo?', a: 'Usamos IA si ayuda con su trabajo.' },
+    { q: '¿Y si el software no ahorra lo acordado?', a: 'Acordamos con usted el ahorro en tiempo o en dinero antes de empezar. Si el software no lo alcanza, se queda con el plan y las mediciones y no nos debe nada más.' },
+    { q: '¿Qué tan rápido podemos empezar?', a: 'La primera llamada es gratis, el plan está listo en días y el software funciona en semanas.' },
+    { q: '¿Por qué no contratar a una agencia o a alguien de planta?', a: 'Compare el costo y el tiempo de contratar a alguien o a una agencia con nuestro precio por una fase. El código que construimos es suyo, puede pedirnos que lo mantengamos, y si contratar le conviene más, se lo diremos.' },
+    { q: '¿Usan IA para todo?', a: 'Usamos IA solo cuando ayuda en su trabajo.' },
   ],
 
   hero: {
-    h1: 'Arreglamos errores caros. (Usamos IA donde ayuda)',
+    h1: 'Eliminamos parches caros. (Usamos IA donde ayuda)',
     lede: 'Integrado en los sistemas que ya usa. En marcha en semanas.',
   },
 
@@ -671,7 +699,7 @@ export const es: Copy = {
 
   solution: {
     eyebrow: 'Valor',
-    h2: 'Rehacemos cómo se hace el trabajo.',
+    h2: 'Rehacemos la forma en que se trabaja.',
     lede: 'Construimos software que funciona dentro de las herramientas que su equipo ya usa, cotizamos cada fase por adelantado y le entregamos el código.',
   },
 
@@ -679,7 +707,7 @@ export const es: Copy = {
     enabled: false,
     eyebrow: 'Recomendaciones',
     h2: 'Gente que nos ha visto trabajar.',
-    ph: 'Las tres son [placeholder], solo la forma (nombre, cargo, tipo de empresa). Reemplace con recomendaciones reales antes de publicar.',
+    ph: 'Las tres son [placeholder], solo la forma (nombre, cargo, tipo de empresa). Reemplácelas por recomendaciones reales antes de publicar.',
   },
 
   howItWorks: {
@@ -694,14 +722,14 @@ export const es: Copy = {
     {
       num: '0',
       name: 'Probar',
-      does: 'Nos sentamos con quienes hacen el trabajo y buscamos la tarea donde un arreglo se paga más rápido.',
-      gets: 'Un plan con el costo y el ahorro de esa tarea, y un precio fijo por construirlo.',
+      does: 'Nos sentamos con quienes hacen el trabajo y buscamos la tarea donde un arreglo se paga solo más rápido.',
+      gets: 'Un plan con el costo y el ahorro de esa tarea, y un precio fijo para construir la solución.',
     },
     {
       num: '1',
-      name: 'Producción',
+      name: 'Producir',
       does: 'Construimos el primer arreglo dentro del software que ya usa, con su equipo revisando el trabajo sobre la marcha.',
-      gets: 'Software funcionando en una tarea real, medido contra las horas y el dinero que gastaba antes.',
+      gets: 'Software en funcionamiento en una tarea real, medido frente a las horas y el dinero que se gastaban antes.',
     },
     {
       num: 'n',
@@ -714,7 +742,7 @@ export const es: Copy = {
   comparisonHead: {
     eyebrow: 'Competencia',
     h2: 'Muchos consultores le cobran por ponerle otro nombre a su problema.',
-    lede: 'Compare el tiempo y el dinero que toma cada opción. Pregunte quién se hace responsable de arreglarlo después de arrancar.',
+    lede: 'Compare el tiempo y el dinero que requiere cada opción. Pregunte quién se hace responsable de los arreglos después del arranque.',
     ph: 'Las cifras marcadas [placeholder] necesitan una fuente o un proyecto real detrás antes de publicarse.',
   },
 
@@ -736,7 +764,7 @@ export const es: Copy = {
     prompt: 'Elija un trabajo y vea cómo cambia.',
     before: 'Antes — a mano',
     after: 'Después — IA donde ayuda',
-    who: { staff: 'Equipo', auto: 'Auto', ai: 'IA' },
+    who: { staff: 'Equipo', auto: 'Automático', ai: 'IA' },
     legend: { before: 'Antes', after: 'Después' },
     steps: 'Pasos antes / después',
     toggle: 'Ver pasos',
@@ -809,7 +837,7 @@ export const es: Copy = {
         { who: 'auto', t: 'Cotización armada con su lista de precios' },
         { who: 'auto', t: 'Enviada y registrada en el CRM' },
         { who: 'ai', t: 'Seguimiento redactado por la IA al tercer día' },
-        { who: 'staff', t: 'El vendedor lo envía o toma el teléfono' },
+        { who: 'staff', t: 'El vendedor lo envía o llama por teléfono' },
       ],
       metrics: [
         { k: 'Dinero', t: 'Costo por mes', before: 7800, after: 2600, unit: 'money' },
@@ -820,7 +848,7 @@ export const es: Copy = {
     {
       id: 'legal',
       name: 'Legal: revisión de contratos',
-      job: 'Un cliente devuelve su contrato con cambios.',
+      job: 'Un cliente le devuelve el contrato con sus cambios.',
       before: [
         { who: 'staff', t: 'El contrato llega como adjunto por correo' },
         { who: 'staff', t: 'El asistente legal lo guarda en la carpeta compartida' },
@@ -831,7 +859,7 @@ export const es: Copy = {
       after: [
         { who: 'auto', t: 'El contrato llega y se archiva' },
         { who: 'ai', t: 'La IA lo compara con sus términos estándar' },
-        { who: 'ai', t: 'Cláusulas cambiadas marcadas con lo que le cuestan' },
+        { who: 'ai', t: 'Cláusulas modificadas marcadas con lo que le cuestan' },
         { who: 'auto', t: 'Resumen enviado al abogado' },
         { who: 'staff', t: 'El abogado revisa solo las cláusulas marcadas' },
       ],
@@ -843,6 +871,49 @@ export const es: Copy = {
     },
   ],
 
+  solutionsHead: {
+    eyebrow: 'Soluciones',
+    h2: 'Software real. Ya en marcha.',
+    lede: 'Programas que eliminan los parches caros de un negocio. Elija su industria para ver lo que ya construimos, o empiece por el trabajo que quiere quitarle a su equipo.',
+    byIndustry: 'Por industria',
+    byArea: 'Por área',
+    whatItDoes: 'Qué hace',
+    areasLabel: 'Áreas de solución',
+    see: 'Ver',
+    readBuild: 'Cómo lo construimos',
+    other: '¿No ve su industria? Casi todo lo que construimos se adapta.',
+    otherCta: 'Cuéntenos su problema',
+    workaround: 'El parche',
+    built: 'Construido:',
+    talk: 'Hablemos de esto',
+  },
+  solutionIndustries: { 'real-estate': 'Bienes raíces', medical: 'Salud', events: 'Eventos', tourism: 'Turismo', legal: 'Legal' },
+  solutionAreas: [
+    {
+      name: 'Inteligencia de mercado y generación de prospectos',
+      workaround: 'Horas en mapas lentos y hojas de cálculo decidiendo dónde buscar y a quién llamar.',
+      builds: 'Mapas, datos de cada terreno y precios basados en ventas comparables en una sola pantalla, para que el equipo trabaje primero las mejores oportunidades.',
+      items: ['Mapas y búsqueda de terrenos', 'Prospectos por prioridad', 'Precios con ventas comparables'],
+    },
+    {
+      name: 'Crecimiento y visibilidad',
+      workaround: 'Pagarle a una agencia por reportes, o no publicar nada.',
+      builds: 'Posicionamiento en buscadores, visibilidad en motores de respuesta, su sitio web y un motor de contenido que lo mantiene al día.',
+      items: ['SEO', 'AEO', 'Sitio web', 'Contenido'],
+    },
+    {
+      name: 'Automatización de ventas',
+      workaround: 'Tratos detenidos en correos, hojas de cálculo y notas adhesivas.',
+      builds: 'Embudos, seguimientos y traspasos que avanzan sin que nadie tenga que perseguirlos.',
+      items: ['Embudo', 'Seguimientos', 'Traspasos'],
+    },
+    {
+      name: 'Modelos y contexto',
+      workaround: 'IA genérica que no conoce su negocio, así que nadie confía en sus respuestas.',
+      builds: 'Bases de conocimiento, motores de contexto y modelos ajustados con sus propios datos y reglas.',
+      items: ['Bases de conocimiento', 'Motores de contexto', 'Ajuste de modelos'],
+    },
+  ],
   notFound: {
     title: '404 — Sondri',
     description: 'La página que busca no existe.',
