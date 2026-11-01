@@ -10,6 +10,7 @@ export const announcement = {
 export const nav = [
   { label: 'How it works', href: '#how' },
   { label: 'Framework', href: '#framework' },
+  { label: 'Solutions', href: '#solutions' },
   { label: 'Compare', href: '#compare' },
   { label: 'FAQ', href: '#faq' },
 ];
@@ -66,6 +67,8 @@ export const footerCols = [
     links: [
       { label: 'How it works', href: '#how' },
       { label: 'What we build', href: '#features' },
+      { label: 'Solutions', href: '#solutions' },
+      { label: 'Insights', href: '/insights/' },
     ],
   },
   {

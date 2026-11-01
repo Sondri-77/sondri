@@ -12,6 +12,7 @@ import HowItWorks from '../components/HowItWorks.astro';
 import Comparison from '../components/Comparison.astro';
 import Features from '../components/Features.astro';
 import Faq from '../components/Faq.astro';
+import Solutions from '../components/Solutions.astro';
 import FinalCta from '../components/FinalCta.astro';
 import { homeFaq, socialProof } from '../home-data';
 import { en } from '../i18n';
@@ -34,9 +35,12 @@ const faqSchema = {
   <Marquee />
   <Problem />
   <Knife />
+  <!-- From here the scroll follows the nav: How it works, Framework,
+       Solutions, Compare, FAQ (captain, 2026-10-31). -->
+  <HowItWorks />
   <Solution />
   {socialProof.enabled && <SocialProof />}
-  <HowItWorks />
+  <Solutions />
   <Comparison />
   <Features />
   <Faq />
