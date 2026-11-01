@@ -1,16 +1,16 @@
 ---
-title: "LandHacker: from parcel to offer in one screen"
-excerpt: "Land buyers lose days on one question: what should we offer? LandHacker maps the parcel, prices it from comparable sales and writes two offers side by side. Here's what the pilot does today, and what comes next."
+title: "Land Platform: from parcel to offer in one screen"
+excerpt: "Land buyers lose days on one question: what should we offer? The Land Platform maps the parcel, prices it from comparable sales and writes two offers side by side. Here's what the pilot does today, and what comes next."
 category: "Solutions"
 date: 2026-10-10
 author: "Sondri"
-solution: landhacker
+solution: land-platform
 draft: false
 ---
 
 A land acquisition team does the same five things over and over. Find a parcel. Judge it. Price it. Make an offer. Hand it to whoever closes. Most teams run those steps across a parcel app, a spreadsheet, a pricing gut feeling and a group chat that never goes quiet.
 
-LandHacker is the pilot we built to put the first four in one place. This post covers what it does today, the decisions behind it, and what's next.
+The Land Platform is the pilot we built to put the first four in one place. This post covers what it does today, the decisions behind it, and what's next.
 
 ## The problem
 
@@ -34,13 +34,13 @@ The map is the home screen. It opens on satellite imagery with every parcel pinn
 
 ### A price you can check
 
-Select a parcel and LandHacker estimates its value. It starts from the assessed tax value and blends in comparable sales nearby, weighted by how close they are, which direction they sit from the parcel, and how similar they are.
+Select a parcel and the Land Platform estimates its value. It starts from the assessed tax value and blends in comparable sales nearby, weighted by how close they are, which direction they sit from the parcel, and how similar they are.
 
 The estimate never arrives on its own. The comparables sit in a table underneath it, with their distance, direction, price and similarity, and a confidence score sits beside the number.
 
 ### Two offers from one price
 
-LandHacker turns the estimate into two offers, side by side:
+The Land Platform turns the estimate into two offers, side by side:
 
 1. **Cash**, at a set percentage of the estimated value.
 2. **Seller-finance**, at a higher price with a small down payment, no interest and a fixed term.
@@ -53,7 +53,7 @@ Channels, private channels, direct messages and unread counts live next to the d
 
 ## The decisions behind it
 
-**A buyer confirms every offer before it prints.** LandHacker does the math and drafts the paperwork. A buyer still checks the terms and ticks to confirm before the letter prints.
+**A buyer confirms every offer before it prints.** The Land Platform does the math and drafts the paperwork. A buyer still checks the terms and ticks to confirm before the letter prints.
 
 **Every number shows its working.** Buyers trust a price when they can see where it came from, so the comparables and the confidence score always sit next to the estimate.
 

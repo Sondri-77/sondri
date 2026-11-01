@@ -108,7 +108,7 @@ const features = [
 
 export const en: Copy = {
   meta: {
-    title: 'Sondri — Fix expensive bullsh*t',
+    title: 'Sondri — Fix expensive workarounds',
     description: 'Built into the systems you already run. Live in weeks. AI where it helps, regular software where it doesn’t.',
     lang: 'en',
   },
@@ -276,7 +276,7 @@ export const en: Copy = {
 
   /** Section 1 · Hero */
   hero: {
-    h1: 'Fix expensive bullsh*t. (Use AI where it helps)',
+    h1: 'Fix expensive workarounds. (Use AI where it helps)',
     lede: 'Built into the systems you already run. Live in weeks.',
   },
 
@@ -520,7 +520,7 @@ const featuresEs = [
 
 export const es: Copy = {
   meta: {
-    title: 'Sondri — Arreglamos errores caros',
+    title: 'Sondri — Arreglamos parches caros',
     description: 'Integrado en los sistemas que ya usa. En marcha en semanas. IA donde ayuda, software normal donde no.',
     lang: 'es',
   },
@@ -677,7 +677,7 @@ export const es: Copy = {
   ],
 
   hero: {
-    h1: 'Arreglamos errores caros. (Usamos IA donde ayuda)',
+    h1: 'Arreglamos parches caros. (Usamos IA donde ayuda)',
     lede: 'Integrado en los sistemas que ya usa. En marcha en semanas.',
   },
 
