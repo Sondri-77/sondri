@@ -74,18 +74,22 @@ const at = (h: string) => sectionHref(h, Astro.url.pathname);
     border-bottom-color: var(--line-soft);
   }
   @media (prefers-reduced-motion: reduce) { header { transition: none; } }
-  .nav-in { display: flex; align-items: center; gap: var(--s-32); height: var(--nav-h); }
+  /* Gaps breathe with the viewport, so the row fits longer (Spanish) labels
+     before it has to fold into the Menu button. */
+  .nav-in { display: flex; align-items: center; gap: clamp(var(--s-16), 2.2vw, var(--s-32)); height: var(--nav-h); }
   .brand img { height: 26px; width: auto; }
 
-  .links { display: flex; gap: var(--s-32); margin-right: auto; }
+  .links { display: flex; gap: clamp(var(--s-16), 2.2vw, var(--s-32)); margin-right: auto; }
   .link {
     font-family: var(--mono); font-size: 14px; letter-spacing: 0.04em;
     text-transform: uppercase; text-decoration: none; color: var(--pale);
     padding-block: 4px; border-bottom: 1px solid transparent;
+    white-space: nowrap;
   }
   .link:hover { color: var(--text-hi); border-bottom-color: var(--accent); }
 
-  .right { display: flex; align-items: center; gap: var(--s-24); }
+  .right { display: flex; align-items: center; gap: clamp(var(--s-16), 1.7vw, var(--s-24)); }
+  .right .btn, .right .link { white-space: nowrap; }
   /* The bar's CTA is the white pill, not the gold one: gold stays the hero's.
      Same grammar as .btn-gold with paper for the fill, in both bar states. */
   .btn-white { background: var(--white); border-color: var(--white); color: var(--teal); font-weight: 500; }
@@ -118,12 +122,18 @@ const at = (h: string) => sectionHref(h, Astro.url.pathname);
   }
   .panel-btn { margin-top: var(--s-24); width: 100%; justify-content: center; }
 
+  /* Phones and tablets get the Menu button; so does any wider screen where
+     the full row does not fit in the current language (`.compact`, set by
+     the script below from a real measurement, not a guessed breakpoint). */
   @media (max-width: 980px) {
     .links, .right { display: none; }
     .lang { margin-left: auto; }
     .toggle { display: block; }
     .nav-in { gap: var(--s-16); }
   }
+  header.compact .links, header.compact .right { display: none; }
+  header.compact .lang { margin-left: auto; }
+  header.compact .toggle { display: block; }
 </style>
 
 <script>
@@ -146,4 +156,21 @@ const at = (h: string) => sectionHref(h, Astro.url.pathname);
   document.addEventListener(EVENT, () => {
     if (t) t.textContent = t.getAttribute('aria-expanded') === 'true' ? tr('ui.close') : tr('ui.menu');
   });
+
+  // Fold the bar into the Menu button whenever the full row does not fit:
+  // measured with the row laid out in full, so it holds for any language,
+  // label length or screen. Below 980px the stylesheet already folds it.
+  const row = header?.querySelector<HTMLElement>('.nav-in');
+  const fit = () => {
+    if (!header || !row) return;
+    header.classList.remove('compact');
+    if (window.innerWidth <= 980) return;
+    if (row.scrollWidth > row.clientWidth + 1) header.classList.add('compact');
+    else if (p && !p.hidden && t) { p.hidden = true; t.setAttribute('aria-expanded', 'false'); t.textContent = tr('ui.menu'); }
+  };
+  fit();
+  let frame = 0;
+  window.addEventListener('resize', () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(fit); });
+  document.addEventListener(EVENT, () => requestAnimationFrame(fit));
+  document.fonts?.ready.then(fit);
 </script>
