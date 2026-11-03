@@ -92,6 +92,7 @@ const [h1, dot] = splitDot(line1);
   }
   .copy {
     min-width: 0;
+    container-type: inline-size;
     display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-24);
     text-align: left;
   }
@@ -108,13 +109,19 @@ const [h1, dot] = splitDot(line1);
     letter-spacing: 0; text-transform: uppercase;
     color: var(--white);
   }
-  /* Exactly two line boxes from tablet up; phones wrap naturally. */
+  /* Exactly two line boxes from tablet up; phones wrap naturally. Because
+     the lines never wrap there, the size is also capped by the copy column's
+     own width (cqi): the widest line, EN "FIX EXPENSIVE WORKAROUNDS.", runs
+     ~12.9 em, so 7.6cqi keeps it inside the column beside the window in
+     every language, with a little room to spare. Re-measure if the H1 copy
+     gets longer. */
   @media (min-width: 900px) {
     .display .l { display: block; white-space: nowrap; }
+    .display { font-size: min(clamp(44px, 6.6vw, 100px), 7.6cqi); }
   }
   @media (min-width: 1100px) {
     .cols { grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); gap: var(--s-64); }
-    .display { font-size: clamp(44px, 4.3vw, 66px); }
+    .display { font-size: min(clamp(36px, 4.3vw, 66px), 7.6cqi); }
   }
 
   @media (max-width: 640px) {
