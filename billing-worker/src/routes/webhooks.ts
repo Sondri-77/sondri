@@ -1,10 +1,16 @@
 import { getStripe } from '../lib/stripe';
 import { sendDiscordNotification } from '../lib/discord';
 import { appendToGoogleSheet } from '../lib/sheets';
+import { markLeadPaid99 } from '../lib/db';
+import { runBackgroundFullAuditBaseline } from './audit';
 import { Env } from '../types';
 import Stripe from 'stripe';
 
-export async function handleStripeWebhook(request: Request, env: Env): Promise<Response> {
+export async function handleStripeWebhook(
+  request: Request,
+  env: Env,
+  ctx?: ExecutionContext
+): Promise<Response> {
   const signature = request.headers.get('stripe-signature');
   
   if (!signature) {
@@ -64,17 +70,30 @@ export async function handleStripeWebhook(request: Request, env: Env): Promise<R
         const customerName = sessionPayload.customer_details?.name || sessionPayload.customer_email || 'Website Client';
         const clientEmail = sessionPayload.customer_details?.email || sessionPayload.customer_email || 'N/A';
         const description = sessionPayload.metadata?.description || 'Website Deposit / Custom Payment';
+        const isAeoFullAudit = sessionPayload.metadata?.source === 'aeo_full_audit';
+        const auditId = sessionPayload.metadata?.audit_id || undefined;
+        const auditedDomain = sessionPayload.metadata?.domain || '';
 
         let discordMsg = `**Customer:** ${customerName}\n**Email:** ${clientEmail}\n**Amount:** $${amount} ${currency}\n**Reference:** ${description}\n**Session ID:** \`${sessionPayload.id}\``;
+        if (auditedDomain) discordMsg += `\n**Audited Domain:** \`${auditedDomain}\``;
+        if (auditId) discordMsg += `\n**Mini Audit ID:** \`${auditId}\``;
         if (receiptUrl) discordMsg += `\n**Receipt:** [View Receipt](${receiptUrl})`;
         if (invoiceUrl) discordMsg += `\n**Invoice:** [View Invoice](${invoiceUrl})`;
 
         console.log(`[Checkout Completed] Session ${sessionPayload.id} paid by ${customerName} ($${amount} ${currency})`);
 
+        // Mark D1 lead as paid if this was a $99 AEO Full Audit conversion
+        if (isAeoFullAudit) {
+          await markLeadPaid99(env, auditId, clientEmail !== 'N/A' ? clientEmail : undefined, sessionPayload.id);
+          if (auditId && ctx) {
+            ctx.waitUntil(runBackgroundFullAuditBaseline(env, auditId, clientEmail));
+          }
+        }
+
         // 1. Send Discord Notification
         await sendDiscordNotification(
           env,
-          '💰 Website Payment Received!',
+          isAeoFullAudit ? '🎯 $99 AEO Full Audit Purchased!' : '💰 Website Payment Received!',
           discordMsg,
           0x10b981 // Green
         );
@@ -88,7 +107,7 @@ export async function handleStripeWebhook(request: Request, env: Env): Promise<R
           currency: currency,
           invoiceNumber: sessionPayload.id.substring(0, 14),
           description: description,
-          status: 'PAID (Checkout)',
+          status: isAeoFullAudit ? 'PAID (AEO Full Audit $99)' : 'PAID (Checkout)',
           receiptUrl: receiptUrl || undefined,
           invoiceUrl: invoiceUrl || undefined,
         });

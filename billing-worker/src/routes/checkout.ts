@@ -3,11 +3,16 @@ import { Env } from '../types';
 import Stripe from 'stripe';
 
 export interface CreateCheckoutSessionDTO {
-  type: 'fixed' | 'custom';
+  type: 'fixed' | 'custom' | 'aeo_full_audit';
   plan_id?: 'starter' | 'growth' | 'enterprise';
   custom_amount?: number; // In dollars (e.g. 2500)
   description?: string;
   client_email?: string;
+  audit_id?: string;
+  domain?: string;
+  city?: string;
+  service?: string;
+  lang?: 'en' | 'es';
   success_url?: string;
   cancel_url?: string;
 }
@@ -81,13 +86,35 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
           quantity: 1,
         },
       ];
+    } else if (body.type === 'aeo_full_audit') {
+      const targetDomain = (body.domain || 'your website').trim();
+      const isEs = body.lang === 'es';
+      mode = 'payment';
+      lineItems = [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: isEs
+                ? `Auditoría Completa AEO / GEO — ${targetDomain}`
+                : `Sondri Full AEO / GEO Visibility Audit — ${targetDomain}`,
+              description: isEs
+                ? '12 a 15 preguntas sin marca × 3 repeticiones por motor (ChatGPT, Gemini, Google AI Overviews, Google AI Mode), revisión de exactitud y lista de correcciones priorizadas.'
+                : '12–15 unbranded buyer questions × 3 runs per engine (ChatGPT, Gemini, Google AI Overviews, Google AI Mode), accuracy check, and prioritized fix list.',
+            },
+            unit_amount: 9900, // Server-locked $99.00 USD
+          },
+          quantity: 1,
+        },
+      ];
     } else {
       return Response.json(
-        { success: false, error: { code: 'INVALID_TYPE', message: 'Type must be "fixed" or "custom"' } },
+        { success: false, error: { code: 'INVALID_TYPE', message: 'Type must be "fixed", "custom", or "aeo_full_audit"' } },
         { status: 400 }
       );
     }
 
+    const isAeoAudit = body.type === 'aeo_full_audit';
     const sessionParams: any = {
       managed_payments: { enabled: false },
       line_items: lineItems,
@@ -103,8 +130,17 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
         },
       },
       metadata: {
-        source: 'website_checkout',
-        description: body.description || 'Custom Sondri AI Payment / Deposit',
+        source: isAeoAudit ? 'aeo_full_audit' : 'website_checkout',
+        description:
+          body.description ||
+          (isAeoAudit
+            ? `Full AEO / GEO Audit ($99) — ${body.domain || ''}`
+            : 'Custom Sondri AI Payment / Deposit'),
+        audit_id: body.audit_id || '',
+        domain: body.domain || '',
+        city: body.city || '',
+        service: body.service || '',
+        lang: body.lang || 'en',
       },
     };
 

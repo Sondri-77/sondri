@@ -1,0 +1,1219 @@
+---
+interface Props {
+  defaultLang?: 'en' | 'es';
+}
+
+const { defaultLang = 'en' } = Astro.props;
+---
+
+<section class="section section-pad on-dark audit-section" id="mini-audit" data-default-lang={defaultLang}>
+  <div class="wrap">
+    <div class="sec-head audit-head">
+      <div class="kick-row">
+        <span class="chip"><span class="gdot">■</span> <span data-audit-i18n="kicker">Free AEO / GEO Snapshot</span></span>
+        <div class="lang-switch" role="group" aria-label="Audit language">
+          <button type="button" class="lang-btn active" data-set-lang="en">EN (US)</button>
+          <button type="button" class="lang-btn" data-set-lang="es">ES (Chile)</button>
+        </div>
+      </div>
+      <h1 class="h2">
+        <span data-audit-i18n="title">Does AI name your business when buyers ask</span><span class="gdot">?</span>
+      </h1>
+      <p class="lede" data-audit-i18n="subtitle">
+        Enter your website to check whether AI search crawlers can read your site, inspect your structured data and Google Lighthouse base health, and run 3 unbranded buyer questions with live search grounding.
+      </p>
+    </div>
+
+    <!-- STEP 1 FORM: URL + optional service/city -->
+    <div class="panel audit-card">
+      <form id="formStep1" class="audit-form">
+        <div class="form-grid">
+          <div class="form-group form-group-url">
+            <label for="auditUrl" class="label" data-audit-i18n="urlLabel">Website URL *</label>
+            <input
+              type="text"
+              id="auditUrl"
+              class="form-input"
+              placeholder="yourcompany.com"
+              required
+              autocomplete="url"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="auditService" class="label" data-audit-i18n="serviceLabel">Primary service (optional)</label>
+            <input
+              type="text"
+              id="auditService"
+              class="form-input"
+              placeholder="e.g. Dental clinic, B2B SaaS, HVAC"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="auditCity" class="label" data-audit-i18n="cityLabel">City / market (optional)</label>
+            <input
+              type="text"
+              id="auditCity"
+              class="form-input"
+              placeholder="e.g. Austin, TX or Concón, Chile"
+            />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" id="btnScan" class="btn btn-gold">
+            <span data-audit-i18n="scanBtn">Run Free Technical & AI Readiness Scan</span> <span class="arr">→</span>
+          </button>
+          <span class="label meta-hint" data-audit-i18n="scanHint">
+            <span class="gdot">■</span> Instant technical scan · Unbranded prompts · No rankings promised
+          </span>
+        </div>
+
+        <p id="scanError" class="error-banner" style="display: none;"></p>
+      </form>
+    </div>
+
+    <!-- STEP 1 RESULTS: Technical Scan + Async Lighthouse + Step 2 Prompt/Email Gate -->
+    <div id="step1Results" class="results-stack" style="display: none;">
+      <div class="grid-2">
+        <!-- Left card: Technical AI Readiness -->
+        <div class="panel result-card">
+          <div class="card-top">
+            <span class="label" data-audit-i18n="techCardKicker">/ 01 · Technical AI Readiness</span>
+            <span id="readinessBadge" class="score-pill">-- / 100</span>
+          </div>
+          <h2 class="h4" id="detectedBrandTitle">Website Readiness</h2>
+          <p class="body-s muted-line" id="detectedMetaLine"></p>
+
+          <div class="check-grid" id="techCheckGrid"></div>
+
+          <div class="sub-block">
+            <p class="label sub-title" data-audit-i18n="botsTitle">AI Search Crawlers (robots.txt)</p>
+            <div class="bot-chips" id="botChips"></div>
+          </div>
+
+          <div class="sub-block" id="gapsBlock" style="display: none;">
+            <p class="label sub-title" data-audit-i18n="gapsTitle">Priority technical gaps found</p>
+            <ul class="gaps-list" id="gapsList"></ul>
+          </div>
+        </div>
+
+        <!-- Right card: Google Lighthouse Base Health (Async) -->
+        <div class="panel result-card">
+          <div class="card-top">
+            <span class="label" data-audit-i18n="lhCardKicker">/ 02 · Base Web & SEO Health (Lighthouse)</span>
+            <span id="lhStatusBadge" class="chip">Running PageSpeed…</span>
+          </div>
+          <h3 class="h4" data-audit-i18n="lhTitle">Crawlability & mobile speed</h3>
+          <p class="body-s muted-line" data-audit-i18n="lhSubtitle">
+            AI engines rely on fast, indexable web pages as their base—but high SEO scores alone do not mean AI answers name your business.
+          </p>
+
+          <div class="lh-meters" id="lhMeters">
+            <div class="lh-box">
+              <span class="label" data-audit-i18n="lhSeoLabel">Lighthouse SEO</span>
+              <strong class="lh-num" id="lhSeoScore">…</strong>
+            </div>
+            <div class="lh-box">
+              <span class="label" data-audit-i18n="lhPerfLabel">Mobile Performance</span>
+              <strong class="lh-num" id="lhPerfScore">…</strong>
+            </div>
+            <div class="lh-box">
+              <span class="label" data-audit-i18n="lhCrawlLabel">Indexable</span>
+              <strong class="lh-num" id="lhCrawlable">…</strong>
+            </div>
+          </div>
+
+          <p class="body-s muted-line" id="lhExtraMetrics"></p>
+        </div>
+      </div>
+
+      <!-- STEP 2 GATE: Confirm 3 Unbranded Buyer Questions + Email -->
+      <div class="panel audit-card step2-card" id="step2GateCard">
+        <div class="card-top">
+          <span class="label" data-audit-i18n="step2Kicker">/ 03 · Live AI Answer Check (Unbranded Prompts)</span>
+          <span class="chip"><span class="gdot">■</span> Gemini + Google Search Grounding</span>
+        </div>
+        <h3 class="h4" data-audit-i18n="step2Title">Check whether AI names you or your competitors</h3>
+        <p class="body-s muted-line" data-audit-i18n="step2Desc">
+          We ask 3 buyer questions without your brand name. You can edit the questions below before running the live check.
+        </p>
+
+        <form id="formStep2" class="audit-form">
+          <div class="questions-edit-list">
+            <div class="form-group">
+              <label for="qInput0" class="label"><span class="gdot">01</span> <span data-audit-i18n="qLabel">Unbranded buyer question</span></label>
+              <input type="text" id="qInput0" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label for="qInput1" class="label"><span class="gdot">02</span> <span data-audit-i18n="qLabel">Unbranded buyer question</span></label>
+              <input type="text" id="qInput1" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label for="qInput2" class="label"><span class="gdot">03</span> <span data-audit-i18n="qLabel">Unbranded buyer question</span></label>
+              <input type="text" id="qInput2" class="form-input" required />
+            </div>
+          </div>
+
+          <div class="email-gate-row">
+            <div class="form-group email-input-wrap">
+              <label for="leadEmail" class="label" data-audit-i18n="emailLabel">Your work email to unlock live AI results *</label>
+              <input
+                type="email"
+                id="leadEmail"
+                class="form-input"
+                placeholder="you@company.com"
+                required
+                autocomplete="email"
+              />
+            </div>
+
+            <button type="submit" id="btnRunAi" class="btn btn-gold btn-ai-submit">
+              <span data-audit-i18n="runAiBtn">Run Live AI Visibility Check</span> <span class="arr">→</span>
+            </button>
+          </div>
+
+          <p id="aiError" class="error-banner" style="display: none;"></p>
+        </form>
+      </div>
+    </div>
+
+    <!-- STEP 2 RESULTS: Live AI Gap Report + $99 Full Audit Upgrade -->
+    <div id="step2Results" class="results-stack" style="display: none;">
+      <div class="panel result-card">
+        <div class="card-top">
+          <span class="label" data-audit-i18n="aiReportKicker">/ 04 · Live AI Visibility Snapshot</span>
+          <span class="chip" id="aiEngineBadge">Gemini + Google Search Grounding (1x run)</span>
+        </div>
+
+        <div class="summary-stats">
+          <div class="stat-box">
+            <span class="label" data-audit-i18n="statNamed">Answers naming you</span>
+            <strong class="stat-big" id="statNamedVal">0 / 3</strong>
+          </div>
+          <div class="stat-box">
+            <span class="label" data-audit-i18n="statCited">Answers citing your site</span>
+            <strong class="stat-big" id="statCitedVal">0 / 3</strong>
+          </div>
+          <div class="stat-box">
+            <span class="label" data-audit-i18n="statCompetitors">Competitors named instead</span>
+            <div class="tag-cloud" id="competitorsCloud"></div>
+          </div>
+          <div class="stat-box">
+            <span class="label" data-audit-i18n="statSources">Top sources AI cited</span>
+            <div class="tag-cloud" id="sourcesCloud"></div>
+          </div>
+        </div>
+
+        <div class="runs-list" id="runsList"></div>
+
+        <div class="not-run-note" id="notRunNote"></div>
+      </div>
+
+      <!-- UPGRADE CTA: $99 FULL AUDIT -->
+      <div class="panel upgrade-card">
+        <div class="upgrade-copy">
+          <span class="chip"><span class="gdot">■</span> <span data-audit-i18n="upgradeChip">Full AEO / GEO Audit — $99 USD</span></span>
+          <h3 class="h3" data-audit-i18n="upgradeTitle">See the full picture across ChatGPT, Gemini & Google AI.</h3>
+          <p class="lede upgrade-lede" data-audit-i18n="upgradeDesc">
+            A single API check is only a snapshot—AI answers change from run to run and differ when logged out. In our Full Audit, we run 12 to 15 unbranded buyer questions 3 times per engine across ChatGPT, Gemini, Google AI Overviews, and Google AI Mode, verify whether the AI describes your business accurately, and hand you a prioritized fix list.
+          </p>
+
+          <div class="compare-mini">
+            <div class="cmp-col">
+              <p class="label cmp-head" data-audit-i18n="cmpFreeHead">Free Snapshot (Above)</p>
+              <ul>
+                <li data-audit-i18n="cmpFree1">3 unbranded buyer questions</li>
+                <li data-audit-i18n="cmpFree2">1 API run on Gemini Search Grounding</li>
+                <li data-audit-i18n="cmpFree3">Automated homepage + schema check</li>
+              </ul>
+            </div>
+            <div class="cmp-col cmp-highlight">
+              <p class="label cmp-head"><span class="gdot">■</span> <span data-audit-i18n="cmpPaidHead">Full Audit ($99 USD)</span></p>
+              <ul>
+                <li data-audit-i18n="cmpPaid1">12–15 buyer questions × 3 runs per engine (36–45 checks per engine)</li>
+                <li data-audit-i18n="cmpPaid2">ChatGPT, Gemini, Google AI Overviews & Google AI Mode (logged out)</li>
+                <li data-audit-i18n="cmpPaid3">Full competitor & cited-source breakdown + accuracy check</li>
+                <li data-audit-i18n="cmpPaid4">Prioritized fix list (pages, FAQs, schema, Google Business Profile, citations)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="upgrade-cta-box">
+          <div class="price-display">
+            <span class="label" data-audit-i18n="priceLabel">Fixed one-time audit</span>
+            <strong class="price-big">$99 <span class="price-cur">USD</span></strong>
+            <span class="body-s muted-line" data-audit-i18n="priceDisclaimer">
+              We do not promise rankings or percentages. We measure and report change with the same method every time.
+            </span>
+          </div>
+
+          <button type="button" id="btnBuyFullAudit" class="btn btn-gold btn-full">
+            <span data-audit-i18n="buyBtn">Order Full 15-Question Audit ($99)</span> <span class="arr">→</span>
+          </button>
+
+          <span class="label pay- footnote" data-audit-i18n="stripeNote">
+            <span class="gdot">■</span> Instant Stripe Checkout · PDF tax invoice included
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const WORKER_BASE =
+    window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:8787'
+      : 'https://billing.sondri.ai';
+
+  const I18N: Record<'en' | 'es', Record<string, string>> = {
+    en: {
+      kicker: 'Free AEO / GEO Snapshot',
+      title: 'Does AI name your business when buyers ask',
+      subtitle:
+        'Enter your website to check whether AI search crawlers can read your site, inspect your structured data and Google Lighthouse base health, and run 3 unbranded buyer questions with live search grounding.',
+      urlLabel: 'Website URL *',
+      serviceLabel: 'Primary service (optional)',
+      cityLabel: 'City / market (optional)',
+      scanBtn: 'Run Free Technical & AI Readiness Scan',
+      scanBtnLoading: 'Scanning website & crawlers…',
+      scanHint: '■ Instant technical scan · Unbranded prompts · No rankings promised',
+      techCardKicker: '/ 01 · Technical AI Readiness',
+      botsTitle: 'AI Search Crawlers (robots.txt)',
+      gapsTitle: 'Priority technical gaps found',
+      lhCardKicker: '/ 02 · Base Web & SEO Health (Lighthouse)',
+      lhTitle: 'Crawlability & mobile speed',
+      lhSubtitle:
+        'AI engines rely on fast, indexable web pages as their base—but high SEO scores alone do not mean AI answers name your business.',
+      lhSeoLabel: 'Lighthouse SEO',
+      lhPerfLabel: 'Mobile Performance',
+      lhCrawlLabel: 'Indexable',
+      step2Kicker: '/ 03 · Live AI Answer Check (Unbranded Prompts)',
+      step2Title: 'Check whether AI names you or your competitors',
+      step2Desc:
+        'We ask 3 buyer questions without your brand name. You can edit the questions below before running the live check.',
+      qLabel: 'Unbranded buyer question',
+      emailLabel: 'Your work email to unlock live AI results *',
+      runAiBtn: 'Run Live AI Visibility Check',
+      runAiBtnLoading: 'Querying live AI with Google Search…',
+      aiReportKicker: '/ 04 · Live AI Visibility Snapshot',
+      statNamed: 'Answers naming you',
+      statCited: 'Answers citing your site',
+      statCompetitors: 'Competitors named instead',
+      statSources: 'Top sources AI cited',
+      upgradeChip: 'Full AEO / GEO Audit — $99 USD',
+      upgradeTitle: 'See the full picture across ChatGPT, Gemini & Google AI.',
+      upgradeDesc:
+        'A single API check is only a snapshot—AI answers change from run to run and differ when logged out. In our Full Audit, we run 12 to 15 unbranded buyer questions 3 times per engine across ChatGPT, Gemini, Google AI Overviews, and Google AI Mode, verify whether the AI describes your business accurately, and hand you a prioritized fix list.',
+      cmpFreeHead: 'Free Snapshot (Above)',
+      cmpFree1: '3 unbranded buyer questions',
+      cmpFree2: '1 API run on Gemini Search Grounding',
+      cmpFree3: 'Automated homepage + schema check',
+      cmpPaidHead: 'Full Audit ($99 USD)',
+      cmpPaid1: '12–15 buyer questions × 3 runs per engine',
+      cmpPaid2: 'ChatGPT, Gemini, Google AI Overviews & Google AI Mode (logged out)',
+      cmpPaid3: 'Full competitor & cited-source breakdown + accuracy check',
+      cmpPaid4: 'Prioritized fix list (pages, FAQs, schema, Google Business Profile, citations)',
+      priceLabel: 'Fixed one-time audit',
+      priceDisclaimer:
+        'We do not promise rankings or percentages. We measure and report change with the same method every time.',
+      buyBtn: 'Order Full 15-Question Audit ($99)',
+      buyBtnLoading: 'Redirecting to Stripe Checkout…',
+      stripeNote: '■ Instant Stripe Checkout · PDF tax invoice included',
+    },
+    es: {
+      kicker: 'Diagnóstico Gratuito AEO / GEO',
+      title: '¿La IA nombra a tu empresa cuando un cliente pregunta',
+      subtitle:
+        'Ingresa tu sitio web para revisar si los rastreadores de búsqueda de IA pueden leerlo, verificar tus datos estructurados y Google Lighthouse, y probar 3 preguntas de compra sin marca en vivo.',
+      urlLabel: 'Sitio web *',
+      serviceLabel: 'Servicio principal (opcional)',
+      cityLabel: 'Ciudad o comuna (opcional)',
+      scanBtn: 'Revisar Preparación Técnica para IA Gratis',
+      scanBtnLoading: 'Analizando sitio y rastreadores…',
+      scanHint: '■ Revisión técnica al instante · Preguntas sin tu marca · Sin promesas de ranking',
+      techCardKicker: '/ 01 · Preparación Técnica para IA',
+      botsTitle: 'Rastreadores de Búsqueda IA (robots.txt)',
+      gapsTitle: 'Brechas técnicas prioritarias detectadas',
+      lhCardKicker: '/ 02 · Salud Base Web y SEO (Lighthouse)',
+      lhTitle: 'Rastreabilidad y velocidad móvil',
+      lhSubtitle:
+        'Las IA se apoyan en un sitio claro, rápido y rastreable como base, pero un puntaje alto de SEO no basta para que te nombren.',
+      lhSeoLabel: 'SEO Lighthouse',
+      lhPerfLabel: 'Rendimiento Móvil',
+      lhCrawlLabel: 'Indexable',
+      step2Kicker: '/ 03 · Prueba en Vivo en Respuestas de IA (Sin Marca)',
+      step2Title: 'Revisa si la IA te nombra a ti o a tu competencia',
+      step2Desc:
+        'Hacemos 3 preguntas de cliente sin el nombre de tu empresa. Puedes editar las preguntas antes de ejecutar la revisión.',
+      qLabel: 'Pregunta de cliente sin marca',
+      emailLabel: 'Tu correo de trabajo para ver los resultados de IA en vivo *',
+      runAiBtn: 'Ejecutar Revisión de Visibilidad en IA',
+      runAiBtnLoading: 'Consultando IA con búsqueda en vivo…',
+      aiReportKicker: '/ 04 · Resultado de Visibilidad en IA',
+      statNamed: 'Respuestas que te nombran',
+      statCited: 'Respuestas que citan tu sitio',
+      statCompetitors: 'Competidores nombrados en tu lugar',
+      statSources: 'Fuentes principales citadas por la IA',
+      upgradeChip: 'Auditoría Completa AEO / GEO — $99 USD',
+      upgradeTitle: 'Conoce el panorama completo en ChatGPT, Gemini y la IA de Google.',
+      upgradeDesc:
+        'Una consulta por API es solo una primera muestra: las respuestas cambian entre una vez y otra y varían sin sesión iniciada. En la Auditoría Completa hacemos entre 12 y 15 preguntas sin tu marca, tres veces por motor en ChatGPT, Gemini, Google AI Overviews y Google AI Mode, revisamos la exactitud de tus datos y te entregamos una lista de correcciones priorizadas.',
+      cmpFreeHead: 'Muestra Gratis (Arriba)',
+      cmpFree1: '3 preguntas de compra sin marca',
+      cmpFree2: '1 revisión vía API en Gemini con Google Search',
+      cmpFree3: 'Revisión automática de portada y schema',
+      cmpPaidHead: 'Auditoría Completa ($99 USD)',
+      cmpPaid1: '12 a 15 preguntas × 3 repeticiones por motor',
+      cmpPaid2: 'ChatGPT, Gemini, Google AI Overviews y Google AI Mode (sin sesión)',
+      cmpPaid3: 'Detalle completo de competidores, fuentes citadas y exactitud',
+      cmpPaid4: 'Lista priorizada de correcciones (páginas, FAQs, schema, Perfil de Google, menciones)',
+      priceLabel: 'Auditoría única a precio fijo',
+      priceDisclaimer:
+        'No prometemos un puesto ni un porcentaje. Medimos y reportamos el cambio con el mismo método cada vez.',
+      buyBtn: 'Solicitar Auditoría Completa de 15 Preguntas ($99)',
+      buyBtnLoading: 'Redirigiendo a Stripe Checkout…',
+      stripeNote: '■ Pago seguro con Stripe · Factura PDF al instante',
+    },
+  };
+
+  const sectionEl = document.getElementById('mini-audit');
+  let currentLang: 'en' | 'es' =
+    (sectionEl?.getAttribute('data-default-lang') as 'en' | 'es') || 'en';
+  let currentAudit: any = null;
+
+  function applyAuditLang(lang: 'en' | 'es') {
+    currentLang = lang;
+    const dict = I18N[lang];
+    document.querySelectorAll<HTMLElement>('[data-audit-i18n]').forEach((el) => {
+      const key = el.getAttribute('data-audit-i18n');
+      if (key && dict[key]) {
+        el.textContent = dict[key];
+      }
+    });
+    document.querySelectorAll<HTMLButtonElement>('[data-set-lang]').forEach((btn) => {
+      btn.classList.toggle('active', btn.getAttribute('data-set-lang') === lang);
+    });
+  }
+
+  // Initialize language from query param or saved site preference
+  const urlLang = new URLSearchParams(window.location.search).get('lang');
+  const savedLang = localStorage.getItem('sondri.lang');
+  if (urlLang === 'es' || savedLang === 'es') {
+    applyAuditLang('es');
+  } else {
+    applyAuditLang(currentLang);
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('[data-set-lang]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const l = btn.getAttribute('data-set-lang') === 'es' ? 'es' : 'en';
+      applyAuditLang(l);
+    });
+  });
+
+  function renderTechScan(audit: any) {
+    const scan = audit.tech_scan;
+    const step1El = document.getElementById('step1Results');
+    if (!step1El || !scan) return;
+    step1El.style.display = 'flex';
+
+    const badge = document.getElementById('readinessBadge');
+    if (badge) {
+      badge.textContent = `${scan.readinessScore} / 100`;
+      badge.className = `score-pill ${scan.readinessScore >= 75 ? 'good' : scan.readinessScore >= 45 ? 'warn' : 'bad'}`;
+    }
+
+    const brandTitle = document.getElementById('detectedBrandTitle');
+    if (brandTitle) {
+      brandTitle.textContent = `${scan.detectedBrand || audit.domain} (${audit.domain})`;
+    }
+
+    const metaLine = document.getElementById('detectedMetaLine');
+    if (metaLine) {
+      metaLine.textContent =
+        currentLang === 'es'
+          ? `Rubro detectado: ${audit.service} · Ubicación: ${audit.city}`
+          : `Detected service: ${audit.service} · Market: ${audit.city}`;
+    }
+
+    const grid = document.getElementById('techCheckGrid');
+    if (grid) {
+      const items = [
+        {
+          label: currentLang === 'es' ? 'Schema Organization / LocalBusiness' : 'Organization / LocalBusiness Schema',
+          ok: scan.hasOrganizationOrLocalBusiness,
+        },
+        {
+          label: currentLang === 'es' ? 'Schema FAQPage' : 'FAQPage Schema',
+          ok: scan.hasFaqSchema,
+        },
+        {
+          label: currentLang === 'es' ? 'Señales de teléfono / dirección' : 'Phone / Address Signals',
+          ok: scan.hasPhoneInHtml || scan.hasAddressSignals,
+        },
+        {
+          label: 'sitemap.xml',
+          ok: scan.sitemapFound,
+        },
+        {
+          label: currentLang === 'es' ? 'llms.txt (opcional)' : 'llms.txt (optional)',
+          ok: scan.llmsTxtFound,
+          optional: true,
+        },
+      ];
+
+      grid.innerHTML = items
+        .map(
+          (item) => `
+          <div class="check-row">
+            <span class="check-dot ${item.ok ? 'ok' : item.optional ? 'opt' : 'miss'}">${item.ok ? '✓' : item.optional ? '○' : '✕'}</span>
+            <span>${item.label}</span>
+          </div>`
+        )
+        .join('');
+    }
+
+    const botChips = document.getElementById('botChips');
+    if (botChips && Array.isArray(scan.bots)) {
+      botChips.innerHTML = scan.bots
+        .map(
+          (b: any) => `
+          <span class="bot-pill ${b.allowed ? 'ok' : 'blocked'}">
+            ${b.allowed ? '✓' : '✕'} ${b.bot}
+          </span>`
+        )
+        .join('');
+    }
+
+    const gapsBlock = document.getElementById('gapsBlock');
+    const gapsList = document.getElementById('gapsList');
+    if (gapsBlock && gapsList) {
+      if (Array.isArray(scan.gaps) && scan.gaps.length > 0) {
+        gapsBlock.style.display = 'block';
+        gapsList.innerHTML = scan.gaps.map((g: string) => `<li>${g}</li>`).join('');
+      } else {
+        gapsBlock.style.display = 'none';
+      }
+    }
+
+    // Populate the 3 editable buyer questions
+    const qs: string[] = audit.questions || [];
+    for (let i = 0; i < 3; i++) {
+      const inp = document.getElementById(`qInput${i}`) as HTMLInputElement | null;
+      if (inp && qs[i]) inp.value = qs[i];
+    }
+  }
+
+  async function loadLighthouseAsync(audit: any) {
+    const statusBadge = document.getElementById('lhStatusBadge');
+    const seoEl = document.getElementById('lhSeoScore');
+    const perfEl = document.getElementById('lhPerfScore');
+    const crawlEl = document.getElementById('lhCrawlable');
+    const extraEl = document.getElementById('lhExtraMetrics');
+
+    if (statusBadge) {
+      statusBadge.textContent =
+        currentLang === 'es' ? 'Consultando PageSpeed…' : 'Running PageSpeed…';
+    }
+    if (seoEl) seoEl.textContent = '…';
+    if (perfEl) perfEl.textContent = '…';
+    if (crawlEl) crawlEl.textContent = '…';
+
+    try {
+      const res = await fetch(
+        `${WORKER_BASE}/audit/lighthouse?audit_id=${encodeURIComponent(audit.id)}&url=${encodeURIComponent(audit.url)}`
+      );
+      const json = await res.json();
+      if (json.success && json.data) {
+        const lh = json.data;
+        if (seoEl) seoEl.textContent = lh.seoScore !== null ? `${lh.seoScore}/100` : 'N/A';
+        if (perfEl)
+          perfEl.textContent = lh.performanceScore !== null ? `${lh.performanceScore}/100` : 'N/A';
+        if (crawlEl) {
+          crawlEl.textContent =
+            lh.isCrawlable === null
+              ? 'N/A'
+              : lh.isCrawlable
+                ? currentLang === 'es'
+                  ? 'Sí'
+                  : 'Yes'
+                : currentLang === 'es'
+                  ? 'Bloqueado'
+                  : 'Blocked';
+        }
+        if (statusBadge) {
+          statusBadge.textContent =
+            lh.seoScore !== null
+              ? currentLang === 'es'
+                ? '■ Lighthouse listo'
+                : '■ Lighthouse complete'
+              : currentLang === 'es'
+                ? 'No disponible'
+                : 'Unavailable';
+        }
+        if (extraEl) {
+          const parts: string[] = [];
+          if (lh.lcpDisplay) parts.push(`LCP: ${lh.lcpDisplay}`);
+          if (lh.clsDisplay) parts.push(`CLS: ${lh.clsDisplay}`);
+          extraEl.textContent = parts.join(' · ');
+        }
+      }
+    } catch {
+      if (statusBadge) statusBadge.textContent = 'Not run';
+    }
+  }
+
+  function renderAiVisibility(audit: any) {
+    const ai = audit.ai_visibility;
+    const step2El = document.getElementById('step2Results');
+    if (!step2El || !ai) return;
+    step2El.style.display = 'flex';
+
+    const namedVal = document.getElementById('statNamedVal');
+    const citedVal = document.getElementById('statCitedVal');
+    if (namedVal) namedVal.textContent = `${ai.namedCount} / ${ai.totalQuestions}`;
+    if (citedVal) citedVal.textContent = `${ai.citedCount} / ${ai.totalQuestions}`;
+
+    const compCloud = document.getElementById('competitorsCloud');
+    if (compCloud) {
+      if (Array.isArray(ai.competitorsSummary) && ai.competitorsSummary.length > 0) {
+        compCloud.innerHTML = ai.competitorsSummary
+          .map((c: string) => `<span class="tag-pill warn">${c}</span>`)
+          .join('');
+      } else {
+        compCloud.innerHTML = `<span class="body-s muted-line">${currentLang === 'es' ? 'Ninguno detectado en esta corrida' : 'None detected in this run'}</span>`;
+      }
+    }
+
+    const srcCloud = document.getElementById('sourcesCloud');
+    if (srcCloud) {
+      if (Array.isArray(ai.topSourceDomains) && ai.topSourceDomains.length > 0) {
+        srcCloud.innerHTML = ai.topSourceDomains
+          .map((d: string) => `<span class="tag-pill">${d}</span>`)
+          .join('');
+      } else {
+        srcCloud.innerHTML = `<span class="body-s muted-line">${currentLang === 'es' ? 'Sin citas externas' : 'No external citations'}</span>`;
+      }
+    }
+
+    const runsList = document.getElementById('runsList');
+    if (runsList && Array.isArray(ai.runs)) {
+      runsList.innerHTML = ai.runs
+        .map((run: any, idx: number) => {
+          const badgeClass =
+            run.status !== 'ok' ? 'neutral' : run.brandNamed ? 'good' : 'bad';
+          const badgeLabel =
+            run.status !== 'ok'
+              ? currentLang === 'es'
+                ? 'NO EJECUTADO'
+                : 'NOT RUN'
+              : run.brandNamed
+                ? currentLang === 'es'
+                  ? 'TE NOMBRA'
+                  : 'NAMED'
+                : currentLang === 'es'
+                  ? 'NO TE NOMBRA'
+                  : 'NOT NAMED';
+
+          const comps =
+            Array.isArray(run.competitorsNamed) && run.competitorsNamed.length > 0
+              ? `<p class="run-meta"><strong>${currentLang === 'es' ? 'Nombrados en tu lugar:' : 'Named instead:'}</strong> ${run.competitorsNamed.join(', ')}</p>`
+              : '';
+
+          const cites =
+            Array.isArray(run.sourcesCited) && run.sourcesCited.length > 0
+              ? `<p class="run-meta"><strong>${currentLang === 'es' ? 'Fuentes citadas:' : 'Sources cited:'}</strong> ${run.sourcesCited
+                  .map((s: any) => s.title || s.domain)
+                  .join(' · ')}</p>`
+              : '';
+
+          return `
+            <div class="run-card">
+              <div class="run-header">
+                <span class="label">Q0${idx + 1} · ${run.question}</span>
+                <span class="score-pill ${badgeClass}">${badgeLabel}</span>
+              </div>
+              <p class="run-excerpt">${run.answerExcerpt}</p>
+              ${comps}
+              ${cites}
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    const notRunNote = document.getElementById('notRunNote');
+    if (notRunNote) {
+      notRunNote.textContent =
+        currentLang === 'es'
+          ? 'Nota metodológica: Esta muestra rápida ejecuta 1 revisión por pregunta vía API en Gemini con búsqueda de Google. Los motores que no se ejecutaron en esta muestra gratuita (ChatGPT, Google AI Overviews, Google AI Mode sin sesión iniciada) se marcan como no ejecutados, nunca como cero, y se miden con 3 repeticiones en la Auditoría Completa de $99.'
+          : 'Method note: This free snapshot runs 1 API check per question on Gemini with Google Search grounding. Engines not checked in this free preview (ChatGPT, Google AI Overviews, Google AI Mode logged out) are marked not run—never zero—and are tested 3 times per question in the $99 Full Audit.';
+    }
+
+    step2El.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // Handle Step 1 Scan
+  document.getElementById('formStep1')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btnScan') as HTMLButtonElement;
+    const errEl = document.getElementById('scanError') as HTMLElement;
+    errEl.style.display = 'none';
+
+    const url = (document.getElementById('auditUrl') as HTMLInputElement).value.trim();
+    const service = (document.getElementById('auditService') as HTMLInputElement).value.trim();
+    const city = (document.getElementById('auditCity') as HTMLInputElement).value.trim();
+
+    btn.disabled = true;
+    const spanText = btn.querySelector('[data-audit-i18n="scanBtn"]');
+    if (spanText) spanText.textContent = I18N[currentLang].scanBtnLoading;
+
+    try {
+      const res = await fetch(`${WORKER_BASE}/audit/scan`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, service, city, lang: currentLang }),
+      });
+      const json = await res.json();
+
+      if (!json.success || !json.data) {
+        throw new Error(json.error?.message || 'Unable to scan website');
+      }
+
+      currentAudit = json.data;
+      renderTechScan(currentAudit);
+      loadLighthouseAsync(currentAudit);
+
+      if (currentAudit.ai_visibility) {
+        renderAiVisibility(currentAudit);
+      } else {
+        const step2El = document.getElementById('step2Results');
+        if (step2El) step2El.style.display = 'none';
+      }
+    } catch (err: any) {
+      errEl.textContent = err.message || 'Scan failed. Please check the URL and try again.';
+      errEl.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      if (spanText) spanText.textContent = I18N[currentLang].scanBtn;
+    }
+  });
+
+  // Handle Step 2 Live AI Visibility
+  document.getElementById('formStep2')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!currentAudit) return;
+
+    const btn = document.getElementById('btnRunAi') as HTMLButtonElement;
+    const errEl = document.getElementById('aiError') as HTMLElement;
+    errEl.style.display = 'none';
+
+    const email = (document.getElementById('leadEmail') as HTMLInputElement).value.trim();
+    const questions = [0, 1, 2]
+      .map((i) => (document.getElementById(`qInput${i}`) as HTMLInputElement)?.value.trim())
+      .filter(Boolean);
+
+    btn.disabled = true;
+    const spanText = btn.querySelector('[data-audit-i18n="runAiBtn"]');
+    if (spanText) spanText.textContent = I18N[currentLang].runAiBtnLoading;
+
+    try {
+      const res = await fetch(`${WORKER_BASE}/audit/ai-visibility`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          audit_id: currentAudit.id,
+          email,
+          questions,
+          city: currentAudit.city,
+          service: currentAudit.service,
+        }),
+      });
+      const json = await res.json();
+
+      if (!json.success || !json.data) {
+        throw new Error(json.error?.message || 'Unable to run AI visibility check');
+      }
+
+      currentAudit = json.data;
+      renderAiVisibility(currentAudit);
+    } catch (err: any) {
+      errEl.textContent = err.message || 'Unable to run live AI check.';
+      errEl.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      if (spanText) spanText.textContent = I18N[currentLang].runAiBtn;
+    }
+  });
+
+  // Handle $99 Full Audit Stripe Checkout
+  document.getElementById('btnBuyFullAudit')?.addEventListener('click', async () => {
+    if (!currentAudit) return;
+    const btn = document.getElementById('btnBuyFullAudit') as HTMLButtonElement;
+    const spanText = btn.querySelector('[data-audit-i18n="buyBtn"]');
+    const email = (document.getElementById('leadEmail') as HTMLInputElement)?.value.trim();
+
+    btn.disabled = true;
+    if (spanText) spanText.textContent = I18N[currentLang].buyBtnLoading;
+
+    try {
+      const res = await fetch(`${WORKER_BASE}/create-checkout-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'aeo_full_audit',
+          client_email: email || undefined,
+          audit_id: currentAudit.id,
+          domain: currentAudit.domain,
+          city: currentAudit.city,
+          service: currentAudit.service,
+          lang: currentLang,
+          success_url: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}&type=aeo_audit`,
+          cancel_url: window.location.href,
+        }),
+      });
+
+      const json = await res.json();
+      if (json.success && json.data?.checkout_url) {
+        window.location.href = json.data.checkout_url;
+      } else {
+        alert(json.error?.message || 'Unable to start Stripe Checkout');
+        btn.disabled = false;
+        if (spanText) spanText.textContent = I18N[currentLang].buyBtn;
+      }
+    } catch (err: any) {
+      alert(err.message || 'Connection error reaching Stripe Checkout');
+      btn.disabled = false;
+      if (spanText) spanText.textContent = I18N[currentLang].buyBtn;
+    }
+  });
+</script>
+
+<style>
+  .audit-section {
+    min-height: calc(100vh - var(--nav-h));
+  }
+
+  .kick-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-16);
+    flex-wrap: wrap;
+    margin-bottom: var(--s-24);
+  }
+
+  .lang-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    background: var(--teal-deep);
+  }
+
+  .lang-btn {
+    background: transparent;
+    border: 0;
+    color: var(--pale);
+    font: 12px/1 var(--mono);
+    padding: 8px 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  .lang-btn.active {
+    background: var(--gold);
+    color: var(--teal);
+    font-weight: 600;
+  }
+
+  .audit-card,
+  .result-card,
+  .upgrade-card {
+    background: var(--teal-deep);
+    border: 1px solid var(--line);
+    padding: var(--s-32);
+    box-shadow: 8px 8px 0 var(--gold);
+  }
+
+  .audit-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-24);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: var(--s-16);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-08);
+  }
+
+  .form-input {
+    background: var(--teal);
+    border: 1px solid var(--line);
+    color: var(--white);
+    font-family: var(--sans);
+    font-size: 15px;
+    padding: 13px 16px;
+  }
+
+  .form-input:focus {
+    outline: 2px solid var(--gold);
+    outline-offset: 1px;
+    border-color: var(--gold);
+  }
+
+  .form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-16);
+    flex-wrap: wrap;
+  }
+
+  .meta-hint {
+    color: var(--pale);
+  }
+
+  .error-banner {
+    background: rgba(239, 68, 68, 0.14);
+    border: 1px solid #ef4444;
+    color: #fecaca;
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  .results-stack {
+    margin-top: var(--s-32);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-32);
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-24);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-16);
+    margin-bottom: var(--s-16);
+    padding-bottom: var(--s-16);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .muted-line {
+    color: var(--pale);
+    margin-top: var(--s-08);
+  }
+
+  .score-pill {
+    font: 600 12px/1 var(--mono);
+    padding: 6px 10px;
+    border: 1px solid var(--line);
+    background: var(--teal);
+    color: var(--white);
+  }
+
+  .score-pill.good {
+    background: rgba(16, 185, 129, 0.18);
+    border-color: #10b981;
+    color: #6ee7b7;
+  }
+
+  .score-pill.warn {
+    background: rgba(253, 179, 67, 0.18);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .score-pill.bad {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: #ef4444;
+    color: #fca5a5;
+  }
+
+  .check-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: var(--s-24);
+  }
+
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--white);
+  }
+
+  .check-dot {
+    font: 700 13px/1 var(--mono);
+  }
+  .check-dot.ok {
+    color: #34d399;
+  }
+  .check-dot.opt {
+    color: var(--gold);
+  }
+  .check-dot.miss {
+    color: #f87171;
+  }
+
+  .sub-block {
+    margin-top: var(--s-24);
+    padding-top: var(--s-16);
+    border-top: 1px solid var(--line);
+  }
+
+  .sub-title {
+    margin-bottom: 10px;
+    color: var(--gold);
+  }
+
+  .bot-chips,
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .bot-pill,
+  .tag-pill {
+    font: 12px/1.2 var(--mono);
+    padding: 5px 9px;
+    border: 1px solid var(--line);
+    background: var(--teal);
+    color: var(--white);
+  }
+
+  .bot-pill.ok {
+    border-color: rgba(52, 211, 153, 0.5);
+    color: #a7f3d0;
+  }
+
+  .bot-pill.blocked {
+    border-color: #ef4444;
+    color: #fca5a5;
+  }
+
+  .tag-pill.warn {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .gaps-list {
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--pale);
+  }
+
+  .lh-meters {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-16);
+    margin-top: var(--s-24);
+    margin-bottom: var(--s-16);
+  }
+
+  .lh-box {
+    background: var(--teal);
+    border: 1px solid var(--line);
+    padding: var(--s-16);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .lh-num {
+    font: 600 26px/1.1 var(--mono);
+    color: var(--gold);
+  }
+
+  .questions-edit-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+    margin-top: var(--s-16);
+  }
+
+  .email-gate-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: var(--s-16);
+  }
+
+  .btn-ai-submit {
+    height: 48px;
+  }
+
+  .summary-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--s-16);
+    margin-block: var(--s-16) var(--s-24);
+  }
+
+  .stat-box {
+    background: var(--teal);
+    border: 1px solid var(--line);
+    padding: var(--s-16);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .stat-big {
+    font: 600 28px/1 var(--mono);
+    color: var(--gold);
+  }
+
+  .runs-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+  }
+
+  .run-card {
+    background: var(--teal);
+    border: 1px solid var(--line);
+    padding: var(--s-24);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .run-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-16);
+  }
+
+  .run-excerpt {
+    font-size: 14px;
+    color: var(--pale);
+    line-height: 1.55;
+  }
+
+  .run-meta {
+    font-size: 13px;
+    color: var(--white);
+  }
+
+  .not-run-note {
+    margin-top: var(--s-24);
+    padding-top: var(--s-16);
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--pale);
+  }
+
+  .upgrade-card {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: var(--s-32);
+    align-items: center;
+  }
+
+  .upgrade-lede {
+    margin-top: var(--s-16);
+    color: var(--pale);
+    font-size: 16px;
+  }
+
+  .compare-mini {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: var(--s-16);
+    margin-top: var(--s-24);
+  }
+
+  .cmp-col {
+    background: var(--teal);
+    border: 1px solid var(--line);
+    padding: var(--s-16);
+    font-size: 13px;
+    color: var(--pale);
+  }
+
+  .cmp-col.cmp-highlight {
+    border-color: var(--gold);
+    color: var(--white);
+  }
+
+  .cmp-head {
+    margin-bottom: 10px;
+    color: var(--white);
+  }
+
+  .cmp-col ul {
+    padding-left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .upgrade-cta-box {
+    background: var(--teal);
+    border: 1px solid var(--gold);
+    padding: var(--s-32);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-24);
+  }
+
+  .price-display {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .price-big {
+    font: 600 44px/1 var(--mono);
+    color: var(--gold);
+  }
+
+  .price-cur {
+    font-size: 18px;
+    color: var(--white);
+  }
+
+  .btn-full {
+    width: 100%;
+    justify-content: center;
+  }
+
+  @media (max-width: 960px) {
+    .form-grid,
+    .grid-2,
+    .summary-stats,
+    .upgrade-card,
+    .compare-mini,
+    .email-gate-row {
+      grid-template-columns: 1fr;
+    }
+
+    .check-grid,
+    .lh-meters {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -5,6 +5,12 @@ import { handleCreateCharge } from './routes/charges';
 import { handleCreateInvoice, handleListInvoices } from './routes/invoices';
 import { handleStripeWebhook } from './routes/webhooks';
 import { handleCreateCheckoutSession, handleGetCheckoutSession } from './routes/checkout';
+import {
+  handleAuditAiVisibility,
+  handleAuditLighthouse,
+  handleAuditScan,
+  handleGetAudit,
+} from './routes/audit';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -40,7 +46,7 @@ export default {
 
     // 1. Webhook Route (No X-API-Key required, verified by Stripe-Signature)
     if (path === '/webhooks/stripe' && method === 'POST') {
-      return handleStripeWebhook(request, env);
+      return handleStripeWebhook(request, env, ctx);
     }
 
     // 2. Public Website Checkout Route (No X-API-Key required)
@@ -53,6 +59,28 @@ export default {
     if (path.startsWith('/checkout-session/') && method === 'GET') {
       const sessionId = path.replace('/checkout-session/', '');
       const resp = await handleGetCheckoutSession(request, env, sessionId);
+      return withCors(resp);
+    }
+
+    // 4. Public AEO Mini Audit Routes (No X-API-Key required; protected by rate limits & daily circuit breaker)
+    if (path === '/audit/scan' && method === 'POST') {
+      const resp = await handleAuditScan(request, env);
+      return withCors(resp);
+    }
+
+    if (path === '/audit/lighthouse' && method === 'GET') {
+      const resp = await handleAuditLighthouse(request, env);
+      return withCors(resp);
+    }
+
+    if (path === '/audit/ai-visibility' && method === 'POST') {
+      const resp = await handleAuditAiVisibility(request, env, ctx);
+      return withCors(resp);
+    }
+
+    if (path.startsWith('/audit/') && method === 'GET') {
+      const auditId = path.replace('/audit/', '');
+      const resp = await handleGetAudit(request, env, auditId);
       return withCors(resp);
     }
 

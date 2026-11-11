@@ -9,5 +9,13 @@ routes = [
   { pattern = "billing.sondri.ai", custom_domain = true }
 ]
 
+# Cloudflare D1 Database (caching domain audits, storing leads & daily rate limits)
+# Local dev (`wrangler dev`) uses a local SQLite instance automatically.
+[[d1_databases]]
+binding = "DB"
+database_name = "sondri-audits"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
 [observability]
 enabled = true
