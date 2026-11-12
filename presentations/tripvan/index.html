@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TripVan × Sondri — Proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" />
+<style>
+  :root {
+    --ink: #0C1A1A; --ink-deep: #081313; --raise: #152020;
+    --gold: #ffcc78; --gold-soft: #ffe7b3; --tan: #F7C062;
+    --bone: #E6F2F0; --clay: #86A19E; --text: #C9DAD7;
+    --line: #263434; --line-strong: #334141; --dim: #7D8A89; --fine: #566363;
+    --display: 'Space Grotesk', system-ui, sans-serif;
+    --mono: 'Space Mono', ui-monospace, monospace;
+  }
+  html, body { margin: 0; height: 100%; background: var(--ink-deep); }
+  #sky { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; z-index: 0; image-rendering: pixelated; }
+  .vignette { position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 45%, transparent 35%, rgba(8,19,19,.75) 100%); }
+  .reveal-viewport { background: transparent; }
+  .reveal { position: fixed !important; inset: 0; z-index: 2; font-family: var(--display); color: var(--text); }
+  .reveal .slides { text-align: left; }
+  .reveal .slides section { height: 100%; box-sizing: border-box; padding: 96px 110px 110px; }
+
+  /* ---------- chrome ---------- */
+  .chrome { position: fixed; z-index: 3; font-family: var(--mono); font-size: 12px; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--dim); pointer-events: none; }
+  .chrome.tl { top: 26px; left: 34px; color: var(--bone); font-weight: 700; letter-spacing: .34em; display: flex; align-items: center; gap: 10px; }
+  .chrome.tl i { width: 9px; height: 9px; background: var(--gold); display: inline-block; box-shadow: 0 0 14px var(--gold); }
+  .chrome.bl { bottom: 26px; left: 34px; }
+  .chrome.tr { top: 26px; right: 34px; }
+  .reveal .slide-number { font-family: var(--mono); background: transparent; color: var(--gold); font-size: 12px;
+    letter-spacing: .2em; right: 34px; bottom: 22px; }
+  .reveal .progress { color: var(--gold); height: 2px; }
+  .reveal .controls { color: var(--gold); }
+
+  /* ---------- type ---------- */
+  .kicker { font-family: var(--mono); font-size: 15px; letter-spacing: .32em; text-transform: uppercase; color: var(--gold);
+    display: inline-flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+  .kicker::before { content: ""; width: 34px; height: 1px; background: var(--gold); }
+  .reveal h1, .reveal h2, .reveal h3 { font-family: var(--display); color: var(--bone); text-transform: none; margin: 0; text-shadow: none; }
+  .reveal h2 { font-size: 68px; line-height: 1.02; font-weight: 600; letter-spacing: -.025em; max-width: 1200px; }
+  .reveal h2 em { font-style: normal; color: var(--gold); }
+  .lede, .tag, .chip, .stat .l, .stage .ph, .stage .v, .stage p, .closing .cta, .kicker, .reveal h2, .closing .big { text-shadow: 0 1px 14px rgba(8,19,19,.95), 0 0 2px rgba(8,19,19,.9); }
+  .lede { font-size: 24px; line-height: 1.5; color: var(--text); max-width: 980px; margin: 26px 0 0; font-weight: 300; }
+  .mono { font-family: var(--mono); }
+
+  .card { background: linear-gradient(180deg, rgba(21,32,32,.82), rgba(12,26,26,.78)); border: 1px solid var(--line);
+    border-radius: 4px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: relative; }
+  .card.hot { border-color: rgba(255,204,120,.55); box-shadow: 0 0 0 1px rgba(255,204,120,.15), 0 30px 80px -30px rgba(255,204,120,.35); }
+  .tag { font-family: var(--mono); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--dim); }
+
+  /* ---------- 1. title ---------- */
+  .s-title { display: flex !important; flex-direction: column; justify-content: center; }
+  .s-title .for { font-family: var(--mono); color: var(--clay); font-size: 18px; letter-spacing: .3em; text-transform: uppercase; }
+  .s-title h1 { font-size: 220px; line-height: .86; font-weight: 700; letter-spacing: -.055em; margin: 14px 0 0 -8px; }
+  .s-title h1 span { color: var(--gold); }
+  .s-title .sub { font-size: 34px; font-weight: 300; color: var(--bone); max-width: 1000px; line-height: 1.25; margin-top: 34px; }
+  .s-title .pillars { display: flex; gap: 0; margin-top: 54px; font-family: var(--mono); font-size: 14px; letter-spacing: .26em; text-transform: uppercase; }
+  .s-title .pillars span { padding: 12px 22px; border: 1px solid var(--line-strong); color: var(--text); background: rgba(8,19,19,.55); }
+  .s-title .pillars span + span { border-left: 0; }
+  .s-title .pillars span:first-child { color: var(--ink); background: var(--gold); border-color: var(--gold); }
+  .s-title .prepared { position: absolute; left: 110px; bottom: 96px; font-family: var(--mono); font-size: 13px; color: var(--dim); letter-spacing: .14em; }
+  .s-title .prepared b { color: var(--gold); font-weight: 400; }
+
+  /* ---------- 2. situation ---------- */
+  .otas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 56px; }
+  .ota { padding: 30px 32px 28px; overflow: hidden; }
+  .ota .name { font-size: 26px; color: var(--bone); font-weight: 500; }
+  .ota .pct { font-size: 88px; font-weight: 600; letter-spacing: -.04em; color: var(--gold); margin-top: 18px; line-height: 1; }
+  .ota .leak { height: 6px; background: var(--line); margin-top: 26px; position: relative; overflow: hidden; }
+  .ota .leak b { position: absolute; right: 0; top: 0; bottom: 0; background: repeating-linear-gradient(90deg, var(--gold) 0 3px, transparent 3px 6px); }
+  .ota .legend { display: flex; justify-content: space-between; margin-top: 10px; }
+  .risk { margin-top: 30px; padding: 24px 30px; display: flex; gap: 22px; align-items: center; border-left: 3px solid var(--gold); }
+  .risk .tag { color: var(--gold); white-space: nowrap; }
+  .risk p { margin: 0; font-size: 22px; line-height: 1.45; color: var(--bone); }
+
+  /* ---------- 3. playbook ---------- */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 64px; border-top: 1px solid var(--line-strong); }
+  .stat { padding: 34px 28px 0 0; }
+  .stat + .stat { padding-left: 28px; border-left: 1px solid var(--line); }
+  .stat .n { font-size: 112px; font-weight: 600; letter-spacing: -.05em; color: var(--bone); line-height: 1; }
+  .stat .n.g { color: var(--gold); }
+  .stat .l { font-family: var(--mono); font-size: 14px; letter-spacing: .24em; text-transform: uppercase; color: var(--clay); margin-top: 16px; }
+  .proves { margin-top: 64px; display: flex; gap: 26px; align-items: center; }
+  .proves .chips { display: flex; gap: 12px; flex-wrap: wrap; }
+  .chip { font-size: 19px; padding: 12px 20px; border: 1px solid var(--line-strong); background: rgba(12,26,26,.7); color: var(--bone); border-radius: 999px; }
+  .chip::before { content: "✓"; color: var(--gold); margin-right: 10px; }
+
+  /* ---------- 4. solution ---------- */
+  .quads { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 50px; position: relative; }
+  .quad { padding: 28px 32px 28px; min-height: 290px; display: flex; flex-direction: column; }
+  .quad:nth-child(2) { margin-top: 32px; } .quad:nth-child(3) { margin-top: 64px; }
+  .quad .num { font-family: var(--mono); font-size: 54px; color: var(--gold); line-height: 1; }
+  .quad .ph { font-family: var(--mono); font-size: 13px; letter-spacing: .26em; text-transform: uppercase; color: var(--clay); margin-top: 26px; }
+  .quad h3 { font-size: 36px; font-weight: 600; margin-top: 8px !important; letter-spacing: -.02em; }
+  .quad p { font-size: 19px; line-height: 1.5; color: var(--text); margin: 14px 0 0; flex: 1; }
+  .quad .price { font-family: var(--mono); font-size: 20px; color: var(--ink); background: var(--gold); padding: 10px 14px; align-self: flex-start; margin-top: 22px; }
+  .deepens { margin-top: 48px; padding: 16px 24px; background: rgba(8,19,19,.8); border: 1px solid var(--line); width: fit-content; display: flex; align-items: center; gap: 18px; font-family: var(--mono); font-size: 15px; letter-spacing: .18em; text-transform: uppercase; color: var(--dim); }
+  .deepens b { color: var(--bone); font-weight: 400; } .deepens .arr { color: var(--gold); }
+
+  /* ---------- 5/6 grids ---------- */
+  .qhead { display: flex; gap: 64px; align-items: flex-start; }
+  .bignum { font-family: var(--mono); font-size: 170px; line-height: .8; color: transparent; -webkit-text-stroke: 1.5px var(--gold); letter-spacing: -.06em; }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 40px; }
+  .tile { padding: 24px 26px; }
+  .tile .i { font-family: var(--mono); color: var(--gold); font-size: 13px; letter-spacing: .2em; }
+  .tile h4 { font-family: var(--display); font-size: 24px; font-weight: 600; color: var(--bone); margin: 10px 0 8px; text-transform: none; letter-spacing: -.01em; }
+  .tile p { margin: 0; font-size: 17px; line-height: 1.5; color: var(--text); }
+  .model { margin-top: 22px; display: flex; justify-content: space-between; align-items: center; padding: 20px 28px; }
+  .model .v { font-size: 34px; color: var(--gold); font-weight: 600; letter-spacing: -.02em; }
+
+  .q2 { display: grid; grid-template-columns: 1.45fr 1fr; gap: 26px; margin-top: 34px; }
+  .q2 .tiles { grid-template-columns: repeat(2, 1fr); margin-top: 14px; gap: 12px; }
+  .q2 .tile { padding: 18px 22px; } .q2 .tile h4 { font-size: 21px; margin: 6px 0 6px; } .q2 .tile p { font-size: 15px; }
+  .bench { padding: 28px 30px; display: flex; flex-direction: column; }
+  .bar { margin-top: 18px; }
+  .bar .row { display: flex; justify-content: space-between; font-size: 18px; color: var(--text); margin-bottom: 8px; }
+  .bar .row b { font-family: var(--mono); font-weight: 400; color: var(--bone); }
+  .bar .track { height: 14px; background: rgba(38,52,52,.6); }
+  .bar .fill { height: 100%; background: var(--clay); opacity: .7; }
+  .bar.me .row { color: var(--gold); } .bar.me .row b { color: var(--gold); }
+  .bar.me .fill { background: var(--gold); opacity: 1; box-shadow: 0 0 22px rgba(255,204,120,.6); }
+  .bench .note { margin-top: auto; padding-top: 22px; font-size: 15px; line-height: 1.5; color: var(--text); border-top: 1px solid var(--line); }
+  .bench .note b { color: var(--gold); font-weight: 500; display: block; font-size: 22px; margin-bottom: 6px; }
+
+  /* ---------- 7. JV ---------- */
+  .jv { display: grid; grid-template-columns: 520px 1fr; gap: 56px; margin-top: 30px; align-items: start; }
+  .ring { position: relative; width: 460px; height: 460px; }
+  .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring .lbl { position: absolute; text-align: center; font-family: var(--mono); }
+  .ring .lbl b { display: block; font-family: var(--display); font-size: 64px; font-weight: 600; letter-spacing: -.04em; }
+  .ring .lbl span { font-size: 13px; letter-spacing: .3em; }
+  .ring .l1 { right: 66px; top: 175px; color: var(--gold); } .ring .l1 b { color: var(--gold); }
+  .ring .l2 { left: 66px; top: 175px; color: var(--clay); } .ring .l2 b { color: var(--bone); }
+  .ring .cap { left: 0; right: 0; bottom: -64px; padding: 10px 14px; background: rgba(8,19,19,.78); border: 1px solid var(--line); text-shadow: 0 1px 12px rgba(8,19,19,.95); font-size: 15px; line-height: 1.5; color: var(--text); font-family: var(--display); letter-spacing: 0; }
+  .jv .tiles { grid-template-columns: repeat(2, 1fr); margin-top: 14px; gap: 12px; }
+  .jv .tile { padding: 20px 22px; } .jv .tile h4 { font-size: 22px; } .jv .tile p { font-size: 16px; }
+  .why { margin-top: 14px; padding: 20px 24px; border-left: 3px solid var(--gold); }
+  .why p { margin: 6px 0 0; font-size: 17px; line-height: 1.5; color: var(--bone); }
+
+  /* ---------- 8. end to end ---------- */
+  .journey { position: relative; margin-top: 70px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 60px; }
+  .journey .rail { position: absolute; left: 34px; right: 20%; top: 33px; height: 2px; background: repeating-linear-gradient(90deg, var(--gold) 0 10px, transparent 10px 20px); opacity: .8; }
+  .stage .dot { width: 68px; height: 68px; border-radius: 50%; border: 1px solid var(--gold); background: var(--ink); display: grid; place-items: center;
+    font-family: var(--mono); color: var(--gold); font-size: 18px; position: relative; z-index: 1; box-shadow: 0 0 0 8px rgba(8,19,19,.9); }
+  .stage:last-child .dot { background: var(--gold); color: var(--ink); box-shadow: 0 0 0 8px rgba(8,19,19,.9), 0 0 40px rgba(255,204,120,.7); }
+  .stage .ph { font-family: var(--mono); font-size: 13px; letter-spacing: .26em; text-transform: uppercase; color: var(--clay); margin-top: 30px; }
+  .stage h3 { font-size: 40px; font-weight: 600; letter-spacing: -.02em; margin-top: 6px !important; }
+  .stage .v { font-family: var(--mono); color: var(--gold); font-size: 22px; margin-top: 14px; }
+  .stage p { font-size: 18px; color: var(--text); margin: 8px 0 0; }
+  .closing { margin-top: 80px; }
+  .closing .big { font-size: 76px; font-weight: 600; letter-spacing: -.035em; line-height: 1; color: var(--bone); }
+  .closing .big em { font-style: normal; color: var(--gold); }
+  .closing .cta { display: inline-block; padding: 10px 16px; background: rgba(8,19,19,.8); border: 1px solid var(--line); margin-top: 26px; font-family: var(--mono); font-size: 16px; letter-spacing: .14em; color: var(--clay); }
+  .closing .cta a { color: var(--gold); text-decoration: none; border-bottom: 1px solid var(--gold); }
+
+  /* ---------- meet tripvan ---------- */
+  .meet { display: grid; grid-template-columns: 1fr 470px; gap: 64px; height: 100%; }
+  .meet .motto { font-family: var(--mono); color: var(--gold); font-size: 17px; letter-spacing: .08em; margin-top: 22px; }
+  .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 34px; border-top: 1px solid var(--line-strong); background: rgba(8,19,19,.72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .fact:nth-child(3n+1) { padding-left: 18px; }
+  .fact { padding: 20px 20px 18px 0; border-bottom: 1px solid var(--line); }
+  .fact:nth-child(3n+2), .fact:nth-child(3n) { padding-left: 20px; border-left: 1px solid var(--line); }
+  .fact b { display: block; font-size: 40px; font-weight: 600; letter-spacing: -.03em; color: var(--bone); line-height: 1.05; }
+  .fact b small { font-size: 18px; color: var(--clay); font-weight: 400; letter-spacing: 0; }
+  .fact span { display: block; font-family: var(--mono); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--clay); margin-top: 8px; }
+  .live { margin-top: 22px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .live .tag { color: var(--gold); margin-right: 6px; }
+  .live i { font-style: normal; font-size: 15px; color: var(--bone); padding: 7px 13px; border: 1px solid var(--line-strong); background: rgba(8,19,19,.7); }
+  .photo { position: relative; overflow: hidden; border: 1px solid var(--line-strong); }
+  .photo img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(.85) contrast(1.05); }
+  .photo::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: radial-gradient(rgba(8,19,19,.55) 1px, transparent 1.4px) 0 0 / 4px 4px; mix-blend-mode: multiply; }
+  .photo::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: linear-gradient(180deg, rgba(8,19,19,0) 45%, rgba(8,19,19,.92) 100%); }
+  .photo figcaption { position: absolute; z-index: 2; left: 26px; right: 26px; bottom: 22px; }
+  .photo figcaption .tag { color: var(--gold); }
+  .photo figcaption p { margin: 6px 0 0; font-size: 17px; color: var(--bone); line-height: 1.45; }
+  .photo img.ruta { position: absolute; z-index: 2; top: 22px; left: 24px; width: 190px; height: auto; filter: brightness(0) invert(1); opacity: .92; }
+  .meet .photo { height: 694px; margin-top: -10px; }
+
+  /* ---------- route map ---------- */
+  .route { position: relative; height: 360px; margin-top: 30px; }
+  .route svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .route .stop { position: absolute; width: 0; height: 0; }
+  .route .node { position: absolute; left: -11px; top: -11px; width: 22px; height: 22px; border-radius: 50%; box-sizing: border-box;
+    border: 2px solid var(--gold); background: var(--ink); }
+  .route .stop.x .node { background: var(--gold); box-shadow: 0 0 18px rgba(255,204,120,.75); }
+  .route .lab { position: absolute; left: 0; width: 150px; transform: translateX(-50%); text-align: center; }
+  .route .stop.up .lab { bottom: 22px; } .route .stop.dn .lab { top: 22px; }
+  .route .lab .n { font-family: var(--mono); font-size: 12px; color: var(--gold); letter-spacing: .14em; }
+  .route .lab .t { font-size: 16px; line-height: 1.2; color: var(--bone); font-weight: 500; margin-top: 3px;
+    text-shadow: 0 1px 10px rgba(8,19,19,.95), 0 0 2px rgba(8,19,19,1); }
+  .route .lab .k { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--clay); margin-top: 3px; }
+  .route .van { position: absolute; left: 0; top: 0; margin: -10px 0 0 -16px; width: 32px; height: 20px; border-radius: 4px; background: var(--gold);
+    box-shadow: 0 0 26px rgba(255,204,120,.9); z-index: 3; font-family: var(--mono); font-size: 9px; color: var(--ink); display: grid; place-items: center; font-weight: 700; }
+  .route-foot { display: flex; align-items: center; gap: 30px; margin-top: 8px; }
+  .route-foot .lg { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--text); }
+  .route-foot .lg i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--gold); box-sizing: border-box; display: inline-block; }
+  .route-foot .lg i.f { background: var(--gold); }
+  .raco { margin-left: auto; display: flex; align-items: center; gap: 16px; padding: 12px 20px 12px 12px; }
+  .raco .av { width: 78px; height: 78px; flex: none; border-radius: 50%; border: 2px solid var(--gold); background: url(assets/raco.png) 21% 14% / 300% auto no-repeat; }
+  .raco b { display: block; color: var(--bone); font-size: 19px; font-weight: 600; }
+  .raco span { font-size: 15px; color: var(--text); }
+
+  .postcard { position: absolute; right: 120px; top: 560px; width: 390px; height: 260px; margin: 0; transform: rotate(2.5deg);
+    box-shadow: 0 40px 90px -30px rgba(0,0,0,.8), 0 0 0 6px rgba(230,242,240,.9); border: 0; }
+  .postcard figcaption { left: 18px; bottom: 14px; }
+
+  /* ---------- print ---------- */
+  html.print-pdf #sky, html.print-pdf .vignette, html.print-pdf .chrome { display: none; }
+  html.print-pdf .reveal .slides section { background: var(--ink); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+<div class="vignette"></div>
+<div class="chrome tl"><i></i>SONDRI</div>
+<div class="chrome tr">Cajón del Maipo · Ruta Sostenible</div>
+<div class="chrome bl">TripVan × Sondri — Proposal</div>
+
+<div class="reveal">
+<div class="slides">
+
+  <!-- 1 · TITLE -->
+  <section class="s-title" data-scene="0">
+    <div class="for" data-a>A proposal for</div>
+    <h1 data-a>TripVan<span>.</span></h1>
+    <div class="sub" data-a>The digital journey — from OTA-dependence to an owned growth engine.</div>
+    <div class="pillars" data-a><span>Foundation</span><span>Acceleration</span><span>Efficiency</span></div>
+    <div class="prepared" data-a>Prepared for <b>Hernán, TripVan</b> · Cajón del Maipo, Chile — Forbes Destination of the Year</div>
+  </section>
+
+  <!-- 2 · MEET TRIPVAN -->
+  <section data-scene="1">
+    <div class="meet">
+      <div>
+        <div class="kicker" data-a>Meet TripVan</div>
+        <h2 data-a>TripVan connects the <em>Cajón del Maipo.</em></h2>
+        <p class="lede" data-a style="font-size:21px">An organized passenger route into the Andes just outside Santiago — linking landscapes, local producers and experiences, stop after stop.</p>
+        <div class="motto" data-a>“We connect the route. You live every stop.”</div>
+        <div class="facts">
+          <div class="fact" data-a><b data-count="10" data-prefix="+">+10</b><span>Years on the mountain</span></div>
+          <div class="fact" data-a><b data-count="12">12</b><span>Connected stops</span></div>
+          <div class="fact" data-a><b>75.000 <small>CLP</small></b><span>Adult · 50.000 child</span></div>
+          <div class="fact" data-a><b>05:00–15:30</b><span>One full mountain day</span></div>
+          <div class="fact" data-a><b>ES · EN · PT</b><span>Trilingual service</span></div>
+          <div class="fact" data-a><b>2026</b><span>100% sustainable route</span></div>
+        </div>
+        <div class="live" data-a><span class="tag">Already live</span><i>Trilingual website</i><i>Hotel-partner portal + QR codes</i><i>Mercado Pago</i><i>PIX Brasil (soon)</i></div>
+      </div>
+      <figure class="photo" data-a data-photo style="margin:0">
+        <img src="assets/embalse-el-yeso.jpg" alt="Embalse El Yeso, Cajón del Maipo" />
+        <img class="ruta" src="assets/logo-ruta-sostenible-hd.png" alt="Ruta Sostenible" />
+        <figcaption><div class="tag">Embalse El Yeso · on the route</div><p>Turquoise water under the cordillera — the postcard of the route, and of every OTA listing that sells it.</p></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 3 · THE ROUTE -->
+  <section data-scene="2">
+    <div class="kicker" data-a>The route · Ruta Sostenible</div>
+    <h2 data-a>One van. Twelve stops. <em>A whole mountain day.</em></h2>
+    <div class="route" id="route">
+      <svg viewBox="0 0 1380 360" preserveAspectRatio="none">
+        <path d="M 30 250 C 140 250, 170 120, 280 130 S 420 260, 530 230 S 640 90, 760 110 S 900 260, 1010 230 S 1130 100, 1230 120 S 1340 200, 1350 230" fill="none" stroke="#263434" stroke-width="2" />
+        <path id="routePath" d="M 30 250 C 140 250, 170 120, 280 130 S 420 260, 530 230 S 640 90, 760 110 S 900 260, 1010 230 S 1130 100, 1230 120 S 1340 200, 1350 230" fill="none" stroke="#ffcc78" stroke-width="2.5" stroke-dasharray="7 7" />
+      </svg>
+    </div>
+    <div class="route-foot">
+      <div class="lg" data-a><i></i>TripVan transport point</div>
+      <div class="lg" data-a><i class="f"></i>Stop / experience</div>
+      <div class="card raco" data-a><div class="av" role="img" aria-label="Raco the llama"></div><div><b>Raco, guardián del Cajón</b><span>A llama mascot + audio-guides — a brand asset no OTA can copy.</span></div></div>
+    </div>
+  </section>
+
+  <!-- 4 · SITUATION -->
+  <section data-scene="1">
+    <div class="kicker" data-a>The situation</div>
+    <h2 data-a>Today, TripVan <em>rents</em> its demand.</h2>
+    <p class="lede" data-a>Chile just won Forbes “Destination of the Year” again — demand is rising. But bookings flow through third-party platforms that take a heavy cut on every seat and own the customer relationship.</p>
+    <div class="otas">
+      <div class="card ota" data-a>
+        <div class="tag">Commission per booking</div>
+        <div class="name" style="margin-top:10px">Expedia</div>
+        <div class="pct">15–25%</div>
+        <div class="leak"><b data-w="25" style="width:25%"></b></div>
+        <div class="legend tag"><span>TripVan keeps</span><span style="color:var(--gold)">OTA takes</span></div>
+      </div>
+      <div class="card ota" data-a>
+        <div class="tag">Commission per booking</div>
+        <div class="name" style="margin-top:10px">GetYourGuide</div>
+        <div class="pct">20–30%</div>
+        <div class="leak"><b data-w="30" style="width:30%"></b></div>
+        <div class="legend tag"><span>TripVan keeps</span><span style="color:var(--gold)">OTA takes</span></div>
+      </div>
+      <div class="card ota" data-a>
+        <div class="tag">Commission per booking</div>
+        <div class="name" style="margin-top:10px">Viator</div>
+        <div class="pct">~25%</div>
+        <div class="leak"><b data-w="25" style="width:25%"></b></div>
+        <div class="legend tag"><span>TripVan keeps</span><span style="color:var(--gold)">OTA takes</span></div>
+      </div>
+    </div>
+    <div class="card risk" data-a>
+      <span class="tag">The risk</span>
+      <p>On a <b style="color:var(--gold);font-weight:500">CLP 75.000</b> seat, an OTA keeps <b style="color:var(--gold);font-weight:500">CLP 15.000–22.500</b> — and they, not TripVan, own the customer, the data, and the repeat sale.</p>
+    </div>
+  </section>
+
+  <!-- 3 · PLAYBOOK -->
+  <section data-scene="2">
+    <div class="kicker" data-a>The proven playbook</div>
+    <h2 data-a>We’ve seen this journey work: <em>BMC Adventures.</em></h2>
+    <p class="lede" data-a>A South-India trekking operator that built an owned digital platform — direct booking, content-led acquisition, and a loyal community. The same arc TripVan can take in Chile.</p>
+    <div class="stats">
+      <div class="stat" data-a><div class="n" data-count="200" data-suffix="K">200K</div><div class="l">Participants</div></div>
+      <div class="stat" data-a><div class="n" data-count="50" data-suffix="K">50K</div><div class="l">Members</div></div>
+      <div class="stat" data-a><div class="n" data-count="10" data-suffix="K">10K</div><div class="l">Adventure events</div></div>
+      <div class="stat" data-a><div class="n g">Direct</div><div class="l">Booking engine</div></div>
+    </div>
+    <div class="proves">
+      <span class="tag" data-a style="color:var(--gold)">What it proves</span>
+      <div class="chips">
+        <span class="chip" data-a>Own the website &amp; booking</span>
+        <span class="chip" data-a>Win on SEO / content</span>
+        <span class="chip" data-a>Build community</span>
+        <span class="chip" data-a>Land corporate &amp; group clients</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · SOLUTION -->
+  <section data-scene="3">
+    <div class="kicker" data-a>The solution</div>
+    <h2 data-a>Three quadrants. <em>A deepening partnership.</em></h2>
+    <div class="quads">
+      <div class="card quad" data-a>
+        <div class="num">01</div><div class="ph">Foundation</div><h3>Digital Strategy</h3>
+        <p>Website, SEO &amp; AEO — take TripVan on its digital journey.</p>
+        <div class="price">$2,500 / month</div>
+      </div>
+      <div class="card quad" data-a>
+        <div class="num">02</div><div class="ph">Acceleration</div><h3>Growth Engine</h3>
+        <p>Drive bookings directly; shift to a performance share.</p>
+        <div class="price">~10% per transaction</div>
+      </div>
+      <div class="card quad hot" data-a>
+        <div class="num">03</div><div class="ph">Efficiency</div><h3>50/50 Joint Venture</h3>
+        <p>Co-own the sustainable-farming innovation for farmers.</p>
+        <div class="price">50 / 50 split</div>
+      </div>
+    </div>
+    <div class="deepens" data-a><b>Vendor</b><span class="arr">→</span><b>Growth partner</b><span class="arr">→</span><b>Co-owner</b><span style="margin-left:14px">The relationship deepens at every stage.</span></div>
+  </section>
+
+  <!-- 5 · Q1 -->
+  <section data-scene="4">
+    <div class="qhead">
+      <div class="bignum" data-a>01</div>
+      <div>
+        <div class="kicker" data-a>Quadrant 1 · Foundation</div>
+        <h2 data-a>Digital <em>Strategy</em></h2>
+        <p class="lede" data-a style="font-size:21px;margin-top:16px">Take TripVan on the same digital journey that built BMC — off the OTAs, onto an owned platform it controls.</p>
+      </div>
+    </div>
+    <div class="tiles">
+      <div class="card tile" data-a><div class="i">A · BOOK</div><h4>Website &amp; direct booking</h4><p>Build on today’s site: real-time availability, instant confirmation, hotel-partner codes &amp; Mercado Pago. No OTA commission on a direct sale.</p></div>
+      <div class="card tile" data-a><div class="i">B · RANK</div><h4>SEO foundation</h4><p>Pages for Cajón del Maipo, Embalse El Yeso, San José de Maipo &amp; “snow day trip from Santiago” + technical SEO, schema &amp; Google Business.</p></div>
+      <div class="card tile" data-a><div class="i">C · ANSWER</div><h4>AEO — AI search</h4><p>When travellers ask ChatGPT, Gemini or AI Overviews for “a day trip from Santiago to the Andes”, the answer is TripVan — in ES, EN &amp; PT.</p></div>
+      <div class="card tile" data-a><div class="i">D · PUBLISH</div><h4>Content engine</h4><p>Forbes anchor article + Raco-narrated stories and the stop videos, turned into an evergreen, consistently published blog.</p></div>
+      <div class="card tile" data-a><div class="i">E · KEEP</div><h4>Own the audience</h4><p>WhatsApp booking + email capture &amp; newsletter — a first-party list of every Chilean &amp; Brazilian traveller, unlike OTA customers.</p></div>
+      <div class="card tile" data-a><div class="i">F · MEASURE</div><h4>Analytics &amp; tracking</h4><p>Conversion tracking and a simple dashboard so every channel’s bookings are measurable from day one.</p></div>
+    </div>
+    <div class="card model hot" data-a><span class="tag" style="color:var(--gold)">Commercial model</span><span class="v">$2,500 / month <span class="mono" style="font-size:15px;color:var(--text);font-weight:400;letter-spacing:.1em">· fixed service retainer</span></span></div>
+  </section>
+
+  <!-- 6 · Q2 -->
+  <section data-scene="5">
+    <div class="qhead">
+      <div class="bignum" data-a>02</div>
+      <div>
+        <div class="kicker" data-a>Quadrant 2 · Acceleration</div>
+        <h2 data-a>Pour fuel on <em>the foundation.</em></h2>
+        <p class="lede" data-a style="font-size:20px;margin-top:14px">Once the foundation is driving bookings, Sondri scales demand — and shifts from a flat fee to a cut of the transactions it drives.</p>
+      </div>
+    </div>
+    <div class="q2">
+      <div>
+        <div class="tag" data-a style="color:var(--gold)">What we deliver</div>
+        <div class="tiles">
+          <div class="card tile" data-a><h4>Content at scale</h4><p>Blog, video &amp; social content + multi-platform syndication, AI-assisted.</p></div>
+          <div class="card tile" data-a><h4>Influencer &amp; creator program</h4><p>Creators film El Yeso, the snow &amp; Raco — each with a tracked direct-booking link.</p></div>
+          <div class="card tile" data-a><h4>Data Aggregator App</h4><p>Hotel partners, route providers &amp; creator performance in one booking + analytics hub.</p></div>
+          <div class="card tile" data-a><h4>Paid acquisition</h4><p>Google / Meta + retargeting, with a Portuguese track for Brazil as PIX goes live.</p></div>
+          <div class="card tile" data-a><h4>Premium “Stargazing Line”</h4><p>Launch &amp; market the sustainability tour ($100+/head) as a new revenue line.</p></div>
+          <div class="card tile" data-a><h4>Corporate &amp; group channel</h4><p>Corporate retreats &amp; group tours — the BMC playbook.</p></div>
+        </div>
+      </div>
+      <div class="card bench" data-a>
+        <div class="tag" style="color:var(--gold)">The cut — benchmarked</div>
+        <div class="bar"><div class="row"><span>OTA marketplaces</span><b>30%</b></div><div class="track"><div class="fill" style="width:100%"></div></div></div>
+        <div class="bar"><div class="row"><span>Expedia activities</span><b>25%</b></div><div class="track"><div class="fill" style="width:83.3%"></div></div></div>
+        <div class="bar"><div class="row"><span>Affiliate payout</span><b>10%</b></div><div class="track"><div class="fill" style="width:33.3%"></div></div></div>
+        <div class="bar me"><div class="row"><span>Sondri (recommended)</span><b>10%</b></div><div class="track"><div class="fill" style="width:33.3%"></div></div></div>
+        <div class="note"><b>10% of each transaction Sondri drives</b>The $2,500 retainer tapers as the cut grows. Top of the affiliate band (we own the whole funnel), far below the 20–30% OTAs charge — so TripVan wins on every booking moved in-house.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · Q3 -->
+  <section data-scene="6">
+    <div class="qhead">
+      <div class="bignum" data-a>03</div>
+      <div>
+        <div class="kicker" data-a>Quadrant 3 · Efficiency</div>
+        <h2 data-a>A 50/50 <em>joint venture.</em></h2>
+        <p class="lede" data-a style="font-size:20px;margin-top:14px">Sondri and TripVan jointly build a sustainable-farming innovation for farmers — equal IP, equal capital, equal upside.</p>
+      </div>
+    </div>
+    <div class="jv">
+      <div class="ring" data-a>
+        <svg viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="84" fill="none" stroke="#263434" stroke-width="1" />
+          <circle class="arc a1" cx="100" cy="100" r="84" fill="none" stroke="#ffcc78" stroke-width="14" pathLength="100" stroke-dasharray="49 51" stroke-dashoffset="0" />
+          <circle class="arc a2" cx="100" cy="100" r="84" fill="none" stroke="#86A19E" stroke-width="14" pathLength="100" stroke-dasharray="49 51" stroke-dashoffset="-50" />
+        </svg>
+        <div class="lbl l1"><span>SONDRI</span><b>50%</b></div>
+        <div class="lbl l2"><span>TRIPVAN</span><b>50%</b></div>
+        <div class="lbl cap">Shared ownership of a new firm — not a service relationship. Both parties co-invest and co-own the IP and the revenue.</div>
+      </div>
+      <div>
+        <div class="tag" data-a style="color:var(--gold)">What the JV builds &amp; monetizes</div>
+        <div class="tiles">
+          <div class="card tile" data-a><div class="i">BUILD</div><h4>Sustainable farm innovation</h4><p>Hydrogel-planting experience + IoT farm tech &amp; water monitoring, built jointly.</p></div>
+          <div class="card tile" data-a><div class="i">REVENUE</div><h4>Charge passengers</h4><p>Premium stargazing + farm-stop tours (Cabrerío goat cheese, Parque Almendro) at $100+/head.</p></div>
+          <div class="card tile" data-a><div class="i">REVENUE</div><h4>Charge farmers</h4><p>Route farmers &amp; producers pay to host the tourist-planting experience on their land.</p></div>
+          <div class="card tile" data-a><div class="i">NON-DILUTIVE</div><h4>Government funding</h4><p>Startup Chile + subsidies fund the sustainable-tech build.</p></div>
+        </div>
+        <div class="card why" data-a><span class="tag" style="color:var(--gold)">Why 50/50</span><p>Equal IP and equal capital/risk on a net-new product line — distinct from the Q1 retainer and Q2 revenue share. The deepest tier of the partnership: co-owner, not vendor.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 · END TO END -->
+  <section data-scene="7">
+    <div class="kicker" data-a>The partnership, end to end</div>
+    <h2 data-a>How Sondri grows <em>with</em> TripVan.</h2>
+    <div class="journey">
+      <div class="rail"></div>
+      <div class="stage" data-a><div class="dot">01</div><div class="ph">Foundation</div><h3>Service provider</h3><div class="v">$2,500 / mo</div><p>Website · SEO · AEO</p></div>
+      <div class="stage" data-a><div class="dot">02</div><div class="ph">Acceleration</div><h3>Growth partner</h3><div class="v">~10% / txn</div><p>Drives direct bookings</p></div>
+      <div class="stage" data-a><div class="dot">03</div><div class="ph">Efficiency</div><h3>Co-owner</h3><div class="v">50 / 50 JV</div><p>Sustainability innovation</p></div>
+    </div>
+    <div class="closing">
+      <div class="big" data-a>From renting demand<br/>to <em>owning growth.</em></div>
+      <figure class="photo postcard" data-a data-photo>
+        <img src="assets/passengers-postcard.jpeg" alt="TripVan passengers in the Cajón del Maipo, 19 May 2026" />
+        <figcaption><div class="tag">Real passengers · 19 May 2026</div><p style="font-size:15px">Every one of them should be TripVan’s customer — not an OTA’s.</p></figcaption>
+      </figure>
+      <div class="cta" data-a>Let’s build TripVan’s digital future together · <a href="https://sondri.ai">sondri.ai</a></div>
+    </div>
+  </section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script>
+/* =========================================================
+   Bayer-dithered night sky (WebGL)
+   An ordered-dither field of Atacama sky: drifting fbm
+   "nebula", a ridge-line horizon, twinkling stars, and a
+   cursor-driven glow. Uniforms are tweened per slide.
+   ========================================================= */
+const sky = (() => {
+  const canvas = document.getElementById('sky');
+  const gl = canvas.getContext('webgl', { antialias: false, premultipliedAlpha: false });
+  if (!gl) return null;
+
+  const vs = `attribute vec2 p; void main(){ gl_Position = vec4(p,0.,1.); }`;
+  const fs = `
+  precision highp float;
+  uniform vec2 uRes; uniform float uTime; uniform vec2 uMouse; uniform vec2 uFocus;
+  uniform float uIntensity; uniform float uPix; uniform float uHorizon; uniform float uStars;
+
+  float bayer2(vec2 a){ a = floor(a); return fract(dot(a, vec2(.5, a.y*.75))); }
+  float bayer4(vec2 a){ return bayer2(.5*a)*.25 + bayer2(a); }
+  float bayer8(vec2 a){ return bayer4(.5*a)*.25 + bayer2(a); }
+
+  float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453); }
+  float noise(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.-2.*f);
+    return mix(mix(hash(i),hash(i+vec2(1,0)),f.x), mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x), f.y); }
+  float fbm(vec2 p){ float v=0., a=.5; for(int i=0;i<5;i++){ v+=a*noise(p); p=p*2.03+vec2(1.7,9.2); a*=.5; } return v; }
+
+  void main(){
+    vec2 cell = floor(gl_FragCoord.xy / uPix);
+    vec2 uv = (cell * uPix) / uRes.y;             // aspect-correct, pixelated
+    vec2 st = (cell * uPix) / uRes;               // 0..1
+    float t = uTime;
+
+    // drifting nebula with domain warp
+    vec2 q = vec2(fbm(uv*1.4 + t*.03), fbm(uv*1.4 - t*.025 + 4.));
+    float neb = fbm(uv*1.8 + q*1.6 + vec2(t*.02, 0.));
+
+    // focus glow (tweened per slide) + cursor glow
+    vec2 asp = vec2(uRes.x/uRes.y, 1.);
+    float fg = exp(-3.2*length((st-uFocus)*asp));
+    float mg = exp(-9.0*length((st-uMouse)*asp));
+    float ripple = .5+.5*sin(length((st-uMouse)*asp)*48. - t*3.);
+
+    // ridge-line horizon (Andes silhouette) near the bottom
+    float ridge = uHorizon + .06*fbm(vec2(st.x*3.5, 1.)) + .025*fbm(vec2(st.x*14., 3.));
+    float ground = step(st.y, ridge);
+    float horizonGlow = exp(-abs(st.y - ridge)*18.) * (1.-ground);
+
+    float v = neb*.55*uIntensity + fg*.45*uIntensity + mg*(.28+.12*ripple) + horizonGlow*.55;
+    v *= (1. - ground*.92);
+
+    float th = bayer8(cell);
+    float gold = step(th, v - .18);
+    float teal = step(th, v*1.35);
+
+    vec3 ink = vec3(.031,.075,.075);
+    vec3 tealC = vec3(.149,.204,.204);
+    vec3 goldC = vec3(1., .8, .47);
+    vec3 col = ink;
+    col = mix(col, tealC, teal);
+    col = mix(col, goldC*.92, gold);
+
+    // stars: sparse, twinkling, above the ridge
+    vec2 sc = floor(gl_FragCoord.xy / (uPix*2.));
+    float h = hash(sc);
+    float star = step(.9965, h) * (.55 + .45*sin(t*2.2 + h*90.)) * (1.-ground) * uStars;
+    col = mix(col, vec3(1., .93, .78), clamp(star,0.,1.));
+
+    gl_FragColor = vec4(col, 1.);
+  }`;
+
+  function sh(type, src){ const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s)); return s; }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog); gl.useProgram(prog);
+  const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const U = n => gl.getUniformLocation(prog, n);
+  const u = { res:U('uRes'), time:U('uTime'), mouse:U('uMouse'), focus:U('uFocus'), inten:U('uIntensity'), pix:U('uPix'), hor:U('uHorizon'), stars:U('uStars') };
+
+  const state = { intensity: .92, fx: .8, fy: .66, horizon: .12, stars: 1, mx: .5, my: .5, tmx: .5, tmy: .5 };
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // one canvas pixel = one 3px dither cell; upscaled with crisp pixels (cheap on any laptop)
+  const CELL = 3;
+  function resize(){ canvas.width = Math.ceil(innerWidth / CELL); canvas.height = Math.ceil(innerHeight / CELL);
+    gl.viewport(0,0,canvas.width,canvas.height); }
+  addEventListener('resize', resize); resize();
+  addEventListener('pointermove', e => { state.tmx = e.clientX / innerWidth; state.tmy = 1 - e.clientY / innerHeight; });
+
+  const t0 = performance.now();
+  (function frame(now){
+    state.mx += (state.tmx - state.mx) * .06; state.my += (state.tmy - state.my) * .06;
+    gl.uniform2f(u.res, canvas.width, canvas.height);
+    gl.uniform1f(u.time, (now - t0) / 1000 * (reduce ? .15 : 1));
+    gl.uniform2f(u.mouse, state.mx, state.my);
+    gl.uniform2f(u.focus, state.fx, state.fy);
+    gl.uniform1f(u.inten, state.intensity);
+    gl.uniform1f(u.pix, 1.0);
+    gl.uniform1f(u.hor, state.horizon);
+    gl.uniform1f(u.stars, state.stars);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    requestAnimationFrame(frame);
+  })(t0);
+  return state;
+})();
+
+/* per-slide sky "camera": focus point, nebula intensity, horizon height */
+const SCENES = [
+  { intensity: .92, fx: .80, fy: .66, horizon: .12, stars: 1 },   // title: big sky over the Andes
+  { intensity: .40,  fx: .97, fy: .97, horizon: .03, stars: .6 },  // meet tripvan
+  { intensity: .50,  fx: .50, fy: .97, horizon: .03, stars: .8 },  // the route
+  { intensity: .44,  fx: .95, fy: .10, horizon: .06, stars: .6 },  // situation
+  { intensity: .45,  fx: .92, fy: .22, horizon: .05, stars: .6 },  // playbook
+  { intensity: .50,  fx: .92, fy: .80, horizon: .05, stars: .7 },  // solution
+  { intensity: .36,  fx: .97, fy: .55, horizon: .03, stars: .4 },  // Q1
+  { intensity: .36,  fx: .97, fy: .97, horizon: .03, stars: .4 },  // Q2
+  { intensity: .38,  fx: .97, fy: .97, horizon: .04, stars: .6 },  // Q3
+  { intensity: .44,  fx: .92, fy: .88, horizon: .03, stars: 1 },   // close: open sky
+];
+
+/* =========================================================
+   Reveal + GSAP choreography
+   Content is fully visible in markup (so ?print-pdf works);
+   GSAP animates *from* hidden on each slide entry.
+   ========================================================= */
+const isPrint = /print-pdf/i.test(location.search);
+// no entrance motion for print, ?static, or OS "reduce motion" — content is simply shown
+const noMotion = isPrint || /static/i.test(location.search) || matchMedia('(prefers-reduced-motion: reduce)').matches;
+Reveal.initialize({
+  width: 1600, height: 900, margin: 0, minScale: .2, maxScale: 2,
+  hash: true, controls: true, progress: true, center: false,
+  slideNumber: 'c/t', transition: 'fade', transitionSpeed: 'slow', backgroundTransition: 'none',
+  pdfSeparateFragments: false,
+});
+
+function enter(slide){
+  if (isPrint || !slide) return;
+  const idx = Reveal.getIndices(slide).h;
+  const sc = SCENES[idx] || SCENES[1];
+  if (noMotion) { if (sky) Object.assign(sky, sc); if (slide.querySelector('#route')) playRoute(); return; }
+  if (sky) gsap.to(sky, { ...sc, duration: 2.2, ease: 'power2.inOut', overwrite: true });
+
+  const items = slide.querySelectorAll('[data-a]');
+  gsap.killTweensOf(items);
+  gsap.fromTo(items, { y: 34, opacity: 0, filter: 'blur(8px)' },
+    { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.0, ease: 'expo.out', stagger: .07, delay: .25, clearProps: 'filter' });
+
+  // count-ups
+  slide.querySelectorAll('[data-count]').forEach((el, i) => {
+    const end = +el.dataset.count, suf = el.dataset.suffix || '', pre = el.dataset.prefix || '', o = { v: 0 };
+    gsap.to(o, { v: end, duration: 1.8, delay: .5 + i * .1, ease: 'power3.out',
+      onUpdate: () => el.textContent = pre + Math.round(o.v) + suf });
+  });
+  // OTA leak bars
+  slide.querySelectorAll('.leak b').forEach((b, i) =>
+    gsap.fromTo(b, { width: '0%' }, { width: b.dataset.w + '%', duration: 1.4, delay: .8 + i * .12, ease: 'power3.out' }));
+  // benchmark bars
+  slide.querySelectorAll('.bar .fill').forEach((f, i) =>
+    gsap.from(f, { width: '0%', duration: 1.3, delay: .7 + i * .15, ease: 'power3.out' }));
+  // 50/50 ring
+  const a1 = slide.querySelector('.arc.a1'), a2 = slide.querySelector('.arc.a2');
+  if (a1) {
+    gsap.fromTo(a1, { attr: { 'stroke-dasharray': '0 100' } }, { attr: { 'stroke-dasharray': '49 51' }, duration: 1.6, delay: .5, ease: 'power3.inOut' });
+    gsap.fromTo(a2, { attr: { 'stroke-dasharray': '0 100' } }, { attr: { 'stroke-dasharray': '49 51' }, duration: 1.6, delay: .8, ease: 'power3.inOut' });
+  }
+  // solution: quadrants climb
+  slide.querySelectorAll('.quad').forEach((q, i) =>
+    gsap.from(q, { y: 120, duration: 1.4, delay: .3 + i * .18, ease: 'expo.out' }));
+  // journey dashed path flows
+  const rail = slide.querySelector('.journey .rail');
+  if (rail) {
+    gsap.fromTo(rail, { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)', duration: 1.8, delay: .5, ease: 'power2.inOut' });
+    gsap.fromTo(rail, { backgroundPosition: '0px 0' }, { backgroundPosition: '200px 0', duration: 6, ease: 'none', repeat: -1 });
+  }
+  // photo: clip reveal + slow push-in
+  slide.querySelectorAll('[data-photo]').forEach(ph => {
+    gsap.fromTo(ph, { clipPath: 'inset(100% 0 0 0)' }, { clipPath: 'inset(0% 0 0 0)', duration: 1.4, delay: .3, ease: 'expo.inOut' });
+    gsap.fromTo(ph.querySelector('img'), { scale: 1.18 }, { scale: 1, duration: 6, delay: .3, ease: 'power2.out' });
+  });
+  if (slide.querySelector('#route')) playRoute();
+}
+
+/* ---------- 12-stop route map (stops taken from tripvan.cl) ---------- */
+const STOPS = [
+  ['Salida', 'Pick-up', 0], ['Cajón del Maipo', 'Gateway', 0], ['San José de Maipo', 'Historic town', 0],
+  ['Parque Almendro', 'Nature stop', 1], ['Embalse El Yeso', 'Reservoir', 0], ['Parque Cordillera', 'Ruta Sostenible', 1],
+  ['Cordillera & Nieve', 'High Andes', 1], ['Cabrerío', 'Goat cheese', 1], ['Encuentro con Raco', 'The guardian', 1],
+  ['Casa Chocolate', 'Partner stop', 1], ['Casa Bosque', 'Partner stop', 1], ['Regreso', 'Return', 0],
+];
+let routeBuilt = false, routeTl = null;
+function buildRoute(){
+  const box = document.getElementById('route'), path = document.getElementById('routePath');
+  const L = path.getTotalLength();
+  STOPS.forEach(([t, k, x], i) => {
+    const pt = path.getPointAtLength(L * i / (STOPS.length - 1));
+    const up = pt.y <= 190;
+    const d = document.createElement('div');
+    d.className = 'stop ' + (x ? 'x ' : '') + (up ? 'up' : 'dn');
+    d.style.left = (pt.x / 1380 * 100) + '%'; d.style.top = (pt.y / 360 * 100) + '%';
+    d.innerHTML = `<div class="node"></div><div class="lab"><div class="n">${String(i + 1).padStart(2, '0')}</div><div class="t">${t}</div><div class="k">${k}</div></div>`;
+    box.appendChild(d);
+  });
+  const van = document.createElement('div'); van.className = 'van'; van.textContent = 'TV'; box.appendChild(van);
+  routeBuilt = true;
+}
+function playRoute(){
+  if (!routeBuilt) buildRoute();
+  const box = document.getElementById('route'), path = document.getElementById('routePath');
+  const L = path.getTotalLength(), stops = [...box.querySelectorAll('.stop')], van = box.querySelector('.van');
+  if (routeTl) routeTl.kill();
+  const placeVan = f => { const p = path.getPointAtLength(L * f); van.style.left = (p.x / 1380 * 100) + '%'; van.style.top = (p.y / 360 * 100) + '%'; };
+  if (noMotion) { placeVan(1); return; }
+  const prog = { f: 0 };
+  stops.forEach(s => s._on = 0);
+  gsap.set(path, { attr: { 'stroke-dasharray': `${L} ${L}`, 'stroke-dashoffset': L } });
+  gsap.set(stops, { opacity: 0, scale: .4 });
+  placeVan(0);
+  routeTl = gsap.timeline({ delay: .7 })
+    .to(prog, { f: 1, duration: 5.5, ease: 'power1.inOut', onUpdate: () => {
+      placeVan(prog.f);
+      path.setAttribute('stroke-dashoffset', L * (1 - prog.f));
+      stops.forEach((s, i) => { if (!s._on && prog.f >= i / (stops.length - 1) - .01) { s._on = 1;
+        gsap.to(s, { opacity: 1, scale: 1, duration: .6, ease: 'back.out(2.4)' }); } });
+    } })
+    .set(path, { attr: { 'stroke-dasharray': '7 7', 'stroke-dashoffset': 0 } })
+    .to(path, { attr: { 'stroke-dashoffset': -140 }, duration: 8, ease: 'none', repeat: -1 });
+}
+if (isPrint) Reveal.on('ready', () => playRoute());
+
+Reveal.on('ready', e => enter(e.currentSlide));
+Reveal.on('slidechanged', e => enter(e.currentSlide));
+</script>
+</body>
+</html>

@@ -4,9 +4,37 @@
     {
       "name": "sondri-preview",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["astro", "preview", "--port", "4321"],
+      "runtimeArgs": [
+        "astro",
+        "preview",
+        "--port",
+        "4321"
+      ],
       "cwd": "C:\\Users\\I868004\\Desktop\\Sondri\\sondri-site",
       "port": 4321
+    },
+    {
+      "name": "tripvan-deck",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4600",
+        "--directory",
+        "C:/Users/I868004/Desktop/Sondri/presentations/tripvan"
+      ],
+      "port": 4600
+    },
+    {
+      "name": "tripvan-raco-deck",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8765"
+      ],
+      "cwd": "C:\\Users\\I868004\\Desktop\\Sondri\\tripvan-presentation",
+      "port": 8765
     }
   ]
 }
