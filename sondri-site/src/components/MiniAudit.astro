@@ -156,9 +156,21 @@ const { defaultLang = 'en' } = Astro.props;
             </div>
           </div>
 
-          <div class="email-gate-row">
-            <div class="form-group email-input-wrap">
-              <label for="leadEmail" class="label" data-audit-i18n="emailLabel">Your work email to unlock live AI results *</label>
+          <div class="lead-fields-grid">
+            <div class="form-group">
+              <label for="leadName" class="label" data-audit-i18n="nameLabel">Your full name *</label>
+              <input
+                type="text"
+                id="leadName"
+                class="form-input"
+                placeholder="Alex Rivera"
+                required
+                autocomplete="name"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="leadEmail" class="label" data-audit-i18n="emailLabel">Work email *</label>
               <input
                 type="email"
                 id="leadEmail"
@@ -169,6 +181,20 @@ const { defaultLang = 'en' } = Astro.props;
               />
             </div>
 
+            <div class="form-group">
+              <label for="leadPhone" class="label" data-audit-i18n="phoneLabel">Phone / WhatsApp *</label>
+              <input
+                type="tel"
+                id="leadPhone"
+                class="form-input"
+                placeholder="+1 555 234 5678"
+                required
+                autocomplete="tel"
+              />
+            </div>
+          </div>
+
+          <div class="email-gate-row">
             <button type="submit" id="btnRunAi" class="btn btn-gold btn-ai-submit">
               <span data-audit-i18n="runAiBtn">Run Live AI Visibility Check</span> <span class="arr">→</span>
             </button>
@@ -296,7 +322,9 @@ const { defaultLang = 'en' } = Astro.props;
       step2Desc:
         'We ask 3 buyer questions without your brand name. You can edit the questions below before running the live check.',
       qLabel: 'Unbranded buyer question',
-      emailLabel: 'Your work email to unlock live AI results *',
+      nameLabel: 'Your full name *',
+      emailLabel: 'Work email *',
+      phoneLabel: 'Phone / WhatsApp *',
       runAiBtn: 'Run Live AI Visibility Check',
       runAiBtnLoading: 'Querying live AI with Google Search…',
       aiReportKicker: '/ 04 · Live AI Visibility Snapshot',
@@ -350,7 +378,9 @@ const { defaultLang = 'en' } = Astro.props;
       step2Desc:
         'Hacemos 3 preguntas de cliente sin el nombre de tu empresa. Puedes editar las preguntas antes de ejecutar la revisión.',
       qLabel: 'Pregunta de cliente sin marca',
-      emailLabel: 'Tu correo de trabajo para ver los resultados de IA en vivo *',
+      nameLabel: 'Tu nombre completo *',
+      emailLabel: 'Correo de trabajo *',
+      phoneLabel: 'Teléfono / WhatsApp *',
       runAiBtn: 'Ejecutar Revisión de Visibilidad en IA',
       runAiBtnLoading: 'Consultando IA con búsqueda en vivo…',
       aiReportKicker: '/ 04 · Resultado de Visibilidad en IA',
@@ -712,7 +742,9 @@ const { defaultLang = 'en' } = Astro.props;
     const errEl = document.getElementById('aiError') as HTMLElement;
     errEl.style.display = 'none';
 
+    const name = (document.getElementById('leadName') as HTMLInputElement).value.trim();
     const email = (document.getElementById('leadEmail') as HTMLInputElement).value.trim();
+    const phone = (document.getElementById('leadPhone') as HTMLInputElement).value.trim();
     const questions = [0, 1, 2]
       .map((i) => (document.getElementById(`qInput${i}`) as HTMLInputElement)?.value.trim())
       .filter(Boolean);
@@ -727,7 +759,9 @@ const { defaultLang = 'en' } = Astro.props;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           audit_id: currentAudit.id,
+          name,
           email,
+          phone,
           questions,
           city: currentAudit.city,
           service: currentAudit.service,
@@ -791,6 +825,36 @@ const { defaultLang = 'en' } = Astro.props;
       if (spanText) spanText.textContent = I18N[currentLang].buyBtn;
     }
   });
+
+  // Pre-fill from homepage query params (?url=...&name=...&email=...&phone=...) and auto-run Step 1
+  (function initFromQuery() {
+    const q = new URLSearchParams(window.location.search);
+    const qUrl = q.get('url');
+    const qName = q.get('name');
+    const qEmail = q.get('email');
+    const qPhone = q.get('phone');
+    const qCity = q.get('city');
+    const qService = q.get('service');
+
+    const urlInp = document.getElementById('auditUrl') as HTMLInputElement | null;
+    const nameInp = document.getElementById('leadName') as HTMLInputElement | null;
+    const emailInp = document.getElementById('leadEmail') as HTMLInputElement | null;
+    const phoneInp = document.getElementById('leadPhone') as HTMLInputElement | null;
+    const cityInp = document.getElementById('auditCity') as HTMLInputElement | null;
+    const serviceInp = document.getElementById('auditService') as HTMLInputElement | null;
+
+    if (qName && nameInp) nameInp.value = qName;
+    if (qEmail && emailInp) emailInp.value = qEmail;
+    if (qPhone && phoneInp) phoneInp.value = qPhone;
+    if (qCity && cityInp) cityInp.value = qCity;
+    if (qService && serviceInp) serviceInp.value = qService;
+
+    if (qUrl && urlInp) {
+      urlInp.value = qUrl;
+      const form1 = document.getElementById('formStep1') as HTMLFormElement | null;
+      form1?.requestSubmit();
+    }
+  })();
 </script>
 
 <style>
@@ -1053,10 +1117,15 @@ const { defaultLang = 'en' } = Astro.props;
     margin-top: var(--s-16);
   }
 
-  .email-gate-row {
+  .lead-fields-grid {
     display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: end;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-16);
+  }
+
+  .email-gate-row {
+    display: flex;
+    justify-content: flex-end;
     gap: var(--s-16);
   }
 
@@ -1203,11 +1272,11 @@ const { defaultLang = 'en' } = Astro.props;
 
   @media (max-width: 960px) {
     .form-grid,
+    .lead-fields-grid,
     .grid-2,
     .summary-stats,
     .upgrade-card,
-    .compare-mini,
-    .email-gate-row {
+    .compare-mini {
       grid-template-columns: 1fr;
     }
 

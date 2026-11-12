@@ -1,0 +1,192 @@
+<section class="section section-pad on-dark aeo-promo" id="ai-audit" data-reveal>
+  <div class="wrap">
+    <div class="panel promo-box">
+      <div class="promo-left">
+        <span class="chip">
+          <span class="gdot">■</span>
+          <span class="i18n-en">New · AI Search Visibility (AEO / GEO)</span>
+          <span class="i18n-es">Nuevo · Visibilidad en Búsqueda con IA (AEO / GEO)</span>
+        </span>
+
+        <h2 class="h3 promo-title">
+          <span class="i18n-en">Does ChatGPT or Google AI name your business when a buyer asks<span class="gdot">?</span></span>
+          <span class="i18n-es">¿ChatGPT o la IA de Google nombran a su empresa cuando un cliente pregunta<span class="gdot">?</span></span>
+        </h2>
+
+        <p class="lede promo-lede">
+          <span class="i18n-en">
+            Run a free instant snapshot of your website’s AI search readiness, Google Lighthouse base health, and live unbranded buyer prompts—or upgrade to our Full 15-Question Audit across ChatGPT, Gemini, Google AI Overviews, and Google AI Mode for $99.
+          </span>
+          <span class="i18n-es">
+            Ejecute un diagnóstico gratuito de la preparación técnica de su sitio para IA, su puntaje de Google Lighthouse y 3 preguntas de compra sin marca en vivo, o solicite la Auditoría Completa de 15 preguntas en ChatGPT, Gemini y la IA de Google por $99.
+          </span>
+        </p>
+
+        <ul class="promo-points">
+          <li>
+            <span class="gdot">■</span>
+            <span class="i18n-en">Checks AI crawlers (OAI-SearchBot, Googlebot, PerplexityBot, Claude-SearchBot), schema & Lighthouse</span>
+            <span class="i18n-es">Revisa rastreadores de IA (OAI-SearchBot, Googlebot, PerplexityBot, Claude-SearchBot), schema y Lighthouse</span>
+          </li>
+          <li>
+            <span class="gdot">■</span>
+            <span class="i18n-en">Tests unbranded buyer questions and shows which competitors get named instead</span>
+            <span class="i18n-es">Prueba preguntas reales sin su marca y muestra a qué competidores nombran en su lugar</span>
+          </li>
+        </ul>
+      </div>
+
+      <form id="homeAuditForm" class="promo-form" action="/audit" method="get">
+        <p class="label form-head">
+          <span class="gdot">■</span>
+          <span class="i18n-en">Register for your Free AI Snapshot</span>
+          <span class="i18n-es">Regístrese para su Diagnóstico Gratuito de IA</span>
+        </p>
+
+        <div class="field">
+          <label for="haUrl" class="label">
+            <span class="i18n-en">Website URL *</span>
+            <span class="i18n-es">Sitio web *</span>
+          </label>
+          <input type="text" id="haUrl" name="url" class="inp" placeholder="yourcompany.com" required />
+        </div>
+
+        <div class="field">
+          <label for="haName" class="label">
+            <span class="i18n-en">Full name *</span>
+            <span class="i18n-es">Nombre completo *</span>
+          </label>
+          <input type="text" id="haName" name="name" class="inp" placeholder="Alex Rivera" required />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="haEmail" class="label">
+              <span class="i18n-en">Work email *</span>
+              <span class="i18n-es">Correo de trabajo *</span>
+            </label>
+            <input type="email" id="haEmail" name="email" class="inp" placeholder="you@company.com" required />
+          </div>
+
+          <div class="field">
+            <label for="haPhone" class="label">
+              <span class="i18n-en">Phone / WhatsApp *</span>
+              <span class="i18n-es">Teléfono / WhatsApp *</span>
+            </label>
+            <input type="tel" id="haPhone" name="phone" class="inp" placeholder="+1 555 234 5678" required />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-gold btn-full">
+          <span class="i18n-en">Run My Free AI Audit</span>
+          <span class="i18n-es">Ejecutar Mi Diagnóstico Gratis</span>
+          <span class="arr">→</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Toggle EN/ES copy based on html[lang="es"] set by Base.astro / scripts/i18n.ts */
+  .i18n-es {
+    display: none;
+  }
+  :global(html[lang='es']) .i18n-en {
+    display: none;
+  }
+  :global(html[lang='es']) .i18n-es {
+    display: inline;
+  }
+
+  .promo-box {
+    background: var(--teal-deep);
+    border: 1px solid var(--line);
+    box-shadow: 10px 10px 0 var(--gold);
+    padding: var(--s-48);
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: var(--s-48);
+    align-items: center;
+  }
+
+  .promo-title {
+    margin-top: var(--s-24);
+    margin-bottom: var(--s-16);
+  }
+
+  .promo-lede {
+    color: var(--pale);
+    font-size: 16px;
+    margin-bottom: var(--s-24);
+  }
+
+  .promo-points {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--white);
+  }
+
+  .promo-form {
+    background: var(--teal);
+    border: 1px solid var(--gold);
+    padding: var(--s-32);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+  }
+
+  .form-head {
+    color: var(--white);
+    margin-bottom: var(--s-04);
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-16);
+  }
+
+  .inp {
+    background: var(--teal-deep);
+    border: 1px solid var(--line);
+    color: var(--white);
+    font-family: var(--sans);
+    font-size: 14px;
+    padding: 12px 14px;
+    width: 100%;
+  }
+
+  .inp:focus {
+    outline: 2px solid var(--gold);
+    outline-offset: 1px;
+    border-color: var(--gold);
+  }
+
+  .btn-full {
+    width: 100%;
+    justify-content: center;
+    margin-top: var(--s-08);
+  }
+
+  @media (max-width: 960px) {
+    .promo-box {
+      grid-template-columns: 1fr;
+      padding: var(--s-32) var(--s-24);
+      gap: var(--s-32);
+    }
+
+    .field-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -19,7 +19,9 @@ CREATE INDEX IF NOT EXISTS idx_audits_domain_exp ON audits(domain, expires_at);
 -- 2. Captured leads & $99 Full Audit conversions
 CREATE TABLE IF NOT EXISTS leads (
   id TEXT PRIMARY KEY,
+  name TEXT,
   email TEXT NOT NULL,
+  phone TEXT,
   domain TEXT NOT NULL,
   city TEXT,
   service TEXT,

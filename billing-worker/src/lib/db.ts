@@ -46,7 +46,9 @@ async function ensureSchema(env: Env): Promise<void> {
       env.DB.prepare(`
         CREATE TABLE IF NOT EXISTS leads (
           id TEXT PRIMARY KEY,
+          name TEXT,
           email TEXT NOT NULL,
+          phone TEXT,
           domain TEXT NOT NULL,
           city TEXT,
           service TEXT,
@@ -221,7 +223,9 @@ export async function recordLead(
   env: Env,
   lead: {
     id: string;
+    name: string;
     email: string;
+    phone: string;
     domain: string;
     city: string;
     service: string;
@@ -233,22 +237,44 @@ export async function recordLead(
   await ensureSchema(env);
   if (!env.DB) return;
 
-  await env.DB.prepare(
-    `INSERT INTO leads (id, email, domain, city, service, lang, audit_id, ip_hash, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-  )
-    .bind(
-      lead.id,
-      lead.email.toLowerCase().trim(),
-      lead.domain,
-      lead.city,
-      lead.service,
-      lead.lang,
-      lead.auditId,
-      lead.ipHash,
-      new Date().toISOString()
+  try {
+    await env.DB.prepare(
+      `INSERT INTO leads (id, name, email, phone, domain, city, service, lang, audit_id, ip_hash, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
-    .run();
+      .bind(
+        lead.id,
+        lead.name.trim(),
+        lead.email.toLowerCase().trim(),
+        lead.phone.trim(),
+        lead.domain,
+        lead.city,
+        lead.service,
+        lead.lang,
+        lead.auditId,
+        lead.ipHash,
+        new Date().toISOString()
+      )
+      .run();
+  } catch {
+    // Fallback if existing local table was created prior to name/phone columns
+    await env.DB.prepare(
+      `INSERT INTO leads (id, email, domain, city, service, lang, audit_id, ip_hash, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    )
+      .bind(
+        lead.id,
+        lead.email.toLowerCase().trim(),
+        lead.domain,
+        lead.city,
+        lead.service,
+        lead.lang,
+        lead.auditId,
+        lead.ipHash,
+        new Date().toISOString()
+      )
+      .run();
+  }
 }
 
 export async function markLeadPaid99(

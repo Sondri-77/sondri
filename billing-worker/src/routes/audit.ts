@@ -194,7 +194,9 @@ export async function handleAuditAiVisibility(
   try {
     const body: any = await request.json();
     const auditId = String(body.audit_id || '').trim();
+    const name = String(body.name || '').trim();
     const email = String(body.email || '').trim().toLowerCase();
+    const phone = String(body.phone || '').trim();
     const customCity = String(body.city || '').trim();
     const customService = String(body.service || '').trim();
     const customQuestions: string[] = Array.isArray(body.questions)
@@ -263,7 +265,9 @@ export async function handleAuditAiVisibility(
     const leadId = `lead_${crypto.randomUUID().replace(/-/g, '').slice(0, 14)}`;
     await recordLead(env, {
       id: leadId,
+      name,
       email,
+      phone,
       domain: audit.domain,
       city: finalCity,
       service: finalService,
@@ -277,13 +281,15 @@ export async function handleAuditAiVisibility(
         sendDiscordNotification(
           env,
           '🔍 New AEO Mini Audit Lead!',
-          `**Domain:** \`${audit.domain}\`\n**Email:** ${email}\n**Service / City:** ${finalService} (${finalCity})\n**Readiness Score:** ${audit.tech_scan.readinessScore}/100\n**Language:** ${audit.lang.toUpperCase()}`,
+          `**Name:** ${name || 'N/A'}\n**Email:** ${email}\n**Phone:** ${phone || 'N/A'}\n**Domain:** \`${audit.domain}\`\n**Service / City:** ${finalService} (${finalCity})\n**Readiness Score:** ${audit.tech_scan.readinessScore}/100\n**Language:** ${audit.lang.toUpperCase()}`,
           0x3b82f6
         ),
         appendToGoogleSheet(env, {
           date: new Date().toISOString().split('T')[0],
           clientEmail: email,
-          customerName: audit.tech_scan.detectedBrand || audit.domain,
+          customerName: name
+            ? `${name}${phone ? ` (${phone})` : ''} — ${audit.domain}`
+            : audit.tech_scan.detectedBrand || audit.domain,
           amount: '0.00',
           currency: 'USD',
           invoiceNumber: audit.id,
