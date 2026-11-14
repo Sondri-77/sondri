@@ -6,29 +6,34 @@ interface Props {
 const { defaultLang = 'en' } = Astro.props;
 ---
 
-<section class="section section-pad on-dark audit-section" id="mini-audit" data-default-lang={defaultLang}>
-  <div class="wrap">
-    <div class="sec-head audit-head">
-      <div class="kick-row">
-        <span class="chip"><span class="gdot">■</span> <span data-audit-i18n="kicker">Free AEO / GEO Snapshot</span></span>
+<div id="mini-audit" data-default-lang={defaultLang}>
+  <!-- SECTION 1: HERO & UNIFIED INTAKE FORM (on-dark) -->
+  <section class="section section-pad on-dark">
+    <div class="wrap">
+      <div class="top-bar">
+        <a href="/" class="label back-link">← <span data-audit-i18n="backHome">Back to Sondri</span></a>
         <div class="lang-switch" role="group" aria-label="Audit language">
           <button type="button" class="lang-btn active" data-set-lang="en">EN (US)</button>
           <button type="button" class="lang-btn" data-set-lang="es">ES (Chile)</button>
         </div>
       </div>
-      <h1 class="h2">
-        <span data-audit-i18n="title">Does AI name your business when buyers ask</span><span class="gdot">?</span>
-      </h1>
-      <p class="lede" data-audit-i18n="subtitle">
-        Enter your website to check whether AI search crawlers can read your site, inspect your structured data and Google Lighthouse base health, and run 3 unbranded buyer questions with live search grounding.
-      </p>
-    </div>
 
-    <!-- STEP 1 FORM: URL + optional service/city -->
-    <div class="panel audit-card">
-      <form id="formStep1" class="audit-form">
-        <div class="form-grid">
-          <div class="form-group form-group-url">
+      <div class="sec-head">
+        <div>
+          <h1 class="h2">
+            <span data-audit-i18n="title">Does AI name your business when a buyer asks</span><span class="gdot">?</span>
+          </h1>
+        </div>
+        <div class="intro">
+          <p class="lede" data-audit-i18n="subtitle">
+            Enter your website and contact details to run a free technical AI readiness scan, check your Google Lighthouse base health, and test 3 unbranded buyer questions.
+          </p>
+        </div>
+      </div>
+
+      <form id="formAuditIntake" class="intake-form">
+        <div class="intake-grid">
+          <div class="field">
             <label for="auditUrl" class="label" data-audit-i18n="urlLabel">Website URL *</label>
             <input
               type="text"
@@ -40,7 +45,7 @@ const { defaultLang = 'en' } = Astro.props;
             />
           </div>
 
-          <div class="form-group">
+          <div class="field">
             <label for="auditService" class="label" data-audit-i18n="serviceLabel">Primary service (optional)</label>
             <input
               type="text"
@@ -50,7 +55,7 @@ const { defaultLang = 'en' } = Astro.props;
             />
           </div>
 
-          <div class="form-group">
+          <div class="field">
             <label for="auditCity" class="label" data-audit-i18n="cityLabel">City / market (optional)</label>
             <input
               type="text"
@@ -59,235 +64,260 @@ const { defaultLang = 'en' } = Astro.props;
               placeholder="e.g. Austin, TX or Concón, Chile"
             />
           </div>
+
+          <div class="field">
+            <label for="leadName" class="label" data-audit-i18n="nameLabel">Your full name *</label>
+            <input
+              type="text"
+              id="leadName"
+              class="form-input"
+              placeholder="Alex Rivera"
+              required
+              autocomplete="name"
+            />
+          </div>
+
+          <div class="field">
+            <label for="leadEmail" class="label" data-audit-i18n="emailLabel">Work email *</label>
+            <input
+              type="email"
+              id="leadEmail"
+              class="form-input"
+              placeholder="you@company.com"
+              required
+              autocomplete="email"
+            />
+          </div>
+
+          <div class="field">
+            <label for="leadPhone" class="label" data-audit-i18n="phoneLabel">Phone / WhatsApp *</label>
+            <input
+              type="tel"
+              id="leadPhone"
+              class="form-input"
+              placeholder="+1 555 234 5678"
+              required
+              autocomplete="tel"
+            />
+          </div>
         </div>
 
-        <div class="form-actions">
+        <div class="intake-actions">
           <button type="submit" id="btnScan" class="btn btn-gold">
-            <span data-audit-i18n="scanBtn">Run Free Technical & AI Readiness Scan</span> <span class="arr">→</span>
+            <span data-audit-i18n="scanBtn">Run My Free AI Visibility Audit</span> <span class="arr">→</span>
           </button>
-          <span class="label meta-hint" data-audit-i18n="scanHint">
-            <span class="gdot">■</span> Instant technical scan · Unbranded prompts · No rankings promised
+          <span class="label" data-audit-i18n="scanHint">
+            Unbranded buyer prompts · Crawler & schema check · Google Lighthouse included
           </span>
         </div>
 
         <p id="scanError" class="error-banner" style="display: none;"></p>
       </form>
     </div>
+  </section>
 
-    <!-- STEP 1 RESULTS: Technical Scan + Async Lighthouse + Step 2 Prompt/Email Gate -->
-    <div id="step1Results" class="results-stack" style="display: none;">
-      <div class="grid-2">
-        <!-- Left card: Technical AI Readiness -->
-        <div class="panel result-card">
-          <div class="card-top">
-            <span class="label" data-audit-i18n="techCardKicker">/ 01 · Technical AI Readiness</span>
-            <span id="readinessBadge" class="score-pill">-- / 100</span>
+  <!-- RESULTS WRAPPER (Hidden until scan runs) -->
+  <div id="auditReportContainer" style="display: none;">
+    <!-- SECTION 2: TECHNICAL AI READINESS & LIGHTHOUSE (on-off) -->
+    <section class="section section-pad on-off" id="techSection">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <h2 class="h2" id="detectedBrandTitle">Website Readiness<span class="gdot">.</span></h2>
           </div>
-          <h2 class="h4" id="detectedBrandTitle">Website Readiness</h2>
-          <p class="body-s muted-line" id="detectedMetaLine"></p>
-
-          <div class="check-grid" id="techCheckGrid"></div>
-
-          <div class="sub-block">
-            <p class="label sub-title" data-audit-i18n="botsTitle">AI Search Crawlers (robots.txt)</p>
-            <div class="bot-chips" id="botChips"></div>
-          </div>
-
-          <div class="sub-block" id="gapsBlock" style="display: none;">
-            <p class="label sub-title" data-audit-i18n="gapsTitle">Priority technical gaps found</p>
-            <ul class="gaps-list" id="gapsList"></ul>
+          <div class="intro">
+            <p class="lede" id="detectedMetaLine"></p>
           </div>
         </div>
 
-        <!-- Right card: Google Lighthouse Base Health (Async) -->
-        <div class="panel result-card">
-          <div class="card-top">
-            <span class="label" data-audit-i18n="lhCardKicker">/ 02 · Base Web & SEO Health (Lighthouse)</span>
-            <span id="lhStatusBadge" class="chip">Running PageSpeed…</span>
-          </div>
-          <h3 class="h4" data-audit-i18n="lhTitle">Crawlability & mobile speed</h3>
-          <p class="body-s muted-line" data-audit-i18n="lhSubtitle">
-            AI engines rely on fast, indexable web pages as their base—but high SEO scores alone do not mean AI answers name your business.
-          </p>
-
-          <div class="lh-meters" id="lhMeters">
-            <div class="lh-box">
-              <span class="label" data-audit-i18n="lhSeoLabel">Lighthouse SEO</span>
-              <strong class="lh-num" id="lhSeoScore">…</strong>
-            </div>
-            <div class="lh-box">
-              <span class="label" data-audit-i18n="lhPerfLabel">Mobile Performance</span>
-              <strong class="lh-num" id="lhPerfScore">…</strong>
-            </div>
-            <div class="lh-box">
-              <span class="label" data-audit-i18n="lhCrawlLabel">Indexable</span>
-              <strong class="lh-num" id="lhCrawlable">…</strong>
-            </div>
+        <!-- 3 KPI Columns: AI Readiness, Lighthouse SEO, Mobile Speed -->
+        <div class="rule-cols cols-3 kpi-row">
+          <div>
+            <p class="label k-idx" data-audit-i18n="kpiReadiness">Technical AI Readiness</p>
+            <p class="n kpi" id="readinessBadge">--</p>
+            <p class="body-s" data-audit-i18n="kpiReadinessDesc">
+              Based on AI crawler access, structured data (Organization/LocalBusiness & FAQPage), and clear entity signals.
+            </p>
           </div>
 
-          <p class="body-s muted-line" id="lhExtraMetrics"></p>
+          <div>
+            <p class="label k-idx" data-audit-i18n="lhSeoLabel">Google Lighthouse SEO</p>
+            <p class="n kpi" id="lhSeoScore">…</p>
+            <p class="body-s" id="lhCrawlableLine" data-audit-i18n="lhSeoDesc">
+              Checking mobile crawlability and baseline search indexability via Google PageSpeed Insights.
+            </p>
+          </div>
+
+          <div>
+            <p class="label k-idx" data-audit-i18n="lhPerfLabel">Mobile Speed (Lighthouse)</p>
+            <p class="n kpi" id="lhPerfScore">…</p>
+            <p class="body-s" id="lhExtraMetrics" data-audit-i18n="lhPerfDesc">
+              Running live Google Lighthouse mobile performance check…
+            </p>
+          </div>
+        </div>
+
+        <!-- 2 Columns: Schema/Signals & AI Bots -->
+        <div class="rule-cols cols-2 detail-cols">
+          <div>
+            <h3 class="h5 detail-heading" data-audit-i18n="signalsTitle">Structured data & site signals</h3>
+            <div class="signal-list" id="techCheckGrid"></div>
+          </div>
+
+          <div>
+            <h3 class="h5 detail-heading" data-audit-i18n="botsTitle">AI search crawlers (robots.txt)</h3>
+            <div class="bot-list" id="botChips"></div>
+
+            <div class="gaps-wrap" id="gapsBlock" style="display: none;">
+              <h4 class="label gaps-heading" data-audit-i18n="gapsTitle">Priority technical gaps</h4>
+              <ul class="gaps-list" id="gapsList"></ul>
+            </div>
+          </div>
         </div>
       </div>
+    </section>
 
-      <!-- STEP 2 GATE: Confirm 3 Unbranded Buyer Questions + Email -->
-      <div class="panel audit-card step2-card" id="step2GateCard">
-        <div class="card-top">
-          <span class="label" data-audit-i18n="step2Kicker">/ 03 · Live AI Answer Check (Unbranded Prompts)</span>
-          <span class="chip"><span class="gdot">■</span> Gemini + Google Search Grounding</span>
+    <!-- SECTION 3: UNBRANDED BUYER QUESTIONS & LIVE AI VISIBILITY (on-paper) -->
+    <section class="section section-pad on-paper" id="aiSection">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <h2 class="h2">
+              <span data-audit-i18n="aiReportTitle">Unbranded buyer questions</span><span class="gdot">.</span>
+            </h2>
+          </div>
+          <div class="intro">
+            <p class="lede" data-audit-i18n="aiReportLede">
+              We test questions a real customer asks without naming your business. You can also edit any question below and re-run the check.
+            </p>
+          </div>
         </div>
-        <h3 class="h4" data-audit-i18n="step2Title">Check whether AI names you or your competitors</h3>
-        <p class="body-s muted-line" data-audit-i18n="step2Desc">
-          We ask 3 buyer questions without your brand name. You can edit the questions below before running the live check.
-        </p>
 
-        <form id="formStep2" class="audit-form">
-          <div class="questions-edit-list">
-            <div class="form-group">
-              <label for="qInput0" class="label"><span class="gdot">01</span> <span data-audit-i18n="qLabel">Unbranded buyer question</span></label>
-              <input type="text" id="qInput0" class="form-input" required />
-            </div>
-            <div class="form-group">
-              <label for="qInput1" class="label"><span class="gdot">02</span> <span data-audit-i18n="qLabel">Unbranded buyer question</span></label>
-              <input type="text" id="qInput1" class="form-input" required />
-            </div>
-            <div class="form-group">
-              <label for="qInput2" class="label"><span class="gdot">03</span> <span data-audit-i18n="qLabel">Unbranded buyer question</span></label>
-              <input type="text" id="qInput2" class="form-input" required />
-            </div>
+        <div class="rule-cols cols-3 kpi-row">
+          <div>
+            <p class="label k-idx" data-audit-i18n="statNamed">Answers naming you</p>
+            <p class="n kpi" id="statNamedVal">0/3</p>
+            <p class="body-s" data-audit-i18n="statNamedSub">
+              Out of 3 unbranded buyer questions run once on Gemini.
+            </p>
           </div>
 
-          <div class="lead-fields-grid">
-            <div class="form-group">
-              <label for="leadName" class="label" data-audit-i18n="nameLabel">Your full name *</label>
-              <input
-                type="text"
-                id="leadName"
-                class="form-input"
-                placeholder="Alex Rivera"
-                required
-                autocomplete="name"
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="leadEmail" class="label" data-audit-i18n="emailLabel">Work email *</label>
-              <input
-                type="email"
-                id="leadEmail"
-                class="form-input"
-                placeholder="you@company.com"
-                required
-                autocomplete="email"
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="leadPhone" class="label" data-audit-i18n="phoneLabel">Phone / WhatsApp *</label>
-              <input
-                type="tel"
-                id="leadPhone"
-                class="form-input"
-                placeholder="+1 555 234 5678"
-                required
-                autocomplete="tel"
-              />
-            </div>
+          <div>
+            <p class="label k-idx" data-audit-i18n="statCited">Answers citing your site</p>
+            <p class="n kpi" id="statCitedVal">0/3</p>
+            <p class="body-s" data-audit-i18n="statCitedSub">
+              Times your domain appeared in the grounded web sources.
+            </p>
           </div>
 
-          <div class="email-gate-row">
-            <button type="submit" id="btnRunAi" class="btn btn-gold btn-ai-submit">
-              <span data-audit-i18n="runAiBtn">Run Live AI Visibility Check</span> <span class="arr">→</span>
-            </button>
+          <div>
+            <p class="label k-idx" data-audit-i18n="statCompetitors">Named instead & sources cited</p>
+            <div class="summary-lists">
+              <div>
+                <span class="label" data-audit-i18n="compSubLabel">Competitors named:</span>
+                <p class="body-s strong-text" id="competitorsCloud">—</p>
+              </div>
+              <div>
+                <span class="label" data-audit-i18n="srcSubLabel">Sources cited:</span>
+                <p class="body-s strong-text" id="sourcesCloud">—</p>
+              </div>
+            </div>
           </div>
+        </div>
 
-          <p id="aiError" class="error-banner" style="display: none;"></p>
-        </form>
+        <!-- Question Breakdown List -->
+        <div class="runs-ledger" id="runsList"></div>
+
+        <!-- Optional Custom Prompt Re-run -->
+        <details class="edit-prompts-drawer">
+          <summary class="label drawer-trigger">
+            <span class="gdot">■</span> <span data-audit-i18n="editPromptsBtn">Edit the 3 buyer questions and re-run</span>
+          </summary>
+          <form id="formStep2" class="edit-prompts-form">
+            <div class="field">
+              <label for="qInput0" class="label">01</label>
+              <input type="text" id="qInput0" class="form-input light-input" required />
+            </div>
+            <div class="field">
+              <label for="qInput1" class="label">02</label>
+              <input type="text" id="qInput1" class="form-input light-input" required />
+            </div>
+            <div class="field">
+              <label for="qInput2" class="label">03</label>
+              <input type="text" id="qInput2" class="form-input light-input" required />
+            </div>
+            <div>
+              <button type="submit" id="btnRunAi" class="btn btn-gold">
+                <span data-audit-i18n="runAiBtn">Re-run 3 Questions</span> <span class="arr">→</span>
+              </button>
+            </div>
+            <p id="aiError" class="error-banner" style="display: none;"></p>
+          </form>
+        </details>
+
+        <p class="body-s method-note" id="notRunNote"></p>
       </div>
-    </div>
+    </section>
 
-    <!-- STEP 2 RESULTS: Live AI Gap Report + $99 Full Audit Upgrade -->
-    <div id="step2Results" class="results-stack" style="display: none;">
-      <div class="panel result-card">
-        <div class="card-top">
-          <span class="label" data-audit-i18n="aiReportKicker">/ 04 · Live AI Visibility Snapshot</span>
-          <span class="chip" id="aiEngineBadge">Gemini + Google Search Grounding (1x run)</span>
-        </div>
-
-        <div class="summary-stats">
-          <div class="stat-box">
-            <span class="label" data-audit-i18n="statNamed">Answers naming you</span>
-            <strong class="stat-big" id="statNamedVal">0 / 3</strong>
+    <!-- SECTION 4: $99 FULL AUDIT UPGRADE (on-dark) -->
+    <section class="section section-pad on-dark" id="upgradeSection">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <h2 class="h2">
+              <span data-audit-i18n="upgradeTitle">Get the full 15-question audit across ChatGPT, Gemini & Google AI</span><span class="gdot">.</span>
+            </h2>
           </div>
-          <div class="stat-box">
-            <span class="label" data-audit-i18n="statCited">Answers citing your site</span>
-            <strong class="stat-big" id="statCitedVal">0 / 3</strong>
-          </div>
-          <div class="stat-box">
-            <span class="label" data-audit-i18n="statCompetitors">Competitors named instead</span>
-            <div class="tag-cloud" id="competitorsCloud"></div>
-          </div>
-          <div class="stat-box">
-            <span class="label" data-audit-i18n="statSources">Top sources AI cited</span>
-            <div class="tag-cloud" id="sourcesCloud"></div>
+          <div class="intro">
+            <p class="lede" data-audit-i18n="upgradeDesc">
+              A single API check is only a snapshot—AI answers change from run to run and differ when logged out. In our Full Audit, we run 12 to 15 unbranded buyer questions 3 times per engine across ChatGPT, Gemini, Google AI Overviews, and Google AI Mode, verify whether the AI describes your business accurately, and hand you a prioritized fix list.
+            </p>
           </div>
         </div>
 
-        <div class="runs-list" id="runsList"></div>
+        <div class="rule-cols cols-2 upgrade-ledger">
+          <div>
+            <p class="label k-idx" data-audit-i18n="cmpFreeHead">Free Snapshot (Above)</p>
+            <ul class="ledger-list">
+              <li data-audit-i18n="cmpFree1">3 unbranded buyer questions</li>
+              <li data-audit-i18n="cmpFree2">1 API check per question on Gemini Search Grounding</li>
+              <li data-audit-i18n="cmpFree3">Automated homepage, crawler, schema & Lighthouse check</li>
+            </ul>
+          </div>
 
-        <div class="not-run-note" id="notRunNote"></div>
-      </div>
-
-      <!-- UPGRADE CTA: $99 FULL AUDIT -->
-      <div class="panel upgrade-card">
-        <div class="upgrade-copy">
-          <span class="chip"><span class="gdot">■</span> <span data-audit-i18n="upgradeChip">Full AEO / GEO Audit — $99 USD</span></span>
-          <h3 class="h3" data-audit-i18n="upgradeTitle">See the full picture across ChatGPT, Gemini & Google AI.</h3>
-          <p class="lede upgrade-lede" data-audit-i18n="upgradeDesc">
-            A single API check is only a snapshot—AI answers change from run to run and differ when logged out. In our Full Audit, we run 12 to 15 unbranded buyer questions 3 times per engine across ChatGPT, Gemini, Google AI Overviews, and Google AI Mode, verify whether the AI describes your business accurately, and hand you a prioritized fix list.
-          </p>
-
-          <div class="compare-mini">
-            <div class="cmp-col">
-              <p class="label cmp-head" data-audit-i18n="cmpFreeHead">Free Snapshot (Above)</p>
-              <ul>
-                <li data-audit-i18n="cmpFree1">3 unbranded buyer questions</li>
-                <li data-audit-i18n="cmpFree2">1 API run on Gemini Search Grounding</li>
-                <li data-audit-i18n="cmpFree3">Automated homepage + schema check</li>
-              </ul>
-            </div>
-            <div class="cmp-col cmp-highlight">
-              <p class="label cmp-head"><span class="gdot">■</span> <span data-audit-i18n="cmpPaidHead">Full Audit ($99 USD)</span></p>
-              <ul>
-                <li data-audit-i18n="cmpPaid1">12–15 buyer questions × 3 runs per engine (36–45 checks per engine)</li>
-                <li data-audit-i18n="cmpPaid2">ChatGPT, Gemini, Google AI Overviews & Google AI Mode (logged out)</li>
-                <li data-audit-i18n="cmpPaid3">Full competitor & cited-source breakdown + accuracy check</li>
-                <li data-audit-i18n="cmpPaid4">Prioritized fix list (pages, FAQs, schema, Google Business Profile, citations)</li>
-              </ul>
-            </div>
+          <div>
+            <p class="label k-idx" data-audit-i18n="cmpPaidHead">Full AEO / GEO Audit ($99 USD)</p>
+            <ul class="ledger-list highlight-list">
+              <li data-audit-i18n="cmpPaid1">12 to 15 unbranded buyer questions × 3 runs per engine (36–45 checks per engine)</li>
+              <li data-audit-i18n="cmpPaid2">Measured on ChatGPT, Gemini, Google AI Overviews & Google AI Mode (logged out)</li>
+              <li data-audit-i18n="cmpPaid3">Complete competitor & source citation map + factual accuracy review</li>
+              <li data-audit-i18n="cmpPaid4">Prioritized fix list (service pages, FAQs, schema, Google Business Profile, citations)</li>
+            </ul>
           </div>
         </div>
 
-        <div class="upgrade-cta-box">
-          <div class="price-display">
+        <div class="checkout-bar">
+          <div class="price-block">
             <span class="label" data-audit-i18n="priceLabel">Fixed one-time audit</span>
-            <strong class="price-big">$99 <span class="price-cur">USD</span></strong>
-            <span class="body-s muted-line" data-audit-i18n="priceDisclaimer">
+            <p class="price-kpi kpi">$99 <span class="cur">USD</span></p>
+            <p class="body-s" data-audit-i18n="priceDisclaimer">
               We do not promise rankings or percentages. We measure and report change with the same method every time.
+            </p>
+          </div>
+
+          <div class="checkout-action">
+            <button type="button" id="btnBuyFullAudit" class="btn btn-gold">
+              <span data-audit-i18n="buyBtn">Order Full 15-Question Audit ($99)</span> <span class="arr">→</span>
+            </button>
+            <span class="label" data-audit-i18n="stripeNote">
+              Encrypted Stripe Checkout · Instant PDF tax invoice
             </span>
           </div>
-
-          <button type="button" id="btnBuyFullAudit" class="btn btn-gold btn-full">
-            <span data-audit-i18n="buyBtn">Order Full 15-Question Audit ($99)</span> <span class="arr">→</span>
-          </button>
-
-          <span class="label pay- footnote" data-audit-i18n="stripeNote">
-            <span class="gdot">■</span> Instant Stripe Checkout · PDF tax invoice included
-          </span>
         </div>
       </div>
-    </div>
+    </section>
   </div>
-</section>
+</div>
 
 <script>
   const WORKER_BASE =
@@ -297,116 +327,116 @@ const { defaultLang = 'en' } = Astro.props;
 
   const I18N: Record<'en' | 'es', Record<string, string>> = {
     en: {
-      kicker: 'Free AEO / GEO Snapshot',
-      title: 'Does AI name your business when buyers ask',
+      backHome: 'Back to Sondri',
+      title: 'Does AI name your business when a buyer asks',
       subtitle:
-        'Enter your website to check whether AI search crawlers can read your site, inspect your structured data and Google Lighthouse base health, and run 3 unbranded buyer questions with live search grounding.',
+        'Enter your website and contact details to run a free technical AI readiness scan, check your Google Lighthouse base health, and test 3 unbranded buyer questions.',
       urlLabel: 'Website URL *',
       serviceLabel: 'Primary service (optional)',
       cityLabel: 'City / market (optional)',
-      scanBtn: 'Run Free Technical & AI Readiness Scan',
-      scanBtnLoading: 'Scanning website & crawlers…',
-      scanHint: '■ Instant technical scan · Unbranded prompts · No rankings promised',
-      techCardKicker: '/ 01 · Technical AI Readiness',
-      botsTitle: 'AI Search Crawlers (robots.txt)',
-      gapsTitle: 'Priority technical gaps found',
-      lhCardKicker: '/ 02 · Base Web & SEO Health (Lighthouse)',
-      lhTitle: 'Crawlability & mobile speed',
-      lhSubtitle:
-        'AI engines rely on fast, indexable web pages as their base—but high SEO scores alone do not mean AI answers name your business.',
-      lhSeoLabel: 'Lighthouse SEO',
-      lhPerfLabel: 'Mobile Performance',
-      lhCrawlLabel: 'Indexable',
-      step2Kicker: '/ 03 · Live AI Answer Check (Unbranded Prompts)',
-      step2Title: 'Check whether AI names you or your competitors',
-      step2Desc:
-        'We ask 3 buyer questions without your brand name. You can edit the questions below before running the live check.',
-      qLabel: 'Unbranded buyer question',
       nameLabel: 'Your full name *',
       emailLabel: 'Work email *',
       phoneLabel: 'Phone / WhatsApp *',
-      runAiBtn: 'Run Live AI Visibility Check',
-      runAiBtnLoading: 'Querying live AI with Google Search…',
-      aiReportKicker: '/ 04 · Live AI Visibility Snapshot',
+      scanBtn: 'Run My Free AI Visibility Audit',
+      scanBtnLoading: 'Scanning website & running AI check…',
+      scanHint: 'Unbranded buyer prompts · Crawler & schema check · Google Lighthouse included',
+      kpiReadiness: 'Technical AI Readiness',
+      kpiReadinessDesc:
+        'Based on AI crawler access, structured data (Organization/LocalBusiness & FAQPage), and clear entity signals.',
+      lhSeoLabel: 'Google Lighthouse SEO',
+      lhSeoDesc: 'Checking mobile crawlability and baseline search indexability via Google PageSpeed Insights.',
+      lhPerfLabel: 'Mobile Speed (Lighthouse)',
+      lhPerfDesc: 'Running live Google Lighthouse mobile performance check…',
+      signalsTitle: 'Structured data & site signals',
+      botsTitle: 'AI search crawlers (robots.txt)',
+      gapsTitle: 'Priority technical gaps',
+      aiReportTitle: 'Unbranded buyer questions',
+      aiReportLede:
+        'We test questions a real customer asks without naming your business. You can also edit any question below and re-run the check.',
       statNamed: 'Answers naming you',
+      statNamedSub: 'Out of 3 unbranded buyer questions run once on Gemini.',
       statCited: 'Answers citing your site',
-      statCompetitors: 'Competitors named instead',
-      statSources: 'Top sources AI cited',
-      upgradeChip: 'Full AEO / GEO Audit — $99 USD',
-      upgradeTitle: 'See the full picture across ChatGPT, Gemini & Google AI.',
+      statCitedSub: 'Times your domain appeared in the grounded web sources.',
+      statCompetitors: 'Named instead & sources cited',
+      compSubLabel: 'Competitors named:',
+      srcSubLabel: 'Sources cited:',
+      editPromptsBtn: 'Edit the 3 buyer questions and re-run',
+      runAiBtn: 'Re-run 3 Questions',
+      runAiBtnLoading: 'Querying live AI…',
+      upgradeTitle: 'Get the full 15-question audit across ChatGPT, Gemini & Google AI',
       upgradeDesc:
         'A single API check is only a snapshot—AI answers change from run to run and differ when logged out. In our Full Audit, we run 12 to 15 unbranded buyer questions 3 times per engine across ChatGPT, Gemini, Google AI Overviews, and Google AI Mode, verify whether the AI describes your business accurately, and hand you a prioritized fix list.',
       cmpFreeHead: 'Free Snapshot (Above)',
       cmpFree1: '3 unbranded buyer questions',
-      cmpFree2: '1 API run on Gemini Search Grounding',
-      cmpFree3: 'Automated homepage + schema check',
-      cmpPaidHead: 'Full Audit ($99 USD)',
-      cmpPaid1: '12–15 buyer questions × 3 runs per engine',
-      cmpPaid2: 'ChatGPT, Gemini, Google AI Overviews & Google AI Mode (logged out)',
-      cmpPaid3: 'Full competitor & cited-source breakdown + accuracy check',
-      cmpPaid4: 'Prioritized fix list (pages, FAQs, schema, Google Business Profile, citations)',
+      cmpFree2: '1 API check per question on Gemini Search Grounding',
+      cmpFree3: 'Automated homepage, crawler, schema & Lighthouse check',
+      cmpPaidHead: 'Full AEO / GEO Audit ($99 USD)',
+      cmpPaid1: '12 to 15 unbranded buyer questions × 3 runs per engine (36–45 checks per engine)',
+      cmpPaid2: 'Measured on ChatGPT, Gemini, Google AI Overviews & Google AI Mode (logged out)',
+      cmpPaid3: 'Complete competitor & source citation map + factual accuracy review',
+      cmpPaid4: 'Prioritized fix list (service pages, FAQs, schema, Google Business Profile, citations)',
       priceLabel: 'Fixed one-time audit',
       priceDisclaimer:
         'We do not promise rankings or percentages. We measure and report change with the same method every time.',
       buyBtn: 'Order Full 15-Question Audit ($99)',
       buyBtnLoading: 'Redirecting to Stripe Checkout…',
-      stripeNote: '■ Instant Stripe Checkout · PDF tax invoice included',
+      stripeNote: 'Encrypted Stripe Checkout · Instant PDF tax invoice',
     },
     es: {
-      kicker: 'Diagnóstico Gratuito AEO / GEO',
-      title: '¿La IA nombra a tu empresa cuando un cliente pregunta',
+      backHome: 'Volver a Sondri',
+      title: '¿La IA nombra a su empresa cuando un cliente pregunta',
       subtitle:
-        'Ingresa tu sitio web para revisar si los rastreadores de búsqueda de IA pueden leerlo, verificar tus datos estructurados y Google Lighthouse, y probar 3 preguntas de compra sin marca en vivo.',
+        'Ingrese su sitio web y sus datos para ejecutar una revisión técnica gratuita para IA, medir Google Lighthouse y probar 3 preguntas reales de compra sin su marca.',
       urlLabel: 'Sitio web *',
       serviceLabel: 'Servicio principal (opcional)',
       cityLabel: 'Ciudad o comuna (opcional)',
-      scanBtn: 'Revisar Preparación Técnica para IA Gratis',
-      scanBtnLoading: 'Analizando sitio y rastreadores…',
-      scanHint: '■ Revisión técnica al instante · Preguntas sin tu marca · Sin promesas de ranking',
-      techCardKicker: '/ 01 · Preparación Técnica para IA',
-      botsTitle: 'Rastreadores de Búsqueda IA (robots.txt)',
-      gapsTitle: 'Brechas técnicas prioritarias detectadas',
-      lhCardKicker: '/ 02 · Salud Base Web y SEO (Lighthouse)',
-      lhTitle: 'Rastreabilidad y velocidad móvil',
-      lhSubtitle:
-        'Las IA se apoyan en un sitio claro, rápido y rastreable como base, pero un puntaje alto de SEO no basta para que te nombren.',
-      lhSeoLabel: 'SEO Lighthouse',
-      lhPerfLabel: 'Rendimiento Móvil',
-      lhCrawlLabel: 'Indexable',
-      step2Kicker: '/ 03 · Prueba en Vivo en Respuestas de IA (Sin Marca)',
-      step2Title: 'Revisa si la IA te nombra a ti o a tu competencia',
-      step2Desc:
-        'Hacemos 3 preguntas de cliente sin el nombre de tu empresa. Puedes editar las preguntas antes de ejecutar la revisión.',
-      qLabel: 'Pregunta de cliente sin marca',
-      nameLabel: 'Tu nombre completo *',
+      nameLabel: 'Nombre completo *',
       emailLabel: 'Correo de trabajo *',
       phoneLabel: 'Teléfono / WhatsApp *',
-      runAiBtn: 'Ejecutar Revisión de Visibilidad en IA',
-      runAiBtnLoading: 'Consultando IA con búsqueda en vivo…',
-      aiReportKicker: '/ 04 · Resultado de Visibilidad en IA',
-      statNamed: 'Respuestas que te nombran',
-      statCited: 'Respuestas que citan tu sitio',
-      statCompetitors: 'Competidores nombrados en tu lugar',
-      statSources: 'Fuentes principales citadas por la IA',
-      upgradeChip: 'Auditoría Completa AEO / GEO — $99 USD',
-      upgradeTitle: 'Conoce el panorama completo en ChatGPT, Gemini y la IA de Google.',
+      scanBtn: 'Ejecutar Diagnóstico Gratuito de IA',
+      scanBtnLoading: 'Analizando sitio y consultando IA…',
+      scanHint: 'Preguntas sin marca · Rastreadores y schema · Incluye Google Lighthouse',
+      kpiReadiness: 'Preparación Técnica para IA',
+      kpiReadinessDesc:
+        'Basado en acceso a rastreadores de IA, datos estructurados (Organization/LocalBusiness y FAQPage) y claridad de datos.',
+      lhSeoLabel: 'SEO Google Lighthouse',
+      lhSeoDesc: 'Verificando rastreabilidad móvil e indexación mediante Google PageSpeed Insights.',
+      lhPerfLabel: 'Velocidad Móvil (Lighthouse)',
+      lhPerfDesc: 'Ejecutando prueba de rendimiento móvil en Google Lighthouse…',
+      signalsTitle: 'Datos estructurados y señales del sitio',
+      botsTitle: 'Rastreadores de búsqueda IA (robots.txt)',
+      gapsTitle: 'Brechas técnicas prioritarias',
+      aiReportTitle: 'Preguntas de compra sin marca',
+      aiReportLede:
+        'Probamos las preguntas que haría un cliente real sin poner el nombre de su empresa. También puede editar las preguntas abajo y volver a probar.',
+      statNamed: 'Respuestas que lo nombran',
+      statNamedSub: 'De 3 preguntas sin marca probadas en Gemini.',
+      statCited: 'Respuestas que citan su sitio',
+      statCitedSub: 'Veces que su dominio apareció en las fuentes citadas.',
+      statCompetitors: 'Nombrados en su lugar y fuentes',
+      compSubLabel: 'Competidores nombrados:',
+      srcSubLabel: 'Fuentes citadas:',
+      editPromptsBtn: 'Editar las 3 preguntas de cliente y volver a ejecutar',
+      runAiBtn: 'Volver a Probar 3 Preguntas',
+      runAiBtnLoading: 'Consultando IA en vivo…',
+      upgradeTitle: 'Obtenga la auditoría completa de 15 preguntas en ChatGPT, Gemini y la IA de Google',
       upgradeDesc:
-        'Una consulta por API es solo una primera muestra: las respuestas cambian entre una vez y otra y varían sin sesión iniciada. En la Auditoría Completa hacemos entre 12 y 15 preguntas sin tu marca, tres veces por motor en ChatGPT, Gemini, Google AI Overviews y Google AI Mode, revisamos la exactitud de tus datos y te entregamos una lista de correcciones priorizadas.',
+        'Una consulta por API es solo una muestra: las respuestas cambian entre una vez y otra y varían sin sesión iniciada. En la Auditoría Completa hacemos entre 12 y 15 preguntas sin su marca, tres veces por motor en ChatGPT, Gemini, Google AI Overviews y Google AI Mode, verificamos la exactitud de sus datos y le entregamos una lista de correcciones priorizadas.',
       cmpFreeHead: 'Muestra Gratis (Arriba)',
       cmpFree1: '3 preguntas de compra sin marca',
       cmpFree2: '1 revisión vía API en Gemini con Google Search',
-      cmpFree3: 'Revisión automática de portada y schema',
-      cmpPaidHead: 'Auditoría Completa ($99 USD)',
-      cmpPaid1: '12 a 15 preguntas × 3 repeticiones por motor',
-      cmpPaid2: 'ChatGPT, Gemini, Google AI Overviews y Google AI Mode (sin sesión)',
-      cmpPaid3: 'Detalle completo de competidores, fuentes citadas y exactitud',
-      cmpPaid4: 'Lista priorizada de correcciones (páginas, FAQs, schema, Perfil de Google, menciones)',
+      cmpFree3: 'Revisión automática de portada, rastreadores, schema y Lighthouse',
+      cmpPaidHead: 'Auditoría Completa AEO / GEO ($99 USD)',
+      cmpPaid1: '12 a 15 preguntas sin marca × 3 repeticiones por motor (36 a 45 revisiones por motor)',
+      cmpPaid2: 'Medido en ChatGPT, Gemini, Google AI Overviews y Google AI Mode (sin sesión)',
+      cmpPaid3: 'Mapa completo de competidores y fuentes citadas + revisión de exactitud',
+      cmpPaid4: 'Lista de correcciones priorizadas (páginas, FAQs, schema, Perfil de Google, menciones)',
       priceLabel: 'Auditoría única a precio fijo',
       priceDisclaimer:
         'No prometemos un puesto ni un porcentaje. Medimos y reportamos el cambio con el mismo método cada vez.',
       buyBtn: 'Solicitar Auditoría Completa de 15 Preguntas ($99)',
       buyBtnLoading: 'Redirigiendo a Stripe Checkout…',
-      stripeNote: '■ Pago seguro con Stripe · Factura PDF al instante',
+      stripeNote: 'Pago seguro con Stripe · Factura PDF al instante',
     },
   };
 
@@ -429,7 +459,6 @@ const { defaultLang = 'en' } = Astro.props;
     });
   }
 
-  // Initialize language from query param or saved site preference
   const urlLang = new URLSearchParams(window.location.search).get('lang');
   const savedLang = localStorage.getItem('sondri.lang');
   if (urlLang === 'es' || savedLang === 'es') {
@@ -447,27 +476,26 @@ const { defaultLang = 'en' } = Astro.props;
 
   function renderTechScan(audit: any) {
     const scan = audit.tech_scan;
-    const step1El = document.getElementById('step1Results');
-    if (!step1El || !scan) return;
-    step1El.style.display = 'flex';
+    const reportEl = document.getElementById('auditReportContainer');
+    if (!reportEl || !scan) return;
+    reportEl.style.display = 'block';
 
     const badge = document.getElementById('readinessBadge');
     if (badge) {
-      badge.textContent = `${scan.readinessScore} / 100`;
-      badge.className = `score-pill ${scan.readinessScore >= 75 ? 'good' : scan.readinessScore >= 45 ? 'warn' : 'bad'}`;
+      badge.textContent = `${scan.readinessScore}/100`;
     }
 
     const brandTitle = document.getElementById('detectedBrandTitle');
     if (brandTitle) {
-      brandTitle.textContent = `${scan.detectedBrand || audit.domain} (${audit.domain})`;
+      brandTitle.innerHTML = `${scan.detectedBrand || audit.domain} <span class="gdot">.</span>`;
     }
 
     const metaLine = document.getElementById('detectedMetaLine');
     if (metaLine) {
       metaLine.textContent =
         currentLang === 'es'
-          ? `Rubro detectado: ${audit.service} · Ubicación: ${audit.city}`
-          : `Detected service: ${audit.service} · Market: ${audit.city}`;
+          ? `Dominio: ${audit.domain} · Rubro: ${audit.service} · Mercado: ${audit.city}`
+          : `Domain: ${audit.domain} · Service: ${audit.service} · Market: ${audit.city}`;
     }
 
     const grid = document.getElementById('techCheckGrid');
@@ -482,7 +510,7 @@ const { defaultLang = 'en' } = Astro.props;
           ok: scan.hasFaqSchema,
         },
         {
-          label: currentLang === 'es' ? 'Señales de teléfono / dirección' : 'Phone / Address Signals',
+          label: currentLang === 'es' ? 'Señales de teléfono y dirección' : 'Phone & Address Signals',
           ok: scan.hasPhoneInHtml || scan.hasAddressSignals,
         },
         {
@@ -499,9 +527,11 @@ const { defaultLang = 'en' } = Astro.props;
       grid.innerHTML = items
         .map(
           (item) => `
-          <div class="check-row">
-            <span class="check-dot ${item.ok ? 'ok' : item.optional ? 'opt' : 'miss'}">${item.ok ? '✓' : item.optional ? '○' : '✕'}</span>
-            <span>${item.label}</span>
+          <div class="signal-row">
+            <span class="sig-label">${item.label}</span>
+            <span class="label sig-status ${item.ok ? 'ok' : item.optional ? 'opt' : 'miss'}">
+              ${item.ok ? (currentLang === 'es' ? 'DETECTADO' : 'FOUND') : item.optional ? (currentLang === 'es' ? 'OPCIONAL' : 'OPTIONAL') : (currentLang === 'es' ? 'FALTA' : 'MISSING')}
+            </span>
           </div>`
         )
         .join('');
@@ -512,9 +542,12 @@ const { defaultLang = 'en' } = Astro.props;
       botChips.innerHTML = scan.bots
         .map(
           (b: any) => `
-          <span class="bot-pill ${b.allowed ? 'ok' : 'blocked'}">
-            ${b.allowed ? '✓' : '✕'} ${b.bot}
-          </span>`
+          <div class="signal-row">
+            <span class="sig-label">${b.bot}</span>
+            <span class="label sig-status ${b.allowed ? 'ok' : 'miss'}">
+              ${b.allowed ? (currentLang === 'es' ? 'PERMITIDO' : 'ALLOWED') : (currentLang === 'es' ? 'BLOQUEADO' : 'BLOCKED')}
+            </span>
+          </div>`
         )
         .join('');
     }
@@ -530,7 +563,6 @@ const { defaultLang = 'en' } = Astro.props;
       }
     }
 
-    // Populate the 3 editable buyer questions
     const qs: string[] = audit.questions || [];
     for (let i = 0; i < 3; i++) {
       const inp = document.getElementById(`qInput${i}`) as HTMLInputElement | null;
@@ -539,19 +571,13 @@ const { defaultLang = 'en' } = Astro.props;
   }
 
   async function loadLighthouseAsync(audit: any) {
-    const statusBadge = document.getElementById('lhStatusBadge');
     const seoEl = document.getElementById('lhSeoScore');
     const perfEl = document.getElementById('lhPerfScore');
-    const crawlEl = document.getElementById('lhCrawlable');
+    const crawlEl = document.getElementById('lhCrawlableLine');
     const extraEl = document.getElementById('lhExtraMetrics');
 
-    if (statusBadge) {
-      statusBadge.textContent =
-        currentLang === 'es' ? 'Consultando PageSpeed…' : 'Running PageSpeed…';
-    }
     if (seoEl) seoEl.textContent = '…';
     if (perfEl) perfEl.textContent = '…';
-    if (crawlEl) crawlEl.textContent = '…';
 
     try {
       const res = await fetch(
@@ -563,80 +589,62 @@ const { defaultLang = 'en' } = Astro.props;
         if (seoEl) seoEl.textContent = lh.seoScore !== null ? `${lh.seoScore}/100` : 'N/A';
         if (perfEl)
           perfEl.textContent = lh.performanceScore !== null ? `${lh.performanceScore}/100` : 'N/A';
-        if (crawlEl) {
-          crawlEl.textContent =
-            lh.isCrawlable === null
-              ? 'N/A'
-              : lh.isCrawlable
-                ? currentLang === 'es'
-                  ? 'Sí'
-                  : 'Yes'
-                : currentLang === 'es'
-                  ? 'Bloqueado'
-                  : 'Blocked';
-        }
-        if (statusBadge) {
-          statusBadge.textContent =
-            lh.seoScore !== null
-              ? currentLang === 'es'
-                ? '■ Lighthouse listo'
-                : '■ Lighthouse complete'
-              : currentLang === 'es'
-                ? 'No disponible'
-                : 'Unavailable';
+        if (crawlEl && lh.isCrawlable !== null) {
+          crawlEl.textContent = lh.isCrawlable
+            ? currentLang === 'es'
+              ? 'Página indexable y rastreable por buscadores.'
+              : 'Page is indexable and crawlable by search engines.'
+            : currentLang === 'es'
+              ? 'Alerta: la página bloquea la indexación.'
+              : 'Warning: page is blocked from indexing.';
         }
         if (extraEl) {
           const parts: string[] = [];
           if (lh.lcpDisplay) parts.push(`LCP: ${lh.lcpDisplay}`);
           if (lh.clsDisplay) parts.push(`CLS: ${lh.clsDisplay}`);
-          extraEl.textContent = parts.join(' · ');
+          if (parts.length > 0) extraEl.textContent = parts.join(' · ');
         }
       }
     } catch {
-      if (statusBadge) statusBadge.textContent = 'Not run';
+      if (seoEl) seoEl.textContent = 'N/A';
+      if (perfEl) perfEl.textContent = 'N/A';
     }
   }
 
   function renderAiVisibility(audit: any) {
     const ai = audit.ai_visibility;
-    const step2El = document.getElementById('step2Results');
-    if (!step2El || !ai) return;
-    step2El.style.display = 'flex';
+    if (!ai) return;
 
     const namedVal = document.getElementById('statNamedVal');
     const citedVal = document.getElementById('statCitedVal');
-    if (namedVal) namedVal.textContent = `${ai.namedCount} / ${ai.totalQuestions}`;
-    if (citedVal) citedVal.textContent = `${ai.citedCount} / ${ai.totalQuestions}`;
+    if (namedVal) namedVal.textContent = `${ai.namedCount}/${ai.totalQuestions}`;
+    if (citedVal) citedVal.textContent = `${ai.citedCount}/${ai.totalQuestions}`;
 
     const compCloud = document.getElementById('competitorsCloud');
     if (compCloud) {
-      if (Array.isArray(ai.competitorsSummary) && ai.competitorsSummary.length > 0) {
-        compCloud.innerHTML = ai.competitorsSummary
-          .map((c: string) => `<span class="tag-pill warn">${c}</span>`)
-          .join('');
-      } else {
-        compCloud.innerHTML = `<span class="body-s muted-line">${currentLang === 'es' ? 'Ninguno detectado en esta corrida' : 'None detected in this run'}</span>`;
-      }
+      compCloud.textContent =
+        Array.isArray(ai.competitorsSummary) && ai.competitorsSummary.length > 0
+          ? ai.competitorsSummary.join(', ')
+          : currentLang === 'es'
+            ? 'Ninguno detectado en esta corrida'
+            : 'None detected in this run';
     }
 
     const srcCloud = document.getElementById('sourcesCloud');
     if (srcCloud) {
-      if (Array.isArray(ai.topSourceDomains) && ai.topSourceDomains.length > 0) {
-        srcCloud.innerHTML = ai.topSourceDomains
-          .map((d: string) => `<span class="tag-pill">${d}</span>`)
-          .join('');
-      } else {
-        srcCloud.innerHTML = `<span class="body-s muted-line">${currentLang === 'es' ? 'Sin citas externas' : 'No external citations'}</span>`;
-      }
+      srcCloud.textContent =
+        Array.isArray(ai.topSourceDomains) && ai.topSourceDomains.length > 0
+          ? ai.topSourceDomains.join(' · ')
+          : currentLang === 'es'
+            ? 'Sin citas externas'
+            : 'No external citations';
     }
 
     const runsList = document.getElementById('runsList');
     if (runsList && Array.isArray(ai.runs)) {
       runsList.innerHTML = ai.runs
         .map((run: any, idx: number) => {
-          const badgeClass =
-            run.status !== 'ok' ? 'neutral' : run.brandNamed ? 'good' : 'bad';
-          const badgeLabel =
+          const statusLabel =
             run.status !== 'ok'
               ? currentLang === 'es'
                 ? 'NO EJECUTADO'
@@ -649,23 +657,26 @@ const { defaultLang = 'en' } = Astro.props;
                   ? 'NO TE NOMBRA'
                   : 'NOT NAMED';
 
+          const statusClass =
+            run.status !== 'ok' ? 'opt' : run.brandNamed ? 'ok' : 'miss';
+
           const comps =
             Array.isArray(run.competitorsNamed) && run.competitorsNamed.length > 0
-              ? `<p class="run-meta"><strong>${currentLang === 'es' ? 'Nombrados en tu lugar:' : 'Named instead:'}</strong> ${run.competitorsNamed.join(', ')}</p>`
+              ? `<p class="body-s run-meta"><strong>${currentLang === 'es' ? 'Nombrados en su lugar:' : 'Named instead:'}</strong> ${run.competitorsNamed.join(', ')}</p>`
               : '';
 
           const cites =
             Array.isArray(run.sourcesCited) && run.sourcesCited.length > 0
-              ? `<p class="run-meta"><strong>${currentLang === 'es' ? 'Fuentes citadas:' : 'Sources cited:'}</strong> ${run.sourcesCited
+              ? `<p class="body-s run-meta"><strong>${currentLang === 'es' ? 'Fuentes citadas:' : 'Sources cited:'}</strong> ${run.sourcesCited
                   .map((s: any) => s.title || s.domain)
                   .join(' · ')}</p>`
               : '';
 
           return `
-            <div class="run-card">
-              <div class="run-header">
-                <span class="label">Q0${idx + 1} · ${run.question}</span>
-                <span class="score-pill ${badgeClass}">${badgeLabel}</span>
+            <div class="run-row">
+              <div class="run-top">
+                <p class="h6 run-q"><span class="label">0${idx + 1}</span> ${run.question}</p>
+                <span class="label sig-status ${statusClass}">${statusLabel}</span>
               </div>
               <p class="run-excerpt">${run.answerExcerpt}</p>
               ${comps}
@@ -680,15 +691,13 @@ const { defaultLang = 'en' } = Astro.props;
     if (notRunNote) {
       notRunNote.textContent =
         currentLang === 'es'
-          ? 'Nota metodológica: Esta muestra rápida ejecuta 1 revisión por pregunta vía API en Gemini con búsqueda de Google. Los motores que no se ejecutaron en esta muestra gratuita (ChatGPT, Google AI Overviews, Google AI Mode sin sesión iniciada) se marcan como no ejecutados, nunca como cero, y se miden con 3 repeticiones en la Auditoría Completa de $99.'
+          ? 'Nota metodológica: Esta muestra gratuita ejecuta 1 revisión por pregunta vía API en Gemini con búsqueda de Google. Los motores no ejecutados en esta muestra (ChatGPT, Google AI Overviews, Google AI Mode sin sesión iniciada) se marcan como no ejecutados, nunca como cero, y se miden con 3 repeticiones en la Auditoría Completa de $99.'
           : 'Method note: This free snapshot runs 1 API check per question on Gemini with Google Search grounding. Engines not checked in this free preview (ChatGPT, Google AI Overviews, Google AI Mode logged out) are marked not run—never zero—and are tested 3 times per question in the $99 Full Audit.';
     }
-
-    step2El.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  // Handle Step 1 Scan
-  document.getElementById('formStep1')?.addEventListener('submit', async (e) => {
+  // Unified Intake Form Submit: runs Step 1 Scan + Lighthouse + Step 2 AI Visibility in one flow
+  document.getElementById('formAuditIntake')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('btnScan') as HTMLButtonElement;
     const errEl = document.getElementById('scanError') as HTMLElement;
@@ -697,32 +706,51 @@ const { defaultLang = 'en' } = Astro.props;
     const url = (document.getElementById('auditUrl') as HTMLInputElement).value.trim();
     const service = (document.getElementById('auditService') as HTMLInputElement).value.trim();
     const city = (document.getElementById('auditCity') as HTMLInputElement).value.trim();
+    const name = (document.getElementById('leadName') as HTMLInputElement).value.trim();
+    const email = (document.getElementById('leadEmail') as HTMLInputElement).value.trim();
+    const phone = (document.getElementById('leadPhone') as HTMLInputElement).value.trim();
 
     btn.disabled = true;
     const spanText = btn.querySelector('[data-audit-i18n="scanBtn"]');
     if (spanText) spanText.textContent = I18N[currentLang].scanBtnLoading;
 
     try {
-      const res = await fetch(`${WORKER_BASE}/audit/scan`, {
+      // 1. Run Technical Scan & infer 3 buyer questions
+      const scanRes = await fetch(`${WORKER_BASE}/audit/scan`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url, service, city, lang: currentLang }),
       });
-      const json = await res.json();
+      const scanJson = await scanRes.json();
 
-      if (!json.success || !json.data) {
-        throw new Error(json.error?.message || 'Unable to scan website');
+      if (!scanJson.success || !scanJson.data) {
+        throw new Error(scanJson.error?.message || 'Unable to scan website');
       }
 
-      currentAudit = json.data;
+      currentAudit = scanJson.data;
       renderTechScan(currentAudit);
       loadLighthouseAsync(currentAudit);
 
-      if (currentAudit.ai_visibility) {
+      document.getElementById('techSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // 2. Capture lead (Name + Email + Phone) & run 3-question AI visibility check
+      const aiRes = await fetch(`${WORKER_BASE}/audit/ai-visibility`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          audit_id: currentAudit.id,
+          name,
+          email,
+          phone,
+          questions: currentAudit.questions,
+          city: currentAudit.city,
+          service: currentAudit.service,
+        }),
+      });
+      const aiJson = await aiRes.json();
+      if (aiJson.success && aiJson.data) {
+        currentAudit = aiJson.data;
         renderAiVisibility(currentAudit);
-      } else {
-        const step2El = document.getElementById('step2Results');
-        if (step2El) step2El.style.display = 'none';
       }
     } catch (err: any) {
       errEl.textContent = err.message || 'Scan failed. Please check the URL and try again.';
@@ -733,7 +761,7 @@ const { defaultLang = 'en' } = Astro.props;
     }
   });
 
-  // Handle Step 2 Live AI Visibility
+  // Handle Custom Question Re-run
   document.getElementById('formStep2')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!currentAudit) return;
@@ -826,7 +854,7 @@ const { defaultLang = 'en' } = Astro.props;
     }
   });
 
-  // Pre-fill from homepage query params (?url=...&name=...&email=...&phone=...) and auto-run Step 1
+  // Pre-fill from query params if linked from another page
   (function initFromQuery() {
     const q = new URLSearchParams(window.location.search);
     const qUrl = q.get('url');
@@ -843,38 +871,40 @@ const { defaultLang = 'en' } = Astro.props;
     const cityInp = document.getElementById('auditCity') as HTMLInputElement | null;
     const serviceInp = document.getElementById('auditService') as HTMLInputElement | null;
 
+    if (qUrl && urlInp) urlInp.value = qUrl;
     if (qName && nameInp) nameInp.value = qName;
     if (qEmail && emailInp) emailInp.value = qEmail;
     if (qPhone && phoneInp) phoneInp.value = qPhone;
     if (qCity && cityInp) cityInp.value = qCity;
     if (qService && serviceInp) serviceInp.value = qService;
 
-    if (qUrl && urlInp) {
-      urlInp.value = qUrl;
-      const form1 = document.getElementById('formStep1') as HTMLFormElement | null;
-      form1?.requestSubmit();
+    if (qUrl && qName && qEmail && qPhone) {
+      const form = document.getElementById('formAuditIntake') as HTMLFormElement | null;
+      form?.requestSubmit();
     }
   })();
 </script>
 
 <style>
-  .audit-section {
-    min-height: calc(100vh - var(--nav-h));
-  }
-
-  .kick-row {
+  .top-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--s-16);
-    flex-wrap: wrap;
-    margin-bottom: var(--s-24);
+    gap: var(--s-24);
+    margin-bottom: var(--s-48);
+  }
+
+  .back-link {
+    text-decoration: none;
+    color: var(--pale);
+  }
+  .back-link:hover {
+    color: var(--gold);
   }
 
   .lang-switch {
     display: inline-flex;
     border: 1px solid var(--line);
-    background: var(--teal-deep);
   }
 
   .lang-btn {
@@ -882,7 +912,7 @@ const { defaultLang = 'en' } = Astro.props;
     border: 0;
     color: var(--pale);
     font: 12px/1 var(--mono);
-    padding: 8px 12px;
+    padding: 10px 14px;
     cursor: pointer;
     text-transform: uppercase;
   }
@@ -893,40 +923,35 @@ const { defaultLang = 'en' } = Astro.props;
     font-weight: 600;
   }
 
-  .audit-card,
-  .result-card,
-  .upgrade-card {
-    background: var(--teal-deep);
-    border: 1px solid var(--line);
-    padding: var(--s-32);
-    box-shadow: 8px 8px 0 var(--gold);
-  }
-
-  .audit-form {
+  .intake-form {
+    border-top: 1px solid var(--line);
+    padding-top: var(--s-48);
     display: flex;
     flex-direction: column;
-    gap: var(--s-24);
+    gap: var(--s-32);
   }
 
-  .form-grid {
+  .intake-grid {
     display: grid;
-    grid-template-columns: 1.4fr 1fr 1fr;
-    gap: var(--s-16);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--s-32);
+    row-gap: var(--s-24);
   }
 
-  .form-group {
+  .field {
     display: flex;
     flex-direction: column;
     gap: var(--s-08);
   }
 
   .form-input {
-    background: var(--teal);
+    background: var(--teal-deep);
     border: 1px solid var(--line);
     color: var(--white);
     font-family: var(--sans);
-    font-size: 15px;
-    padding: 13px 16px;
+    font-size: 16px;
+    padding: 16px 18px;
+    width: 100%;
   }
 
   .form-input:focus {
@@ -935,353 +960,237 @@ const { defaultLang = 'en' } = Astro.props;
     border-color: var(--gold);
   }
 
-  .form-actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--s-16);
-    flex-wrap: wrap;
+  .light-input {
+    background: var(--white);
+    color: var(--teal);
+    border-color: var(--teal);
   }
 
-  .meta-hint {
-    color: var(--pale);
+  .intake-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--s-32);
+    flex-wrap: wrap;
+    padding-top: var(--s-08);
   }
 
   .error-banner {
-    background: rgba(239, 68, 68, 0.14);
-    border: 1px solid #ef4444;
-    color: #fecaca;
-    padding: 12px 16px;
-    font-size: 14px;
+    border-top: 1px solid #ef4444;
+    padding-top: var(--s-16);
+    color: #fca5a5;
+    font-size: 15px;
   }
 
-  .results-stack {
-    margin-top: var(--s-32);
+  /* KPI columns (matches Problem.astro rhythm) */
+  .kpi-row > * {
     display: flex;
     flex-direction: column;
-    gap: var(--s-32);
-  }
-
-  .grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
     gap: var(--s-24);
+    min-height: 240px;
   }
 
-  .card-top {
+  .k-idx {
+    color: var(--text-hi);
+  }
+
+  .k-idx::before {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 10px;
+    vertical-align: 1px;
+    background: var(--dot);
+  }
+
+  .n {
+    font-size: clamp(52px, 5.5vw, 80px);
+    color: var(--accent);
+    margin-top: auto;
+  }
+
+  .detail-cols {
+    margin-top: var(--s-64);
+  }
+
+  .detail-heading {
+    margin-bottom: var(--s-24);
+  }
+
+  :global(.signal-row) {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--s-16);
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 15px;
+    color: var(--text-hi);
+  }
+
+  :global(.sig-status) {
+    font-weight: 600;
+  }
+  :global(.sig-status.ok) {
+    color: #0d9488;
+  }
+  :global(.sig-status.opt) {
+    color: var(--steel);
+  }
+  :global(.sig-status.miss) {
+    color: #dc2626;
+  }
+
+  .gaps-wrap {
+    margin-top: var(--s-32);
+  }
+
+  .gaps-heading {
+    color: var(--text-hi);
     margin-bottom: var(--s-16);
-    padding-bottom: var(--s-16);
-    border-bottom: 1px solid var(--line);
-  }
-
-  .muted-line {
-    color: var(--pale);
-    margin-top: var(--s-08);
-  }
-
-  .score-pill {
-    font: 600 12px/1 var(--mono);
-    padding: 6px 10px;
-    border: 1px solid var(--line);
-    background: var(--teal);
-    color: var(--white);
-  }
-
-  .score-pill.good {
-    background: rgba(16, 185, 129, 0.18);
-    border-color: #10b981;
-    color: #6ee7b7;
-  }
-
-  .score-pill.warn {
-    background: rgba(253, 179, 67, 0.18);
-    border-color: var(--gold);
-    color: var(--gold);
-  }
-
-  .score-pill.bad {
-    background: rgba(239, 68, 68, 0.18);
-    border-color: #ef4444;
-    color: #fca5a5;
-  }
-
-  .check-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: var(--s-24);
-  }
-
-  .check-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: var(--white);
-  }
-
-  .check-dot {
-    font: 700 13px/1 var(--mono);
-  }
-  .check-dot.ok {
-    color: #34d399;
-  }
-  .check-dot.opt {
-    color: var(--gold);
-  }
-  .check-dot.miss {
-    color: #f87171;
-  }
-
-  .sub-block {
-    margin-top: var(--s-24);
-    padding-top: var(--s-16);
-    border-top: 1px solid var(--line);
-  }
-
-  .sub-title {
-    margin-bottom: 10px;
-    color: var(--gold);
-  }
-
-  .bot-chips,
-  .tag-cloud {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .bot-pill,
-  .tag-pill {
-    font: 12px/1.2 var(--mono);
-    padding: 5px 9px;
-    border: 1px solid var(--line);
-    background: var(--teal);
-    color: var(--white);
-  }
-
-  .bot-pill.ok {
-    border-color: rgba(52, 211, 153, 0.5);
-    color: #a7f3d0;
-  }
-
-  .bot-pill.blocked {
-    border-color: #ef4444;
-    color: #fca5a5;
-  }
-
-  .tag-pill.warn {
-    border-color: var(--gold);
-    color: var(--gold);
   }
 
   .gaps-list {
     padding-left: 18px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    font-size: 14px;
+    gap: 10px;
+    font-size: 15px;
+    line-height: 1.5;
     color: var(--pale);
   }
 
-  .lh-meters {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--s-16);
-    margin-top: var(--s-24);
-    margin-bottom: var(--s-16);
-  }
-
-  .lh-box {
-    background: var(--teal);
-    border: 1px solid var(--line);
-    padding: var(--s-16);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .lh-num {
-    font: 600 26px/1.1 var(--mono);
-    color: var(--gold);
-  }
-
-  .questions-edit-list {
+  .summary-lists {
     display: flex;
     flex-direction: column;
     gap: var(--s-16);
-    margin-top: var(--s-16);
+    margin-top: auto;
   }
 
-  .lead-fields-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--s-16);
+  .strong-text {
+    color: var(--text-hi);
+    font-size: 15px;
+    margin-top: 4px;
   }
 
-  .email-gate-row {
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--s-16);
-  }
-
-  .btn-ai-submit {
-    height: 48px;
-  }
-
-  .summary-stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--s-16);
-    margin-block: var(--s-16) var(--s-24);
-  }
-
-  .stat-box {
-    background: var(--teal);
-    border: 1px solid var(--line);
-    padding: var(--s-16);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .stat-big {
-    font: 600 28px/1 var(--mono);
-    color: var(--gold);
-  }
-
-  .runs-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--s-16);
-  }
-
-  .run-card {
-    background: var(--teal);
-    border: 1px solid var(--line);
-    padding: var(--s-24);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .run-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--s-16);
-  }
-
-  .run-excerpt {
-    font-size: 14px;
-    color: var(--pale);
-    line-height: 1.55;
-  }
-
-  .run-meta {
-    font-size: 13px;
-    color: var(--white);
-  }
-
-  .not-run-note {
-    margin-top: var(--s-24);
-    padding-top: var(--s-16);
+  /* Unbranded Prompt Runs Ledger */
+  .runs-ledger {
+    margin-top: var(--s-64);
     border-top: 1px solid var(--line);
-    font-size: 13px;
-    color: var(--pale);
   }
 
-  .upgrade-card {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: var(--s-32);
-    align-items: center;
-  }
-
-  .upgrade-lede {
-    margin-top: var(--s-16);
-    color: var(--pale);
-    font-size: 16px;
-  }
-
-  .compare-mini {
-    display: grid;
-    grid-template-columns: 1fr 1.2fr;
+  :global(.run-row) {
+    padding: var(--s-32) 0;
+    border-bottom: 1px solid var(--line-soft);
+    display: flex;
+    flex-direction: column;
     gap: var(--s-16);
-    margin-top: var(--s-24);
   }
 
-  .cmp-col {
-    background: var(--teal);
-    border: 1px solid var(--line);
-    padding: var(--s-16);
-    font-size: 13px;
-    color: var(--pale);
-  }
-
-  .cmp-col.cmp-highlight {
-    border-color: var(--gold);
-    color: var(--white);
-  }
-
-  .cmp-head {
-    margin-bottom: 10px;
-    color: var(--white);
-  }
-
-  .cmp-col ul {
-    padding-left: 16px;
+  :global(.run-top) {
     display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .upgrade-cta-box {
-    background: var(--teal);
-    border: 1px solid var(--gold);
-    padding: var(--s-32);
-    display: flex;
-    flex-direction: column;
+    align-items: baseline;
+    justify-content: space-between;
     gap: var(--s-24);
   }
 
-  .price-display {
+  :global(.run-q) {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-16);
+  }
+
+  :global(.run-excerpt) {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--pale);
+    max-width: 72ch;
+  }
+
+  :global(.run-meta) {
+    color: var(--text-hi);
+  }
+
+  .edit-prompts-drawer {
+    margin-top: var(--s-40);
+  }
+
+  .drawer-trigger {
+    cursor: pointer;
+    color: var(--text-hi);
+    padding: var(--s-08) 0;
+  }
+
+  .edit-prompts-form {
+    padding-top: var(--s-24);
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--s-16);
+    max-width: 760px;
   }
 
-  .price-big {
-    font: 600 44px/1 var(--mono);
-    color: var(--gold);
+  .method-note {
+    margin-top: var(--s-40);
+    max-width: 72ch;
   }
 
-  .price-cur {
-    font-size: 18px;
+  /* Section 4: $99 Upgrade Ledger */
+  .upgrade-ledger {
+    margin-bottom: var(--s-64);
+  }
+
+  .ledger-list {
+    margin-top: var(--s-24);
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--pale);
+  }
+
+  .highlight-list {
     color: var(--white);
   }
 
-  .btn-full {
-    width: 100%;
-    justify-content: center;
+  .checkout-bar {
+    border-top: 1px solid var(--line);
+    padding-top: var(--s-48);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--s-48);
+    flex-wrap: wrap;
+  }
+
+  .price-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+    max-width: 48ch;
+  }
+
+  .price-kpi {
+    font-size: clamp(56px, 6vw, 84px);
+    color: var(--gold);
+  }
+
+  .price-kpi .cur {
+    font-family: var(--mono);
+    font-size: 20px;
+    color: var(--white);
+  }
+
+  .checkout-action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s-16);
   }
 
   @media (max-width: 960px) {
-    .form-grid,
-    .lead-fields-grid,
-    .grid-2,
-    .summary-stats,
-    .upgrade-card,
-    .compare-mini {
-      grid-template-columns: 1fr;
-    }
-
-    .check-grid,
-    .lh-meters {
+    .intake-grid {
       grid-template-columns: 1fr;
     }
   }
