@@ -94,6 +94,15 @@ function rowToStoredAudit(row: Record<string, any>): StoredAudit {
   };
 }
 
+function isUsableCachedAudit(a: StoredAudit | null, expectedDefaultCity: string): a is StoredAudit {
+  if (!a || !a.tech_scan || !a.ai_visibility) return false;
+  if (a.city && a.city !== expectedDefaultCity) return false;
+  if (a.ai_visibility.circuitBreakerTripped) return false;
+  const runs = a.ai_visibility.runs || [];
+  if (runs.length === 0 || runs.some((r) => r.status !== 'ok')) return false;
+  return true;
+}
+
 export async function getCachedAuditByDomain(
   env: Env,
   domain: string,
@@ -101,10 +110,16 @@ export async function getCachedAuditByDomain(
 ): Promise<StoredAudit | null> {
   await ensureSchema(env);
   const nowIso = new Date().toISOString();
+  const expectedDefaultCity = lang === 'es' ? 'Chile' : 'United States';
 
   if (!env.DB) {
     for (const audit of memoryAudits.values()) {
-      if (audit.domain === domain && audit.lang === lang && audit.expires_at > nowIso) {
+      if (
+        audit.domain === domain &&
+        audit.lang === lang &&
+        audit.expires_at > nowIso &&
+        isUsableCachedAudit(audit, expectedDefaultCity)
+      ) {
         return audit;
       }
     }
@@ -112,12 +127,13 @@ export async function getCachedAuditByDomain(
   }
 
   const row = await env.DB.prepare(
-    `SELECT * FROM audits WHERE domain = ? AND lang = ? AND expires_at > ? ORDER BY created_at DESC LIMIT 1`
+    `SELECT * FROM audits WHERE domain = ? AND lang = ? AND city = ? AND expires_at > ? ORDER BY created_at DESC LIMIT 1`
   )
-    .bind(domain, lang, nowIso)
+    .bind(domain, lang, expectedDefaultCity, nowIso)
     .first<Record<string, any>>();
 
-  return row ? rowToStoredAudit(row) : null;
+  const parsed = row ? rowToStoredAudit(row) : null;
+  return isUsableCachedAudit(parsed, expectedDefaultCity) ? parsed : null;
 }
 
 export async function getAuditById(env: Env, id: string): Promise<StoredAudit | null> {

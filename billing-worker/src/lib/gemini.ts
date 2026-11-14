@@ -155,12 +155,12 @@ export async function inferContextAndBuyerQuestions(
   }
 
   const locationInstructionEn = explicitCity
-    ? `Target market/location specified by user: "${explicitCity}". Tailor the questions to buyers in ${explicitCity}.`
-    : `Default market: United States. DO NOT invent or inject specific cities (like Bengaluru, London, etc.) into the questions. Keep the questions focused on the specific problem, workflow, industry use-case, and solution the company offers.`;
+    ? `Target market specified by user: "${explicitCity}".`
+    : `Target market: United States / Global. Write completely location-agnostic questions—NEVER mention any city, state, or geographic office in the questions.`;
 
   const locationInstructionEs = explicitCity
-    ? `Ubicación/mercado indicado por el usuario: "${explicitCity}". Adapta las preguntas a compradores en ${explicitCity}.`
-    : `Mercado por defecto: Chile / Latinoamérica. NO inventes ciudades aleatorias si no son relevantes; enfoca las preguntas en el problema real, flujo de trabajo, caso de uso y solución que ofrece la empresa.`;
+    ? `Mercado indicado por el usuario: "${explicitCity}".`
+    : `Mercado: Global / Latinoamérica. Escribe preguntas sin mencionar ninguna ciudad específica.`;
 
   const unbrandedCount = count === 3 ? 2 : count;
 

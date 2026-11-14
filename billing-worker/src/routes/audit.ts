@@ -319,10 +319,16 @@ export async function handleAuditAiVisibility(
       );
     };
 
-    // 2. If this audit already has AI visibility results and questions match, return cached ($0)
+    // 2. If this audit already has valid AI visibility results and questions match, return cached ($0)
     const questionsUnchanged =
       JSON.stringify(finalQuestions) === JSON.stringify(audit.questions);
-    if (audit.ai_visibility && questionsUnchanged) {
+    const hasValidAiRuns =
+      audit.ai_visibility &&
+      !audit.ai_visibility.circuitBreakerTripped &&
+      Array.isArray(audit.ai_visibility.runs) &&
+      audit.ai_visibility.runs.length > 0 &&
+      audit.ai_visibility.runs.every((r) => r.status === 'ok');
+    if (hasValidAiRuns && questionsUnchanged) {
       audit.tech_scan.readinessScore = computeCombinedAiScore(
         audit.tech_scan.readinessScore,
         audit.ai_visibility
@@ -363,7 +369,9 @@ export async function handleAuditAiVisibility(
     }
 
     // 4. Enforce per-IP rate limit and daily circuit breaker before calling paid AI APIs
-    const usageCheck = await checkAndIncrementAiUsage(env, ipHash, 3);
+    // Allow generous per-IP testing (50/day) and bypass per-IP cap on localhost dev
+    const isLocalDev = clientIp === '0.0.0.0' || clientIp === '127.0.0.1' || clientIp === '::1';
+    const usageCheck = await checkAndIncrementAiUsage(env, ipHash, isLocalDev ? 1000 : 30);
     if (!usageCheck.allowed) {
       const fallbackVisibility = {
         ranAt: new Date().toISOString(),

@@ -50,18 +50,26 @@ const { defaultLang = 'en' } = Astro.props;
             <input
               type="text"
               id="auditService"
+              name="target_service_custom"
               class="form-input"
-              placeholder="e.g. Dental clinic, B2B SaaS, HVAC"
+              placeholder="e.g. Workflow automation, B2B SaaS, Dental clinic"
+              autocomplete="off"
+              data-lpignore="true"
+              data-1p-ignore="true"
             />
           </div>
 
           <div class="field">
-            <label for="auditCity" class="label" data-audit-i18n="cityLabel">City / market (optional)</label>
+            <label for="auditCity" class="label" data-audit-i18n="cityLabel">Target market (optional)</label>
             <input
               type="text"
               id="auditCity"
+              name="target_market_custom"
               class="form-input"
-              placeholder="e.g. Austin, TX or Concón, Chile"
+              placeholder="Defaults to United States / Global"
+              autocomplete="off"
+              data-lpignore="true"
+              data-1p-ignore="true"
             />
           </div>
 
@@ -322,7 +330,7 @@ const { defaultLang = 'en' } = Astro.props;
         'Enter your website and contact details to run a free technical AI readiness scan, check your Google Lighthouse base health, and test 3 unbranded buyer questions.',
       urlLabel: 'Website URL *',
       serviceLabel: 'Primary service (optional)',
-      cityLabel: 'City / market (optional)',
+      cityLabel: 'Target market (optional)',
       nameLabel: 'Your full name *',
       emailLabel: 'Work email *',
       phoneLabel: 'Phone / WhatsApp *',
@@ -378,7 +386,7 @@ const { defaultLang = 'en' } = Astro.props;
         'Ingrese su sitio web y sus datos para ejecutar una revisión técnica gratuita para IA, medir Google Lighthouse y probar 3 preguntas reales de compra sin su marca.',
       urlLabel: 'Sitio web *',
       serviceLabel: 'Servicio principal (opcional)',
-      cityLabel: 'Ciudad o comuna (opcional)',
+      cityLabel: 'Mercado objetivo (opcional)',
       nameLabel: 'Nombre completo *',
       emailLabel: 'Correo de trabajo *',
       phoneLabel: 'Teléfono / WhatsApp *',
