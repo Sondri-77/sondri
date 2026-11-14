@@ -364,6 +364,8 @@ export async function fetchLighthouseResult(
   endpoint.searchParams.set('strategy', 'mobile');
   endpoint.searchParams.append('category', 'PERFORMANCE');
   endpoint.searchParams.append('category', 'SEO');
+  endpoint.searchParams.append('category', 'ACCESSIBILITY');
+  endpoint.searchParams.append('category', 'BEST_PRACTICES');
   if (apiKey && !apiKey.startsWith('AIzaSy...')) {
     endpoint.searchParams.set('key', apiKey);
   }
@@ -386,6 +388,8 @@ export async function fetchLighthouseResult(
       strategy: 'mobile',
       performanceScore: null,
       seoScore: null,
+      accessibilityScore: null,
+      bestPracticesScore: null,
       isCrawlable: null,
       error: errDetail,
     };
@@ -397,15 +401,62 @@ export async function fetchLighthouseResult(
 
   const perfRaw = categories?.performance?.score;
   const seoRaw = categories?.seo?.score;
+  const a11yRaw = categories?.accessibility?.score;
+  const bpRaw = categories?.['best-practices']?.score;
   const crawlableScore = audits?.['is-crawlable']?.score;
+
+  // Collect actionable Lighthouse opportunities & diagnostics that scored < 0.9
+  const priorityAuditIds = [
+    'render-blocking-resources',
+    'unused-javascript',
+    'unused-css-rules',
+    'modern-image-formats',
+    'uses-optimized-images',
+    'uses-Responsive-images',
+    'server-response-time',
+    'unminified-javascript',
+    'unminified-css',
+    'meta-description',
+    'document-title',
+    'image-alt',
+    'link-text',
+    'crawlable-anchors',
+    'is-crawlable',
+    'robots-txt',
+    'canonical',
+    'color-contrast',
+    'heading-order',
+    'tap-targets',
+  ];
+
+  const diagnostics: { id: string; title: string; displayValue?: string; score: number }[] = [];
+  for (const id of priorityAuditIds) {
+    const a = audits?.[id];
+    if (a && typeof a.score === 'number' && a.score < 0.9 && a.title) {
+      diagnostics.push({
+        id,
+        title: String(a.title),
+        displayValue: a.displayValue ? String(a.displayValue) : undefined,
+        score: Math.round(a.score * 100),
+      });
+    }
+    if (diagnostics.length >= 8) break;
+  }
 
   return {
     fetchedAt: new Date().toISOString(),
     strategy: 'mobile',
     performanceScore: typeof perfRaw === 'number' ? Math.round(perfRaw * 100) : null,
     seoScore: typeof seoRaw === 'number' ? Math.round(seoRaw * 100) : null,
+    accessibilityScore: typeof a11yRaw === 'number' ? Math.round(a11yRaw * 100) : null,
+    bestPracticesScore: typeof bpRaw === 'number' ? Math.round(bpRaw * 100) : null,
     isCrawlable: typeof crawlableScore === 'number' ? crawlableScore === 1 : null,
+    fcpDisplay: audits?.['first-contentful-paint']?.displayValue || undefined,
     lcpDisplay: audits?.['largest-contentful-paint']?.displayValue || undefined,
+    tbtDisplay: audits?.['total-blocking-time']?.displayValue || undefined,
     clsDisplay: audits?.['cumulative-layout-shift']?.displayValue || undefined,
+    siDisplay: audits?.['speed-index']?.displayValue || undefined,
+    ttfbDisplay: audits?.['server-response-time']?.displayValue || undefined,
+    diagnostics,
   };
 }

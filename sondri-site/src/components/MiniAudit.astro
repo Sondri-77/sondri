@@ -125,8 +125,11 @@ const { defaultLang = 'en' } = Astro.props;
           <div>
             <h2 class="h2" id="detectedBrandTitle">Website Readiness<span class="gdot">.</span></h2>
           </div>
-          <div class="intro">
+          <div class="intro report-head-actions">
             <p class="lede" id="detectedMetaLine"></p>
+            <button type="button" id="btnDownloadPdf" class="btn btn-ghost-dark">
+              <span data-audit-i18n="downloadPdfBtn">Download Audit PDF</span> <span class="arr">↓</span>
+            </button>
           </div>
         </div>
 
@@ -154,6 +157,19 @@ const { defaultLang = 'en' } = Astro.props;
             <p class="body-s" id="lhExtraMetrics" data-audit-i18n="lhPerfDesc">
               Running live Google Lighthouse mobile performance check…
             </p>
+          </div>
+        </div>
+
+        <!-- Extended Google PageSpeed Insights & Core Web Vitals Panel -->
+        <div class="rule-cols cols-2 detail-cols" id="lhDetailsPanel" style="display: none;">
+          <div>
+            <h3 class="h5 detail-heading" data-audit-i18n="cwvTitle">Google PageSpeed & Core Web Vitals</h3>
+            <div class="signal-list" id="lhMetricsGrid"></div>
+          </div>
+
+          <div>
+            <h3 class="h5 detail-heading" data-audit-i18n="lhDiagTitle">Lighthouse opportunities & diagnostics</h3>
+            <div class="signal-list" id="lhDiagGrid"></div>
           </div>
         </div>
 
@@ -188,7 +204,7 @@ const { defaultLang = 'en' } = Astro.props;
           </div>
           <div class="intro">
             <p class="lede" data-audit-i18n="aiReportLede">
-              We test questions a real customer asks without naming your business. You can also edit any question below and re-run the check.
+              We test targeted buyer-intent questions generated from your website copy without naming your brand—measuring whether AI recommends you or your competitors.
             </p>
           </div>
         </div>
@@ -227,33 +243,6 @@ const { defaultLang = 'en' } = Astro.props;
 
         <!-- Question Breakdown List -->
         <div class="runs-ledger" id="runsList"></div>
-
-        <!-- Optional Custom Prompt Re-run -->
-        <details class="edit-prompts-drawer">
-          <summary class="label drawer-trigger">
-            <span class="gdot">■</span> <span data-audit-i18n="editPromptsBtn">Edit the 3 buyer questions and re-run</span>
-          </summary>
-          <form id="formStep2" class="edit-prompts-form">
-            <div class="field">
-              <label for="qInput0" class="label">01</label>
-              <input type="text" id="qInput0" class="form-input light-input" required />
-            </div>
-            <div class="field">
-              <label for="qInput1" class="label">02</label>
-              <input type="text" id="qInput1" class="form-input light-input" required />
-            </div>
-            <div class="field">
-              <label for="qInput2" class="label">03</label>
-              <input type="text" id="qInput2" class="form-input light-input" required />
-            </div>
-            <div>
-              <button type="submit" id="btnRunAi" class="btn btn-gold">
-                <span data-audit-i18n="runAiBtn">Re-run 3 Questions</span> <span class="arr">→</span>
-              </button>
-            </div>
-            <p id="aiError" class="error-banner" style="display: none;"></p>
-          </form>
-        </details>
 
         <p class="body-s method-note" id="notRunNote"></p>
       </div>
@@ -347,12 +336,15 @@ const { defaultLang = 'en' } = Astro.props;
       lhSeoDesc: 'Checking mobile crawlability and baseline search indexability via Google PageSpeed Insights.',
       lhPerfLabel: 'Mobile Speed (Lighthouse)',
       lhPerfDesc: 'Running live Google Lighthouse mobile performance check…',
+      cwvTitle: 'Google PageSpeed & Core Web Vitals',
+      lhDiagTitle: 'Lighthouse opportunities & diagnostics',
+      downloadPdfBtn: 'Download Audit PDF',
       signalsTitle: 'Structured data & site signals',
       botsTitle: 'AI search crawlers (robots.txt)',
       gapsTitle: 'Priority technical gaps',
       aiReportTitle: 'Unbranded buyer questions',
       aiReportLede:
-        'We test questions a real customer asks without naming your business. You can also edit any question below and re-run the check.',
+        'We test targeted buyer-intent questions generated from your website copy without naming your brand—measuring whether AI recommends you or your competitors.',
       statNamed: 'Answers naming you',
       statNamedSub: 'Out of 3 unbranded buyer questions run once on Gemini.',
       statCited: 'Answers citing your site',
@@ -360,9 +352,6 @@ const { defaultLang = 'en' } = Astro.props;
       statCompetitors: 'Named instead & sources cited',
       compSubLabel: 'Competitors named:',
       srcSubLabel: 'Sources cited:',
-      editPromptsBtn: 'Edit the 3 buyer questions and re-run',
-      runAiBtn: 'Re-run 3 Questions',
-      runAiBtnLoading: 'Querying live AI…',
       upgradeTitle: 'Get the full 15-question audit across ChatGPT, Gemini & Google AI',
       upgradeDesc:
         'A single API check is only a snapshot—AI answers change from run to run and differ when logged out. In our Full Audit, we run 12 to 15 unbranded buyer questions 3 times per engine across ChatGPT, Gemini, Google AI Overviews, and Google AI Mode, verify whether the AI describes your business accurately, and hand you a prioritized fix list.',
@@ -403,12 +392,15 @@ const { defaultLang = 'en' } = Astro.props;
       lhSeoDesc: 'Verificando rastreabilidad móvil e indexación mediante Google PageSpeed Insights.',
       lhPerfLabel: 'Velocidad Móvil (Lighthouse)',
       lhPerfDesc: 'Ejecutando prueba de rendimiento móvil en Google Lighthouse…',
+      cwvTitle: 'Google PageSpeed y Core Web Vitals',
+      lhDiagTitle: 'Oportunidades y diagnósticos de Lighthouse',
+      downloadPdfBtn: 'Descargar Informe PDF',
       signalsTitle: 'Datos estructurados y señales del sitio',
       botsTitle: 'Rastreadores de búsqueda IA (robots.txt)',
       gapsTitle: 'Brechas técnicas prioritarias',
       aiReportTitle: 'Preguntas de compra sin marca',
       aiReportLede:
-        'Probamos las preguntas que haría un cliente real sin poner el nombre de su empresa. También puede editar las preguntas abajo y volver a probar.',
+        'Probamos preguntas específicas de intención de compra generadas a partir del contenido de su sitio sin nombrar su marca.',
       statNamed: 'Respuestas que lo nombran',
       statNamedSub: 'De 3 preguntas sin marca probadas en Gemini.',
       statCited: 'Respuestas que citan su sitio',
@@ -416,9 +408,6 @@ const { defaultLang = 'en' } = Astro.props;
       statCompetitors: 'Nombrados en su lugar y fuentes',
       compSubLabel: 'Competidores nombrados:',
       srcSubLabel: 'Fuentes citadas:',
-      editPromptsBtn: 'Editar las 3 preguntas de cliente y volver a ejecutar',
-      runAiBtn: 'Volver a Probar 3 Preguntas',
-      runAiBtnLoading: 'Consultando IA en vivo…',
       upgradeTitle: 'Obtenga la auditoría completa de 15 preguntas en ChatGPT, Gemini y la IA de Google',
       upgradeDesc:
         'Una consulta por API es solo una muestra: las respuestas cambian entre una vez y otra y varían sin sesión iniciada. En la Auditoría Completa hacemos entre 12 y 15 preguntas sin su marca, tres veces por motor en ChatGPT, Gemini, Google AI Overviews y Google AI Mode, verificamos la exactitud de sus datos y le entregamos una lista de correcciones priorizadas.',
@@ -562,12 +551,6 @@ const { defaultLang = 'en' } = Astro.props;
         gapsBlock.style.display = 'none';
       }
     }
-
-    const qs: string[] = audit.questions || [];
-    for (let i = 0; i < 3; i++) {
-      const inp = document.getElementById(`qInput${i}`) as HTMLInputElement | null;
-      if (inp && qs[i]) inp.value = qs[i];
-    }
   }
 
   async function loadLighthouseAsync(audit: any) {
@@ -575,6 +558,9 @@ const { defaultLang = 'en' } = Astro.props;
     const perfEl = document.getElementById('lhPerfScore');
     const crawlEl = document.getElementById('lhCrawlableLine');
     const extraEl = document.getElementById('lhExtraMetrics');
+    const detailsPanel = document.getElementById('lhDetailsPanel');
+    const metricsGrid = document.getElementById('lhMetricsGrid');
+    const diagGrid = document.getElementById('lhDiagGrid');
 
     if (seoEl) seoEl.textContent = '…';
     if (perfEl) perfEl.textContent = '…';
@@ -586,6 +572,9 @@ const { defaultLang = 'en' } = Astro.props;
       const json = await res.json();
       if (json.success && json.data) {
         const lh = json.data;
+        if (currentAudit) {
+          currentAudit.lighthouse = lh;
+        }
         if (seoEl) seoEl.textContent = lh.seoScore !== null ? `${lh.seoScore}/100` : 'N/A';
         if (perfEl)
           perfEl.textContent = lh.performanceScore !== null ? `${lh.performanceScore}/100` : 'N/A';
@@ -601,8 +590,80 @@ const { defaultLang = 'en' } = Astro.props;
         if (extraEl) {
           const parts: string[] = [];
           if (lh.lcpDisplay) parts.push(`LCP: ${lh.lcpDisplay}`);
+          if (lh.fcpDisplay) parts.push(`FCP: ${lh.fcpDisplay}`);
           if (lh.clsDisplay) parts.push(`CLS: ${lh.clsDisplay}`);
           if (parts.length > 0) extraEl.textContent = parts.join(' · ');
+        }
+
+        if (detailsPanel && metricsGrid && diagGrid) {
+          detailsPanel.style.display = 'grid';
+          const metricRows = [
+            {
+              label: currentLang === 'es' ? 'Accesibilidad (Lighthouse)' : 'Accessibility Score',
+              val: lh.accessibilityScore != null ? `${lh.accessibilityScore}/100` : '—',
+            },
+            {
+              label: currentLang === 'es' ? 'Buenas Prácticas (Lighthouse)' : 'Best Practices Score',
+              val: lh.bestPracticesScore != null ? `${lh.bestPracticesScore}/100` : '—',
+            },
+            {
+              label: 'First Contentful Paint (FCP)',
+              val: lh.fcpDisplay || '—',
+            },
+            {
+              label: 'Largest Contentful Paint (LCP)',
+              val: lh.lcpDisplay || '—',
+            },
+            {
+              label: 'Total Blocking Time (TBT)',
+              val: lh.tbtDisplay || '—',
+            },
+            {
+              label: 'Cumulative Layout Shift (CLS)',
+              val: lh.clsDisplay || '—',
+            },
+            {
+              label: 'Speed Index',
+              val: lh.siDisplay || '—',
+            },
+            {
+              label: currentLang === 'es' ? 'Respuesta del servidor (TTFB)' : 'Server Response Time (TTFB)',
+              val: lh.ttfbDisplay || '—',
+            },
+          ];
+
+          metricsGrid.innerHTML = metricRows
+            .map(
+              (m) => `
+              <div class="signal-row">
+                <span class="sig-label">${m.label}</span>
+                <span class="label sig-status ok">${m.val}</span>
+              </div>`
+            )
+            .join('');
+
+          const diags = Array.isArray(lh.diagnostics) ? lh.diagnostics : [];
+          if (diags.length > 0) {
+            diagGrid.innerHTML = diags
+              .map(
+                (d: any) => `
+                <div class="signal-row">
+                  <span class="sig-label">${d.title}${d.displayValue ? ` — <small>${d.displayValue}</small>` : ''}</span>
+                  <span class="label sig-status ${d.score >= 50 ? 'opt' : 'miss'}">${d.score}/100</span>
+                </div>`
+              )
+              .join('');
+          } else {
+            diagGrid.innerHTML = `
+              <div class="signal-row">
+                <span class="sig-label">${
+                  currentLang === 'es'
+                    ? 'Sin alertas críticas detectadas en las auditorías principales de Lighthouse.'
+                    : 'No critical bottlenecks flagged across primary Lighthouse checks.'
+                }</span>
+                <span class="label sig-status ok">PASS</span>
+              </div>`;
+          }
         }
       }
     } catch {
@@ -761,54 +822,461 @@ const { defaultLang = 'en' } = Astro.props;
     }
   });
 
-  // Handle Custom Question Re-run
-  document.getElementById('formStep2')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!currentAudit) return;
+  function escapeHtml(raw: any): string {
+    return String(raw ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
 
-    const btn = document.getElementById('btnRunAi') as HTMLButtonElement;
-    const errEl = document.getElementById('aiError') as HTMLElement;
-    errEl.style.display = 'none';
+  function openAuditPdfReport(audit: any, lang: 'en' | 'es') {
+    if (!audit || !audit.tech_scan) return;
+    const scan = audit.tech_scan;
+    const lh = audit.lighthouse || {};
+    const ai = audit.ai_visibility || {};
+    const isEs = lang === 'es';
+    const dateStr = new Date().toLocaleDateString(isEs ? 'es-CL' : 'en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
 
-    const name = (document.getElementById('leadName') as HTMLInputElement).value.trim();
-    const email = (document.getElementById('leadEmail') as HTMLInputElement).value.trim();
-    const phone = (document.getElementById('leadPhone') as HTMLInputElement).value.trim();
-    const questions = [0, 1, 2]
-      .map((i) => (document.getElementById(`qInput${i}`) as HTMLInputElement)?.value.trim())
-      .filter(Boolean);
+    const signalRows = [
+      {
+        name: isEs ? 'Schema Organization / LocalBusiness' : 'Organization / LocalBusiness Schema',
+        status: scan.hasOrganizationOrLocalBusiness ? (isEs ? 'DETECTADO' : 'FOUND') : isEs ? 'FALTA' : 'MISSING',
+        ok: scan.hasOrganizationOrLocalBusiness,
+      },
+      {
+        name: 'FAQPage JSON-LD Schema',
+        status: scan.hasFaqSchema ? (isEs ? 'DETECTADO' : 'FOUND') : isEs ? 'FALTA' : 'MISSING',
+        ok: scan.hasFaqSchema,
+      },
+      {
+        name: isEs ? 'Señales de teléfono y dirección' : 'Phone & Address Entity Signals',
+        status:
+          scan.hasPhoneInHtml || scan.hasAddressSignals ? (isEs ? 'DETECTADO' : 'FOUND') : isEs ? 'FALTA' : 'MISSING',
+        ok: scan.hasPhoneInHtml || scan.hasAddressSignals,
+      },
+      {
+        name: 'sitemap.xml',
+        status: scan.sitemapFound ? (isEs ? 'DETECTADO' : 'FOUND') : isEs ? 'FALTA' : 'MISSING',
+        ok: scan.sitemapFound,
+      },
+      {
+        name: 'llms.txt',
+        status: scan.llmsTxtFound ? (isEs ? 'DETECTADO' : 'FOUND') : isEs ? 'OPCIONAL' : 'OPTIONAL',
+        ok: true,
+      },
+      {
+        name: isEs ? 'Esquemas JSON-LD detectados' : 'All JSON-LD Schemas Found',
+        status: Array.isArray(scan.schemasFound) && scan.schemasFound.length > 0 ? scan.schemasFound.join(', ') : 'None',
+        ok: Array.isArray(scan.schemasFound) && scan.schemasFound.length > 0,
+      },
+    ];
 
-    btn.disabled = true;
-    const spanText = btn.querySelector('[data-audit-i18n="runAiBtn"]');
-    if (spanText) spanText.textContent = I18N[currentLang].runAiBtnLoading;
+    const botRows = (scan.bots || []).map((b: any) => ({
+      name: `${b.bot} (${b.role})`,
+      status: b.allowed ? (isEs ? 'PERMITIDO' : 'ALLOWED') : isEs ? 'BLOQUEADO' : 'BLOCKED',
+      ok: b.allowed,
+    }));
 
-    try {
-      const res = await fetch(`${WORKER_BASE}/audit/ai-visibility`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          audit_id: currentAudit.id,
-          name,
-          email,
-          phone,
-          questions,
-          city: currentAudit.city,
-          service: currentAudit.service,
-        }),
-      });
-      const json = await res.json();
+    const cwvRows = [
+      { name: 'Lighthouse SEO Score', val: lh.seoScore != null ? `${lh.seoScore}/100` : 'N/A' },
+      { name: 'Lighthouse Mobile Performance', val: lh.performanceScore != null ? `${lh.performanceScore}/100` : 'N/A' },
+      { name: 'Lighthouse Accessibility', val: lh.accessibilityScore != null ? `${lh.accessibilityScore}/100` : 'N/A' },
+      { name: 'Lighthouse Best Practices', val: lh.bestPracticesScore != null ? `${lh.bestPracticesScore}/100` : 'N/A' },
+      { name: 'First Contentful Paint (FCP)', val: lh.fcpDisplay || '—' },
+      { name: 'Largest Contentful Paint (LCP)', val: lh.lcpDisplay || '—' },
+      { name: 'Total Blocking Time (TBT)', val: lh.tbtDisplay || '—' },
+      { name: 'Cumulative Layout Shift (CLS)', val: lh.clsDisplay || '—' },
+      { name: 'Speed Index', val: lh.siDisplay || '—' },
+      { name: 'Server Response Time (TTFB)', val: lh.ttfbDisplay || '—' },
+    ];
 
-      if (!json.success || !json.data) {
-        throw new Error(json.error?.message || 'Unable to run AI visibility check');
-      }
+    const diagList = Array.isArray(lh.diagnostics) ? lh.diagnostics : [];
+    const gapsList = Array.isArray(scan.gaps) ? scan.gaps : [];
+    const runs = Array.isArray(ai.runs) ? ai.runs : [];
 
-      currentAudit = json.data;
-      renderAiVisibility(currentAudit);
-    } catch (err: any) {
-      errEl.textContent = err.message || 'Unable to run live AI check.';
-      errEl.style.display = 'block';
-    } finally {
-      btn.disabled = false;
-      if (spanText) spanText.textContent = I18N[currentLang].runAiBtn;
+    const html = `<!DOCTYPE html>
+<html lang="${lang}">
+<head>
+  <meta charset="utf-8" />
+  <title>Sondri AEO & GEO Audit — ${escapeHtml(audit.domain)}</title>
+  <style>
+    @page { size: A4; margin: 12mm 14mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #072227;
+      background: #ffffff;
+      line-height: 1.45;
+      font-size: 12px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .page-wrap { max-width: 820px; margin: 0 auto; padding: 8px 0 24px; }
+    .header {
+      background: #072227;
+      color: #ffffff;
+      padding: 22px 26px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      border-bottom: 4px solid #c8a24a;
+      margin-bottom: 20px;
+    }
+    .brand-tag {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #c8a24a;
+      margin-bottom: 6px;
+    }
+    .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+    .header .sub { font-size: 12px; color: #b7c8cb; }
+    .meta-right {
+      text-align: right;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 10px;
+      color: #d5e2e4;
+      line-height: 1.6;
+      white-space: nowrap;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .kpi-card {
+      border: 1px solid #d2dcde;
+      background: #f8fafa;
+      padding: 14px 16px;
+      break-inside: avoid;
+    }
+    .kpi-label {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #4a666b;
+      margin-bottom: 6px;
+    }
+    .kpi-val {
+      font-size: 26px;
+      font-weight: 700;
+      color: #072227;
+      letter-spacing: -0.03em;
+    }
+    .kpi-note { font-size: 10.5px; color: #526c71; margin-top: 4px; }
+    .sec-title {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #072227;
+      border-bottom: 2px solid #072227;
+      padding-bottom: 6px;
+      margin: 20px 0 12px;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .box {
+      border: 1px solid #d2dcde;
+      padding: 12px 14px;
+      break-inside: avoid;
+    }
+    .box h3 {
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #072227;
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+    }
+    table.data-table tr { border-bottom: 1px solid #e6ecee; }
+    table.data-table tr:last-child { border-bottom: 0; }
+    table.data-table td { padding: 6px 4px; vertical-align: top; }
+    table.data-table td.val {
+      text-align: right;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 10.5px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .ok { color: #0d9488; }
+    .miss { color: #dc2626; }
+    .warn { color: #b45309; }
+    .meta-summary {
+      border: 1px solid #d2dcde;
+      background: #fcfdfd;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      font-size: 11.5px;
+      break-inside: avoid;
+    }
+    .meta-summary p { margin-bottom: 4px; }
+    .meta-summary p:last-child { margin-bottom: 0; }
+    .gaps-box {
+      border-left: 3px solid #dc2626;
+      background: #fef2f2;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      break-inside: avoid;
+    }
+    .gaps-box h4 { font-size: 11px; text-transform: uppercase; color: #991b1b; margin-bottom: 6px; }
+    .gaps-box ul { padding-left: 16px; color: #7f1d1d; font-size: 11.5px; }
+    .gaps-box li { margin-bottom: 3px; }
+    .run-card {
+      border: 1px solid #d2dcde;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      break-inside: avoid;
+    }
+    .run-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .run-q { font-weight: 700; font-size: 12.5px; color: #072227; }
+    .badge {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+    .badge.ok { background: #ccfbf1; color: #115e59; }
+    .badge.miss { background: #fee2e2; color: #991b1b; }
+    .run-ans { color: #2c4448; font-size: 11.5px; margin-bottom: 6px; }
+    .run-foot { font-size: 11px; color: #4a666b; }
+    .footer-cta {
+      margin-top: 18px;
+      background: #072227;
+      color: #ffffff;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      break-inside: avoid;
+    }
+    .footer-cta h4 { font-size: 13px; color: #c8a24a; margin-bottom: 3px; }
+    .footer-cta p { font-size: 11px; color: #d5e2e4; }
+    .no-print-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .print-btn {
+      background: #c8a24a;
+      color: #072227;
+      border: 0;
+      padding: 8px 16px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    @media print {
+      .no-print-bar { display: none !important; }
+      .page-wrap { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <div class="no-print-bar">
+      <button class="print-btn" onclick="window.print()">${isEs ? 'Guardar como PDF / Imprimir' : 'Save as PDF / Print'}</button>
+    </div>
+
+    <div class="header">
+      <div>
+        <div class="brand-tag">SONDRI.AI · AEO &amp; GEO VISIBILITY AUDIT REPORT</div>
+        <h1>${escapeHtml(scan.detectedBrand || audit.domain)}</h1>
+        <div class="sub">${escapeHtml(audit.url)} · ${escapeHtml(audit.service || '')}</div>
+      </div>
+      <div class="meta-right">
+        <div>DATE: ${escapeHtml(dateStr)}</div>
+        <div>MARKET: ${escapeHtml(audit.city || 'United States')}</div>
+        <div>AUDIT ID: ${escapeHtml(audit.id)}</div>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">${isEs ? 'Preparación IA' : 'AI Readiness Score'}</div>
+        <div class="kpi-val">${scan.readinessScore}/100</div>
+        <div class="kpi-note">${isEs ? 'Schema, bots y entidad' : 'Crawlers, schema & entity'}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Lighthouse SEO</div>
+        <div class="kpi-val">${lh.seoScore != null ? `${lh.seoScore}/100` : 'N/A'}</div>
+        <div class="kpi-note">${lh.isCrawlable === false ? 'Blocked from indexing' : 'Indexable & crawlable'}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">${isEs ? 'Velocidad Móvil' : 'Mobile Speed'}</div>
+        <div class="kpi-val">${lh.performanceScore != null ? `${lh.performanceScore}/100` : 'N/A'}</div>
+        <div class="kpi-note">${escapeHtml(lh.lcpDisplay ? `LCP: ${lh.lcpDisplay}` : 'Google PageSpeed v5')}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">${isEs ? 'Menciones en IA' : 'AI Brand Mentions'}</div>
+        <div class="kpi-val">${ai.namedCount ?? 0}/${ai.totalQuestions ?? 3}</div>
+        <div class="kpi-note">${isEs ? `Citas web: ${ai.citedCount ?? 0}/${ai.totalQuestions ?? 3}` : `Domain cited: ${ai.citedCount ?? 0}/${ai.totalQuestions ?? 3}`}</div>
+      </div>
+    </div>
+
+    <div class="meta-summary">
+      <p><strong>${isEs ? 'Título detectado:' : 'Detected Title Tag:'}</strong> ${escapeHtml(scan.title || '—')}</p>
+      <p><strong>${isEs ? 'Meta descripción:' : 'Meta Description:'}</strong> ${escapeHtml(scan.metaDescription || '—')}</p>
+      <p><strong>${isEs ? 'Encabezado H1:' : 'Primary H1:'}</strong> ${escapeHtml((scan.h1s || []).join(' | ') || '—')}</p>
+    </div>
+
+    ${
+      gapsList.length > 0
+        ? `<div class="gaps-box">
+            <h4>${isEs ? 'Brechas Técnicas Prioritarias' : 'Priority Technical Gaps Detected'}</h4>
+            <ul>${gapsList.map((g: string) => `<li>${escapeHtml(g)}</li>`).join('')}</ul>
+          </div>`
+        : ''
+    }
+
+    <div class="sec-title">01 · ${isEs ? 'Señales Estructuradas y Rastreadores de IA' : 'Technical AEO Signals & AI Crawler Access (robots.txt)'}</div>
+    <div class="two-col">
+      <div class="box">
+        <h3>${isEs ? 'Datos Estructurados y Señales' : 'Structured Data & Site Signals'}</h3>
+        <table class="data-table">
+          ${signalRows
+            .map(
+              (r) => `<tr>
+                <td>${escapeHtml(r.name)}</td>
+                <td class="val ${r.ok ? 'ok' : 'miss'}">${escapeHtml(r.status)}</td>
+              </tr>`
+            )
+            .join('')}
+        </table>
+      </div>
+      <div class="box">
+        <h3>${isEs ? 'Acceso de Rastreadores IA' : 'AI Search Crawlers (robots.txt)'}</h3>
+        <table class="data-table">
+          ${botRows
+            .map(
+              (r: any) => `<tr>
+                <td>${escapeHtml(r.name)}</td>
+                <td class="val ${r.ok ? 'ok' : 'miss'}">${escapeHtml(r.status)}</td>
+              </tr>`
+            )
+            .join('')}
+        </table>
+      </div>
+    </div>
+
+    <div class="sec-title">02 · Google PageSpeed Insights &amp; Core Web Vitals (Mobile)</div>
+    <div class="two-col">
+      <div class="box">
+        <h3>${isEs ? 'Métricas de Rendimiento y Core Web Vitals' : 'Lighthouse Scores & Core Web Vitals'}</h3>
+        <table class="data-table">
+          ${cwvRows
+            .map(
+              (r) => `<tr>
+                <td>${escapeHtml(r.name)}</td>
+                <td class="val">${escapeHtml(r.val)}</td>
+              </tr>`
+            )
+            .join('')}
+        </table>
+      </div>
+      <div class="box">
+        <h3>${isEs ? 'Oportunidades y Diagnósticos Lighthouse' : 'Lighthouse Opportunities & Diagnostics'}</h3>
+        <table class="data-table">
+          ${
+            diagList.length > 0
+              ? diagList
+                  .map(
+                    (d: any) => `<tr>
+                      <td>${escapeHtml(d.title)}${d.displayValue ? ` <span style="color:#526c71">(${escapeHtml(d.displayValue)})</span>` : ''}</td>
+                      <td class="val ${d.score >= 50 ? 'warn' : 'miss'}">${d.score}/100</td>
+                    </tr>`
+                  )
+                  .join('')
+              : `<tr><td>${isEs ? 'Sin cuellos de botella críticos detectados.' : 'No critical bottlenecks flagged in primary checks.'}</td><td class="val ok">PASS</td></tr>`
+          }
+        </table>
+      </div>
+    </div>
+
+    <div class="sec-title">03 · ${isEs ? 'Preguntas de Compra Sin Marca y Respuestas de IA' : 'Unbranded Buyer Questions & Live AI Visibility'}</div>
+    <div class="meta-summary">
+      <p><strong>${isEs ? 'Competidores nombrados en su lugar:' : 'Competitors Named Instead:'}</strong> ${escapeHtml((ai.competitorsSummary || []).join(', ') || 'None')}</p>
+      <p><strong>${isEs ? 'Dominios y fuentes citadas:' : 'Reference Domains Cited:'}</strong> ${escapeHtml((ai.topSourceDomains || []).join(' · ') || 'None')}</p>
+    </div>
+
+    ${runs
+      .map(
+        (r: any, idx: number) => `<div class="run-card">
+          <div class="run-head">
+            <div class="run-q">Q0${idx + 1}. ${escapeHtml(r.question)}</div>
+            <span class="badge ${r.brandNamed ? 'ok' : 'miss'}">${
+              r.brandNamed ? (isEs ? 'TE NOMBRA' : 'NAMED') : isEs ? 'NO TE NOMBRA' : 'NOT NAMED'
+            }</span>
+          </div>
+          <div class="run-ans">${escapeHtml(r.answerExcerpt)}</div>
+          <div class="run-foot">
+            <strong>${isEs ? 'Competidores:' : 'Named instead:'}</strong> ${escapeHtml((r.competitorsNamed || []).join(', ') || '—')}
+            &nbsp;|&nbsp;
+            <strong>${isEs ? 'Fuentes:' : 'Sources:'}</strong> ${escapeHtml(
+              (r.sourcesCited || []).map((s: any) => s.title || s.domain).join(', ') || '—'
+            )}
+          </div>
+        </div>`
+      )
+      .join('')}
+
+    <div class="footer-cta">
+      <div>
+        <h4>${isEs ? 'Auditoría Completa AEO / GEO de 15 Preguntas ($99 USD)' : 'Full 15-Question Multi-Engine AEO / GEO Audit ($99 USD)'}</h4>
+        <p>${
+          isEs
+            ? '12–15 preguntas sin marca × 3 repeticiones en ChatGPT, Gemini, Google AI Overviews y Google AI Mode + plan de acción priorizado.'
+            : '12–15 unbranded buyer questions × 3 runs across ChatGPT, Gemini, Google AI Overviews & Google AI Mode + prioritized fix roadmap.'
+        }</p>
+      </div>
+      <div class="meta-right">sondri.ai/ai-audit</div>
+    </div>
+  </div>
+  <script>
+    window.addEventListener('load', function () {
+      setTimeout(function () { window.print(); }, 250);
+    });
+  <\/script>
+</body>
+</html>`;
+
+    const win = window.open('', '_blank');
+    if (win) {
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+    }
+  }
+
+  document.getElementById('btnDownloadPdf')?.addEventListener('click', () => {
+    if (currentAudit) {
+      openAuditPdfReport(currentAudit, currentLang);
     }
   });
 
@@ -1111,22 +1579,31 @@ const { defaultLang = 'en' } = Astro.props;
     color: var(--text-hi);
   }
 
-  .edit-prompts-drawer {
-    margin-top: var(--s-40);
-  }
-
-  .drawer-trigger {
-    cursor: pointer;
-    color: var(--text-hi);
-    padding: var(--s-08) 0;
-  }
-
-  .edit-prompts-form {
-    padding-top: var(--s-24);
+  .report-head-actions {
     display: flex;
     flex-direction: column;
-    gap: var(--s-16);
-    max-width: 760px;
+    align-items: flex-start;
+    gap: var(--s-24);
+  }
+
+  .btn-ghost-dark {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text-hi);
+    font: 12px/1 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 14px 20px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .btn-ghost-dark:hover {
+    border-color: var(--gold);
+    color: var(--gold);
   }
 
   .method-note {

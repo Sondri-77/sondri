@@ -71,14 +71,28 @@ export interface TechScanResult {
   gaps: string[];
 }
 
+export interface LighthouseDiagnostic {
+  id: string;
+  title: string;
+  displayValue?: string;
+  score: number; // 0-100
+}
+
 export interface LighthouseResult {
   fetchedAt: string;
   strategy: 'mobile' | 'desktop';
   performanceScore: number | null; // 0-100
   seoScore: number | null; // 0-100
+  accessibilityScore?: number | null; // 0-100
+  bestPracticesScore?: number | null; // 0-100
   isCrawlable: boolean | null;
+  fcpDisplay?: string;
   lcpDisplay?: string;
+  tbtDisplay?: string;
   clsDisplay?: string;
+  siDisplay?: string;
+  ttfbDisplay?: string;
+  diagnostics?: LighthouseDiagnostic[];
   error?: string;
 }
 

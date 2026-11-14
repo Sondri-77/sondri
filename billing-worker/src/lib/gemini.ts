@@ -128,8 +128,8 @@ export async function inferContextAndBuyerQuestions(
     scan.h1s[0] ||
     scan.title.split(/[|–—•:-]/)[0]?.trim() ||
     (lang === 'es' ? 'servicios profesionales' : 'professional services');
-  const fallbackCity =
-    (userCity || '').trim() || (lang === 'es' ? 'Chile' : 'United States');
+  const explicitCity = (userCity || '').trim();
+  const fallbackCity = explicitCity || (lang === 'es' ? 'Chile' : 'United States');
 
   if (!apiKey || apiKey.startsWith('AIzaSy...')) {
     return {
@@ -138,6 +138,14 @@ export async function inferContextAndBuyerQuestions(
       questions: buildFallbackQuestions(fallbackService, fallbackCity, lang, count),
     };
   }
+
+  const locationInstructionEn = explicitCity
+    ? `Target market/location specified by user: "${explicitCity}". Tailor the questions to buyers in ${explicitCity}.`
+    : `Default market: United States. DO NOT invent or inject specific cities (like Bengaluru, London, etc.) into the questions. Keep the questions focused on the specific problem, workflow, industry use-case, and solution the company offers.`;
+
+  const locationInstructionEs = explicitCity
+    ? `Ubicación/mercado indicado por el usuario: "${explicitCity}". Adapta las preguntas a compradores en ${explicitCity}.`
+    : `Mercado por defecto: Chile / Latinoamérica. NO inventes ciudades aleatorias si no son relevantes; enfoca las preguntas en el problema real, flujo de trabajo, caso de uso y solución que ofrece la empresa.`;
 
   const prompt =
     lang === 'es'
@@ -150,11 +158,11 @@ H1s: ${scan.h1s.join(' | ')}
 H2s: ${scan.h2s.join(' | ')}
 Extracto del contenido de la página: ${(scan.bodyExcerpt || '').slice(0, 1800)}
 Servicio indicado por el usuario: ${userService || '(inferir del contenido real del sitio)'}
-Ciudad/país indicado por el usuario: ${userCity || '(inferir del sitio o usar Chile)'}
+${locationInstructionEs}
 
-Primero identifica con precisión el servicio/industria exacta que ofrece este negocio y su mercado/ubicación. Luego genera exactamente ${count} preguntas específicas y realistas de intención de compra que haría un cliente potencial en ChatGPT o Gemini cuando busca contratar o comparar proveedores de ese servicio exacto en esa ubicación, SIN nombrar la marca "${scan.detectedBrand}" ni el dominio "${scan.domain}".
+Primero identifica con precisión qué hace este negocio (su servicio, producto o solución principal). Luego genera exactamente ${count} preguntas muy interesantes, específicas y con alta intención de compra que haría un tomador de decisiones en ChatGPT o Gemini cuando busca resolver ese problema exacto, comparar alternativas o contratar un proveedor para esa necesidad, SIN nombrar la marca "${scan.detectedBrand}" ni el dominio "${scan.domain}".
 Formato JSON exacto:
-{"service":"...","city":"...","questions":["..."]}`
+{"service":"...","city":"${fallbackCity}","questions":["..."]}`
       : `Analyze the actual page content and metadata of the following website and return ONLY a valid JSON object without markdown fences.
 Domain: ${scan.domain}
 Detected brand (NEVER name this brand in the questions): ${scan.detectedBrand}
@@ -164,11 +172,11 @@ H1s: ${scan.h1s.join(' | ')}
 H2s: ${scan.h2s.join(' | ')}
 Visible page copy excerpt: ${(scan.bodyExcerpt || '').slice(0, 1800)}
 User-provided service: ${userService || '(infer from actual website content)'}
-User-provided city/location: ${userCity || '(infer from website content or use United States)'}
+${locationInstructionEn}
 
-First accurately identify the specific service/product category and target market of this business from its page copy. Then generate exactly ${count} highly relevant, specific unbranded buyer-intent questions a decision-maker would ask ChatGPT or Gemini when looking to evaluate, compare, or hire a provider for this exact offering in that location, WITHOUT naming "${scan.detectedBrand}" or "${scan.domain}".
+First accurately identify the core offering, problem solved, and value proposition of this business from its page copy. Then generate exactly ${count} sharp, high-intent, targeted unbranded buyer questions a decision-maker would ask ChatGPT or Gemini when looking to solve that exact problem, evaluate approaches, or compare providers/solutions in this category—WITHOUT naming "${scan.detectedBrand}" or "${scan.domain}".
 Exact JSON format:
-{"service":"...","city":"...","questions":["..."]}`;
+{"service":"...","city":"${fallbackCity}","questions":["..."]}`;
 
   try {
     const parsed = await callGeminiGenerateJson(prompt, apiKey);
@@ -181,7 +189,7 @@ Exact JSON format:
     }
 
     const service = (userService || parsed.service || fallbackService).trim();
-    const city = (userCity || parsed.city || fallbackCity).trim();
+    const city = explicitCity || fallbackCity;
     const questions = Array.isArray(parsed.questions)
       ? parsed.questions
           .map((q: any) => String(q || '').trim())
