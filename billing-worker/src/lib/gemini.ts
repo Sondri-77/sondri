@@ -5,7 +5,69 @@ import {
   TechScanResult,
 } from '../types';
 
-const GEMINI_MODEL = 'gemini-2.5-flash';
+// Models ordered by free-tier availability & RPD quota on Google AI Studio (2026):
+// - gemini-3.5-flash-lite: 15 RPM / 500 RPD free
+// - gemini-3.1-flash-lite: 15 RPM / 500 RPD free
+// - gemini-3.8-flash: 5 RPM / 20 RPD free
+// - gemma-4-31b-it: 30 RPM / 14.4K RPD free
+const GEMINI_TEXT_MODELS = [
+  'gemini-3.1-flash-lite',
+  'gemini-3.5-flash-lite',
+  'gemini-3.8-flash',
+  'gemma-4-31b-it',
+];
+
+async function callGeminiGenerateJson(
+  prompt: string,
+  apiKey: string,
+  systemInstruction?: string
+): Promise<any | null> {
+  for (const model of GEMINI_TEXT_MODELS) {
+    try {
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+      const body: Record<string, any> = {
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.2,
+        },
+      };
+      if (!model.startsWith('gemma-')) {
+        body.generationConfig.responseMimeType = 'application/json';
+        if (systemInstruction) {
+          body.systemInstruction = { parts: [{ text: systemInstruction }] };
+        }
+      }
+
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        console.warn(`[Gemini ${model}] HTTP ${res.status}: ${errText.slice(0, 180)}`);
+        continue;
+      }
+
+      const data: any = await res.json();
+      const rawText = (data?.candidates?.[0]?.content?.parts || [])
+        .map((p: any) => p.text || '')
+        .join('\n')
+        .trim();
+      if (!rawText) continue;
+
+      const cleaned = rawText
+        .replace(/^```(?:json)?\s*/i, '')
+        .replace(/\s*```$/i, '')
+        .trim();
+      return JSON.parse(cleaned);
+    } catch (err: any) {
+      console.warn(`[Gemini ${model} Exception]`, err?.message || err);
+    }
+  }
+  return null;
+}
 
 export function buildFallbackQuestions(
   service: string,
@@ -104,30 +166,14 @@ Exact JSON format:
 {"service":"...","city":"...","questions":["..."]}`;
 
   try {
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`;
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.2,
-          responseMimeType: 'application/json',
-        },
-      }),
-    });
-
-    if (!res.ok) {
+    const parsed = await callGeminiGenerateJson(prompt, apiKey);
+    if (!parsed || typeof parsed !== 'object') {
       return {
         service: fallbackService,
         city: fallbackCity,
         questions: buildFallbackQuestions(fallbackService, fallbackCity, lang, count),
       };
     }
-
-    const data: any = await res.json();
-    const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    const parsed = JSON.parse(rawText);
 
     const service = (userService || parsed.service || fallbackService).trim();
     const city = (userCity || parsed.city || fallbackCity).trim();
@@ -189,7 +235,7 @@ async function runSingleGeminiGroundedPrompt(
   lang: AuditLang,
   apiKey: string
 ): Promise<GroundedPromptRun> {
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TEXT_MODELS[0]}:generateContent?key=${encodeURIComponent(apiKey)}`;
   const systemInstruction =
     lang === 'es'
       ? 'Responde como a un comprador real buscando opciones concretas. Nombra empresas o proveedores reales y específicos y sé directo.'
@@ -329,6 +375,141 @@ async function runSingleGeminiGroundedPrompt(
   }
 }
 
+async function runBatchedGeminiVisibilityFallback(
+  questions: string[],
+  scan: TechScanResult,
+  lang: AuditLang,
+  apiKey: string
+): Promise<GroundedPromptRun[] | null> {
+  const prompt =
+    lang === 'es'
+      ? `Responde cada una de las siguientes ${questions.length} preguntas exactamente como lo haría un motor de respuestas de IA (Gemini / ChatGPT) cuando un comprador real busca proveedores específicos.
+No recibas pistas de la empresa evaluada: responde de forma neutral nombrando proveedores o empresas reales que lideran esa categoría/ubicación y los directorios o sitios de referencia que normalmente se citan.
+
+Preguntas:
+${questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
+
+Devuelve SOLO un objeto JSON válido con este formato exacto:
+{
+  "answers": [
+    {
+      "answer": "Respuesta directa de 2 a 3 oraciones con nombres de empresas reales en **negrita**...",
+      "providersNamed": ["Empresa 1", "Empresa 2", "Empresa 3"],
+      "referenceDomains": ["clutch.co", "g2.com", "sitioejemplo.cl"]
+    }
+  ]
+}`
+      : `Answer each of the following ${questions.length} buyer questions exactly as an AI answer engine (Gemini / ChatGPT) responds when a real buyer asks for specific provider recommendations.
+Remain neutral and name real companies/providers known in that category/location along with the reference domains or directories typically cited.
+
+Questions:
+${questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
+
+Return ONLY a valid JSON object matching this exact schema:
+{
+  "answers": [
+    {
+      "answer": "Direct 2-3 sentence answer naming real providers in **bold**...",
+      "providersNamed": ["Company 1", "Company 2", "Company 3"],
+      "referenceDomains": ["clutch.co", "g2.com", "example.com"]
+    }
+  ]
+}`;
+
+  const parsed = await callGeminiGenerateJson(prompt, apiKey);
+  if (!parsed || !Array.isArray(parsed.answers)) {
+    return null;
+  }
+
+  const brandSlug = scan.domain.split('.')[0].toLowerCase();
+  const brandNameLower = scan.detectedBrand.toLowerCase();
+  const ownDomainLower = scan.domain.toLowerCase();
+
+  return questions.map((question, idx) => {
+    const item = parsed.answers[idx] || {};
+    const fullText = String(item.answer || '').trim();
+    if (!fullText) {
+      return {
+        question,
+        engine: 'gemini',
+        status: 'not_run',
+        brandNamed: false,
+        domainCited: false,
+        competitorsNamed: [],
+        sourcesCited: [],
+        answerExcerpt:
+          lang === 'es'
+            ? 'No ejecutado (respuesta vacía).'
+            : 'Not run (empty response).',
+      };
+    }
+
+    const rawProviders: string[] = Array.isArray(item.providersNamed)
+      ? item.providersNamed.map((p: any) => String(p || '').trim()).filter(Boolean)
+      : extractCompetitorsFromAnswer(fullText, scan.detectedBrand, scan.domain);
+
+    const rawDomains: string[] = Array.isArray(item.referenceDomains)
+      ? item.referenceDomains
+          .map((d: any) =>
+            String(d || '')
+              .trim()
+              .replace(/^https?:\/\//i, '')
+              .replace(/^www\./i, '')
+              .replace(/\/.*$/, '')
+          )
+          .filter((d: string) => d.includes('.'))
+      : [];
+
+    const lowerText = fullText.toLowerCase();
+    const providersLower = rawProviders.map((p) => p.toLowerCase());
+
+    const brandNamed =
+      lowerText.includes(ownDomainLower) ||
+      (brandNameLower.length >= 3 && lowerText.includes(brandNameLower)) ||
+      (brandSlug.length >= 4 && lowerText.includes(brandSlug)) ||
+      providersLower.some(
+        (p) =>
+          (brandNameLower.length >= 3 && p.includes(brandNameLower)) ||
+          (brandSlug.length >= 4 && p.includes(brandSlug))
+      );
+
+    const domainCited =
+      lowerText.includes(ownDomainLower) ||
+      rawDomains.some((d) => d.toLowerCase().includes(ownDomainLower));
+
+    const competitorsNamed = rawProviders
+      .filter((p) => {
+        const l = p.toLowerCase();
+        return (
+          (!brandNameLower || !l.includes(brandNameLower)) &&
+          (!brandSlug || brandSlug.length < 4 || !l.includes(brandSlug))
+        );
+      })
+      .slice(0, 6);
+
+    const sourcesCited = rawDomains.slice(0, 6).map((domain) => ({
+      title: domain,
+      url: `https://${domain}`,
+      domain,
+    }));
+
+    const cleanExcerpt =
+      fullText.replace(/\s+/g, ' ').slice(0, 340) +
+      (fullText.length > 340 ? '…' : '');
+
+    return {
+      question,
+      engine: 'gemini',
+      status: 'ok',
+      brandNamed,
+      domainCited,
+      competitorsNamed,
+      sourcesCited,
+      answerExcerpt: cleanExcerpt,
+    };
+  });
+}
+
 export async function runGeminiGroundedVisibility(
   questions: string[],
   scan: TechScanResult,
@@ -367,9 +548,26 @@ export async function runGeminiGroundedVisibility(
     };
   }
 
-  const runs = await Promise.all(
-    questions.map((q) => runSingleGeminiGroundedPrompt(q, scan, lang, apiKey))
-  );
+  let runs: GroundedPromptRun[] = [];
+  if (questions.length > 0) {
+    // Probe grounded search on the first question; if the key is on the AI Studio free tier
+    // (where Gemini 3+ search grounding quota is 0/0), immediately fall back to a single
+    // batched call on gemini-3.5-flash-lite (500 RPD free) so all buyer questions succeed.
+    const firstRun = await runSingleGeminiGroundedPrompt(questions[0], scan, lang, apiKey);
+    if (firstRun.status === 'ok') {
+      const restRuns = await Promise.all(
+        questions.slice(1).map((q) => runSingleGeminiGroundedPrompt(q, scan, lang, apiKey))
+      );
+      runs = [firstRun, ...restRuns];
+    } else {
+      const batched = await runBatchedGeminiVisibilityFallback(questions, scan, lang, apiKey);
+      if (batched && batched.length > 0) {
+        runs = batched;
+      } else {
+        runs = questions.map(() => firstRun);
+      }
+    }
+  }
 
   const validRuns = runs.filter((r) => r.status === 'ok');
   const namedCount = validRuns.filter((r) => r.brandNamed).length;
