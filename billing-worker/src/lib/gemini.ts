@@ -38,14 +38,22 @@ async function callGeminiGenerateJson(
         }
       }
 
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': apiKey,
-        },
-        body: JSON.stringify(body),
-      });
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 9500);
+      let res: Response;
+      try {
+        res = await fetch(endpoint, {
+          method: 'POST',
+          signal: controller.signal,
+          headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': apiKey,
+          },
+          body: JSON.stringify(body),
+        });
+      } finally {
+        clearTimeout(timer);
+      }
 
       if (!res.ok) {
         const errText = await res.text();
