@@ -138,30 +138,32 @@ export async function inferContextAndBuyerQuestions(
 
   const prompt =
     lang === 'es'
-      ? `Analiza los siguientes metadatos de un sitio web y devuelve SOLO un objeto JSON válido sin bloques markdown.
+      ? `Analiza el contenido real y los metadatos del siguiente sitio web y devuelve SOLO un objeto JSON válido sin bloques markdown.
 Dominio: ${scan.domain}
 Marca detectada (NUNCA la menciones en las preguntas): ${scan.detectedBrand}
 Título: ${scan.title}
 Meta descripción: ${scan.metaDescription}
 H1s: ${scan.h1s.join(' | ')}
 H2s: ${scan.h2s.join(' | ')}
-Servicio indicado por el usuario: ${userService || '(inferir del sitio)'}
+Extracto del contenido de la página: ${(scan.bodyExcerpt || '').slice(0, 1800)}
+Servicio indicado por el usuario: ${userService || '(inferir del contenido real del sitio)'}
 Ciudad/país indicado por el usuario: ${userCity || '(inferir del sitio o usar Chile)'}
 
-Genera exactamente ${count} preguntas reales de compra que haría un cliente en ChatGPT o Gemini buscando este servicio en esa ubicación, SIN nombrar la marca "${scan.detectedBrand}" ni el dominio "${scan.domain}".
+Primero identifica con precisión el servicio/industria exacta que ofrece este negocio y su mercado/ubicación. Luego genera exactamente ${count} preguntas específicas y realistas de intención de compra que haría un cliente potencial en ChatGPT o Gemini cuando busca contratar o comparar proveedores de ese servicio exacto en esa ubicación, SIN nombrar la marca "${scan.detectedBrand}" ni el dominio "${scan.domain}".
 Formato JSON exacto:
 {"service":"...","city":"...","questions":["..."]}`
-      : `Analyze the following website metadata and return ONLY a valid JSON object without markdown fences.
+      : `Analyze the actual page content and metadata of the following website and return ONLY a valid JSON object without markdown fences.
 Domain: ${scan.domain}
 Detected brand (NEVER name this brand in the questions): ${scan.detectedBrand}
 Title: ${scan.title}
 Meta description: ${scan.metaDescription}
 H1s: ${scan.h1s.join(' | ')}
 H2s: ${scan.h2s.join(' | ')}
-User-provided service: ${userService || '(infer from site)'}
-User-provided city/location: ${userCity || '(infer from site or use United States)'}
+Visible page copy excerpt: ${(scan.bodyExcerpt || '').slice(0, 1800)}
+User-provided service: ${userService || '(infer from actual website content)'}
+User-provided city/location: ${userCity || '(infer from website content or use United States)'}
 
-Generate exactly ${count} realistic unbranded buyer questions a customer would ask ChatGPT or Gemini when looking to hire/buy this service in that location, WITHOUT naming "${scan.detectedBrand}" or "${scan.domain}".
+First accurately identify the specific service/product category and target market of this business from its page copy. Then generate exactly ${count} highly relevant, specific unbranded buyer-intent questions a decision-maker would ask ChatGPT or Gemini when looking to evaluate, compare, or hire a provider for this exact offering in that location, WITHOUT naming "${scan.detectedBrand}" or "${scan.domain}".
 Exact JSON format:
 {"service":"...","city":"...","questions":["..."]}`;
 

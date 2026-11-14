@@ -54,6 +54,7 @@ export interface TechScanResult {
   canonical: string | null;
   h1s: string[];
   h2s: string[];
+  bodyExcerpt?: string;
   detectedBrand: string;
   inferredService: string;
   inferredCity: string;
