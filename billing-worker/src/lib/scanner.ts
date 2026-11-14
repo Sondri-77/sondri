@@ -254,12 +254,12 @@ export async function runTechnicalScan(
   const inferredService = (userService || '').trim() || h1s[0] || title || domain;
   const inferredCity = (userCity || '').trim();
 
-  // Compute readiness score (0-100) and actionable gaps based on Week 1 guide criteria
+  // Compute base technical readiness score (max 45 pts; remaining 55 pts come from live AI visibility)
   let score = 0;
   const gaps: string[] = [];
 
   if (reachable && statusCode === 200) {
-    score += 20;
+    score += 10;
   } else {
     gaps.push(
       lang === 'es'
@@ -270,7 +270,7 @@ export async function runTechnicalScan(
 
   const searchBotsAllowed = bots.filter((b) => b.role === 'search').every((b) => b.allowed);
   if (searchBotsAllowed) {
-    score += 20;
+    score += 10;
   } else {
     const blockedNames = bots
       .filter((b) => b.role === 'search' && !b.allowed)
@@ -284,7 +284,7 @@ export async function runTechnicalScan(
   }
 
   if (title && metaDescription && h1s.length > 0) {
-    score += 20;
+    score += 10;
   } else {
     gaps.push(
       lang === 'es'
@@ -294,7 +294,7 @@ export async function runTechnicalScan(
   }
 
   if (hasOrganizationOrLocalBusiness) {
-    score += 15;
+    score += 5;
   } else {
     gaps.push(
       lang === 'es'
@@ -304,7 +304,7 @@ export async function runTechnicalScan(
   }
 
   if (hasFaqSchema) {
-    score += 15;
+    score += 5;
   } else {
     gaps.push(
       lang === 'es'
@@ -314,7 +314,7 @@ export async function runTechnicalScan(
   }
 
   if (hasPhoneInHtml || hasAddressSignals) {
-    score += 5;
+    score += 3;
   } else {
     gaps.push(
       lang === 'es'
@@ -324,7 +324,7 @@ export async function runTechnicalScan(
   }
 
   if (sitemapFound) {
-    score += 5;
+    score += 2;
   }
 
   return {

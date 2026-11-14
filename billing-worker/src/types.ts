@@ -3,6 +3,7 @@ export interface Env {
   STRIPE_WEBHOOK_SECRET: string;
   API_KEY: string;
   DISCORD_WEBHOOK_URL?: string;
+  DISCORD_AEO_WEBHOOK_URL?: string;
   GOOGLE_SHEETS_WEBHOOK_URL?: string;
   DB?: D1Database;
   GEMINI_API_KEY?: string;

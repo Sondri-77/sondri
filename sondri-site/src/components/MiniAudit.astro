@@ -329,9 +329,9 @@ const { defaultLang = 'en' } = Astro.props;
       scanBtn: 'Run My Free AI Visibility Audit',
       scanBtnLoading: 'Scanning website & running AI check…',
       scanHint: 'Unbranded buyer prompts · Crawler & schema check · Google Lighthouse included',
-      kpiReadiness: 'Technical AI Readiness',
+      kpiReadiness: 'AI Visibility & Readiness Score',
       kpiReadinessDesc:
-        'Based on AI crawler access, structured data (Organization/LocalBusiness & FAQPage), and clear entity signals.',
+        'Combines technical AI readiness (crawlers, Organization & FAQPage schema) with live AI visibility across the 3 questions below.',
       lhSeoLabel: 'Google Lighthouse SEO',
       lhSeoDesc: 'Checking mobile crawlability and baseline search indexability via Google PageSpeed Insights.',
       lhPerfLabel: 'Mobile Speed (Lighthouse)',
@@ -342,9 +342,9 @@ const { defaultLang = 'en' } = Astro.props;
       signalsTitle: 'Structured data & site signals',
       botsTitle: 'AI search crawlers (robots.txt)',
       gapsTitle: 'Priority technical gaps',
-      aiReportTitle: 'Unbranded buyer questions',
+      aiReportTitle: 'Buyer discovery & brand verification',
       aiReportLede:
-        'We test targeted buyer-intent questions generated from your website copy without naming your brand—measuring whether AI recommends you or your competitors.',
+        'We test 2 unbranded buyer-intent questions (to see if AI recommends you organically) plus 1 direct brand question (to verify whether AI accurately understands what your business does).',
       statNamed: 'Answers naming you',
       statNamedSub: 'Out of 3 unbranded buyer questions run once on Gemini.',
       statCited: 'Answers citing your site',
@@ -385,9 +385,9 @@ const { defaultLang = 'en' } = Astro.props;
       scanBtn: 'Ejecutar Diagnóstico Gratuito de IA',
       scanBtnLoading: 'Analizando sitio y consultando IA…',
       scanHint: 'Preguntas sin marca · Rastreadores y schema · Incluye Google Lighthouse',
-      kpiReadiness: 'Preparación Técnica para IA',
+      kpiReadiness: 'Puntaje de Visibilidad y Preparación IA',
       kpiReadinessDesc:
-        'Basado en acceso a rastreadores de IA, datos estructurados (Organization/LocalBusiness y FAQPage) y claridad de datos.',
+        'Combina preparación técnica (rastreadores, schema Organization y FAQPage) con visibilidad real en las 3 preguntas abajo.',
       lhSeoLabel: 'SEO Google Lighthouse',
       lhSeoDesc: 'Verificando rastreabilidad móvil e indexación mediante Google PageSpeed Insights.',
       lhPerfLabel: 'Velocidad Móvil (Lighthouse)',
@@ -398,9 +398,9 @@ const { defaultLang = 'en' } = Astro.props;
       signalsTitle: 'Datos estructurados y señales del sitio',
       botsTitle: 'Rastreadores de búsqueda IA (robots.txt)',
       gapsTitle: 'Brechas técnicas prioritarias',
-      aiReportTitle: 'Preguntas de compra sin marca',
+      aiReportTitle: 'Descubrimiento de compra y verificación de marca',
       aiReportLede:
-        'Probamos preguntas específicas de intención de compra generadas a partir del contenido de su sitio sin nombrar su marca.',
+        'Probamos 2 preguntas de intención de compra sin marca (para ver si la IA lo recomienda orgánicamente) más 1 pregunta directa sobre su empresa (para verificar si la IA entiende con exactitud qué hace su negocio).',
       statNamed: 'Respuestas que lo nombran',
       statNamedSub: 'De 3 preguntas sin marca probadas en Gemini.',
       statCited: 'Respuestas que citan su sitio',
@@ -675,6 +675,11 @@ const { defaultLang = 'en' } = Astro.props;
   function renderAiVisibility(audit: any) {
     const ai = audit.ai_visibility;
     if (!ai) return;
+
+    const badge = document.getElementById('readinessBadge');
+    if (badge && audit.tech_scan?.readinessScore != null) {
+      badge.textContent = `${audit.tech_scan.readinessScore}/100`;
+    }
 
     const namedVal = document.getElementById('statNamedVal');
     const citedVal = document.getElementById('statCitedVal');

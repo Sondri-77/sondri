@@ -261,7 +261,7 @@ export async function handleAuditAiVisibility(
     const finalQuestions =
       customQuestions.length > 0 ? customQuestions : audit.questions.slice(0, 3);
 
-    // 1. Always capture the lead in D1 + notify Discord & Sheets
+    // 1. Always capture the lead in D1
     const leadId = `lead_${crypto.randomUUID().replace(/-/g, '').slice(0, 14)}`;
     await recordLead(env, {
       id: leadId,
@@ -276,33 +276,58 @@ export async function handleAuditAiVisibility(
       ipHash,
     });
 
-    ctx.waitUntil(
-      Promise.allSettled([
-        sendDiscordNotification(
-          env,
-          '🔍 New AEO Mini Audit Lead!',
-          `**Name:** ${name || 'N/A'}\n**Email:** ${email}\n**Phone:** ${phone || 'N/A'}\n**Domain:** \`${audit.domain}\`\n**Service / City:** ${finalService} (${finalCity})\n**Readiness Score:** ${audit.tech_scan.readinessScore}/100\n**Language:** ${audit.lang.toUpperCase()}`,
-          0x3b82f6
-        ),
-        appendToGoogleSheet(env, {
-          date: new Date().toISOString().split('T')[0],
-          clientEmail: email,
-          customerName: name
-            ? `${name}${phone ? ` (${phone})` : ''} — ${audit.domain}`
-            : audit.tech_scan.detectedBrand || audit.domain,
-          amount: '0.00',
-          currency: 'USD',
-          invoiceNumber: audit.id,
-          description: `Free AEO Mini Audit (${audit.domain} - ${finalCity})`,
-          status: 'LEAD (Mini Audit)',
-        }),
-      ])
-    );
+    const computeCombinedAiScore = (baseTechScore: number, vis: any): number => {
+      // Base technical readiness is capped at 45 pts; live AI visibility contributes up to 55 pts
+      const techPart = Math.min(45, baseTechScore);
+      if (!vis) return techPart;
+      const namedPts = Math.min(45, (vis.namedCount || 0) * 15);
+      const citedPts = Math.min(10, (vis.citedCount || 0) * 5);
+      return Math.min(100, techPart + namedPts + citedPts);
+    };
+
+    const fireLeadNotifications = (vis: any) => {
+      const combinedScore = computeCombinedAiScore(audit.tech_scan!.readinessScore, vis);
+      const mentionsStr = vis ? `${vis.namedCount}/${vis.totalQuestions}` : 'Pending';
+      const compsStr =
+        vis && Array.isArray(vis.competitorsSummary) && vis.competitorsSummary.length > 0
+          ? vis.competitorsSummary.slice(0, 5).join(', ')
+          : 'None';
+
+      ctx.waitUntil(
+        Promise.allSettled([
+          sendDiscordNotification(
+            env,
+            '🔍 New AEO Mini Audit Lead!',
+            `**Name:** ${name || 'N/A'}\n**Email:** ${email}\n**Phone:** ${phone || 'N/A'}\n**Domain:** \`${audit.domain}\`\n**Service / Market:** ${finalService} (${finalCity})\n**Combined AI Score:** ${combinedScore}/100 (AI Mentions: ${mentionsStr})\n**Competitors Named:** ${compsStr}\n**Language:** ${audit.lang.toUpperCase()}`,
+            0x3b82f6,
+            env.DISCORD_AEO_WEBHOOK_URL || env.DISCORD_WEBHOOK_URL,
+            'Sondri AEO Audit Bot'
+          ),
+          appendToGoogleSheet(env, {
+            date: new Date().toISOString().split('T')[0],
+            clientEmail: email,
+            customerName: name
+              ? `${name}${phone ? ` (${phone})` : ''} — ${audit.domain}`
+              : audit.tech_scan!.detectedBrand || audit.domain,
+            amount: '0.00',
+            currency: 'USD',
+            invoiceNumber: audit.id,
+            description: `Free AEO Mini Audit (${audit.domain} - Score ${combinedScore}/100, Mentions ${mentionsStr})`,
+            status: 'LEAD (Mini Audit)',
+          }),
+        ])
+      );
+    };
 
     // 2. If this audit already has AI visibility results and questions match, return cached ($0)
     const questionsUnchanged =
       JSON.stringify(finalQuestions) === JSON.stringify(audit.questions);
     if (audit.ai_visibility && questionsUnchanged) {
+      audit.tech_scan.readinessScore = computeCombinedAiScore(
+        audit.tech_scan.readinessScore,
+        audit.ai_visibility
+      );
+      fireLeadNotifications(audit.ai_visibility);
       return Response.json({
         success: true,
         data: { ...audit, cached: true },
@@ -326,6 +351,11 @@ export async function handleAuditAiVisibility(
       );
       audit.ai_visibility = domainCached.ai_visibility;
       audit.questions = finalQuestions;
+      audit.tech_scan.readinessScore = computeCombinedAiScore(
+        audit.tech_scan.readinessScore,
+        audit.ai_visibility
+      );
+      fireLeadNotifications(audit.ai_visibility);
       return Response.json({
         success: true,
         data: { ...audit, cached: true },
@@ -364,6 +394,7 @@ export async function handleAuditAiVisibility(
         circuitBreakerTripped: true,
       };
 
+      fireLeadNotifications(null);
       return Response.json({
         success: true,
         data: {
@@ -385,6 +416,11 @@ export async function handleAuditAiVisibility(
       env.GEMINI_API_KEY
     );
 
+    audit.tech_scan.readinessScore = computeCombinedAiScore(
+      audit.tech_scan.readinessScore,
+      aiVisibility
+    );
+
     await updateAuditAiVisibility(
       env,
       audit.id,
@@ -393,11 +429,20 @@ export async function handleAuditAiVisibility(
       finalCity,
       finalService
     );
+    await saveAuditStep1(env, {
+      ...audit,
+      city: finalCity,
+      service: finalService,
+      questions: finalQuestions,
+      ai_visibility: aiVisibility,
+    });
 
     audit.questions = finalQuestions;
     audit.city = finalCity;
     audit.service = finalService;
     audit.ai_visibility = aiVisibility;
+
+    fireLeadNotifications(aiVisibility);
 
     return Response.json({
       success: true,

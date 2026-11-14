@@ -131,11 +131,18 @@ export async function inferContextAndBuyerQuestions(
   const explicitCity = (userCity || '').trim();
   const fallbackCity = explicitCity || (lang === 'es' ? 'Chile' : 'United States');
 
+  const directBrandQuestionEn = `What does ${scan.detectedBrand} (${scan.domain}) do, what core services or solutions do they offer, and what types of businesses are they best suited for?`;
+  const directBrandQuestionEs = `¿Qué hace ${scan.detectedBrand} (${scan.domain}), qué servicios o soluciones principales ofrece y para qué tipo de empresas está pensado?`;
+
   if (!apiKey || apiKey.startsWith('AIzaSy...')) {
+    const baseQs = buildFallbackQuestions(fallbackService, fallbackCity, lang, count);
+    if (count === 3 && baseQs.length >= 3) {
+      baseQs[2] = lang === 'es' ? directBrandQuestionEs : directBrandQuestionEn;
+    }
     return {
       service: fallbackService,
       city: fallbackCity,
-      questions: buildFallbackQuestions(fallbackService, fallbackCity, lang, count),
+      questions: baseQs,
     };
   }
 
@@ -146,6 +153,8 @@ export async function inferContextAndBuyerQuestions(
   const locationInstructionEs = explicitCity
     ? `Ubicación/mercado indicado por el usuario: "${explicitCity}". Adapta las preguntas a compradores en ${explicitCity}.`
     : `Mercado por defecto: Chile / Latinoamérica. NO inventes ciudades aleatorias si no son relevantes; enfoca las preguntas en el problema real, flujo de trabajo, caso de uso y solución que ofrece la empresa.`;
+
+  const unbrandedCount = count === 3 ? 2 : count;
 
   const prompt =
     lang === 'es'
@@ -160,7 +169,7 @@ Extracto del contenido de la página: ${(scan.bodyExcerpt || '').slice(0, 1800)}
 Servicio indicado por el usuario: ${userService || '(inferir del contenido real del sitio)'}
 ${locationInstructionEs}
 
-Primero identifica con precisión qué hace este negocio (su servicio, producto o solución principal). Luego genera exactamente ${count} preguntas muy interesantes, específicas y con alta intención de compra que haría un tomador de decisiones en ChatGPT o Gemini cuando busca resolver ese problema exacto, comparar alternativas o contratar un proveedor para esa necesidad, SIN nombrar la marca "${scan.detectedBrand}" ni el dominio "${scan.domain}".
+Primero identifica con precisión qué hace este negocio (su servicio, producto o solución principal). Luego genera exactamente ${unbrandedCount} preguntas muy interesantes, específicas y con alta intención de compra que haría un tomador de decisiones en ChatGPT o Gemini cuando busca resolver ese problema exacto, comparar alternativas o contratar un proveedor para esa necesidad, SIN nombrar la marca "${scan.detectedBrand}" ni el dominio "${scan.domain}".
 Formato JSON exacto:
 {"service":"...","city":"${fallbackCity}","questions":["..."]}`
       : `Analyze the actual page content and metadata of the following website and return ONLY a valid JSON object without markdown fences.
@@ -174,43 +183,60 @@ Visible page copy excerpt: ${(scan.bodyExcerpt || '').slice(0, 1800)}
 User-provided service: ${userService || '(infer from actual website content)'}
 ${locationInstructionEn}
 
-First accurately identify the core offering, problem solved, and value proposition of this business from its page copy. Then generate exactly ${count} sharp, high-intent, targeted unbranded buyer questions a decision-maker would ask ChatGPT or Gemini when looking to solve that exact problem, evaluate approaches, or compare providers/solutions in this category—WITHOUT naming "${scan.detectedBrand}" or "${scan.domain}".
+First accurately identify the core offering, problem solved, and value proposition of this business from its page copy. Then generate exactly ${unbrandedCount} sharp, high-intent, targeted unbranded buyer questions a decision-maker would ask ChatGPT or Gemini when looking to solve that exact problem, evaluate approaches, or compare providers/solutions in this category—WITHOUT naming "${scan.detectedBrand}" or "${scan.domain}".
 Exact JSON format:
 {"service":"...","city":"${fallbackCity}","questions":["..."]}`;
 
   try {
     const parsed = await callGeminiGenerateJson(prompt, apiKey);
     if (!parsed || typeof parsed !== 'object') {
+      const fb = buildFallbackQuestions(fallbackService, fallbackCity, lang, count);
+      if (count === 3 && fb.length >= 3) {
+        fb[2] = lang === 'es' ? directBrandQuestionEs : directBrandQuestionEn;
+      }
       return {
         service: fallbackService,
         city: fallbackCity,
-        questions: buildFallbackQuestions(fallbackService, fallbackCity, lang, count),
+        questions: fb,
       };
     }
 
     const service = (userService || parsed.service || fallbackService).trim();
     const city = explicitCity || fallbackCity;
-    const questions = Array.isArray(parsed.questions)
+    const rawQuestions = Array.isArray(parsed.questions)
       ? parsed.questions
           .map((q: any) => String(q || '').trim())
           .filter(Boolean)
-          .slice(0, count)
+          .slice(0, unbrandedCount)
       : [];
 
-    if (questions.length === 0) {
+    if (rawQuestions.length === 0) {
+      const fb = buildFallbackQuestions(service, city, lang, count);
+      if (count === 3 && fb.length >= 3) {
+        fb[2] = lang === 'es' ? directBrandQuestionEs : directBrandQuestionEn;
+      }
       return {
         service,
         city,
-        questions: buildFallbackQuestions(service, city, lang, count),
+        questions: fb,
       };
     }
 
+    const questions =
+      count === 3
+        ? [...rawQuestions.slice(0, 2), lang === 'es' ? directBrandQuestionEs : directBrandQuestionEn]
+        : rawQuestions;
+
     return { service, city, questions };
   } catch {
+    const fb = buildFallbackQuestions(fallbackService, fallbackCity, lang, count);
+    if (count === 3 && fb.length >= 3) {
+      fb[2] = lang === 'es' ? directBrandQuestionEs : directBrandQuestionEn;
+    }
     return {
       service: fallbackService,
       city: fallbackCity,
-      questions: buildFallbackQuestions(fallbackService, fallbackCity, lang, count),
+      questions: fb,
     };
   }
 }
@@ -397,10 +423,20 @@ async function runBatchedGeminiVisibilityFallback(
   lang: AuditLang,
   apiKey: string
 ): Promise<GroundedPromptRun[] | null> {
+  const directSiteContext = `Publicly indexed homepage snapshot for ${scan.domain} (${scan.detectedBrand}) — use this ONLY if a question explicitly asks about "${scan.detectedBrand}" or "${scan.domain}" by name:
+- Title: ${scan.title}
+- Meta description: ${scan.metaDescription}
+- H1: ${scan.h1s.join(' | ')}
+- Summary copy: ${(scan.bodyExcerpt || '').slice(0, 700)}`;
+
   const prompt =
     lang === 'es'
-      ? `Responde cada una de las siguientes ${questions.length} preguntas exactamente como lo haría un motor de respuestas de IA (Gemini / ChatGPT) cuando un comprador real busca proveedores específicos.
-No recibas pistas de la empresa evaluada: responde de forma neutral nombrando proveedores o empresas reales que lideran esa categoría/ubicación y los directorios o sitios de referencia que normalmente se citan.
+      ? `Responde cada una de las siguientes ${questions.length} preguntas exactamente como lo haría un motor de respuestas de IA (Gemini / ChatGPT).
+Reglas importantes:
+1. Para preguntas SIN marca (que no nombran a "${scan.detectedBrand}" ni "${scan.domain}"), responde de forma 100% neutral nombrando las empresas o proveedores líderes que el modelo recomienda normalmente en esa categoría (NO incluyas a "${scan.detectedBrand}" a menos que sea genuinamente un líder reconocido mundialmente en esa categoría).
+2. Para la pregunta DIRECTA que nombra explícitamente a "${scan.detectedBrand}" (${scan.domain}), explica con precisión qué hace la empresa según su sitio web, qué servicios ofrece, incluye "${scan.domain}" en referenceDomains y menciona 2 o 3 competidores/alternativas comparables en providersNamed.
+
+${directSiteContext}
 
 Preguntas:
 ${questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
@@ -415,8 +451,12 @@ Devuelve SOLO un objeto JSON válido con este formato exacto:
     }
   ]
 }`
-      : `Answer each of the following ${questions.length} buyer questions exactly as an AI answer engine (Gemini / ChatGPT) responds when a real buyer asks for specific provider recommendations.
-Remain neutral and name real companies/providers known in that category/location along with the reference domains or directories typically cited.
+      : `Answer each of the following ${questions.length} questions exactly as an AI answer engine (Gemini / ChatGPT) responds.
+Important rules:
+1. For UNBRANDED buyer questions (questions that do NOT mention "${scan.detectedBrand}" or "${scan.domain}"), remain 100% neutral and name the leading real companies/providers typically recommended in that category (do NOT artificially insert "${scan.detectedBrand}" into unbranded answers unless it is already a globally dominant household name).
+2. For the DIRECT brand question that explicitly asks about "${scan.detectedBrand}" (${scan.domain}), accurately explain what **${scan.detectedBrand}** (${scan.domain}) does based on its public website snapshot, include "${scan.domain}" in referenceDomains, and also list 2–3 comparable category alternatives in providersNamed.
+
+${directSiteContext}
 
 Questions:
 ${questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
