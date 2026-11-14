@@ -24,7 +24,7 @@ async function callGeminiGenerateJson(
 ): Promise<any | null> {
   for (const model of GEMINI_TEXT_MODELS) {
     try {
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
       const body: Record<string, any> = {
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         generationConfig: {
@@ -40,7 +40,10 @@ async function callGeminiGenerateJson(
 
       const res = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey,
+        },
         body: JSON.stringify(body),
       });
 
@@ -237,7 +240,7 @@ async function runSingleGeminiGroundedPrompt(
   lang: AuditLang,
   apiKey: string
 ): Promise<GroundedPromptRun> {
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TEXT_MODELS[0]}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TEXT_MODELS[0]}:generateContent`;
   const systemInstruction =
     lang === 'es'
       ? 'Responde como a un comprador real buscando opciones concretas. Nombra empresas o proveedores reales y específicos y sé directo.'
@@ -246,7 +249,10 @@ async function runSingleGeminiGroundedPrompt(
   try {
     const res = await fetch(endpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey,
+      },
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: systemInstruction }] },
         contents: [{ parts: [{ text: question }] }],
