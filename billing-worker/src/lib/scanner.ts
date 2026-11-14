@@ -359,7 +359,7 @@ export async function fetchLighthouseResult(
   targetUrl: string,
   apiKey?: string
 ): Promise<LighthouseResult> {
-  const endpoint = new URL('https://www.googleapis.com/pagespeedonline/v5/runPagespeed');
+  const endpoint = new URL('https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed');
   endpoint.searchParams.set('url', targetUrl);
   endpoint.searchParams.set('strategy', 'mobile');
   endpoint.searchParams.append('category', 'PERFORMANCE');
@@ -368,7 +368,7 @@ export async function fetchLighthouseResult(
     endpoint.searchParams.set('key', apiKey);
   }
 
-  const res = await fetchWithTimeout(endpoint.href, 22000);
+  const res = await fetchWithTimeout(endpoint.href, 45000);
   if (!res || !res.ok) {
     let errDetail = res ? `PageSpeed HTTP ${res.status}` : 'PageSpeed timeout';
     if (res) {
