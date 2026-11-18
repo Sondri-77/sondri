@@ -1,11 +1,18 @@
 ---
-import { BOOK_HREF, CTA_PRIMARY, RISK_REVERSAL } from '../data';
-import { hero } from '../home-data';
+import { BOOK_HREF } from '../data';
+import { copy, type Lang } from '../i18n';
 import { splitDot } from '../lib/dot';
 import HeroCarousel from './HeroCarousel.astro';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = copy[lang];
 // The H1 sets as two lines on desktop: the claim, then the parenthetical.
 // The copy string stays verbatim; the break falls before the "(".
-const [line1, line2] = hero.h1.split(/ (?=\()/);
+const [line1, line2] = t.hero.h1.split(/ (?=\()/);
 const [h1, dot] = splitDot(line1);
 ---
 
@@ -20,7 +27,9 @@ const [h1, dot] = splitDot(line1);
   <div class="bg" aria-hidden="true">
     <img
       data-dither-src
-      src="/img/hero-industrial.jpg"
+      src="/img/hero-industrial-sm.jpg"
+      srcset="/img/hero-industrial-sm.jpg 900w, /img/hero-industrial.jpg 2400w"
+      sizes="100vw"
       alt=""
       width="2400"
       height="1194"
@@ -34,13 +43,14 @@ const [h1, dot] = splitDot(line1);
   <div class="wrap cols">
     <div class="copy">
       <h1 class="display"><span class="l"><span data-i18n="hero.h1.text">{h1}</span><span class="gdot" data-i18n="hero.h1.dot">{dot}</span></span> <span class="l" data-i18n="hero.h1.paren">{line2}</span></h1>
-      <p class="lede" data-i18n="hero.lede">{hero.lede}</p>
+      <p class="lede" data-i18n="hero.lede">{t.hero.lede}</p>
+      <p class="hero-summary" data-i18n="hero.summary">{t.hero.summary}</p>
       <div class="actions">
-        <a class="btn btn-gold" href={BOOK_HREF}><span data-i18n="cta">{CTA_PRIMARY}</span> <span class="arr">→</span></a>
+        <a class="btn btn-gold" href={BOOK_HREF}><span data-i18n="cta">{t.cta}</span> <span class="arr">→</span></a>
       </div>
-      <p class="label" data-i18n="riskReversal">{RISK_REVERSAL}</p>
+      <p class="label" data-i18n="riskReversal">{t.riskReversal}</p>
     </div>
-    <HeroCarousel />
+    <HeroCarousel lang={lang} />
   </div>
 </section>
 
@@ -97,6 +107,7 @@ const [h1, dot] = splitDot(line1);
     text-align: left;
   }
   .lede { max-width: 44ch; color: var(--white); }
+  .hero-summary { max-width: 56ch; font-size: 16px; line-height: 1.55; color: var(--pale); }
   .actions { display: flex; flex-wrap: wrap; gap: var(--s-16); padding-top: var(--s-08); }
   .label { color: var(--muted-inv); }
 

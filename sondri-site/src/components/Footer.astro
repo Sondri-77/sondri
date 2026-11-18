@@ -1,13 +1,20 @@
 ---
-import { footerCols } from '../brutal-data';
 import { CONTACT_EMAIL, mailto } from '../data';
-import { VALUE_LINE } from '../home-data';
-import { en } from '../i18n';
+import { copy, type Lang } from '../i18n';
 import { splitDot } from '../lib/dot';
 import { sectionHref } from '../lib/href';
-const [line, dot] = splitDot(VALUE_LINE);
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = copy[lang];
+const [line, dot] = splitDot(t.VALUE_LINE);
 const year = new Date().getFullYear();
-const at = (h: string) => sectionHref(h, Astro.url.pathname);
+const at = (h: string) => sectionHref(h, Astro.url.pathname, lang);
+const privacyHref = lang === 'es' ? '/es/privacy/' : '/privacy/';
+const privacyLabel = lang === 'es' ? 'Privacidad' : 'Privacy';
 ---
 
 <!-- The lockup lives in the nav and here — the page turns over on the
@@ -23,7 +30,7 @@ const at = (h: string) => sectionHref(h, Astro.url.pathname);
         <p class="h6"><span data-i18n="VALUE_LINE.text">{line}</span><span class="gdot" data-i18n="VALUE_LINE.dot">{dot}</span></p>
         <a class="mail" href={mailto('Hello from sondri.ai')}>{CONTACT_EMAIL}</a>
       </div>
-      {footerCols.map((col, ci) => (
+      {t.footerCols.map((col, ci) => (
         <div>
           <p class="label col-title">/ <span data-i18n={`footerCols.${ci}.title`}>{col.title}</span></p>
           <ul>
@@ -38,11 +45,11 @@ const at = (h: string) => sectionHref(h, Astro.url.pathname);
     <div class="f-bottom">
       <p class="label">&copy; {year} Sondri</p>
       <div class="f-links">
-        <a class="label pay-link" href="/privacy/">Privacy</a>
+        <a class="label pay-link" href={privacyHref}>{privacyLabel}</a>
         <a class="label pay-link" href="/llms.txt">llms.txt</a>
-        <a class="label pay-link" href="/pay" data-i18n="ui.pay">{en.ui.pay} →</a>
+        <a class="label pay-link" href="/pay/" data-i18n="ui.pay">{t.ui.pay} →</a>
       </div>
-      <p class="label" data-i18n="footerLine">{en.footerLine}</p>
+      <p class="label" data-i18n="footerLine">{t.footerLine}</p>
     </div>
   </div>
 </footer>

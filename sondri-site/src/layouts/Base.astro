@@ -1,7 +1,7 @@
 ---
-/* One layout for the site: <head> (canonical, sitemap, OG, enriched
-   Organization + WebSite JSON-LD, Markdown/llms.txt alternates) over
-   brutal's Nav, Footer and reveal script. */
+/* One layout for the site: <head> (canonical, hreflang alternates when localized,
+   sitemap, OG, enriched Organization + WebSite JSON-LD, Markdown/llms.txt/ai-catalog
+   links, font preload) over brutal's Nav, Footer and reveal script. */
 import '@fontsource/ibm-plex-sans/400.css';
 import '@fontsource/ibm-plex-sans/500.css';
 import '@fontsource/ibm-plex-sans/600.css';
@@ -12,11 +12,14 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import CalModal from '../components/CalModal.astro';
 import { BOOK_HREF, CONTACT_EMAIL } from '../data';
-import { copy } from '../i18n';
+import { copy, type Lang } from '../i18n';
 
 interface Props {
   title: string;
   description: string;
+  lang?: Lang;
+  /** Localized page alternates (e.g. `{ en: '/', es: '/es/' }`). Omit on English-only routes. */
+  alternates?: { en: string; es: string };
   /** The i18n keys the <title> and description swap by (index's by default). */
   titleKey?: string;
   descriptionKey?: string;
@@ -34,6 +37,8 @@ interface Props {
 const {
   title,
   description,
+  lang = 'en',
+  alternates,
   titleKey = 'meta.title',
   descriptionKey = 'meta.description',
   noindex = false,
@@ -44,11 +49,14 @@ const {
   mdPath,
 } = Astro.props;
 
+const t = copy[lang];
 const siteUrl = Astro.site ? Astro.site.origin : 'https://sondri.ai';
 const canonical = new URL(Astro.url.pathname, siteUrl);
 const ogImage = new URL('/og.png', siteUrl);
 const logoUrl = new URL('/brand/avatars/sondri-avatar-512.png', siteUrl);
 const mdHref = mdPath ? new URL(mdPath, siteUrl) : undefined;
+const altEn = alternates ? new URL(alternates.en, siteUrl).href : undefined;
+const altEs = alternates ? new URL(alternates.es, siteUrl).href : undefined;
 
 const siteGraph = {
   '@context': 'https://schema.org',
@@ -99,50 +107,58 @@ const siteGraph = {
       name: 'Sondri',
       description: copy.en.meta.description,
       publisher: { '@id': `${siteUrl}/#organization` },
-      inLanguage: ['en', 'es'],
+      inLanguage: alternates ? ['en', 'es'] : [lang],
     },
   ],
 };
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Language, before paint: `?lang=` wins, then the saved choice, then
-         English. Spanish hides the body until scripts/i18n.ts has swapped the
-         strings, with a 1.5s safety fallback. No JS: English, as built. -->
-    <script is:inline>
-      (function () {
-        try {
-          var q = new URLSearchParams(location.search).get('lang');
-          var l = q || localStorage.getItem('sondri.lang') || 'en';
-          if (l === 'es') {
-            document.documentElement.lang = 'es';
-            document.documentElement.classList.add('i18n-pending');
-            setTimeout(function () {
-              document.documentElement.classList.remove('i18n-pending');
-            }, 1500);
-          }
-        } catch (e) {}
-      })();
-    </script>
+    {!alternates && lang === 'en' && (
+      <script is:inline>
+        (function () {
+          try {
+            var q = new URLSearchParams(location.search).get('lang');
+            var l = q || localStorage.getItem('sondri.lang') || 'en';
+            if (l === 'es') {
+              document.documentElement.lang = 'es';
+              document.documentElement.classList.add('i18n-pending');
+              setTimeout(function () {
+                document.documentElement.classList.remove('i18n-pending');
+              }, 1500);
+            }
+          } catch (e) {}
+        })();
+      </script>
+    )}
     <style>html.i18n-pending body { visibility: hidden; }</style>
     <title data-i18n={titleKey}>{title}</title>
     <meta name="description" content={description} data-i18n-attr={`content=${descriptionKey}`} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     {!omitCanonical && <link rel="canonical" href={canonical} />}
+    {altEn && altEs && (
+      <>
+        <link rel="alternate" hreflang="en" href={altEn} />
+        <link rel="alternate" hreflang="es" href={altEs} />
+        <link rel="alternate" hreflang="x-default" href={altEn} />
+      </>
+    )}
     <meta name="theme-color" content="#081f1f" />
+    <link rel="preload" href="/fonts/florexa.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="alternate" type="text/plain" title="Sondri LLMs Context" href="/llms.txt" />
+    <link rel="ai-catalog" href="/.well-known/ai-catalog.json" />
     {mdHref && <link rel="alternate" type="text/markdown" href={mdHref} />}
 
     <meta property="og:type" content={ogType} />
-    <meta property="og:locale" content="en_US" />
-    <meta property="og:locale:alternate" content="es_US" />
+    <meta property="og:locale" content={lang === 'es' ? 'es_US' : 'en_US'} />
+    {alternates && <meta property="og:locale:alternate" content={lang === 'es' ? 'en_US' : 'es_US'} />}
     <meta property="og:site_name" content="Sondri" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -161,10 +177,10 @@ const siteGraph = {
     <slot name="head" />
   </head>
   <body>
-    <a class="skip" href="#main" data-i18n="ui.skip">{copy.en.ui.skip}</a>
-    <Nav />
+    <a class="skip" href="#main" data-i18n="ui.skip">{t.ui.skip}</a>
+    <Nav lang={lang} alternates={alternates} />
     <main id="main"><slot /></main>
-    <Footer />
+    <Footer lang={lang} />
     <CalModal />
 
     <script>

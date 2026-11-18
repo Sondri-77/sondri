@@ -3,11 +3,17 @@ import Base from '../layouts/Base.astro';
 import { CONTACT_EMAIL, mailto } from '../data';
 import '../styles/prose.css';
 
-const title = 'Privacy Policy — Sondri';
+const title = 'Privacy Policy | Sondri';
 const description = 'How Sondri handles website analytics, scheduling, Stripe invoice payments, and client-environment software deployments.';
 ---
 
-<Base title={title} description={description} mdPath="/privacy.md">
+<Base
+  title={title}
+  description={description}
+  lang="en"
+  alternates={{ en: '/privacy/', es: '/es/privacy/' }}
+  mdPath="/privacy.md"
+>
   <article>
     <header class="section on-dark head">
       <div class="wrap">
@@ -28,8 +34,8 @@ const description = 'How Sondri handles website analytics, scheduling, Stripe in
           <p>
             <code>sondri.ai</code> is a static marketing website. We do not place advertising trackers
             or cross-site tracking cookies on visitors. When you toggle between English and Spanish,
-            your language preference is stored locally in your browser via <code>localStorage</code>
-            under the key <code>sondri.lang</code> so your choice persists between visits.
+            your language preference may be stored locally in your browser via <code>localStorage</code>
+            under the key <code>sondri.lang</code>.
           </p>
 
           <h2>Discovery scheduling</h2>
@@ -42,7 +48,7 @@ const description = 'How Sondri handles website analytics, scheduling, Stripe in
 
           <h2>Invoice &amp; deposit payments</h2>
           <p>
-            Payments submitted through <a href="/pay">/pay</a> are processed over HTTPS through
+            Payments submitted through <a href="/pay/">/pay/</a> are processed over HTTPS through
             <strong>Stripe Checkout</strong> via our billing service at
             <code>billing.sondri.ai</code>. Sondri does not store credit card numbers or bank
             credentials on this site. Stripe collects and processes payment details according to

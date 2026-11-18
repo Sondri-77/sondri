@@ -46,6 +46,15 @@ const videoSchema = media
       publisher: { '@id': `${siteUrl}/#organization` },
     }
   : null;
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${siteUrl}/` },
+    { '@type': 'ListItem', position: 2, name: 'Solutions', item: `${siteUrl}/#solutions` },
+    { '@type': 'ListItem', position: 3, name, item: canonical.href },
+  ],
+};
 ---
 
 <Base
@@ -56,6 +65,7 @@ const videoSchema = media
   mdPath={`/solutions/${solution.id}.md`}
 >
   <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(serviceSchema)} />
+  <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   {videoSchema && <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(videoSchema)} />}
 
   <article>

@@ -9,7 +9,8 @@ export interface Env {
 const APEX_HOST = 'sondri.ai';
 const WWW_HOST = 'www.sondri.ai';
 const ASSET_EXT_RE = /\.(?:css|js|mjs|json|txt|xml|svg|png|jpe?g|webp|gif|ico|woff2?|mp4|webm|webmanifest|map)$/i;
-const ASSET_PREFIX_RE = /^\/(?:_astro|brand|fonts|icons|img|i18n)\//;
+const ASSET_PREFIX_RE = /^\/(?:_astro|brand|fonts|icons|img|i18n|\.well-known)\//;
+const NOINDEX_PREFIX_RE = /^\/(?:pay|success|i18n)(?:\/|$)/;
 
 function parseQuality(accept: string, mediaType: string): number {
   for (const part of accept.split(',')) {
@@ -37,6 +38,7 @@ export function wantsMarkdown(accept: string | null): boolean {
 
 export function toMarkdownPath(pathname: string): string {
   if (pathname === '/' || pathname === '/index.html') return '/index.md';
+  if (pathname === '/es' || pathname === '/es/' || pathname === '/es/index.html') return '/es/index.md';
   if (pathname === '/insights' || pathname === '/insights/' || pathname === '/insights/index.html') {
     return '/insights/index.md';
   }
@@ -44,16 +46,27 @@ export function toMarkdownPath(pathname: string): string {
   return clean.endsWith('.md') ? clean : `${clean}.md`;
 }
 
-function withVaryAccept(res: Response, contentType?: string): Response {
+function applyHeaders(
+  res: Response,
+  opts: { contentType?: string; varyAccept?: boolean; linkHeader?: string; noindex?: boolean } = {},
+): Response {
   const headers = new Headers(res.headers);
-  const existingVary = headers.get('Vary');
-  if (!existingVary) {
-    headers.set('Vary', 'Accept');
-  } else if (!existingVary.toLowerCase().split(',').map((s) => s.trim()).includes('accept')) {
-    headers.set('Vary', `${existingVary}, Accept`);
+  if (opts.varyAccept) {
+    const existingVary = headers.get('Vary');
+    if (!existingVary) {
+      headers.set('Vary', 'Accept');
+    } else if (!existingVary.toLowerCase().split(',').map((s) => s.trim()).includes('accept')) {
+      headers.set('Vary', `${existingVary}, Accept`);
+    }
   }
-  if (contentType) {
-    headers.set('Content-Type', contentType);
+  if (opts.contentType) {
+    headers.set('Content-Type', opts.contentType);
+  }
+  if (opts.linkHeader) {
+    headers.set('Link', opts.linkHeader);
+  }
+  if (opts.noindex) {
+    headers.set('X-Robots-Tag', 'noindex, nofollow');
   }
   headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
   headers.set('X-Content-Type-Options', 'nosniff');
@@ -74,7 +87,20 @@ export default {
       return Response.redirect(canonical.href, 301);
     }
 
+    // Consolidate legacy ?lang=es query URLs to static localized routes.
+    if (url.searchParams.get('lang') === 'es') {
+      if (url.pathname === '/' || url.pathname === '/index.html') {
+        const next = new URL('/es/', url.origin);
+        return Response.redirect(next.href, 301);
+      }
+      if (url.pathname === '/privacy' || url.pathname === '/privacy/') {
+        const next = new URL('/es/privacy/', url.origin);
+        return Response.redirect(next.href, 301);
+      }
+    }
+
     const isGetOrHead = request.method === 'GET' || request.method === 'HEAD';
+    const isNoindex = NOINDEX_PREFIX_RE.test(url.pathname);
     const isDocumentPath =
       !ASSET_PREFIX_RE.test(url.pathname) && !ASSET_EXT_RE.test(url.pathname);
 
@@ -82,9 +108,9 @@ export default {
       const mdPath = toMarkdownPath(url.pathname);
       const mdRes = await env.ASSETS.fetch(new URL(mdPath, url));
       if (mdRes.status === 200) {
-        return withVaryAccept(
+        return applyHeaders(
           new Response(request.method === 'HEAD' ? null : mdRes.body, { status: 200, headers: mdRes.headers }),
-          'text/markdown; charset=utf-8',
+          { contentType: 'text/markdown; charset=utf-8', varyAccept: true, noindex: isNoindex },
         );
       }
 
@@ -96,9 +122,9 @@ export default {
 
       const notFoundMd = await env.ASSETS.fetch(new URL('/404.md', url));
       if (notFoundMd.status === 200) {
-        return withVaryAccept(
+        return applyHeaders(
           new Response(request.method === 'HEAD' ? null : notFoundMd.body, { status: 404, headers: notFoundMd.headers }),
-          'text/markdown; charset=utf-8',
+          { contentType: 'text/markdown; charset=utf-8', varyAccept: true },
         );
       }
 
@@ -112,8 +138,20 @@ export default {
     }
 
     const assetRes = await env.ASSETS.fetch(request);
+    if (isNoindex) {
+      return applyHeaders(assetRes, {
+        varyAccept: assetRes.headers.get('Content-Type')?.includes('text/html') ?? false,
+        noindex: true,
+      });
+    }
+
     if (assetRes.headers.get('Content-Type')?.includes('text/html')) {
-      return withVaryAccept(assetRes);
+      const mdPath = isDocumentPath ? toMarkdownPath(url.pathname) : null;
+      const linkParts = ['</llms.txt>; rel="alternate"; type="text/plain"'];
+      if (mdPath && assetRes.status === 200) {
+        linkParts.push(`<${mdPath}>; rel="alternate"; type="text/markdown"`);
+      }
+      return applyHeaders(assetRes, { varyAccept: true, linkHeader: linkParts.join(', ') });
     }
     return assetRes;
   },

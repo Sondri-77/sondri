@@ -1,7 +1,15 @@
 ---
-import { BOOK_HREF, CTA_PRIMARY, RISK_REVERSAL } from '../data';
-import { finalCta } from '../home-data';
+import { BOOK_HREF } from '../data';
+import { copy, type Lang } from '../i18n';
 import { splitDot } from '../lib/dot';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = copy[lang];
+const { finalCta } = t;
 const [h2, dot] = splitDot(finalCta.h2);
 ---
 
@@ -12,9 +20,9 @@ const [h2, dot] = splitDot(finalCta.h2);
     <h2 class="h2"><span data-i18n="finalCta.h2.text">{h2}</span><span class="gdot" data-i18n="finalCta.h2.dot">{dot}</span></h2>
     <p class="lede" data-i18n="finalCta.lede">{finalCta.lede}</p>
     <div class="cta-actions">
-      <a class="btn btn-gold" href={BOOK_HREF}><span data-i18n="cta">{CTA_PRIMARY}</span> <span class="arr">→</span></a>
+      <a class="btn btn-gold" href={BOOK_HREF}><span data-i18n="cta">{t.cta}</span> <span class="arr">→</span></a>
     </div>
-    <p class="label" data-i18n="riskReversal">{RISK_REVERSAL}</p>
+    <p class="label" data-i18n="riskReversal">{t.riskReversal}</p>
   </div>
 </section>
 

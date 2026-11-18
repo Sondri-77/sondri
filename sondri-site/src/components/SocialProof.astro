@@ -1,6 +1,13 @@
 ---
-import { socialProof, testimonials } from '../home-data';
+import { copy, type Lang } from '../i18n';
 import { splitDot } from '../lib/dot';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const { socialProof, testimonials } = copy[lang];
 const [h2, dot] = splitDot(socialProof.h2);
 ---
 

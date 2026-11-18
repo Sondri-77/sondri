@@ -1,7 +1,14 @@
 ---
-import { problem, problemStats } from '../home-data';
+import { copy, type Lang } from '../i18n';
 import { splitDot } from '../lib/dot';
 import { splitQuote } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const { problem, problemStats } = copy[lang];
 const [h2, dot] = splitDot(problem.h2);
 // Straight quotes in the copy string set as curly ones, and the quoted
 // phrase never breaks: the closer is one line on desktop.
