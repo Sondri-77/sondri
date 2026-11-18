@@ -96,6 +96,14 @@ import { CAL_LINK } from '../data';
       link.addEventListener('pointerenter', warm, { once: true });
       link.addEventListener('focus', warm, { once: true });
       link.addEventListener('click', (e) => {
+        if (e.isTrusted) {
+          if (Array.isArray(window.dataLayer)) {
+            window.dataLayer.push({ event: 'book_discovery_click', link_url: calLink });
+          }
+          if (typeof window.gtag === 'function') {
+            window.gtag('event', 'book_discovery_click', { link_url: calLink });
+          }
+        }
         if (scriptReady) return;
         e.preventDefault();
         window.__loadCalEmbed(() => {

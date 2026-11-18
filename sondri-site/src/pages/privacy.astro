@@ -30,12 +30,15 @@ const description = 'How Sondri handles website analytics, scheduling, Stripe in
     <div class="section section-pad">
       <div class="wrap">
         <div class="prose">
-          <h2>Website &amp; local storage</h2>
+          <h2>Website analytics &amp; local storage</h2>
           <p>
-            <code>sondri.ai</code> is a static marketing website. We do not place advertising trackers
-            or cross-site tracking cookies on visitors. When you toggle between English and Spanish,
-            your language preference may be stored locally in your browser via <code>localStorage</code>
-            under the key <code>sondri.lang</code>.
+            <code>sondri.ai</code> is a static marketing website. We use Google Tag
+            (<code>googletagmanager.com</code> / Google Analytics) to measure aggregate traffic and
+            discovery-call clicks. Google Tag may use first-party measurement cookies and read
+            standard request metadata (visited URL, referrer, browser type, and approximate region).
+            We do not run third-party advertising trackers or sell visitor data. When you toggle
+            between English and Spanish, your language preference may be stored locally in your
+            browser via <code>localStorage</code> under the key <code>sondri.lang</code>.
           </p>
 
           <h2>Discovery scheduling</h2>
