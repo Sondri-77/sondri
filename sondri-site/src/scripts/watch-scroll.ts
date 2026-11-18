@@ -63,7 +63,7 @@ export function initWatchScrollAndCheckout() {
     );
   });
 
-  // 3. Staggered Gate Pipeline progress highlight
+  // 3. Staggered Gate Pipeline & 2x2 Bento Cards progress highlight
   const gateSteps = gsap.utils.toArray<HTMLElement>('[data-gate-step]');
   if (gateSteps.length > 0 && !reduceMotion) {
     gsap.fromTo(
@@ -83,6 +83,43 @@ export function initWatchScrollAndCheckout() {
       },
     );
   }
+
+  const bentoCards = gsap.utils.toArray<HTMLElement>('[data-bento-card]');
+  if (bentoCards.length > 0 && !reduceMotion) {
+    gsap.fromTo(
+      bentoCards,
+      { y: 20, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.5,
+        stagger: 0.1,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: bentoCards[0],
+          start: 'top 86%',
+          once: true,
+        },
+      },
+    );
+  }
+
+  // 3b. Kinetic SVG signal packet animation in Hero pipeline
+  const heroPackets = gsap.utils.toArray<HTMLElement>('[data-hero-packet]');
+  heroPackets.forEach((pkt, i) => {
+    if (reduceMotion) return;
+    gsap.fromTo(
+      pkt,
+      { attr: { cx: 74 } },
+      {
+        attr: { cx: 386 },
+        duration: 2.6,
+        delay: i * 1.1,
+        repeat: -1,
+        ease: 'power1.inOut',
+      },
+    );
+  });
 
   // 4. Sticky Chapter Rail & Mobile Adviser Bar synchronization
   const chapterLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-chapter-link]'));

@@ -1,9 +1,8 @@
-/* Fixed pixelated Bayer-dithered WebGL topographical background for watch.sondri.ai.
-   Uses Sondri's exact dark-teal ramp (#031919 -> #081f1f -> #1a403e -> #2f5b58)
-   plus sparse #fdb343 gold elevation contour crests quantized through a 4x4
-   ordered Bayer matrix at coarse pixel resolution (`image-rendering: pixelated`).
-   Pans gently with scroll progress (`uScroll`) and pauses when hidden or when
-   `prefers-reduced-motion: reduce` is enabled. */
+/* Fixed pixelated Bayer-dithered WebGL horizon & signal sky for watch.sondri.ai.
+   Inspired by layered Andean mountain ridges + signal starfield rendered through
+   an ordered 4x4 Bayer dithering matrix in Sondri's exact dark-teal palette
+   (#031919 -> #081f1f -> #0c2827 -> #173f3c -> #285e59) with warm #fdb343 gold
+   dithered ridge crests and sparse signal nodes. Parallax-pans smoothly on scroll. */
 
 const VERT_SRC = `
 attribute vec2 aPos;
@@ -64,53 +63,101 @@ float fbm(vec2 p) {
   float amp = 0.5;
   for (int i = 0; i < 4; i++) {
     v += amp * noise(p);
-    p = p * 2.03 + vec2(7.13, 3.71);
+    p = p * 2.02 + vec2(5.13, 2.71);
     amp *= 0.5;
   }
   return v;
+}
+
+float ridgeHeight(float x, float freq, float seed, float speed) {
+  float n = fbm(vec2(x * freq + seed + uTime * speed, seed * 0.7));
+  float crest = 1.0 - abs(n * 2.0 - 1.0);
+  return crest * 0.65 + n * 0.35;
 }
 
 void main() {
   vec2 frag = gl_FragCoord.xy;
   vec2 uv = frag / max(uRes, vec2(1.0));
   float aspect = uRes.x / max(uRes.y, 1.0);
-
-  // Pan topography vertically with scroll and drift slowly over time
-  vec2 p = vec2(uv.x * aspect, uv.y) * 2.25;
-  p.y -= uScroll * 1.45;
-  p.x += uTime * 0.018;
-  p.y += uTime * 0.011;
-
-  float h = fbm(p + vec2(fbm(p * 0.65 + uTime * 0.015), 0.0) * 0.45);
-
-  // Contour bands (topographic iso-lines)
-  float band = fract(h * 7.5);
-  float contour = smoothstep(0.08, 0.0, abs(band - 0.5));
-
-  // Subtle radial signal from pointer
-  vec2 mDelta = (uv - uMouse) * vec2(aspect, 1.0);
-  float mouseGlow = exp(-dot(mDelta, mDelta) * 14.0) * 0.16;
-
-  float lum = clamp(h * 0.55 + contour * 0.24 + mouseGlow, 0.0, 1.0);
   float b = bayer4x4(frag);
-  float dithered = clamp(lum + (b - 0.5) * 0.24, 0.0, 1.0);
 
-  // 4-step Sondri dark teal palette + sparse gold crest on highest iso-contour
-  vec3 c0 = vec3(3.0, 25.0, 25.0) / 255.0;     // #031919
-  vec3 c1 = vec3(8.0, 31.0, 31.0) / 255.0;     // #081f1f
-  vec3 c2 = vec3(20.0, 52.0, 50.0) / 255.0;    // #143432
-  vec3 c3 = vec3(38.0, 82.0, 78.0) / 255.0;    // #26524e
-  vec3 cGold = vec3(253.0, 179.0, 67.0) / 255.0; // #fdb343
+  // Subtle radial pointer signal
+  vec2 mDelta = (uv - uMouse) * vec2(aspect, 1.0);
+  float mouseGlow = exp(-dot(mDelta, mDelta) * 9.0) * 0.14;
 
-  vec3 col = c0;
-  if (dithered > 0.78 && contour > 0.55 && h > 0.64) {
-    col = mix(c3, cGold, 0.72);
-  } else if (dithered > 0.62) {
-    col = c3;
-  } else if (dithered > 0.36) {
-    col = c2;
-  } else if (dithered > 0.16) {
-    col = c1;
+  // Vertical scroll parallax shifts horizon gently without distracting text
+  float parFar = uScroll * 0.08;
+  float parMid = uScroll * 0.15;
+  float parNear = uScroll * 0.24;
+
+  // 3 parallax mountain ridge profiles in lower 58%
+  float xCoord = uv.x * aspect;
+  float rFar  = 0.26 + ridgeHeight(xCoord + uScroll * 0.28, 1.35, 1.7, 0.008) * 0.32 - parFar;
+  float rMid  = 0.18 + ridgeHeight(xCoord + uScroll * 0.45, 1.85, 4.3, 0.012) * 0.25 - parMid;
+  float rNear = 0.09 + ridgeHeight(xCoord + uScroll * 0.68, 2.45, 8.9, 0.016) * 0.19 - parNear;
+
+  // Star & signal nodes in upper sky
+  vec2 starCell = floor(frag / 4.0);
+  float starRand = hash21(starCell + vec2(floor(uScroll * 2.0), 0.0));
+  float twinkle = 0.6 + 0.4 * sin(uTime * 1.3 + starRand * 32.0);
+  float isStar = step(0.992, starRand) * smoothstep(0.28, 0.75, uv.y) * twinkle;
+  float isGoldStar = step(0.9965, starRand) * smoothstep(0.35, 0.85, uv.y) * twinkle;
+
+  // Exact Sondri palette
+  vec3 cSky0 = vec3(3.0, 25.0, 25.0) / 255.0;     // #031919 deepest obsidian teal
+  vec3 cSky1 = vec3(8.0, 31.0, 31.0) / 255.0;     // #081f1f slate teal
+  vec3 cFar  = vec3(12.0, 40.0, 39.0) / 255.0;    // #0c2827 far ridge
+  vec3 cMid  = vec3(23.0, 63.0, 60.0) / 255.0;    // #173f3c mid ridge
+  vec3 cNear = vec3(40.0, 94.0, 89.0) / 255.0;    // #285e59 near ridge
+  vec3 cGold = vec3(253.0, 179.0, 67.0) / 255.0;  // #fdb343 warm gold crest
+
+  // Sky dithering gradient toward horizon
+  float skyGrad = clamp((1.0 - uv.y) * 0.42 + mouseGlow, 0.0, 1.0);
+  vec3 col = (skyGrad + (b - 0.5) * 0.22 > 0.28) ? cSky1 : cSky0;
+
+  // Far mountain layer with dithered soft transition near crest
+  float dFar = rFar - uv.y;
+  if (dFar > -0.025) {
+    float edgeMask = smoothstep(-0.025, 0.035, dFar) + mouseGlow * 0.4;
+    if (edgeMask + (b - 0.5) * 0.35 > 0.5) {
+      col = cFar;
+    }
+    // Sparse gold horizon glint on far ridge top
+    if (abs(dFar) < 0.008 && (b < 0.18 + mouseGlow * 0.4)) {
+      col = mix(cMid, cGold, 0.58);
+    }
+  }
+
+  // Mid mountain layer with internal contour dither
+  float dMid = rMid - uv.y;
+  if (dMid > -0.02) {
+    float bandMid = smoothstep(-0.02, 0.03, dMid) - clamp(dMid * 1.4, 0.0, 0.35);
+    if (bandMid + (b - 0.5) * 0.36 > 0.46) {
+      col = cMid;
+    }
+  }
+
+  // Near mountain layer
+  float dNear = rNear - uv.y;
+  if (dNear > -0.018) {
+    float shade = smoothstep(-0.018, 0.025, dNear) + fbm(vec2(xCoord * 3.5, uv.y * 8.0)) * 0.18;
+    if (shade + (b - 0.5) * 0.38 > 0.52) {
+      col = cNear;
+    } else if (dNear > 0.0) {
+      col = cMid;
+    }
+    if (abs(dNear) < 0.006 && b < 0.22) {
+      col = mix(cNear, cGold, 0.65);
+    }
+  }
+
+  // Paint crisp star/signal pixels strictly above ridges
+  if (uv.y > rFar + 0.02) {
+    if (isGoldStar > 0.35) {
+      col = mix(cSky1, cGold, 0.85);
+    } else if (isStar > 0.35) {
+      col = mix(cSky1, vec3(95.0, 196.0, 188.0) / 255.0, 0.45);
+    }
   }
 
   gl_FragColor = vec4(col, 1.0);

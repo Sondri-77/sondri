@@ -140,25 +140,171 @@ const playbooks = [
 }`,
   },
 ];
+
+const gates = [
+  {
+    num: '01',
+    name: isEs ? 'Rastreadores e Infraestructura' : 'AI Crawler & Speed Gate',
+    checks: ['OAI-SearchBot', 'Googlebot', 'PerplexityBot', 'Mobile TTFB & LCP'],
+    why: isEs
+      ? 'Si robots.txt bloquea bots de búsqueda IA o tu móvil tarda >4s, nunca entras al índice en vivo.'
+      : 'If robots.txt blocks AI search bots or mobile TTFB stalls, your site is filtered out before retrieval begins.',
+    fixCode: `User-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /`,
+    fixTitle: isEs ? 'Fix que implementamos: robots.txt + optimización LCP' : 'Fix we ship: Clean AI crawler policy & LCP tuning',
+  },
+  {
+    num: '02',
+    name: isEs ? 'Grafo de Entidad y Schema' : 'Entity & Schema Gate',
+    checks: ['Organization / LocalBusiness', 'FAQPage JSON-LD', 'Service Schema', 'NAP Consistency'],
+    why: isEs
+      ? 'Los LLM extraen hechos verificables del JSON-LD y encabezados claros, no de texto comercial vago.'
+      : 'LLMs extract verifiable facts from JSON-LD and clean answer-ready headings—not vague marketing copy.',
+    fixCode: `"@type": ["Dentist", "LocalBusiness"],\n"areaServed": "Austin, TX",\n"hasOfferCatalog": { ... }`,
+    fixTitle: isEs ? 'Fix que implementamos: Schema específico de industria' : 'Fix we ship: Validated LocalBusiness + FAQPage schema',
+  },
+  {
+    num: '03',
+    name: isEs ? 'Directorios Oficiales de IA' : 'Official AI Listings Gate',
+    checks: ['OpenAI Business Hub', 'Bing AI Performance', 'Apple Business Connect', 'Google Business Profile'],
+    why: isEs
+      ? 'ChatGPT, Bing y Apple cruzan datos directamente desde perfiles comerciales verificados.'
+      : 'ChatGPT (Business Hub), Bing AI Performance, and Apple Business cross-check verified entity listings directly.',
+    fixCode: `OpenAI Business Hub: CLAIMED\nBing Webmaster AI: VERIFIED\nGBP Categories: ALIGNED`,
+    fixTitle: isEs ? 'Fix que implementamos: AI Listings Sprint ($249)' : 'Fix we ship: AI Listings Sprint ($249 one-time)',
+  },
+  {
+    num: '04',
+    name: isEs ? 'Citas y Cuota Semanal' : 'Citation & Weekly Answer Share',
+    checks: ['ChatGPT (3x runs)', 'Gemini (Web Grounded)', 'Google AI Overviews', 'Google AI Mode'],
+    why: isEs
+      ? 'Una marca sin citas externas ni seguimiento semanal pierde menciones silenciosamente cuando los modelos se actualizan.'
+      : 'Without external citation building and weekly multi-engine tracking, silent model updates push competitors ahead.',
+    fixCode: `Wave #04 Delta: +34% Named Share\nMonthly Shipped Fix: Service FAQ Cluster #2`,
+    fixTitle: isEs ? 'Fix que implementamos: Sondri Watch ($149–$399/mo)' : 'Fix we ship: Sondri Watch weekly runner + fixes/mo',
+  },
+];
 ---
 
 <WatchShell
-  title={isEs ? 'Packs por Industria — Sondri Watch | watch.sondri.ai' : 'Industry Playbooks & Packs — Sondri Watch | watch.sondri.ai'}
+  title={isEs ? 'Guías Técnicas, Sprints y Packs — Sondri Watch | watch.sondri.ai' : 'Technical Reads, Fix Sprints & Playbooks — Sondri Watch | watch.sondri.ai'}
   description={isEs
-    ? 'Paquetes AEO especializados para Clínicas en Chile ($349), Estudios Jurídicos ($499) y Shopify Agentic Readiness ($499).'
-    : 'Vertical AI visibility packs for Clinics in Chile ($349), Law Firms ($499), and Shopify Agentic Commerce ($499).'}
+    ? 'Guía técnica de los 4 filtros IA, Sprints de pago único ($249–$499) y Packs especializados por industria.'
+    : 'Deep-dive technical read on the 4 AI answer gates, one-time implementation sprints ($249–$499), and vertical playbooks.'}
   lang={lang}
   activeTab="playbooks"
   alternates={alternates}
 >
-  <section class="section section-pad on-dark">
+  <!-- SECTION 1: TECHNICAL DEEP-DIVE READ ("Why AI skips great businesses across 4 gates") -->
+  <section class="section section-pad on-paper" id="technical-read">
+    <div class="wrap">
+      <div class="sec-head" data-watch-reveal>
+        <div>
+          <span class="label kicker-paper">/ {isEs ? 'LECTURA TÉCNICA EN PROFUNDIDAD' : 'TECHNICAL DEEP-DIVE READ'}</span>
+          <h1 class="h2">
+            {isEs ? (
+              <>Por qué la IA omite negocios excelentes en <em class="serif-em">4 filtros técnicos.</em></>
+            ) : (
+              <>Why AI skips great businesses across <em class="serif-em">4 measurable gates.</em></>
+            )}
+          </h1>
+        </div>
+        <div class="intro">
+          <p class="lede">
+            {isEs
+              ? 'Los motores de respuesta filtran candidatos en secuencia antes de escribir una sola palabra. Si fallas un filtro, un competidor inferior con mejor estructura técnica gana la terna.'
+              : 'Answer engines filter candidates sequentially before writing a single word. Miss any one gate and a weaker competitor with cleaner structure wins the shortlist.'}
+          </p>
+        </div>
+      </div>
+
+      <div class="gates-grid">
+        {gates.map((g, idx) => (
+          <article class="gate-card" data-gate-step>
+            <div class="gate-top">
+              <span class="n gate-num">{g.num}</span>
+              <span class="label gate-arrow">{idx < 3 ? 'NEXT GATE →' : 'ANSWERED ✓'}</span>
+            </div>
+            <h2 class="h5">{g.name}</h2>
+            <p class="body-s gate-why">{g.why}</p>
+            <div class="gate-chips">
+              {g.checks.map((chk) => (
+                <span class="chip">{chk}</span>
+              ))}
+            </div>
+            <div class="gate-fix-box">
+              <p class="label fix-head">{g.fixTitle}</p>
+              <pre class="fix-code"><code>{g.fixCode}</code></pre>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: ONE-TIME IMPLEMENTATION SPRINTS ($249 / $499) -->
+  <section class="section section-pad on-off" id="sprints">
+    <div class="wrap">
+      <div class="sec-head" data-watch-reveal>
+        <div>
+          <span class="label kicker-paper">/ {isEs ? 'SPRINTS ÚNICOS LLAVE EN MANO' : 'ONE-TIME FIX SPRINTS'}</span>
+          <h2 class="h2">
+            {isEs ? (
+              <>¿Prefieres un <em class="serif-em">sprint técnico único</em> sin mensualidad?</>
+            ) : (
+              <>Rather start with a <em class="serif-em">one-time fix sprint</em>?</>
+            )}
+          </h2>
+        </div>
+        <div class="intro">
+          <p class="lede">
+            {isEs
+              ? 'Nuestros ingenieros reclaman tus perfiles oficiales IA o programan y publican todo el schema JSON-LD y páginas FAQ directamente en tu web.'
+              : 'No retainer needed. Have our team claim your official AI listings or ship your full JSON-LD schema and answer-ready FAQ pages in one focused sprint.'}
+          </p>
+        </div>
+      </div>
+
+      <div class="sprints-2" data-watch-reveal>
+        <article class="sprint-card">
+          <span class="label sprint-tag">{isEs ? 'MÁS RÁPIDO EN DESPEGAR' : 'FASTEST QUICK WIN'}</span>
+          <h3 class="h4">AI Listings Sprint</h3>
+          <p class="sprint-price"><span class="n">$249</span> <span class="label">USD one-time</span></p>
+          <p class="body-s sprint-copy">
+            {isEs
+              ? 'Reclamamos y alineamos tu empresa en OpenAI Business Hub (ChatGPT), Bing AI Performance, Apple Business Connect y Google Business Profile.'
+              : 'Done-for-you claim and entity synchronization across OpenAI Business Hub (ChatGPT), Bing AI Performance, Apple Business Connect & GBP.'}
+          </p>
+          <button type="button" class="btn btn-gold" data-watch-checkout="listings_sprint">
+            <span data-btn-label>{isEs ? 'Ordenar Listings Sprint ($249)' : 'Book Listings Sprint ($249)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+
+        <article class="sprint-card is-featured">
+          <span class="label sprint-tag">{isEs ? 'IMPLEMENTACIÓN EN PRODUCCIÓN' : 'DONE-FOR-YOU ENGINEERING'}</span>
+          <h3 class="h4">Done-For-You Fix Sprint</h3>
+          <p class="sprint-price"><span class="n">$499</span> <span class="label">USD one-time</span></p>
+          <p class="body-s sprint-copy">
+            {isEs
+              ? 'Programamos y desplegamos schema Organization/LocalBusiness & FAQPage, robots.txt para bots IA, llms.txt y bloques de servicio citables en tu web.'
+              : 'Our engineers write and deploy validated Organization/LocalBusiness & FAQPage schema, clean AI crawler rules, llms.txt, and service FAQs on your stack.'}
+          </p>
+          <button type="button" class="btn btn-gold" data-watch-checkout="fix_sprint">
+            <span data-btn-label>{isEs ? 'Ordenar Fix Sprint ($499)' : 'Book Fix Sprint ($499)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: VERTICAL INDUSTRY PLAYBOOKS -->
+  <section class="section section-pad on-dark" id="industry-packs">
     <div class="wrap">
       <div class="sec-head" data-watch-reveal>
         <div>
           <span class="label kicker">/ {isEs ? 'PLAYBOOKS VERTICALES' : 'VERTICAL PLAYBOOKS'}</span>
-          <h1 class="h2">
+          <h2 class="h2">
             {isEs ? 'Packs diseñados para las preguntas exactas de tu industria' : 'Industry playbooks built around how your buyers actually ask AI'}<span class="gdot">.</span>
-          </h1>
+          </h2>
         </div>
         <div class="intro">
           <p class="lede">
@@ -274,6 +420,128 @@ const playbooks = [
     display: block;
     color: var(--gold);
     margin-bottom: 10px;
+  }
+
+  .kicker-paper {
+    display: block;
+    color: var(--teal-mid);
+    margin-bottom: 10px;
+  }
+
+  /* Deep-Dive 4-Gate Pipeline */
+  .gates-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-24);
+  }
+
+  .gate-card {
+    border: 1px solid var(--line);
+    background: var(--white);
+    padding: var(--s-32);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+    box-shadow: 6px 6px 0 var(--teal);
+  }
+
+  .gate-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line-soft);
+    padding-bottom: 10px;
+  }
+
+  .gate-num {
+    font-size: 38px;
+    color: var(--gold-2);
+  }
+
+  .gate-arrow {
+    color: var(--steel);
+  }
+
+  .gate-why {
+    color: var(--pale);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .gate-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .gate-fix-box {
+    margin-top: auto;
+    background: var(--off);
+    border-left: 3px solid var(--teal);
+    padding: 12px 14px;
+  }
+
+  .fix-head {
+    color: var(--teal);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .fix-code {
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--teal-mid);
+    overflow-x: auto;
+  }
+
+  /* One-Time Sprints */
+  .sprints-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-24);
+  }
+
+  .sprint-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    padding: var(--s-32);
+    box-shadow: 6px 6px 0 var(--teal);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .sprint-card.is-featured {
+    border-color: var(--gold-2);
+    box-shadow: 8px 8px 0 var(--gold-2);
+  }
+
+  .sprint-tag {
+    color: var(--teal-mid);
+  }
+
+  .sprint-price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .sprint-price .n {
+    font-size: 46px;
+    color: var(--teal);
+  }
+
+  .sprint-copy {
+    color: var(--pale);
+    font-size: 15px;
+    line-height: 1.55;
+    margin-bottom: 8px;
+  }
+
+  .sprint-card .btn {
+    margin-top: auto;
   }
 
   .pb-tabs {
@@ -464,6 +732,8 @@ const playbooks = [
   }
 
   @media (max-width: 960px) {
+    .gates-grid,
+    .sprints-2,
     .pb-tabs,
     .pb-head,
     .pb-grid {

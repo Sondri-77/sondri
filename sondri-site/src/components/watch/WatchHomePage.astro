@@ -18,183 +18,448 @@ const alternates = {
 
 const chapters = isEs
   ? [
-      { id: 'act-shift', num: '01', title: 'El Cambio' },
-      { id: 'free-check', num: '02', title: 'Score Gratis' },
-      { id: 'act-gates', num: '03', title: '4 Filtros IA' },
-      { id: 'act-drift', num: '04', title: 'Ciclo 4 Semanas' },
-      { id: 'pricing-ladder', num: '05', title: 'Planes Watch' },
+      { id: 'act-shift', num: '01', title: 'Inicio' },
+      { id: 'free-check', num: '02', title: 'Test Gratis' },
+      { id: 'act-report', num: '03', title: 'Qué Recibes' },
+      { id: 'act-loop', num: '04', title: 'Cómo Funciona' },
+      { id: 'act-services', num: '05', title: 'Servicios' },
+      { id: 'pricing-ladder', num: '06', title: 'Planes' },
+      { id: 'act-faq', num: '07', title: 'Preguntas' },
     ]
   : [
-      { id: 'act-shift', num: '01', title: 'The Shift' },
-      { id: 'free-check', num: '02', title: 'Free Score' },
-      { id: 'act-gates', num: '03', title: '4 AI Gates' },
-      { id: 'act-drift', num: '04', title: '4-Week Loop' },
-      { id: 'pricing-ladder', num: '05', title: 'Plans & Sprints' },
+      { id: 'act-shift', num: '01', title: 'Overview' },
+      { id: 'free-check', num: '02', title: 'Free Check' },
+      { id: 'act-report', num: '03', title: 'What You Get' },
+      { id: 'act-loop', num: '04', title: 'How It Works' },
+      { id: 'act-services', num: '05', title: 'Services' },
+      { id: 'pricing-ladder', num: '06', title: 'Plans' },
+      { id: 'act-faq', num: '07', title: 'FAQ' },
     ];
 
-const scenarios = [
+const industries = [
   {
-    id: 'clinic',
-    label: isEs ? 'Clínica Dental' : 'Dental Clinic',
-    prompt: isEs
-      ? '“¿Cuál es la mejor clínica dental para implantes en Las Condes?”'
-      : '“Who is the highest-rated implant dentist in Austin?”',
-    competitors: [
-      { name: isEs ? 'Clínica NW (Schema + Google Verified)' : 'Riverbend Dental (Schema + Profiles Synced)', pct: 88, ours: false },
-      { name: isEs ? 'DentArt (Citas en Directorios)' : 'Oakwood Prosthodontics (FAQPage + Citations)', pct: 74, ours: false },
-      { name: isEs ? 'Tu Clínica (Sin FAQPage ni Hub IA)' : 'Your Practice (Missing FAQPage & AI Hub)', pct: 12, ours: true },
+    id: 'medical',
+    label: isEs ? 'Salud y Dental' : 'Medical & Dental',
+    servicePrefill: isEs ? 'Clínica dental e implantes' : 'Dental implants clinic',
+    questions: [
+      {
+        tag: isEs ? 'P1 · CATEGORÍA' : 'Q1 · CATEGORY',
+        q: isEs
+          ? '“¿Cuál es la mejor clínica dental para implantes en mi comuna?”'
+          : '“Who is the highest-rated dental implant clinic in my city?”',
+        status: 'miss',
+        outcome: isEs ? '✗ No mencionada · 3 clínicas citadas' : '✗ Not mentioned · 3 competitors named',
+      },
+      {
+        tag: isEs ? 'P2 · SERVICIO' : 'Q2 · SPECIALTY',
+        q: isEs
+          ? '“¿Qué clínica atiende urgencias y corona en el día?”'
+          : '“Which practice offers same-day crowns with transparent pricing?”',
+        status: 'warn',
+        outcome: isEs ? '⚠ Nombrada · Sin precios ni schema' : '⚠ Mentioned · Outdated service details',
+      },
+      {
+        tag: isEs ? 'P3 · TU MARCA' : 'Q3 · BRAND CHECK',
+        q: isEs
+          ? '“¿Es recomendable [Tu Clínica] para pacientes?”'
+          : '“Is [Your Clinic] a good choice for dental care?”',
+        status: 'warn',
+        outcome: isEs ? '⚠ Toma datos antiguos de directorios' : '⚠ Pulls from an old directory listing',
+      },
     ],
-    diagnosis: isEs
-      ? 'ChatGPT nombró 5 competidores locales; las clínicas sin schema Dentist y preguntas clínicas directas quedaron fuera de la terna.'
-      : 'ChatGPT named 3 local clinics directly; sites lacking LocalBusiness + FAQPage schema or clear treatment pricing didn’t make the shortlist.',
+    fixes: isEs
+      ? ['01 Schema Dentist + FAQPage', '02 OpenAI & Bing AI Hub', '03 Página de tratamientos']
+      : ['01 Dentist & FAQPage schema', '02 Claim OpenAI & Bing AI hubs', '03 Answer-ready fee page'],
   },
   {
     id: 'legal',
-    label: isEs ? 'Estudio Jurídico' : 'Law Firm',
-    prompt: isEs
-      ? '“Recomienda abogados de familia con buena reputación en Providencia”'
-      : '“Which mid-size employment law firm handles SaaS executive contracts?”',
-    competitors: [
-      { name: isEs ? 'G&B Abogados (Guías + Perfil Verificado)' : 'Harborview Counsel LLP (Practice Schema)', pct: 91, ours: false },
-      { name: isEs ? 'Abogados de Confianza' : 'Alder & Associates (Clear Fee Pages)', pct: 68, ours: false },
-      { name: isEs ? 'Tu Estudio (Solo página corporativa)' : 'Your Firm (Generic Practice Overview)', pct: 8, ours: true },
+    label: isEs ? 'Legal y Asesoría' : 'Law & Advisory',
+    servicePrefill: isEs ? 'Estudio jurídico familia y laboral' : 'Employment & corporate law firm',
+    questions: [
+      {
+        tag: isEs ? 'P1 · CATEGORÍA' : 'Q1 · CATEGORY',
+        q: isEs
+          ? '“Recomienda estudios jurídicos especialistas en familia o laboral”'
+          : '“Which boutique employment law firm advises growing companies?”',
+        status: 'miss',
+        outcome: isEs ? '✗ Omitido · 5 estudios en terna' : '✗ Skipped · 5 competing firms cited',
+      },
+      {
+        tag: isEs ? 'P2 · ESPECIALIDAD' : 'Q2 · SPECIALTY',
+        q: isEs
+          ? '“¿Qué abogado revisa contratos ejecutivos o pactos de socios?”'
+          : '“Who handles executive equity & commercial contract reviews?”',
+        status: 'miss',
+        outcome: isEs ? '✗ Sin páginas por área de práctica' : '✗ No dedicated practice page found',
+      },
+      {
+        tag: isEs ? 'P3 · TU MARCA' : 'Q3 · BRAND CHECK',
+        q: isEs
+          ? '“¿Qué experiencia y cobertura tiene [Tu Estudio]?”'
+          : '“What does [Your Firm] specialize in and who leads it?”',
+        status: 'warn',
+        outcome: isEs ? '⚠ Socios y cobertura incompletos' : '⚠ Missing partner bio & credentials',
+      },
     ],
-    diagnosis: isEs
-      ? 'Los motores priorizan estudios con páginas dedicadas por área de práctica, honorarios claros y schema LegalService.'
-      : 'AI engines cite firms with dedicated practice-area pages, structured LegalService JSON-LD, and verifiable third-party bar citations.',
+    fixes: isEs
+      ? ['01 Schema LegalService + Attorney', '02 Guías por área legal', '03 Citas en directorios']
+      : ['01 LegalService JSON-LD', '02 Dedicated practice-area FAQs', '03 Verified legal directories'],
   },
   {
     id: 'b2b',
-    label: isEs ? 'Software B2B' : 'B2B Software',
-    prompt: isEs
-      ? '“¿Cómo automatizar conciliación entre CRM y ERP sin cambiar de sistema?”'
-      : '“How do mid-market ops teams automate CRM-to-ERP reconciliation without replacing their stack?”',
-    competitors: [
-      { name: 'Zapier / Workato', pct: 86, ours: false },
-      { name: 'Make', pct: 72, ours: false },
-      { name: isEs ? 'Tu Empresa B2B (Sin comparativas AEO)' : 'Your B2B Company (Blocked or Uncited)', pct: 18, ours: true },
+    label: 'B2B & SaaS',
+    servicePrefill: isEs ? 'Automatización e integración B2B' : 'B2B workflow software',
+    questions: [
+      {
+        tag: isEs ? 'P1 · PROBLEMA' : 'Q1 · PROBLEM',
+        q: isEs
+          ? '“¿Cómo automatizar conciliación CRM–ERP sin cambiar de sistema?”'
+          : '“How do ops teams automate CRM-to-ERP sync without replatforming?”',
+        status: 'miss',
+        outcome: isEs ? '✗ IA sugiere solo plataformas masivas' : '✗ Defaults to 3 legacy tools',
+      },
+      {
+        tag: isEs ? 'P2 · COMPARATIVA' : 'Q2 · VS SEARCH',
+        q: isEs
+          ? '“Mejores alternativas a desarrollo in-house para logística B2B”'
+          : '“Best custom workflow automation partners for mid-market teams”',
+        status: 'warn',
+        outcome: isEs ? '⚠ Faltan comparativas estructuradas' : '⚠ No benchmark or proof cited',
+      },
+      {
+        tag: isEs ? 'P3 · TU MARCA' : 'Q3 · BRAND CHECK',
+        q: isEs
+          ? '“¿Para quién está diseñado [Tu Software / Agencia]?”'
+          : '“Who is [Your Company] best suited for and how much does it cost?”',
+        status: 'warn',
+        outcome: isEs ? '⚠ Sin datos claros de alcance/precio' : '⚠ Unclear pricing & ICP facts',
+      },
     ],
-    diagnosis: isEs
-      ? 'Sin contenido comparativo directo ni citas externas (G2, Clutch, casos técnicos), la IA recomienda por defecto a plataformas masivas.'
-      : 'Without comparison pages, structured capabilities, and grounded case proof, LLMs default to generic horizontal tools.',
+    fixes: isEs
+      ? ['01 llms.txt + Schema Software/Offer', '02 Bloques comparativos AEO', '03 Casos con métricas citables']
+      : ['01 llms.txt & Offer schema', '02 Clear comparison matrices', '03 Grounded case study stats'],
   },
   {
-    id: 'shopify',
-    label: isEs ? 'Marca Shopify' : 'Shopify Brand',
-    prompt: isEs
-      ? '“Mejores botas impermeables de cuero enviadas a EE.UU. en menos de 3 días”'
-      : '“Best full-grain waterproof leather chelsea boots under $250 with 2-day US shipping”',
-    competitors: [
-      { name: 'Thursday Boot Co.', pct: 92, ours: false },
-      { name: 'Blundstone', pct: 79, ours: false },
-      { name: isEs ? 'Tu Tienda (Sin feed ACP / Offer Schema)' : 'Your Store (Incomplete Offer & Shipping Schema)', pct: 15, ours: true },
+    id: 'ecommerce',
+    label: 'Ecommerce',
+    servicePrefill: isEs ? 'Tienda online y catálogo de productos' : 'Direct-to-consumer ecommerce brand',
+    questions: [
+      {
+        tag: isEs ? 'P1 · COMPRA' : 'Q1 · SHOPPING',
+        q: isEs
+          ? '“Mejores botas impermeables de cuero bajo $250 con envío rápido”'
+          : '“Best waterproof leather boots under $250 with 2-day shipping”',
+        status: 'miss',
+        outcome: isEs ? '✗ Fuera del carrusel por falta de Offer JSON-LD' : '✗ Excluded · Incomplete Offer schema',
+      },
+      {
+        tag: isEs ? 'P2 · POLÍTICAS' : 'Q2 · TRUST SIGNALS',
+        q: isEs
+          ? '“¿Qué tienda ofrece cambios gratis y stock inmediato?”'
+          : '“Which stores offer free returns and guaranteed US stock?”',
+        status: 'warn',
+        outcome: isEs ? '⚠ Política de envíos ilegible para agentes' : '⚠ Return policy unreadable to agents',
+      },
+      {
+        tag: isEs ? 'P3 · TU MARCA' : 'Q3 · BRAND CHECK',
+        q: isEs
+          ? '“¿Es confiable comprar en [Tu Tienda]?”'
+          : '“Are [Your Brand] products durable and worth buying?”',
+        status: 'warn',
+        outcome: isEs ? '⚠ Pocas reseñas externas verificadas' : '⚠ Thin verified third-party reviews',
+      },
     ],
-    diagnosis: isEs
-      ? 'ChatGPT ACP y Google UCP exigen precios exactos, stock y políticas de envío legibles en datos estructurados Product/Offer.'
-      : 'ChatGPT ACP and Google UCP checkout agents require machine-readable Product, Offer, shippingRate, and return policy schema.',
+    fixes: isEs
+      ? ['01 Schema Product + Offer completo', '02 Política ACP / Google UCP', '03 FAQ de materiales y envíos']
+      : ['01 Product & Offer schema', '02 Merchant return & shipping tags', '03 ChatGPT ACP readiness fix'],
+  },
+  {
+    id: 'realestate',
+    label: isEs ? 'Inmobiliaria y Hogar' : 'Real Estate & Home',
+    servicePrefill: isEs ? 'Servicios inmobiliarios o remodelación' : 'Home remodeling & real estate advisor',
+    questions: [
+      {
+        tag: isEs ? 'P1 · CATEGORÍA' : 'Q1 · CATEGORY',
+        q: isEs
+          ? '“¿Qué empresa confiable hace remodelaciones llave en mano aquí?”'
+          : '“Who are the most reliable design-build remodelers in this metro?”',
+        status: 'miss',
+        outcome: isEs ? '✗ Solo aparecen directorios generales' : '✗ Aggregators win over your site',
+      },
+      {
+        tag: isEs ? 'P2 · PRESUPUESTO' : 'Q2 · BUDGET',
+        q: isEs
+          ? '“¿Cuánto tarda una remodelación completa y qué garantía dan?”'
+          : '“How long does a full kitchen remodel take and what warranties apply?”',
+        status: 'warn',
+        outcome: isEs ? '⚠ IA responde con promedios genéricos' : '⚠ Generic industry reply cited',
+      },
+      {
+        tag: isEs ? 'P3 · TU MARCA' : 'Q3 · BRAND CHECK',
+        q: isEs
+          ? '“¿En qué zonas trabaja [Tu Empresa] y qué proyectos ha hecho?”'
+          : '“What neighborhoods does [Your Brand] serve?”',
+        status: 'warn',
+        outcome: isEs ? '⚠ Zonas y horarios desactualizados' : '⚠ Service areas out of sync',
+      },
+    ],
+    fixes: isEs
+      ? ['01 LocalBusiness + AreaServed', '02 GBP + Apple Business Connect', '03 Guías de plazos y garantía']
+      : ['01 LocalBusiness + areaServed', '02 Sync GBP & Apple Connect', '03 Transparent scope guides'],
+  },
+  {
+    id: 'local',
+    label: isEs ? 'Servicios Locales' : 'Local Services',
+    servicePrefill: isEs ? 'Servicios profesionales locales' : 'Local service business',
+    questions: [
+      {
+        tag: isEs ? 'P1 · CATEGORÍA' : 'Q1 · CATEGORY',
+        q: isEs
+          ? '“¿A quién contratar en mi ciudad para [tu servicio principal]?”'
+          : '“Who is the most dependable [service provider] near me?”',
+        status: 'miss',
+        outcome: isEs ? '✗ No apareces en la terna inicial' : '✗ Omitted from AI top shortlist',
+      },
+      {
+        tag: isEs ? 'P2 · ALCANCE' : 'Q2 · SCOPE',
+        q: isEs
+          ? '“¿Qué incluye el servicio, horarios y cobertura geográfica?”'
+          : '“Who covers urgent same-week visits with clear pricing?”',
+        status: 'warn',
+        outcome: isEs ? '⚠ Sin datos estructurados legibles' : '⚠ AI guesses hours and coverage',
+      },
+      {
+        tag: isEs ? 'P3 · TU MARCA' : 'Q3 · BRAND CHECK',
+        q: isEs
+          ? '“Opiniones y reputación de [Tu Negocio]”'
+          : '“Should I hire [Your Business]? Reviews and overview.”',
+        status: 'warn',
+        outcome: isEs ? '⚠ Cita información incompleta' : '⚠ Relies on outdated directory data',
+      },
+    ],
+    fixes: isEs
+      ? ['01 Habilitar bots en robots.txt', '02 Schema Service + FAQPage', '03 Alineación de directorios IA']
+      : ['01 Unblock AI crawlers + llms.txt', '02 Service & FAQPage schema', '03 Official AI directory sync'],
   },
 ];
 
-const gates = [
+const reportCards = [
+  {
+    icon: 'question',
+    title: isEs ? 'Preguntas reales de compradores' : 'Real buyer questions',
+    desc: isEs
+      ? 'Consultamos exactamente lo que tus clientes preguntan a la IA, en tu ciudad y especialidad.'
+      : 'We ask the exact questions your clients ask AI, in your city and specialty.',
+  },
+  {
+    icon: 'eye',
+    title: isEs ? 'Cómo te describe la IA' : 'How AI describes you',
+    desc: isEs
+      ? 'Si te nombra, si te recomienda frente a terceros y si los datos que entrega son exactos.'
+      : 'Whether you are named, recommended, or skipped—and how accurately.',
+  },
+  {
+    icon: 'pin',
+    title: isEs ? 'Fuentes que está citando' : 'Sources cited',
+    desc: isEs
+      ? 'Qué directorios, reseñas y páginas de competidores usa cada motor para formar su respuesta.'
+      : 'Which directories, reviews, and competitor pages AI relies on.',
+  },
+  {
+    icon: 'bolt',
+    title: isEs ? 'Tus primeras 3 correcciones' : 'Your first 3 fixes',
+    desc: isEs
+      ? 'Priorizadas en orden de impacto: aplicables por tu equipo o ejecutadas directo por Sondri.'
+      : 'Clear, prioritized, doable by your team—or shipped directly by us.',
+  },
+];
+
+const phases = [
   {
     num: '01',
-    name: isEs ? 'Rastreadores e Infraestructura' : 'AI Crawler & Speed Gate',
-    checks: ['OAI-SearchBot', 'Googlebot', 'PerplexityBot', 'Mobile TTFB & LCP'],
-    why: isEs
-      ? 'Si robots.txt bloquea bots de búsqueda IA o tu móvil tarda >4s, nunca entras al índice en vivo.'
-      : 'If robots.txt blocks AI search bots or mobile TTFB stalls, your site is filtered out before retrieval begins.',
-    fixCode: `User-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /`,
-    fixTitle: isEs ? 'Solución que implementamos: robots.txt + optimización LCP' : 'Fix we ship: Clean AI crawler policy & LCP tuning',
+    id: 'check',
+    tab: isEs ? '01 Medir' : '01 Check',
+    name: isEs ? 'Línea Base en 4 Motores' : 'Baseline Across 4 Engines',
+    share: 14,
+    metricLabel: isEs ? 'Cuota inicial promedio' : 'Typical baseline named-share',
+    summary: isEs
+      ? 'Fijamos entre 25 y 75 preguntas reales sin marca, las corremos sin sesión iniciada y auditamos bots, schema y reseñas.'
+      : 'We lock 25–75 unbranded buyer questions, run them logged out across ChatGPT, Gemini, AI Overviews & AI Mode, and audit crawlers + schema.',
+    deliverable: isEs ? 'Entrega: Score 0–100 + Mapa de Brechas en 48 h' : 'Deliverable: Live baseline score + prioritized fix roadmap in 48h',
+    chatgpt: 12,
+    gemini: 18,
+    aio: 11,
   },
   {
     num: '02',
-    name: isEs ? 'Grafo de Entidad y Schema' : 'Entity & Schema Gate',
-    checks: ['Organization / LocalBusiness', 'FAQPage JSON-LD', 'Service Schema', 'NAP Consistency'],
-    why: isEs
-      ? 'Los LLM extraen hechos verificables del JSON-LD y encabezados claros, no de texto comercial vago.'
-      : 'LLMs extract verifiable facts from JSON-LD and clean answer-ready headings—not vague marketing copy.',
-    fixCode: `"@type": ["Dentist", "LocalBusiness"],\n"areaServed": "Las Condes, Santiago",\n"hasOfferCatalog": { ... }`,
-    fixTitle: isEs ? 'Solución que implementamos: Schema específico de industria' : 'Fix we ship: Validated LocalBusiness + FAQPage schema',
+    id: 'fix',
+    tab: isEs ? '02 Corregir' : '02 Fix',
+    name: isEs ? 'Schema, Bots y Perfiles IA' : 'Technical Schema & Official Hubs',
+    share: 29,
+    metricLabel: isEs ? 'Tras Fix #1 en semana 2' : 'After Week 2 foundation fixes',
+    summary: isEs
+      ? 'Desplegamos JSON-LD válido, habilitamos rastreadores IA y alineamos OpenAI Business Hub, Bing AI, Apple y Google.'
+      : 'Our engineers ship validated JSON-LD, clean robots.txt/llms.txt rules, and sync OpenAI Business Hub, Bing AI Performance, Apple & GBP.',
+    deliverable: isEs ? 'Fix desplegado: Identidad verificada en directorios oficiales' : 'Shipped fix: Verified entity identity + machine-readable facts',
+    chatgpt: 28,
+    gemini: 34,
+    aio: 25,
   },
   {
     num: '03',
-    name: isEs ? 'Directorios Oficiales de IA' : 'Official AI Listings Gate',
-    checks: ['OpenAI Business Hub', 'Bing AI Performance', 'Apple Business Connect', 'Google Business Profile'],
-    why: isEs
-      ? 'Desde noviembre 2026, ChatGPT, Bing y Apple cruzan datos directamente desde perfiles verificados.'
-      : 'ChatGPT (Business Hub), Bing AI Performance, and Apple Business cross-check verified entity listings directly.',
-    fixCode: `OpenAI Business Hub: CLAIMED\nBing Webmaster AI: VERIFIED\nGBP Categories: ALIGNED`,
-    fixTitle: isEs ? 'Solución que implementamos: AI Listings Sprint ($249)' : 'Fix we ship: AI Listings Sprint ($249 one-time)',
+    id: 'strengthen',
+    tab: isEs ? '03 Fortalecer' : '03 Strengthen',
+    name: isEs ? 'Páginas Citables y Autoridad' : 'Answer-Ready Pages & Citations',
+    share: 46,
+    metricLabel: isEs ? 'Tras contenido y citas clave' : 'After answer-ready page updates',
+    summary: isEs
+      ? 'Publicamos páginas de servicio y FAQ estructuradas para respuesta directa y reforzamos citas en los portales que la IA lee.'
+      : 'We publish structured service & FAQ pages built to be quoted verbatim and close high-trust directory citations competitors already hold.',
+    deliverable: isEs ? 'Fix desplegado: Bloques FAQ + Comparativas citables' : 'Shipped fix: Citation clusters + answer-ready service pages',
+    chatgpt: 44,
+    gemini: 52,
+    aio: 42,
   },
   {
     num: '04',
-    name: isEs ? 'Citas y Cuota Semanal' : 'Citation & Weekly Answer Share',
-    checks: ['ChatGPT (3x runs)', 'Gemini (Web Grounded)', 'Google AI Overviews', 'Google AI Mode'],
-    why: isEs
-      ? 'Una marca sin citas externas ni seguimiento semanal pierde menciones silenciosamente cuando los modelos se actualizan.'
-      : 'Without external citation building and weekly multi-engine tracking, silent model updates push competitors ahead.',
-    fixCode: `Wave #04 Delta: +34% Named Share\nMonthly Shipped Fix: Service FAQ Cluster #2`,
-    fixTitle: isEs ? 'Solución que implementamos: Sondri Watch ($149–$399/mo)' : 'Fix we ship: Sondri Watch weekly runner + 1 fix/mo',
+    id: 'measure',
+    tab: isEs ? '04 Monitorear' : '04 Measure',
+    name: isEs ? 'Rastreo Semanal + Mejora Mensual' : 'Weekly Drift Watch + Monthly Fixes',
+    share: 58,
+    metricLabel: isEs ? 'Visibilidad acumulada mensual' : 'Compounded named-share curve',
+    summary: isEs
+      ? 'Cada semana detectamos cambios silenciosos de modelo. Cada mes recibes reporte vivo + PDF y una nueva mejora ya implementada.'
+      : 'Weekly runs catch model updates and competitor moves early. Every month you get a live Page + PDF diff report and fresh fixes shipped.',
+    deliverable: isEs ? 'Ciclo continuo: Reporte mensual + mejoras constantes' : 'Recurring loop: Weekly engine telemetry + fixes shipped monthly',
+    chatgpt: 56,
+    gemini: 64,
+    aio: 54,
   },
 ];
 
-const weeks = [
+const servicePillars = [
   {
-    wk: isEs ? 'Semana 01 · Línea Base' : 'Week 01 · Baseline Wave',
-    share: 14,
-    note: isEs
-      ? 'Auditamos 25 prompts fijos × 3 repeticiones por motor (sin sesión). Descubrimos que solo apareces en 14% de respuestas.'
-      : 'We lock 25 unbranded buyer prompts across 4 engines (logged out). Baseline shows 14% named-share while 3 competitors take the shortlist.',
-    chatgpt: '12%',
-    gemini: '18%',
-    aio: '10%',
-    shipped: isEs ? 'Entregable: Línea base completa + Mapa de Brechas' : 'Shipped: Complete Baseline + Priority Fix Roadmap',
+    num: '01',
+    id: 'aeo',
+    title: 'AEO',
+    subtitle: isEs
+      ? 'Optimización estructural para que los motores de respuesta entiendan qué vendes y a quién recomiendan.'
+      : 'Make your site machine-readable so answer engines extract accurate facts cleanly.',
+    items: isEs
+      ? ['Servicios de AEO', 'AI SEO Técnico', 'ChatGPT SEO', 'Google AI Overviews', 'Implementación llms.txt & Schema JSON-LD']
+      : ['AEO Services', 'AI SEO', 'ChatGPT SEO', 'Google AI Overviews', 'llms.txt & Schema Setup'],
   },
   {
-    wk: isEs ? 'Semana 02 · Listings y Schema' : 'Week 02 · Listings & Schema Shipped',
-    share: 29,
-    note: isEs
-      ? 'Desplegamos schema JSON-LD verificado, reclamamos Bing AI Performance + OpenAI Business Hub y alineamos datos NAP.'
-      : 'We ship validated Organization + FAQPage schema and synchronize OpenAI Business Hub, Bing AI Performance, and Google Business Profile.',
-    chatgpt: '28%',
-    gemini: '34%',
-    aio: '25%',
-    shipped: isEs ? 'Fix #1: JSON-LD completo + AI Business Hubs' : 'Fix #1 Shipped: JSON-LD Entity Graph & AI Business Hubs',
+    num: '02',
+    id: 'geo',
+    title: 'GEO',
+    subtitle: isEs
+      ? 'Medición semanal y construcción de citas externas para ganar presencia en respuestas generativas.'
+      : 'Measure and grow how often ChatGPT, Gemini, and Google AI name your brand.',
+    items: isEs
+      ? ['Servicios de GEO', 'Visibilidad en Gemini y Perplexity', 'Auditoría de Búsqueda IA (15–75 preguntas)', 'Construcción de Citas IA', 'Reportes Semanales de Visibilidad']
+      : ['GEO Services', 'Gemini & Perplexity Visibility', 'AI Search Audit (15–75 Questions)', 'AI Citation Building', 'Weekly AI Visibility Reporting'],
   },
   {
-    wk: isEs ? 'Semana 03 · Páginas Citables' : 'Week 03 · Answer-Ready Service Pages',
-    share: 46,
-    note: isEs
-      ? 'Los rastreadores indexan las nuevas secciones de preguntas frecuentes con precios y criterios objetivos de comparación.'
-      : 'AI crawlers index newly published answer-ready FAQ clusters and structured comparison facts across core service pages.',
-    chatgpt: '44%',
-    gemini: '52%',
-    aio: '42%',
-    shipped: isEs ? 'Rastreo Semanal: Aumento en citas directas del dominio' : 'Weekly Wave: Domain citation pickup across Gemini & ChatGPT',
+    num: '03',
+    id: 'reputation',
+    title: isEs ? 'Reputación' : 'Reputation',
+    subtitle: isEs
+      ? 'Alineación de señales de confianza entre fichas oficiales, reseñas y directorios que la IA verifica.'
+      : 'Ensure external directories, reviews, and official business hubs reinforce trust.',
+    items: isEs
+      ? ['Gestión de Reputación en IA', 'OpenAI Business Hub & Bing AI', 'Google Business Profile & Apple Business', 'Señales de Reseñas y Consistencia NAP']
+      : ['AI Reputation Management', 'OpenAI Business Hub & Bing AI Setup', 'Google Business Profile & Apple Business', 'Review & Entity Trust Signals'],
   },
   {
-    wk: isEs ? 'Semana 04 · Reporte Mensual + Fix #2' : 'Week 04 · Monthly Diff & Next Fix',
-    share: 58,
-    note: isEs
-      ? 'Recibes reporte web + PDF con variaciones por motor, movimiento de competidores y la siguiente mejora priorizada en producción.'
-      : 'You receive your live monthly Page + PDF report showing engine-by-engine delta, competitor movement, and Fix #2 scoped for next month.',
-    chatgpt: '56%',
-    gemini: '64%',
-    aio: '54%',
-    shipped: isEs ? 'Entrega Mensual: Página + PDF + Fix mensual implementado' : 'Monthly Delivery: Live Report Page + PDF + Shipped Fix',
+    num: '04',
+    id: 'websites',
+    title: isEs ? 'Sitios Web' : 'Websites',
+    subtitle: isEs
+      ? 'Páginas rápidas, claras y estructuradas tanto para compradores humanos como para agentes.'
+      : 'Fast, answer-ready service pages engineered for human conversion and AI citations.',
+    items: isEs
+      ? ['Páginas de Servicio y FAQ Citables', 'SEO Técnico y SEO Local', 'Core Web Vitals y Velocidad Móvil', 'Preparación Agentic Checkout (ACP / UCP)']
+      : ['Answer-Ready Service & FAQ Pages', 'Technical SEO & Local SEO', 'Core Web Vitals & Speed Optimization', 'Agentic Checkout Readiness (ACP / UCP)'],
   },
 ];
+
+const faqs = [
+  {
+    q: isEs ? '¿Qué es la visibilidad en IA?' : 'What is AI visibility?',
+    a: isEs
+      ? 'Es la frecuencia y precisión con la que asistentes como ChatGPT, Gemini y Google AI Overviews mencionan, describen y recomiendan tu empresa cuando un comprador hace una pregunta sin nombrar tu marca.'
+      : 'AI visibility measures how often—and how accurately—answer engines like ChatGPT, Gemini, and Google AI mention and recommend your business when buyers ask unbranded questions in your category.',
+  },
+  {
+    q: isEs ? '¿Cuál es la diferencia entre AEO, GEO y AI SEO?' : 'AEO vs. GEO vs. AI SEO—what is the difference?',
+    a: isEs
+      ? 'AEO (Answer Engine Optimization) estructura tu sitio, schema y entidades para respuestas directas; GEO (Generative Engine Optimization) fortalece citas y presencia dentro de síntesis generativas multi-fuente; AI SEO une ambas disciplinas con SEO técnico clásico y velocidad web.'
+      : 'AEO focuses on structuring your pages, schema, and entity data for direct answers. GEO builds the external citations and category authority generative models synthesize. Sondri Watch combines both alongside fast technical SEO.',
+  },
+  {
+    q: isEs ? '¿Cuántas preguntas prueban en el test gratis vs. planes pagos?' : 'How many buyer questions do you test in Free vs. Paid plans?',
+    a: isEs
+      ? 'El test gratuito en esta página prueba 3 preguntas clave en vivo (2 sin marca y 1 de marca). La Auditoría Única ($99) evalúa 15 preguntas × 3 corridas en 4 motores (180 chequeos). Los planes mensuales rastrean 25 (Starter), 40 (Growth) o 75 preguntas (Pro) cada semana.'
+      : 'Our free on-page check tests 3 live buyer questions (2 unbranded + 1 brand verification). The $99 Baseline Audit tests 15 buyer questions × 3 runs across 4 engines (180 checks). Monthly Watch plans track 25 (Starter), 40 (Growth), or 75 buyer questions (Pro) every week.',
+  },
+  {
+    q: isEs ? '¿Cuánto tiempo tarda en verse el impacto?' : 'How long does it take to see results?',
+    a: isEs
+      ? 'Correcciones técnicas (robots.txt, llms.txt, JSON-LD y OpenAI/Bing Hubs) suelen reflejarse en 2 a 4 semanas a medida que los rastreadores en vivo indexan los cambios. Citas en directorios y páginas comparativas consolidan mejoras medibles entre el mes 1 y el mes 3.'
+      : 'Technical schema, crawler access, and OpenAI/Bing Business Hub updates often show movement within 2–4 weeks as live search bots re-index. Answer-ready pages and third-party citations compound visibility steadily across months 1–3.',
+  },
+  {
+    q: isEs ? '¿Necesito rehacer mi sitio web completo?' : 'Do I need a new website?',
+    a: isEs
+      ? 'Casi nunca. Trabajamos sobre tu dominio actual (WordPress, Webflow, Shopify, Next.js, Astro o código propio) añadiendo schema validado, bloques FAQ, archivos llms.txt y mejoras puntuales de velocidad sin rediseñar todo tu sitio.'
+      : 'Rarely. In most cases we ship validated JSON-LD, FAQ sections, llms.txt, and speed fixes directly on your existing stack (Shopify, Webflow, WordPress, Next.js, or Astro) without rebuilding your site.',
+  },
+  {
+    q: isEs ? '¿Garantizan que ChatGPT nos recomendará siempre en #1?' : 'Do you guarantee AI will recommend us?',
+    a: isEs
+      ? 'Ningún proveedor serio puede garantizar un prompt no determinista en #1, porque la IA responde probabilísticamente. Lo que sí garantizamos es cobertura semanal reproducible (sin sesión iniciada), transparencia exacta de menciones y mejoras técnicas reales publicadas cada mes.'
+      : 'No honest team can guarantee deterministic #1 placement inside probabilistic models. What we guarantee is repeatable logged-out tracking, accurate factual representation of your business, and real engineering fixes shipped on your site every month.',
+  },
+  {
+    q: isEs ? '¿Cómo puedo verificar si ChatGPT recomienda mi negocio ahora?' : 'How do I check if ChatGPT recommends my business right now?',
+    a: isEs
+      ? 'Usa nuestro inspector gratuito arriba en menos de 60 segundos: evalúa tu sitio técnico y corre 3 prompts de compra reales sin historial previo, o solicita la auditoría de 15 preguntas ($99) para ver cada competidor y fuente citada.'
+      : 'Run our free 60-second checker above to inspect your technical gates and 3 live buyer questions without login bias—or order the $99 15-question baseline audit for a complete 4-engine competitor and source breakdown.',
+  },
+  {
+    q: isEs ? '¿Se puede pagar a ChatGPT o Google para que recomiende mi empresa?' : 'Can I pay ChatGPT or Google to recommend my business?',
+    a: isEs
+      ? 'No puedes comprar un lugar en las respuestas orgánicas recomendadas por ChatGPT o Gemini. Las recomendaciones dependen de claridad de entidad, datos estructurados, velocidad, reputación en terceros y respuesta directa a las preguntas del comprador.'
+      : 'You cannot buy organic placement inside ChatGPT, Gemini, or Google AI answers. Recommendations come from verified entity signals, clean structured data, fast pages, reputable citations, and clear answers to buyer questions.',
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: f.a,
+    },
+  })),
+};
 ---
 
 <WatchShell
-  title={isEs ? 'Sondri Watch — Visibilidad en ChatGPT, Gemini y Google AI | watch.sondri.ai' : 'Sondri Watch — Done-For-You AI Search Visibility & AEO Monitoring | watch.sondri.ai'}
+  title={isEs ? 'Sondri Watch — Visibilidad en ChatGPT, Gemini y Google AI | watch.sondri.ai' : 'Sondri Watch — Get Found When Buyers Ask AI | watch.sondri.ai'}
   description={isEs
-    ? 'Diagnostica gratis si ChatGPT, Gemini y Google AI nombran tu negocio. Sprints llave en mano desde $249 y monitoreo mensual Sondri Watch desde $149/mes.'
-    : 'Check free whether ChatGPT, Gemini, and Google AI recommend your business or your competitors. $99 full audits, $249–$499 fix sprints, and $149/mo Watch retainers.'}
+    ? 'Revisa gratis cómo ChatGPT, Gemini y Google AI describen tu negocio. Auditoría base de 15 preguntas ($99) y planes Watch llave en mano desde $149/mes.'
+    : 'See how ChatGPT, Gemini, and Google AI describe your business—and get done-for-you fixes shipped every month. Free 3-question check, $99 full audit, plans from $149/mo.'}
   lang={lang}
   activeTab="overview"
   alternates={alternates}
 >
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(faqSchema)} />
+
   <!-- Floating Sticky Chapter Rail (Desktop) -->
   <nav class="chapter-rail" aria-label={isEs ? 'Capítulos de la historia' : 'Story chapters'}>
     {chapters.map((c, idx) => (
@@ -210,405 +475,567 @@ const weeks = [
     ))}
   </nav>
 
-  <!-- ACT 01 · HERO & INTERACTIVE SHIFT VISUALIZER (on-dark over WebGL Topography) -->
+  <!-- CHAPTER 01 · PUNCHY HERO + KINETIC SIGNAL FLOW + 6-VERTICAL 3-QUESTION PREVIEW -->
   <section class="section section-pad on-dark hero-watch" id="act-shift">
     <div class="wrap">
       <div class="hero-top-tag">
         <span class="label gold-pill">
-          {isEs ? 'SONDRI WATCH · INSPECTOR Y MONITOREO AEO' : 'SONDRI WATCH · DONE-FOR-YOU AI VISIBILITY'}
+          {isEs ? 'SONDRI WATCH · VISIBILIDAD EN IA' : 'SONDRI WATCH · AI SEARCH VISIBILITY'}
         </span>
         <span class="label muted-mono">
-          {isEs ? 'Inspirado en rigor de ingeniería · Bilingüe EN/ES' : 'ChatGPT · Gemini · Google AI Overviews · Google AI Mode'}
+          ChatGPT · Gemini · Google AI Overviews · Google AI Mode
         </span>
       </div>
 
       <div class="hero-split">
         <div class="hero-copy" data-watch-reveal>
           <h1 class="h1 watch-h1">
-            {isEs
-              ? 'Cuando un cliente le pregunta a la IA a quién contratar, ¿te nombra a ti o a tu competencia'
-              : 'When a buyer asks AI who to hire, does it name you—or your competitors'}
-            <span class="gdot">?</span>
+            {isEs ? (
+              <>Aparece cuando <em class="serif-em">preguntan a la IA.</em></>
+            ) : (
+              <>Get found <em class="serif-em">when buyers ask AI.</em></>
+            )}
           </h1>
           <p class="lede hero-lede">
             {isEs
-              ? 'Tus clientes dejaron de revisar diez enlaces azules. Ahora preguntan a ChatGPT, Gemini y Google AI y eligen de una terna de tres marcas. Sondri Watch mide en vivo dónde apareces e implementa las correcciones todos los meses.'
-              : 'Buyers now ask ChatGPT, Gemini, and Google AI instead of scrolling ten blue links—and pick from a 3-brand shortlist. Sondri Watch benchmarks your visibility live, ships the schema and listing fixes, and tracks your share every week.'}
+              ? 'Comprobamos cómo ChatGPT, Gemini y Google AI describen tu negocio—y desplegamos las mejoras para que te recomienden.'
+              : 'We check how ChatGPT, Gemini, and Google AI describe your business—and ship the fixes that get you recommended.'}
           </p>
+
           <div class="hero-ctas">
             <a class="btn btn-gold" href="#free-check">
-              {isEs ? 'Probar mi Sitio Gratis (Score 0–100)' : 'Check My Website Free (0–100 Score)'} <span class="arr">→</span>
+              {isEs ? 'Probar mi Sitio Gratis (3 Preguntas)' : 'Check My Website Free'} <span class="arr">→</span>
             </a>
             <a class="btn btn-outline-light" href="#pricing-ladder">
-              {isEs ? 'Ver Planes y Sprints' : 'See Sprints & Watch Plans'}
+              {isEs ? 'Ver Planes ($99–$399)' : 'See Plans ($99–$399)'}
             </a>
             <a class="label text-link" href={`${prefix}/sample-report/`}>
-              {isEs ? 'Ver ejemplo de reporte mensual →' : 'View sample monthly report →'}
+              {isEs ? 'Ver reporte de ejemplo →' : 'Inspect sample report →'}
             </a>
+          </div>
+
+          <!-- Kinetic Inline SVG Signal Diagram -->
+          <div class="hero-signal-box" aria-hidden="true">
+            <svg viewBox="0 0 460 66" class="hero-flow-svg" fill="none">
+              <line x1="74" y1="33" x2="386" y2="33" stroke="rgba(255,255,255,0.22)" stroke-width="1.5" stroke-dasharray="4 4" />
+              <circle data-hero-packet cx="74" cy="33" r="4.5" fill="#fdb343" />
+              <circle data-hero-packet cx="180" cy="33" r="3" fill="#5fc4bc" />
+
+              <rect x="2" y="13" width="112" height="40" fill="#081f1f" stroke="rgba(255,255,255,0.28)" stroke-width="1.2" />
+              <text x="58" y="30" text-anchor="middle" fill="#fdb343" font-family="JetBrains Mono, monospace" font-size="9" font-weight="700">01 BUYER ASK</text>
+              <text x="58" y="43" text-anchor="middle" fill="#c9dad7" font-family="IBM Plex Sans, sans-serif" font-size="10">Unbranded Prompt</text>
+
+              <rect x="164" y="13" width="132" height="40" fill="#0d2a29" stroke="#fdb343" stroke-width="1.3" />
+              <text x="230" y="30" text-anchor="middle" fill="#fdb343" font-family="JetBrains Mono, monospace" font-size="9" font-weight="700">02 LIVE CHECK</text>
+              <text x="230" y="43" text-anchor="middle" fill="#ffffff" font-family="IBM Plex Sans, sans-serif" font-size="10">ChatGPT · Gemini · AIO</text>
+
+              <rect x="342" y="13" width="116" height="40" fill="#081f1f" stroke="#5fc4bc" stroke-width="1.3" />
+              <text x="400" y="30" text-anchor="middle" fill="#5fc4bc" font-family="JetBrains Mono, monospace" font-size="9" font-weight="700">03 OUTCOME</text>
+              <text x="400" y="43" text-anchor="middle" fill="#ffffff" font-family="IBM Plex Sans, sans-serif" font-size="10">3-Brand Shortlist ✓</text>
+            </svg>
           </div>
         </div>
 
-        <!-- Interactive Act 01 Prompt-to-Answer Visualizer -->
-        <div class="shift-visualizer panel-dark" data-watch-reveal>
+        <!-- Right-Side Interactive 3-Question Live Preview Card (6 Industries) -->
+        <div class="preview-card" data-watch-reveal>
           <div class="vis-head">
-            <span class="label">{isEs ? 'SIMULACIÓN EN VIVO POR INDUSTRIA' : 'LIVE BUYER SHORTLIST SIMULATOR'}</span>
-            <div class="scenario-tabs" role="tablist" aria-label="Industry scenario">
-              {scenarios.map((s, idx) => (
+            <div class="vis-head-top">
+              <span class="label gold-kicker">
+                {isEs ? 'QUÉ MUESTRA TU CHEQUEO GRATIS' : 'WHAT YOUR FREE CHECK REVEALS'}
+              </span>
+              <span class="label muted-mono">{isEs ? '3 preguntas · 4 motores' : '3 sample prompts'}</span>
+            </div>
+            <div class="industry-pills" role="tablist" aria-label={isEs ? 'Elegir industria' : 'Choose industry'}>
+              {industries.map((ind, idx) => (
                 <button
                   type="button"
                   role="tab"
                   class:list={['sc-tab', 'label', idx === 0 && 'is-active']}
-                  data-scenario-btn={s.id}
+                  data-ind-btn={ind.id}
+                  data-ind-service={ind.servicePrefill}
                   aria-selected={idx === 0 ? 'true' : 'false'}
                 >
-                  {s.label}
+                  {ind.label}
                 </button>
               ))}
             </div>
           </div>
 
-          {scenarios.map((s, idx) => (
+          {industries.map((ind, idx) => (
             <div
-              class="scenario-pane"
-              data-scenario-pane={s.id}
+              class="ind-pane"
+              data-ind-pane={ind.id}
               style={idx === 0 ? '' : 'display: none;'}
             >
-              <div class="prompt-bubble">
-                <span class="label prompt-kicker">{isEs ? 'PROMPT SIN MARCA DEL COMPRADOR' : 'UNBRANDED BUYER PROMPT'}</span>
-                <p class="prompt-q">{s.prompt}</p>
-              </div>
-
-              <div class="shortlist-bars">
-                <span class="label">{isEs ? 'CUOTA DE MENCIÓN EN RESPUESTA IA' : 'AI SHORTLIST & NAMED-SHARE'}</span>
-                {s.competitors.map((comp) => (
-                  <div class:list={['bar-row', comp.ours && 'is-ours']}>
-                    <div class="bar-top">
-                      <span class="bar-name">{comp.name}</span>
-                      <span class="label bar-pct">{comp.pct}%</span>
+              <div class="q-preview-list">
+                {ind.questions.map((item) => (
+                  <div class="q-row">
+                    <div class="q-row-top">
+                      <span class="label q-tag">{item.tag}</span>
+                      <span class:list={['label', 'status-pill', item.status === 'miss' ? 'is-miss' : 'is-warn']}>
+                        {item.outcome}
+                      </span>
                     </div>
-                    <div class="bar-track">
-                      <div
-                        class:list={['bar-fill', comp.ours && 'fill-miss']}
-                        data-bar-fill={String(comp.pct)}
-                        style={`width: ${comp.pct}%`}
-                      ></div>
-                    </div>
+                    <p class="q-text">{item.q}</p>
                   </div>
                 ))}
               </div>
 
-              <p class="vis-diag body-s">{s.diagnosis}</p>
+              <div class="fixes-preview">
+                <span class="label fix-kicker">
+                  {isEs ? 'PRIMERAS 3 CORRECCIONES QUE DESPLEGAMOS' : 'YOUR FIRST 3 FIXES'}
+                </span>
+                <div class="fix-chips-row">
+                  {ind.fixes.map((fx) => (
+                    <span class="fix-chip">{fx}</span>
+                  ))}
+                </div>
+              </div>
             </div>
           ))}
+
+          <div class="preview-foot">
+            <span class="label muted-mono">
+              {isEs ? 'Aplica a cualquier rubro de confianza.' : 'Works for any trust-driven business.'}
+            </span>
+            <button type="button" class="label jump-check-btn" id="heroRunOwnBtn">
+              {isEs ? 'Probar con mi sitio web ↓' : 'Test my own website free ↓'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ACT 02 · LIVE 3-PROMPT AI VISIBILITY CHECKER (Offer #7 Embedded) -->
-  <div id="free-check">
+  <!-- CHAPTER 02 · LIVE 3-PROMPT FREE CHECKER -->
+  <div id="free-check-wrap">
     <MiniAudit defaultLang={lang} embedded={true} />
   </div>
 
-  <!-- ACT 03 · KINETIC DIAGRAM: THE 4 AI ANSWER GATES (on-paper) -->
-  <section class="section section-pad on-paper" id="act-gates">
+  <!-- CHAPTER 03 · WHAT YOU GET ("A short report you can act on." — 2x2 Bento with Crisp Icons) -->
+  <section class="section section-pad on-paper" id="act-report">
     <div class="wrap">
-      <div class="sec-head" data-watch-reveal>
-        <div>
-          <span class="label sec-kicker">/ 03 · {isEs ? 'ARQUITECTURA DE DECISIÓN IA' : 'THE 4 AI ANSWER GATES'}</span>
-          <h2 class="h2">
-            {isEs ? 'Por qué la IA omite negocios excelentes en 4 filtros' : 'Why AI skips great businesses across 4 measurable gates'}<span class="gdot">.</span>
-          </h2>
-        </div>
-        <div class="intro">
-          <p class="lede">
-            {isEs
-              ? 'Los motores de respuesta no improvisan: filtran sitios web en secuencia. Si fallas un filtro, tu competidor con peor servicio pero mejor estructura se lleva al cliente.'
-              : 'Answer engines filter candidates sequentially before writing a single word. Miss any one gate and a lower-quality competitor with cleaner structure wins the recommendation.'}
-          </p>
-        </div>
+      <div class="bento-head" data-watch-reveal>
+        <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? 'QUÉ OBTIENES' : 'WHAT YOU GET'}</span>
+        <h2 class="h2 bento-h2">
+          {isEs ? (
+            <>Un reporte corto <em class="serif-em">para actuar hoy.</em></>
+          ) : (
+            <>A short report <em class="serif-em">you can act on.</em></>
+          )}
+        </h2>
+        <p class="lede bento-sub">
+          {isEs
+            ? 'Score en vivo al instante (3 preguntas). Auditoría completa de 15 preguntas en 48 horas. Solo datos públicos.'
+            : 'Instant 3-question score online. Full 15-question written baseline in 48 hours. Public information only.'}
+        </p>
       </div>
 
-      <!-- 4-Gate Pipeline Nodes -->
-      <div class="gates-grid">
-        {gates.map((g, idx) => (
-          <article class="gate-card" data-gate-step>
-            <div class="gate-top">
-              <span class="n gate-num">{g.num}</span>
-              <span class="label gate-arrow">{idx < 3 ? 'NEXT GATE →' : 'ANSWERED ✓'}</span>
+      <div class="bento-2x2">
+        {reportCards.map((card) => (
+          <article class="bento-card" data-bento-card>
+            <div class="icon-badge" aria-hidden="true">
+              {card.icon === 'question' && (
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                  <path d="M12 17h.01" />
+                </svg>
+              )}
+              {card.icon === 'eye' && (
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+              {card.icon === 'pin' && (
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+              )}
+              {card.icon === 'bolt' && (
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+              )}
             </div>
-            <h3 class="h5">{g.name}</h3>
-            <p class="body-s gate-why">{g.why}</p>
-            <div class="gate-chips">
-              {g.checks.map((chk) => (
-                <span class="chip">{chk}</span>
-              ))}
-            </div>
-            <div class="gate-fix-box">
-              <p class="label fix-head">{g.fixTitle}</p>
-              <pre class="fix-code"><code>{g.fixCode}</code></pre>
-            </div>
+            <h3 class="h5">{card.title}</h3>
+            <p class="body-s bento-copy">{card.desc}</p>
           </article>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- ACT 04 · 4-WEEK WATCH LOOP & MULTI-ENGINE DRIFT (on-off) -->
-  <section class="section section-pad on-off" id="act-drift">
+  <!-- CHAPTER 04 · HOW IT WORKS ("Check. Fix. Strengthen. Measure." + Kinetic Architectural Blueprint SVG) -->
+  <section class="section section-pad on-off" id="act-loop">
     <div class="wrap">
       <div class="sec-head" data-watch-reveal>
         <div>
-          <span class="label sec-kicker">/ 04 · {isEs ? 'EL PROBLEMA DE LA VARIACIÓN SEMANAL' : 'WHY ONE SNAPSHOT UNDER-SELLS THE PROBLEM'}</span>
+          <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? 'CÓMO FUNCIONA' : 'HOW IT WORKS'}</span>
           <h2 class="h2">
-            {isEs ? 'Las respuestas cambian cada semana. Sondri Watch las sigue por ti' : 'AI answers drift every week. Watch tracks the curve and ships the fix'}<span class="gdot">.</span>
+            {isEs ? (
+              <>Medir. Corregir. <em class="serif-em">Fortalecer. Seguir.</em></>
+            ) : (
+              <>Check. Fix. <em class="serif-em">Strengthen. Measure.</em></>
+            )}
           </h2>
         </div>
         <div class="intro">
           <p class="lede">
             {isEs
-              ? 'Nuestras pruebas base confirman que una misma pregunta cambia según la corrida y el motor. Haz clic en cada semana para ver cómo evoluciona un cliente promedio con Sondri Watch.'
-              : 'Our own multi-run baselines prove answers change from run to run and differ when logged out. Scrub across a 4-week Watch cycle to see how weekly tracking + 1 shipped fix per month compounds visibility.'}
+              ? 'Una foto suelta no basta porque la IA actualiza respuestas cada semana. Haz clic en cada fase para ver cómo construimos tu visibilidad.'
+              : 'One snapshot isn’t enough because AI answers shift every week. Step through each phase to see how we build and compound visibility.'}
           </p>
         </div>
       </div>
 
-      <!-- Interactive Week 1 -> Week 4 Scrubber -->
-      <div class="drift-panel" data-watch-reveal>
-        <div class="week-selector" role="tablist" aria-label="4-week progression">
-          {weeks.map((w, idx) => (
-            <button
-              type="button"
-              role="tab"
-              class:list={['wk-btn', idx === 0 && 'is-active']}
-              data-week-btn={String(idx)}
-              aria-selected={idx === 0 ? 'true' : 'false'}
-            >
-              <span class="label">{w.wk}</span>
-              <strong class="wk-pct">{w.share}% share</strong>
-            </button>
-          ))}
-        </div>
+      <div class="loop-split" data-watch-reveal>
+        <!-- Left: Interactive Phase Selector & Metrics -->
+        <div class="loop-controls">
+          <div class="phase-tabs" role="tablist" aria-label={isEs ? 'Fases del servicio' : 'Visibility phases'}>
+            {phases.map((ph, i) => (
+              <button
+                type="button"
+                role="tab"
+                class:list={['phase-tab', i === 0 && 'is-active']}
+                data-phase-btn={String(i)}
+                aria-selected={i === 0 ? 'true' : 'false'}
+              >
+                <span class="label phase-tab-lbl">{ph.tab}</span>
+                <strong class="phase-tab-pct">{ph.share}%</strong>
+              </button>
+            ))}
+          </div>
 
-        <div class="week-stages">
-          {weeks.map((w, idx) => (
-            <div class="week-pane" data-week-pane={String(idx)} style={idx === 0 ? '' : 'display: none;'}>
-              <div class="week-main">
-                <div class="week-kpi-wrap">
-                  <span class="label">{isEs ? 'CUOTA NOMBRADA PROMEDIO (25 PROMPTS)' : 'AVG. NAMED-SHARE ACROSS 25 FROZEN PROMPTS'}</span>
-                  <p class="n week-kpi">{w.share}%</p>
-                  <p class="label shipped-tag">■ {w.shipped}</p>
-                </div>
-                <p class="lede week-note">{w.note}</p>
-              </div>
+          {phases.map((ph, i) => (
+            <div class="phase-pane" data-phase-pane={String(i)} style={i === 0 ? '' : 'display: none;'}>
+              <span class="label phase-num-tag">{ph.metricLabel}</span>
+              <h3 class="h4 phase-title">{ph.num} · {ph.name}</h3>
+              <p class="body-s phase-summary">{ph.summary}</p>
+              <p class="label phase-deliv">■ {ph.deliverable}</p>
 
-              <div class="engine-bars rule-cols cols-3">
-                <div class="eng-card">
-                  <span class="label">ChatGPT (Logged Out)</span>
-                  <p class="h3">{w.chatgpt}</p>
-                  <div class="eng-track"><div class="eng-fill" style={`width: ${w.chatgpt}`}></div></div>
+              <div class="mini-engines">
+                <div class="m-eng">
+                  <div class="m-eng-top">
+                    <span class="label">ChatGPT</span>
+                    <span class="label">{ph.chatgpt}%</span>
+                  </div>
+                  <div class="m-track"><div class="m-fill" style={`width: ${ph.chatgpt}%`}></div></div>
                 </div>
-                <div class="eng-card">
-                  <span class="label">Google Gemini (Web Grounded)</span>
-                  <p class="h3">{w.gemini}</p>
-                  <div class="eng-track"><div class="eng-fill" style={`width: ${w.gemini}`}></div></div>
+                <div class="m-eng">
+                  <div class="m-eng-top">
+                    <span class="label">Gemini</span>
+                    <span class="label">{ph.gemini}%</span>
+                  </div>
+                  <div class="m-track"><div class="m-fill" style={`width: ${ph.gemini}%`}></div></div>
                 </div>
-                <div class="eng-card">
-                  <span class="label">Google AI Overviews &amp; Mode</span>
-                  <p class="h3">{w.aio}</p>
-                  <div class="eng-track"><div class="eng-fill" style={`width: ${w.aio}`}></div></div>
+                <div class="m-eng">
+                  <div class="m-eng-top">
+                    <span class="label">Google AI</span>
+                    <span class="label">{ph.aio}%</span>
+                  </div>
+                  <div class="m-track"><div class="m-fill" style={`width: ${ph.aio}%`}></div></div>
                 </div>
               </div>
             </div>
           ))}
         </div>
+
+        <!-- Right: Kinetic Architectural Visibility Blueprint SVG (Inspired by TripVan CAD Blueprint) -->
+        <div class="blueprint-stage" data-active-phase="0" id="blueprintStage">
+          <div class="bp-top-bar">
+            <span class="label bp-tag">AI VISIBILITY ARCHITECTURE · SONDRI WATCH</span>
+            <span class="label bp-kpi" id="bpKpiLabel">STAGE 01 / 04 · 14% SHARE</span>
+          </div>
+
+          <svg viewBox="0 0 460 300" class="bp-svg" role="img" aria-label="Progressive 4-layer AI visibility architecture">
+            <defs>
+              <pattern id="bpGridMinor" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.8" />
+              </pattern>
+              <pattern id="bpGridMajor" width="80" height="80" patternUnits="userSpaceOnUse">
+                <rect width="80" height="80" fill="url(#bpGridMinor)" />
+                <path d="M 80 0 L 0 0 0 80" fill="none" stroke="rgba(253,179,67,0.10)" stroke-width="1" />
+              </pattern>
+            </defs>
+
+            <rect width="460" height="300" fill="#061919" />
+            <rect width="460" height="300" fill="url(#bpGridMajor)" />
+
+            <!-- Growth Curve Overlay above Roof -->
+            <path d="M 60 52 C 155 48, 255 36, 404 20" stroke="rgba(95,196,188,0.34)" stroke-width="1.5" stroke-dasharray="4 4" fill="none" />
+            <circle cx="84" cy="51" r="4" class="curve-node" data-curve-idx="0" />
+            <circle cx="192" cy="43" r="4" class="curve-node" data-curve-idx="1" />
+            <circle cx="300" cy="31" r="4" class="curve-node" data-curve-idx="2" />
+            <circle cx="404" cy="20" r="5" class="curve-node" data-curve-idx="3" />
+
+            <!-- LAYER 04 · Roof Signal & Weekly Drift Loop -->
+            <g class="bp-layer" data-bp-layer="3">
+              <polygon points="154,66 306,66 388,124 72,124" class="bp-box" />
+              <rect x="193" y="75" width="74" height="17" rx="8.5" class="bp-accent-circle" />
+              <text x="230" y="86.5" text-anchor="middle" class="bp-mono" font-size="8.5">04 WATCH</text>
+              <text x="230" y="111" text-anchor="middle" class="bp-text" font-size="10">Weekly Drift Loop + Monthly Shipped Fix</text>
+            </g>
+
+            <!-- LAYER 03 · Citation Pillars & Answer-Ready Content -->
+            <g class="bp-layer" data-bp-layer="2">
+              <rect x="86" y="132" width="136" height="44" class="bp-box" />
+              <text x="154" y="150" text-anchor="middle" class="bp-mono" font-size="8.5">03 ANSWER PAGES</text>
+              <text x="154" y="165" text-anchor="middle" class="bp-text" font-size="10">FAQ &amp; Service Proof</text>
+
+              <rect x="238" y="132" width="136" height="44" class="bp-box" />
+              <text x="306" y="150" text-anchor="middle" class="bp-mono" font-size="8.5">03 CITATIONS</text>
+              <text x="306" y="165" text-anchor="middle" class="bp-text" font-size="10">Trusted Directories</text>
+            </g>
+
+            <!-- LAYER 02 · Entity Frame, Schema & Business Hubs -->
+            <g class="bp-layer" data-bp-layer="1">
+              <rect x="74" y="184" width="312" height="42" class="bp-box" />
+              <text x="230" y="201" text-anchor="middle" class="bp-mono" font-size="8.5">02 ENTITY &amp; LISTINGS FRAME</text>
+              <text x="230" y="216" text-anchor="middle" class="bp-text" font-size="10.5">JSON-LD Schema · OpenAI Business Hub · Bing AI · GBP</text>
+            </g>
+
+            <!-- LAYER 01 · Crawler Foundation & 15-Prompt Baseline -->
+            <g class="bp-layer is-lit" data-bp-layer="0">
+              <rect x="60" y="234" width="340" height="44" class="bp-box" />
+              <text x="230" y="252" text-anchor="middle" class="bp-mono" font-size="8.5">01 CRAWLER FOUNDATION &amp; BASELINE</text>
+              <text x="230" y="267" text-anchor="middle" class="bp-text" font-size="10.5">OAI-SearchBot Access · Mobile CWV · Benchmark Prompts</text>
+            </g>
+
+            <!-- Side Elevation Markers -->
+            <text x="414" y="260" class="bp-dim">01</text>
+            <text x="414" y="209" class="bp-dim">02</text>
+            <text x="414" y="158" class="bp-dim">03</text>
+            <text x="414" y="106" class="bp-dim">04</text>
+          </svg>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ACT 05 · RATDECK-INSPIRED 3-STEP VALUE LADDER & COMPETITOR BENCHMARK (on-dark over WebGL) -->
+  <!-- CHAPTER 05 · SERVICES 4-PILLAR HORIZONTAL ACCORDION (RATdeck Screenshot 1) -->
+  <section class="section section-pad on-dark" id="act-services">
+    <div class="wrap">
+      <div class="services-head" data-watch-reveal>
+        <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? 'SERVICIOS' : 'SERVICES'}</span>
+        <h2 class="h2">
+          {isEs ? (
+            <>Visible. Confiable. <em class="serif-em">Recomendado. Contactado.</em></>
+          ) : (
+            <>Found. Trusted. <em class="serif-em">Recommended. Contacted.</em></>
+          )}
+        </h2>
+      </div>
+
+      <div class="pillars-accordion" role="tablist" aria-label={isEs ? 'Pilares de servicio' : 'Service pillars'} data-watch-reveal>
+        {servicePillars.map((pillar, idx) => (
+          <div
+            class:list={['pillar-panel', idx === 0 && 'is-open']}
+            data-pillar={pillar.id}
+          >
+            <button
+              type="button"
+              class="pillar-trigger"
+              data-pillar-btn={pillar.id}
+              aria-expanded={idx === 0 ? 'true' : 'false'}
+            >
+              <span class="pillar-top-num label">
+                <span class="dot-gold pillar-dot" aria-hidden="true"></span>
+                {pillar.num}
+              </span>
+              <span class="pillar-vert-title">{pillar.title}</span>
+            </button>
+
+            <div class="pillar-content">
+              <div class="pillar-header-row">
+                <span class="label pillar-active-num">
+                  <span class="dot-gold" aria-hidden="true"></span> {pillar.num}
+                </span>
+                <h3 class="h2 pillar-big-title">{pillar.title}</h3>
+                <p class="body-s pillar-sub">{pillar.subtitle}</p>
+              </div>
+              <ul class="pillar-items">
+                {pillar.items.map((srv) => (
+                  <li>{srv}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 06 · SIMPLIFIED PLANS ("One clear path. Zero confusion.") -->
   <section class="section section-pad on-dark" id="pricing-ladder">
     <div class="wrap">
       <div class="sec-head" data-watch-reveal>
         <div>
-          <span class="label sec-kicker">/ 05 · {isEs ? 'DEL DIAGNÓSTICO AL MONITOREO CONTINUO' : 'DIAGNOSE → FIX → WATCH'}</span>
+          <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? 'PLANES CLAROS' : 'PRICING'}</span>
           <h2 class="h2">
-            {isEs ? 'Elige cómo empezar: auditoría única, sprint técnico o Sondri Watch mensual' : 'Start with a $99 audit or fix sprint—scale with monthly Sondri Watch'}<span class="gdot">.</span>
+            {isEs ? (
+              <>Un camino claro. <em class="serif-em">Cero enredos.</em></>
+            ) : (
+              <>One clear path. <em class="serif-em">Zero confusion.</em></>
+            )}
           </h2>
         </div>
         <div class="intro">
           <p class="lede">
             {isEs
-              ? 'Sin contratos anuales forzados. Cada nivel incluye medición real sin sesión iniciada y entregables concretos hechos por nuestro equipo.'
-              : 'No annual lock-ins or DIY dashboard homework. Every tier uses repeatable logged-out engine checks and done-for-you implementation.'}
+              ? 'Empieza con una auditoría base de $99 o deja que nuestros ingenieros monitoreen tus preguntas e implementen mejoras cada mes.'
+              : 'Start with a $99 baseline audit, or let our engineers track your buyer questions and ship fixes every month. Cancel anytime.'}
           </p>
         </div>
       </div>
 
-      <!-- STEP 1 & 2: ONE-TIME DIAGNOSTIC & IMPLEMENTATION SPRINTS -->
-      <div class="ladder-group" data-watch-reveal>
-        <p class="label group-label">01 / {isEs ? 'PASOS INICIALES DE PAGO ÚNICO (DIAGNÓSTICO Y SPRINTS)' : 'ONE-TIME DIAGNOSTICS & IMPLEMENTATION SPRINTS'}</p>
-        <div class="cards-3">
-          <article class="offer-card">
-            <span class="label card-tag">{isEs ? 'LÍNEA BASE COMPLETA' : 'ENTRY BASELINE AUDIT'}</span>
-            <h3 class="h5">{isEs ? 'Auditoría Completa 15 Preguntas' : 'Full 15-Question Audit'}</h3>
-            <p class="price-tag"><span class="n">$99</span> <span class="label">USD one-time</span></p>
-            <p class="body-s card-copy">
-              {isEs
-                ? '12 a 15 preguntas sin marca × 3 repeticiones en ChatGPT, Gemini, AI Overviews y AI Mode + verificación de datos + lista de correcciones.'
-                : '12–15 unbranded buyer prompts × 3 runs each across ChatGPT, Gemini, AI Overviews & AI Mode + factual accuracy & fix roadmap.'}
-            </p>
-            <button type="button" class="btn btn-gold card-btn" data-watch-checkout="aeo_full_audit">
-              <span data-btn-label>{isEs ? 'Solicitar Auditoría ($99)' : 'Order Full Audit ($99)'}</span> <span class="arr">→</span>
-            </button>
-          </article>
-
-          <article class="offer-card featured-sprint">
-            <span class="label card-tag gold-tag">{isEs ? 'MÁS RÁPIDO EN DESPEGAR' : 'FASTEST QUICK WIN'}</span>
-            <h3 class="h5">AI Listings Sprint</h3>
-            <p class="price-tag"><span class="n">$249</span> <span class="label">USD one-time</span></p>
-            <p class="body-s card-copy">
-              {isEs
-                ? 'Reclamamos y alineamos tu negocio en OpenAI Business Hub (ChatGPT), Bing AI Performance, Apple Business Connect y Google Business Profile.'
-                : 'Done-for-you claim and entity synchronization across OpenAI Business Hub (ChatGPT), Bing AI Performance, Apple Business & GBP.'}
-            </p>
-            <button type="button" class="btn btn-gold card-btn" data-watch-checkout="listings_sprint">
-              <span data-btn-label>{isEs ? 'Ordenar Listings Sprint ($249)' : 'Book Listings Sprint ($249)'}</span> <span class="arr">→</span>
-            </button>
-          </article>
-
-          <article class="offer-card">
-            <span class="label card-tag">{isEs ? 'IMPLEMENTACIÓN LLAVE EN MANO' : 'DONE-FOR-YOU FIXES'}</span>
-            <h3 class="h5">Done-For-You Fix Sprint</h3>
-            <p class="price-tag"><span class="n">$499</span> <span class="label">USD one-time</span></p>
-            <p class="body-s card-copy">
-              {isEs
-                ? 'No solo te damos la lista: programamos y publicamos tu schema JSON-LD, páginas de servicio citables y bloques FAQPage.'
-                : 'Want fixes shipped, not just listed? Our team deploys your Organization/LocalBusiness & FAQPage schema and service FAQ updates.'}
-            </p>
-            <button type="button" class="btn btn-outline-light card-btn" data-watch-checkout="fix_sprint">
-              <span data-btn-label>{isEs ? 'Ordenar Fix Sprint ($499)' : 'Book Fix Sprint ($499)'}</span> <span class="arr">→</span>
-            </button>
-          </article>
-        </div>
-
-        <div class="packs-callout">
-          <p class="body-s">
-            <strong>{isEs ? '¿Tienes clínica dental, estudio jurídico o tienda Shopify?' : 'Need an industry-specific pack?'}</strong>
-            {' '}
+      <!-- STEP 1: Single Low-Friction $99 Entry Audit Banner -->
+      <div class="audit-entry-banner" data-watch-reveal>
+        <div class="aeb-left">
+          <span class="label gold-tag">
+            {isEs ? 'PASO OPCIONAL · PAGO ÚNICO SIN SUSCRIPCIÓN' : 'ONE-TIME BASELINE · NO SUBSCRIPTION REQUIRED'}
+          </span>
+          <h3 class="h4 aeb-title">
             {isEs
-              ? 'Revisa nuestros paquetes especializados: Pack Clínicas Chile ($349), Law Firm Pack ($499) y Shopify Agentic Readiness ($499).'
-              : 'Explore Pack Clínicas Chile ($349), Law Firm Pack ($499), and Shopify Agentic Readiness Check ($499).'}
+              ? '¿Aún no buscas plan mensual? Empieza con la Auditoría Base de 15 Preguntas — $99 USD'
+              : 'Not ready for a monthly plan? Start with the Full 15-Question Baseline Audit — $99'}
+          </h3>
+          <p class="body-s aeb-copy">
+            {isEs
+              ? 'Probamos 15 preguntas reales × 3 corridas en ChatGPT, Gemini, AI Overviews y AI Mode (180 chequeos en vivo) y entregamos tu hoja de ruta prioritaria en 48 h.'
+              : 'We test 15 real buyer questions × 3 runs across ChatGPT, Gemini, AI Overviews & AI Mode (180 live checks) and deliver your prioritized 3-fix roadmap in 48 hours.'}
+          </p>
+        </div>
+        <div class="aeb-cta">
+          <button type="button" class="btn btn-gold aeb-btn" data-watch-checkout="aeo_full_audit">
+            <span data-btn-label>{isEs ? 'Solicitar Auditoría Base ($99)' : 'Order $99 Baseline Audit'}</span> <span class="arr">→</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 2: 3 Clean Monthly Watch Plans -->
+      <div class="cards-3" data-watch-reveal>
+        <article class="offer-card watch-tier">
+          <span class="label card-tag">WATCH STARTER</span>
+          <h3 class="h5">{isEs ? 'Negocios Locales y Clínicas' : 'Local Businesses & Clinics'}</h3>
+          <p class="price-tag"><span class="n">$149</span> <span class="label">USD / mo</span></p>
+          <p class="q-quota-pill label">
+            {isEs ? '25 preguntas de compra · seguimiento semanal' : '25 buyer questions tracked weekly'}
+          </p>
+          <ul class="tier-list">
+            <li>{isEs ? '4 motores: ChatGPT, Gemini, AI Overviews y AI Mode' : '4 engines: ChatGPT, Gemini, AI Overviews & AI Mode'}</li>
+            <li>{isEs ? 'robots.txt, llms.txt, schema base y fichas oficiales (OpenAI, Bing, GBP)' : 'Technical setup (robots.txt, llms.txt, core schema) & official hubs'}</li>
+            <li>{isEs ? 'Reporte web mensual en vivo + PDF descargable' : 'Monthly live report + downloadable executive PDF'}</li>
+            <li><strong>{isEs ? '1 mejora técnica implementada cada mes' : '1 fix shipped for you every month'}</strong></li>
+          </ul>
+          <button type="button" class="btn btn-gold card-btn" data-watch-checkout="watch_local">
+            <span data-btn-label>{isEs ? 'Iniciar Watch Starter ($149/mes)' : 'Start Watch Starter ($149/mo)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+
+        <article class="offer-card watch-tier featured-pro">
+          <span class="label card-tag gold-tag">WATCH GROWTH · {isEs ? 'MÁS ELEGIDO' : 'MOST POPULAR'}</span>
+          <h3 class="h5">{isEs ? 'Empresas en Crecimiento y Ecommerce' : 'Growing Practices & Ecommerce'}</h3>
+          <p class="price-tag"><span class="n">$299</span> <span class="label">USD / mo</span></p>
+          <p class="q-quota-pill label is-gold">
+            {isEs ? '40 preguntas de compra y producto · semanal' : '40 buyer & product questions tracked weekly'}
+          </p>
+          <ul class="tier-list">
+            <li>{isEs ? 'Schema completo de sitio (LocalBusiness, Service, Product/Offer, FAQPage)' : 'Full-site schema (LocalBusiness, Service, Product/Offer, FAQPage)'}</li>
+            <li>{isEs ? 'Rastreo de hasta 3 competidores directos en respuestas IA' : 'Track up to 3 competitors across all 4 engines'}</li>
+            <li>{isEs ? 'Alineación continua de reseñas y directorios de autoridad' : 'Review, ACP/UCP & directory citation alignment'}</li>
+            <li><strong>{isEs ? '2 páginas citables o mejoras técnicas al mes' : '2 answer-ready pages or fixes shipped every month'}</strong></li>
+          </ul>
+          <button type="button" class="btn btn-gold card-btn" data-watch-checkout="watch_commerce">
+            <span data-btn-label>{isEs ? 'Iniciar Watch Growth ($299/mes)' : 'Start Watch Growth ($299/mo)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+
+        <article class="offer-card watch-tier">
+          <span class="label card-tag">WATCH PRO · MULTI-LOCATION / B2B</span>
+          <h3 class="h5">{isEs ? 'B2B, Estudios y Multi-Sede' : 'Multi-Location, Legal & B2B'}</h3>
+          <p class="price-tag"><span class="n">$399</span> <span class="label">USD / mo</span></p>
+          <p class="q-quota-pill label">
+            {isEs ? '75 preguntas por servicio o ciudad · semanal' : '75 buyer questions tracked weekly'}
+          </p>
+          <ul class="tier-list">
+            <li>{isEs ? 'Cobertura por áreas de práctica, comunas o múltiples sedes' : 'Multi-city or multi-practice prompt sets across 4 engines'}</li>
+            <li>{isEs ? 'Alertas semanales + seguimiento de hasta 5 competidores' : 'Up to 5 competitors tracked + drift & accuracy alerts'}</li>
+            <li>{isEs ? 'Construcción activa de citas externas de tercera parte' : 'Third-party citation & directory gap outreach'}</li>
+            <li><strong>{isEs ? '4 páginas citables o mejoras de impacto al mes' : '4 answer-ready pages or fixes shipped monthly'}</strong></li>
+          </ul>
+          <button type="button" class="btn btn-outline-light card-btn" data-watch-checkout="watch_pro">
+            <span data-btn-label>{isEs ? 'Iniciar Watch Pro ($399/mes)' : 'Start Watch Pro ($399/mo)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+      </div>
+
+      <!-- Clean Contextual Routing Strip (NO Competitor Comparison Table) -->
+      <div class="routing-strip" data-watch-reveal>
+        <div class="route-box">
+          <p class="body-s">
+            <strong>{isEs ? '¿Prefieres sprints únicos sin mensualidad o guías técnicas?' : 'Looking for one-time fix sprints ($249–$499), vertical packs, or technical deep-dives?'}</strong>
           </p>
           <a href={`${prefix}/playbooks/`} class="btn btn-outline-light">
-            {isEs ? 'Ver Packs por Industria' : 'Explore Industry Playbooks'} <span class="arr">→</span>
+            {isEs ? 'Ver Guías Técnicas, Sprints y Packs' : 'Explore Reads & Playbooks'} <span class="arr">→</span>
+          </a>
+        </div>
+        <div class="route-box">
+          <p class="body-s">
+            <strong>{isEs ? '¿Diriges una agencia web o SEO?' : 'Run a web, design, or SEO agency?'}</strong>{' '}
+            {isEs ? 'Planes marca blanca desde $79/cliente/mes.' : 'White-label reporting & Watch from $79/client/mo.'}
+          </p>
+          <a href={`${prefix}/partners/`} class="btn btn-outline-light">
+            {isEs ? 'Ver Programa Agencias' : 'Agency Partner Pricing'} <span class="arr">→</span>
           </a>
         </div>
       </div>
+    </div>
+  </section>
 
-      <!-- STEP 3: SONDRI WATCH RECURRING RETAINERS -->
-      <div class="ladder-group" data-watch-reveal>
-        <p class="label group-label">02 / {isEs ? 'SONDRI WATCH — MONITOREO CONTINUO + 1 MEJORA MENSUAL IMPLEMENTADA' : 'SONDRI WATCH — MONTHLY MONITORING + 1 IMPLEMENTED FIX EVERY MONTH'}</p>
-        <div class="cards-3">
-          <article class="offer-card watch-tier">
-            <span class="label card-tag">WATCH LOCAL</span>
-            <h3 class="h5">{isEs ? 'Negocios Locales y Clínicas' : 'Single-Market & Local Brands'}</h3>
-            <p class="price-tag"><span class="n">$149</span> <span class="label">USD / mo</span></p>
-            <ul class="tier-list">
-              <li>{isEs ? '25 prompts fijos monitoreados semanalmente' : '25 frozen buyer prompts run weekly'}</li>
-              <li>{isEs ? '4 motores: ChatGPT, Gemini, AI Overviews y AI Mode' : '4 engines: ChatGPT, Gemini, AI Overviews & AI Mode'}</li>
-              <li>{isEs ? 'Reporte web en vivo + PDF mensual y cuota de competidores' : 'Monthly live Page + PDF report & competitor named-share'}</li>
-              <li><strong>{isEs ? '1 corrección técnica/AEO implementada al mes' : '1 implemented fix shipped by Sondri every month'}</strong></li>
-            </ul>
-            <button type="button" class="btn btn-gold card-btn" data-watch-checkout="watch_local">
-              <span data-btn-label>{isEs ? 'Iniciar Watch Local ($149/mes)' : 'Start Watch Local ($149/mo)'}</span> <span class="arr">→</span>
-            </button>
-          </article>
-
-          <article class="offer-card watch-tier">
-            <span class="label card-tag">WATCH COMMERCE</span>
-            <h3 class="h5">{isEs ? 'Shopify y Marcas Ecommerce' : 'Shopify & Agentic Commerce'}</h3>
-            <p class="price-tag"><span class="n">$299</span> <span class="label">USD / mo</span></p>
-            <ul class="tier-list">
-              <li>{isEs ? 'Prompts de producto, categoría y comparación comercial' : 'Category & product discovery prompt tracking across 4 engines'}</li>
-              <li>{isEs ? 'Salud semanal de Product/Offer JSON-LD, ACP y UCP' : 'Weekly Product/Offer schema, ChatGPT ACP & Google UCP health'}</li>
-              <li>{isEs ? 'Cuota de menciones frente a marcas competidoras' : 'Monthly competitor shelf-share & citation diff report'}</li>
-              <li><strong>{isEs ? '1 mejora de ficha o schema implementada al mes' : '1 storefront schema / FAQ fix shipped every month'}</strong></li>
-            </ul>
-            <button type="button" class="btn btn-outline-light card-btn" data-watch-checkout="watch_commerce">
-              <span data-btn-label>{isEs ? 'Iniciar Watch Commerce ($299/mes)' : 'Start Watch Commerce ($299/mo)'}</span> <span class="arr">→</span>
-            </button>
-          </article>
-
-          <article class="offer-card watch-tier featured-pro">
-            <span class="label card-tag gold-tag">WATCH PRO · MULTI-LOCATION / B2B</span>
-            <h3 class="h5">{isEs ? 'Marcas B2B, Estudios y Multi-Sede' : 'B2B, Law Firms & Multi-Location'}</h3>
-            <p class="price-tag"><span class="n">$399</span> <span class="label">USD / mo</span></p>
-            <ul class="tier-list">
-              <li>{isEs ? '75 prompts fijos por servicio, área o comuna/ciudad' : '75 frozen buyer prompts across service lines or cities'}</li>
-              <li>{isEs ? 'Corridas semanales en 4 motores con alertas de caída' : 'Weekly 4-engine runs + ranking drift & inaccuracy alerts'}</li>
-              <li>{isEs ? 'Integración de Bing AI Performance y OpenAI Business Hub' : 'Bing AI Performance & OpenAI Business Hub folded into report'}</li>
-              <li><strong>{isEs ? '1 página/schema de alto impacto implementada al mes' : '1 high-impact fix shipped every month + priority Slack/email'}</strong></li>
-            </ul>
-            <button type="button" class="btn btn-gold card-btn" data-watch-checkout="watch_pro">
-              <span data-btn-label>{isEs ? 'Iniciar Watch Pro ($399/mes)' : 'Start Watch Pro ($399/mo)'}</span> <span class="arr">→</span>
-            </button>
-          </article>
-        </div>
-      </div>
-
-      <!-- BENCHMARK COMPARISON LEDGER -->
-      <div class="benchmark-ledger" data-watch-reveal>
-        <h3 class="h5 ledger-title">{isEs ? 'Comparativa de Mercado (Lectura Pública Nov 2026)' : 'Why Sondri Watch vs. DIY Dashboards & US Agencies'}</h3>
-        <div class="table-scroll">
-          <table class="bench-table">
-            <thead>
-              <tr>
-                <th>{isEs ? 'Categoría / Proveedor' : 'Option / Benchmark'}</th>
-                <th>{isEs ? 'Precio de Mercado' : 'Market Pricing'}</th>
-                <th>{isEs ? '¿Implementa Correcciones?' : 'Ships Fixes For You?'}</th>
-                <th>{isEs ? 'Bilingüe EN/ES y Local' : 'Local & Bilingual EN/ES'}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="row-sondri">
-                <td><strong>Sondri Watch (Local / Pro)</strong></td>
-                <td><strong>$149 – $399 / mo</strong></td>
-                <td><strong class="ok-txt">✓ Yes — 1 fix shipped monthly</strong></td>
-                <td><strong>✓ Built-in (US + LATAM)</strong></td>
-              </tr>
-              <tr>
-                <td>RATdeck (US Done-For-You Agency)</td>
-                <td>$349 – $1,190 / mo</td>
-                <td>✓ Yes (3-mo min)</td>
-                <td>US English focus</td>
-              </tr>
-              <tr>
-                <td>Otterly / Peec AI / Scrunch</td>
-                <td>$29 – $495 / mo</td>
-                <td>✗ DIY dashboard only</td>
-                <td>Self-serve software</td>
-              </tr>
-              <tr>
-                <td>HubSpot AEO Grader / BrightLocal</td>
-                <td>$41 – $50 / mo</td>
-                <td>✗ Report / basic SEO only</td>
-                <td>Not live local AI search</td>
-              </tr>
-            </tbody>
-          </table>
+  <!-- CHAPTER 07 · COMMON QUESTIONS FAQ (RATdeck Screenshot 2 + FAQPage JSON-LD) -->
+  <section class="section section-pad on-paper" id="act-faq">
+    <div class="wrap">
+      <div class="faq-grid">
+        <div class="faq-sticky" data-watch-reveal>
+          <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> FAQ</span>
+          <h2 class="h2 faq-h2">
+            {isEs ? (
+              <>Preguntas <em class="serif-em">frecuentes.</em></>
+            ) : (
+              <>Common <em class="serif-em">questions.</em></>
+            )}
+          </h2>
+          <p class="body-s faq-sub">
+            {isEs
+              ? 'Todo lo que necesitas saber sobre cómo ChatGPT, Gemini y Google AI eligen a qué negocio recomendar.'
+              : 'Clear answers about how AI recommends businesses—and how Sondri Watch works.'}
+          </p>
         </div>
 
-        <div class="agency-strip">
-          <div>
-            <span class="label">FOR WEB &amp; SEO AGENCIES</span>
-            <p class="body-s">{isEs
-              ? '¿Eres una agencia web o de marketing? Ofrece auditorías AEO marca blanca ($149) y monitoreo mensual ($79/cliente).'
-              : 'Run a web, design, or local SEO agency? Resell Sondri Watch white-label at $149/audit and $79/client/mo.'}</p>
-          </div>
-          <a href={`${prefix}/partners/`} class="btn btn-gold">
-            {isEs ? 'Ver Programa Marca Blanca' : 'Agency White-Label Program'} <span class="arr">→</span>
-          </a>
+        <div class="faq-list" data-watch-reveal>
+          {faqs.map((item, idx) => (
+            <div class="faq-item">
+              <button
+                type="button"
+                class="faq-trigger"
+                data-faq-btn={String(idx)}
+                aria-expanded="false"
+                aria-controls={`faq-ans-${idx}`}
+              >
+                <span class="faq-q">{item.q}</span>
+                <span class="faq-plus" aria-hidden="true">+</span>
+              </button>
+              <div class="faq-panel" id={`faq-ans-${idx}`} hidden>
+                <p class="body-s faq-a">{item.a}</p>
+              </div>
+            </div>
+          ))}
+          <p class="label faq-updated">
+            {isEs ? 'Última actualización: Noviembre 2026' : 'Last updated: November 2026'}
+          </p>
         </div>
       </div>
     </div>
@@ -616,51 +1043,119 @@ const weeks = [
 </WatchShell>
 
 <script>
-  // Interactive Act 01 Industry Prompt Simulator Tabs
-  document.querySelectorAll<HTMLButtonElement>('[data-scenario-btn]').forEach((btn) => {
+  // 1. Hero 6-Industry 3-Question Preview Switcher + Direct Jump to Checker
+  let activeService = '';
+  const setActiveIndustry = (id: string) => {
+    document.querySelectorAll<HTMLButtonElement>('[data-ind-btn]').forEach((b) => {
+      const active = b.getAttribute('data-ind-btn') === id;
+      b.classList.toggle('is-active', active);
+      b.setAttribute('aria-selected', String(active));
+      if (active) activeService = b.getAttribute('data-ind-service') || '';
+    });
+    document.querySelectorAll<HTMLElement>('[data-ind-pane]').forEach((pane) => {
+      pane.style.display = pane.getAttribute('data-ind-pane') === id ? 'block' : 'none';
+    });
+  };
+  document.querySelectorAll<HTMLButtonElement>('[data-ind-btn]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const id = btn.getAttribute('data-scenario-btn');
-      document.querySelectorAll<HTMLButtonElement>('[data-scenario-btn]').forEach((b) => {
-        const active = b.getAttribute('data-scenario-btn') === id;
-        b.classList.toggle('is-active', active);
-        b.setAttribute('aria-selected', String(active));
-      });
-      document.querySelectorAll<HTMLElement>('[data-scenario-pane]').forEach((pane) => {
-        pane.style.display = pane.getAttribute('data-scenario-pane') === id ? 'block' : 'none';
-      });
+      const id = btn.getAttribute('data-ind-btn');
+      if (id) setActiveIndustry(id);
     });
   });
 
-  // Interactive Act 04 Week 1 -> Week 4 Scrubber
-  document.querySelectorAll<HTMLButtonElement>('[data-week-btn]').forEach((btn) => {
+  const jumpBtn = document.getElementById('heroRunOwnBtn');
+  jumpBtn?.addEventListener('click', () => {
+    const targetSec = document.getElementById('free-check');
+    const urlInput = document.getElementById('auditUrl') as HTMLInputElement | null;
+    const svcInput = document.getElementById('auditService') as HTMLInputElement | null;
+    if (svcInput && !svcInput.value.trim() && activeService) {
+      svcInput.value = activeService;
+    }
+    targetSec?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => urlInput?.focus({ preventScroll: true }), 420);
+  });
+
+  // 2. How It Works: 4-Phase Interactive Stepper + Blueprint Architecture Sync
+  const bpStage = document.getElementById('blueprintStage');
+  const bpKpi = document.getElementById('bpKpiLabel');
+  const phaseShares = ['14%', '29%', '46%', '58%'];
+
+  const syncBlueprint = (phaseIdx: number) => {
+    if (bpStage) bpStage.setAttribute('data-active-phase', String(phaseIdx));
+    if (bpKpi) {
+      const share = phaseShares[phaseIdx] || '14%';
+      bpKpi.textContent = `STAGE 0${phaseIdx + 1} / 04 · ${share} SHARE`;
+    }
+    document.querySelectorAll<SVGGElement>('[data-bp-layer]').forEach((layer) => {
+      const idx = Number(layer.getAttribute('data-bp-layer') || '0');
+      layer.classList.toggle('is-lit', idx <= phaseIdx);
+      layer.classList.toggle('is-current', idx === phaseIdx);
+    });
+    document.querySelectorAll<SVGCircleElement>('[data-curve-idx]').forEach((node) => {
+      const idx = Number(node.getAttribute('data-curve-idx') || '0');
+      node.classList.toggle('is-lit', idx <= phaseIdx);
+    });
+  };
+  syncBlueprint(0);
+
+  document.querySelectorAll<HTMLButtonElement>('[data-phase-btn]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const wk = btn.getAttribute('data-week-btn');
-      document.querySelectorAll<HTMLButtonElement>('[data-week-btn]').forEach((b) => {
-        const active = b.getAttribute('data-week-btn') === wk;
+      const idx = Number(btn.getAttribute('data-phase-btn') || '0');
+      document.querySelectorAll<HTMLButtonElement>('[data-phase-btn]').forEach((b) => {
+        const active = Number(b.getAttribute('data-phase-btn') || '0') === idx;
         b.classList.toggle('is-active', active);
         b.setAttribute('aria-selected', String(active));
       });
-      document.querySelectorAll<HTMLElement>('[data-week-pane]').forEach((pane) => {
-        pane.style.display = pane.getAttribute('data-week-pane') === wk ? 'block' : 'none';
+      document.querySelectorAll<HTMLElement>('[data-phase-pane]').forEach((pane) => {
+        pane.style.display = Number(pane.getAttribute('data-phase-pane') || '0') === idx ? 'block' : 'none';
       });
+      syncBlueprint(idx);
+    });
+  });
+
+  // 3. Services 4-Pillar Horizontal Accordion (01 AEO · 02 GEO · 03 Reputation · 04 Websites)
+  const activatePillar = (id: string) => {
+    document.querySelectorAll<HTMLElement>('[data-pillar]').forEach((panel) => {
+      const open = panel.getAttribute('data-pillar') === id;
+      panel.classList.toggle('is-open', open);
+      const trigger = panel.querySelector<HTMLButtonElement>('[data-pillar-btn]');
+      trigger?.setAttribute('aria-expanded', String(open));
+    });
+  };
+  document.querySelectorAll<HTMLButtonElement>('[data-pillar-btn]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-pillar-btn');
+      if (id) activatePillar(id);
+    });
+  });
+
+  // 4. Common Questions FAQ Accordion
+  document.querySelectorAll<HTMLButtonElement>('[data-faq-btn]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const idx = btn.getAttribute('data-faq-btn');
+      const panel = document.getElementById(`faq-ans-${idx}`);
+      const isOpen = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!isOpen));
+      btn.closest('.faq-item')?.classList.toggle('is-open', !isOpen);
+      if (panel) panel.hidden = isOpen;
     });
   });
 </script>
 
 <style>
-  /* Sticky Floating Chapter Rail (Desktop right edge) */
+  /* Sticky Floating Chapter Rail */
   .chapter-rail {
     position: fixed;
-    right: 20px;
+    right: 18px;
     top: 50%;
     transform: translateY(-50%);
     z-index: 40;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: 12px 10px;
-    background: rgba(3, 25, 25, 0.88);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    gap: 5px;
+    padding: 10px 8px;
+    background: rgba(3, 25, 25, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.18);
     backdrop-filter: blur(8px);
   }
 
@@ -685,7 +1180,7 @@ const weeks = [
   .rail-item:hover {
     color: var(--white);
     border-left-color: var(--gold);
-    background: rgba(253, 179, 67, 0.08);
+    background: rgba(253, 179, 67, 0.09);
   }
 
   @media (max-width: 1440px) {
@@ -694,9 +1189,34 @@ const weeks = [
     }
   }
 
+  .dot-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--steel);
+    margin-bottom: 12px;
+  }
+
+  .on-dark .dot-kicker {
+    color: var(--gold);
+  }
+
+  .dot-gold {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold-2);
+  }
+
+  .on-dark .dot-gold {
+    background: var(--gold);
+  }
+
+  /* HERO */
   .hero-watch {
-    padding-top: var(--s-64);
-    padding-bottom: var(--s-80);
+    padding-top: var(--s-48);
+    padding-bottom: var(--s-64);
   }
 
   .hero-top-tag {
@@ -723,28 +1243,29 @@ const weeks = [
 
   .hero-split {
     display: grid;
-    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
-    gap: var(--s-48);
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+    gap: var(--s-40);
     align-items: start;
   }
 
   .watch-h1 {
-    font-size: clamp(36px, 4.4vw, 62px);
-    line-height: 1.03;
-    letter-spacing: -0.05em;
-    margin-bottom: var(--s-24);
+    font-size: clamp(40px, 4.9vw, 66px);
+    line-height: 1.02;
+    letter-spacing: -0.045em;
+    margin-bottom: var(--s-20);
   }
 
   .hero-lede {
-    max-width: 52ch;
-    margin-bottom: var(--s-32);
+    max-width: 48ch;
+    margin-bottom: var(--s-24);
   }
 
   .hero-ctas {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--s-16) var(--s-24);
+    gap: 12px 18px;
+    margin-bottom: var(--s-24);
   }
 
   .btn-outline-light {
@@ -763,8 +1284,20 @@ const weeks = [
     border-bottom: 1px solid var(--gold);
   }
 
-  /* Prompt Simulator Card */
-  .shift-visualizer {
+  .hero-signal-box {
+    max-width: 480px;
+    border-top: 1px solid var(--line-soft);
+    padding-top: var(--s-16);
+  }
+
+  .hero-flow-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Hero Right-Side 3-Question Live Preview Card */
+  .preview-card {
     background: rgba(3, 25, 25, 0.94);
     border: 1px solid var(--line);
     box-shadow: 10px 10px 0 var(--gold);
@@ -777,20 +1310,32 @@ const weeks = [
     gap: 12px;
     padding-bottom: var(--s-16);
     border-bottom: 1px solid var(--line-soft);
-    margin-bottom: var(--s-24);
+    margin-bottom: var(--s-16);
   }
 
-  .scenario-tabs {
+  .vis-head-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .gold-kicker {
+    color: var(--gold);
+  }
+
+  .industry-pills {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
   }
 
   .sc-tab {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--line-soft);
     color: var(--pale);
-    padding: 7px 11px;
+    padding: 6px 10px;
     cursor: pointer;
     font-size: 11px;
   }
@@ -802,258 +1347,516 @@ const weeks = [
     font-weight: 700;
   }
 
-  .prompt-bubble {
-    background: rgba(255, 255, 255, 0.04);
-    border-left: 3px solid var(--gold);
-    padding: 12px 16px;
-    margin-bottom: var(--s-24);
+  .q-preview-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: var(--s-16);
   }
 
-  .prompt-kicker {
-    display: block;
-    color: var(--gold);
-    font-size: 10px;
+  .q-row {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 10px 14px;
+  }
+
+  .q-row-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
     margin-bottom: 4px;
   }
 
-  .prompt-q {
-    font-size: 16px;
+  .q-tag {
+    color: var(--steel);
+    font-size: 10px;
+  }
+
+  .status-pill {
+    font-size: 10px;
+    padding: 2px 7px;
     font-weight: 600;
+  }
+
+  .status-pill.is-miss {
+    background: rgba(239, 68, 68, 0.18);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+  }
+
+  .status-pill.is-warn {
+    background: rgba(253, 179, 67, 0.14);
+    color: var(--gold);
+    border: 1px solid rgba(253, 179, 67, 0.35);
+  }
+
+  .q-text {
     color: var(--white);
+    font-size: 14px;
+    font-weight: 500;
     line-height: 1.4;
   }
 
-  .shortlist-bars {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    margin-bottom: var(--s-24);
+  .fixes-preview {
+    background: rgba(253, 179, 67, 0.07);
+    border-left: 3px solid var(--gold);
+    padding: 10px 14px;
+    margin-bottom: var(--s-16);
   }
 
-  .bar-row {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .bar-top {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    font-size: 13px;
-    color: var(--white);
-  }
-
-  .bar-row.is-ours .bar-name {
-    color: #fca5a5;
-  }
-
-  .bar-track {
-    height: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    overflow: hidden;
-  }
-
-  .bar-fill {
-    height: 100%;
-    background: var(--gold);
-  }
-
-  .bar-fill.fill-miss {
-    background: #ef4444;
-  }
-
-  .vis-diag {
-    color: var(--pale);
-    font-size: 14px;
-    line-height: 1.5;
-    padding-top: var(--s-16);
-    border-top: 1px solid var(--line-soft);
-  }
-
-  /* Section Kickers */
-  .sec-kicker {
+  .fix-kicker {
     display: block;
-    color: var(--steel);
-    margin-bottom: 12px;
+    color: var(--gold);
+    font-size: 10px;
+    margin-bottom: 8px;
   }
 
-  /* Act 03: 4 Gates Pipeline */
-  .gates-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--s-24);
-  }
-
-  .gate-card {
-    border: 1px solid var(--line);
-    background: var(--white);
-    padding: var(--s-32);
-    display: flex;
-    flex-direction: column;
-    gap: var(--s-16);
-    box-shadow: 6px 6px 0 var(--teal);
-  }
-
-  .gate-top {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--line-soft);
-    padding-bottom: 10px;
-  }
-
-  .gate-num {
-    font-size: 38px;
-    color: var(--gold-2);
-  }
-
-  .gate-arrow {
-    color: var(--steel);
-  }
-
-  .gate-why {
-    color: var(--pale);
-    font-size: 15px;
-    line-height: 1.55;
-  }
-
-  .gate-chips {
+  .fix-chips-row {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
   }
 
-  .gate-fix-box {
-    margin-top: auto;
-    background: var(--off);
-    border-left: 3px solid var(--teal);
-    padding: 12px 14px;
-  }
-
-  .fix-head {
-    color: var(--teal);
-    font-weight: 600;
-    margin-bottom: 6px;
-  }
-
-  .fix-code {
+  .fix-chip {
     font-family: var(--mono);
-    font-size: 12px;
-    line-height: 1.45;
-    color: var(--teal-mid);
-    overflow-x: auto;
+    font-size: 11px;
+    color: var(--white);
+    background: rgba(8, 31, 31, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    padding: 4px 8px;
   }
 
-  /* Act 04: 4-Week Scrubber */
-  .drift-panel {
-    border: 1px solid var(--line);
+  .preview-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-top: 12px;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .jump-check-btn {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--gold);
+    border-bottom: 1px solid var(--gold);
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  /* CHAPTER 03: WHAT YOU GET (2x2 BENTO) */
+  .bento-head {
+    max-width: 68ch;
+    margin-bottom: var(--s-40);
+  }
+
+  .bento-h2 {
+    margin-bottom: var(--s-16);
+  }
+
+  .bento-sub {
+    color: var(--pale);
+  }
+
+  .bento-2x2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-24);
+  }
+
+  .bento-card {
     background: var(--white);
-    box-shadow: 8px 8px 0 var(--teal);
+    border: 1px solid var(--line);
+    padding: var(--s-32);
+    box-shadow: 6px 6px 0 var(--teal);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
   }
 
-  .week-selector {
+  .icon-badge {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background: rgba(253, 179, 67, 0.18);
+    border: 1px solid rgba(210, 132, 16, 0.35);
+    color: var(--teal);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bento-copy {
+    color: var(--pale);
+    font-size: 15.5px;
+    line-height: 1.55;
+  }
+
+  /* CHAPTER 04: HOW IT WORKS (SPLIT + PROGRESSIVE BLUEPRINT SVG) */
+  .loop-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+    gap: var(--s-32);
+    align-items: stretch;
+  }
+
+  .loop-controls {
+    background: var(--white);
+    border: 1px solid var(--line);
+    box-shadow: 8px 8px 0 var(--teal);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .phase-tabs {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     border-bottom: 1px solid var(--line);
   }
 
-  .wk-btn {
+  .phase-tab {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 6px;
-    padding: 18px 20px;
+    gap: 4px;
+    padding: 14px 12px;
     background: var(--off);
     border: 0;
     border-right: 1px solid var(--line-soft);
     cursor: pointer;
     text-align: left;
   }
-
-  .wk-btn:last-child {
+  .phase-tab:last-child {
     border-right: 0;
   }
 
-  .wk-btn.is-active {
-    background: var(--teal);
-    color: var(--white);
+  .phase-tab-lbl {
+    font-size: 10px;
+    color: var(--steel);
   }
 
-  .wk-btn.is-active .label {
+  .phase-tab-pct {
+    font-size: 18px;
+    color: var(--teal);
+  }
+
+  .phase-tab.is-active {
+    background: var(--teal);
+  }
+
+  .phase-tab.is-active .phase-tab-lbl {
     color: var(--gold);
   }
 
-  .wk-pct {
-    font-size: 20px;
-    font-family: var(--sans);
+  .phase-tab.is-active .phase-tab-pct {
+    color: var(--white);
   }
 
-  .week-pane {
-    padding: var(--s-40);
+  .phase-pane {
+    padding: var(--s-32);
+    flex: 1;
   }
 
-  .week-main {
-    display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-    gap: var(--s-32);
-    align-items: center;
-    margin-bottom: var(--s-40);
-  }
-
-  .week-kpi {
-    font-size: clamp(48px, 6vw, 76px);
-    color: var(--teal);
-    margin: 8px 0;
-  }
-
-  .shipped-tag {
+  .phase-num-tag {
+    display: block;
     color: var(--teal-mid);
-    font-weight: 600;
+    margin-bottom: 6px;
   }
 
-  .week-note {
+  .phase-title {
+    color: var(--teal);
+    margin-bottom: 10px;
+  }
+
+  .phase-summary {
     color: var(--pale);
+    font-size: 15px;
+    line-height: 1.55;
+    margin-bottom: 14px;
   }
 
-  .engine-bars {
-    gap: var(--s-24);
+  .phase-deliv {
+    color: var(--teal);
+    font-weight: 700;
+    margin-bottom: var(--s-24);
   }
 
-  .eng-card {
+  .mini-engines {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    padding-top: var(--s-16);
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .m-eng-top {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    justify-content: space-between;
+    font-size: 11px;
+    margin-bottom: 6px;
+    color: var(--teal);
   }
 
-  .eng-track {
-    height: 8px;
+  .m-track {
+    height: 7px;
     background: var(--off);
     border: 1px solid var(--line-soft);
   }
 
-  .eng-fill {
+  .m-fill {
     height: 100%;
     background: var(--gold-2);
     transition: width 0.35s ease;
   }
 
-  /* Act 05: Pricing Ladder */
-  .ladder-group {
-    margin-bottom: var(--s-64);
+  .blueprint-stage {
+    background: #061919;
+    border: 1px solid var(--teal);
+    box-shadow: 8px 8px 0 var(--gold-2);
+    display: flex;
+    flex-direction: column;
   }
 
-  .group-label {
+  .bp-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .bp-tag {
+    color: #9bb8b5;
+    font-size: 10.5px;
+  }
+
+  .bp-kpi {
     color: var(--gold);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .bp-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .bp-layer {
+    opacity: 0.25;
+    transition: opacity 0.3s ease;
+  }
+
+  .bp-layer.is-lit {
+    opacity: 1;
+  }
+
+  .bp-layer .bp-box {
+    fill: rgba(13, 42, 41, 0.85);
+    stroke: rgba(95, 196, 188, 0.45);
+    stroke-width: 1.2;
+  }
+
+  .bp-layer.is-current .bp-box {
+    fill: rgba(253, 179, 67, 0.14);
+    stroke: #fdb343;
+    stroke-width: 1.8;
+  }
+
+  .bp-accent-circle {
+    fill: rgba(253, 179, 67, 0.14);
+    stroke: #fdb343;
+    stroke-width: 1.2;
+  }
+
+  .bp-mono {
+    fill: #fdb343;
+    font-family: 'JetBrains Mono Variable', monospace;
+    font-weight: 700;
+  }
+
+  .bp-text {
+    fill: #ffffff;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 600;
+  }
+
+  .bp-dim {
+    fill: rgba(255, 255, 255, 0.45);
+    font-family: 'JetBrains Mono Variable', monospace;
+    font-size: 10px;
+  }
+
+  .curve-node {
+    fill: rgba(95, 196, 188, 0.3);
+    stroke: #5fc4bc;
+    stroke-width: 1.2;
+    transition: fill 0.25s ease;
+  }
+
+  .curve-node.is-lit {
+    fill: #fdb343;
+    stroke: #ffffff;
+    stroke-width: 1.5;
+  }
+
+  /* CHAPTER 05: SERVICES 4-PILLAR HORIZONTAL ACCORDION */
+  .services-head {
+    margin-bottom: var(--s-40);
+  }
+
+  .pillars-accordion {
+    display: flex;
+    align-items: stretch;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    min-height: 410px;
+    background: rgba(3, 25, 25, 0.9);
+  }
+
+  .pillar-panel {
+    flex: 0.68;
+    min-width: 78px;
+    border-right: 1px solid rgba(255, 255, 255, 0.18);
+    display: flex;
+    transition: flex 0.35s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.25s ease;
+    overflow: hidden;
+  }
+
+  .pillar-panel:last-child {
+    border-right: 0;
+  }
+
+  .pillar-panel.is-open {
+    flex: 3.4;
+    background: rgba(10, 35, 34, 0.95);
+  }
+
+  .pillar-trigger {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    color: var(--white);
+    cursor: pointer;
+    padding: var(--s-24) 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .pillar-panel.is-open .pillar-trigger {
+    display: none;
+  }
+
+  .pillar-top-num {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--steel);
+  }
+
+  .pillar-dot {
+    opacity: 0;
+  }
+
+  .pillar-vert-title {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: clamp(22px, 2.2vw, 32px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    white-space: nowrap;
+  }
+
+  .pillar-content {
+    display: none;
+    width: 100%;
+    padding: var(--s-32) var(--s-40);
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .pillar-panel.is-open .pillar-content {
+    display: flex;
+  }
+
+  .pillar-header-row {
     margin-bottom: var(--s-24);
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .pillar-active-num {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  .pillar-big-title {
+    margin-bottom: 10px;
+  }
+
+  .pillar-sub {
+    color: var(--pale);
+    max-width: 52ch;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .pillar-items {
+    list-style: none;
+    margin-top: auto;
+  }
+
+  .pillar-items li {
+    padding: 13px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    color: var(--white);
+    font-size: 15.5px;
+    font-weight: 500;
+  }
+
+  /* CHAPTER 06: SIMPLIFIED PRICING */
+  .audit-entry-banner {
+    background: rgba(3, 25, 25, 0.94);
+    border: 1px solid var(--gold);
+    padding: var(--s-24) var(--s-32);
+    margin-bottom: var(--s-32);
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) auto;
+    gap: var(--s-24);
+    align-items: center;
+  }
+
+  .aeb-title {
+    color: var(--white);
+    margin: 8px 0;
+  }
+
+  .aeb-copy {
+    color: var(--pale);
+    font-size: 14.5px;
+    line-height: 1.5;
+    max-width: 68ch;
+  }
+
+  .aeb-btn {
+    white-space: nowrap;
   }
 
   .cards-3 {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--s-24);
+    margin-bottom: var(--s-32);
   }
 
   .offer-card {
@@ -1065,7 +1868,6 @@ const weeks = [
     gap: var(--s-16);
   }
 
-  .offer-card.featured-sprint,
   .offer-card.featured-pro {
     border-color: var(--gold);
     box-shadow: 8px 8px 0 var(--gold);
@@ -1091,10 +1893,19 @@ const weeks = [
     color: var(--gold);
   }
 
-  .card-copy {
-    color: var(--pale);
-    font-size: 15px;
-    line-height: 1.55;
+  .q-quota-pill {
+    display: inline-block;
+    padding: 7px 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--line-soft);
+    color: var(--white);
+    font-weight: 600;
+  }
+
+  .q-quota-pill.is-gold {
+    background: rgba(253, 179, 67, 0.14);
+    border-color: var(--gold);
+    color: var(--gold);
   }
 
   .tier-list {
@@ -1123,95 +1934,165 @@ const weeks = [
     padding-inline: 16px;
   }
 
-  .packs-callout {
-    margin-top: var(--s-24);
+  .routing-strip {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-20);
+  }
+
+  .route-box {
     border: 1px solid var(--line-soft);
-    background: rgba(255, 255, 255, 0.04);
-    padding: 18px 24px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 18px 22px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--s-24);
+    gap: 16px;
     flex-wrap: wrap;
   }
 
-  .packs-callout p {
+  .route-box p {
     color: var(--pale);
-    max-width: 68ch;
+    max-width: 44ch;
   }
 
-  /* Benchmark Table */
-  .benchmark-ledger {
-    border: 1px solid var(--line);
-    background: rgba(3, 25, 25, 0.94);
-    padding: var(--s-32);
+  /* CHAPTER 07: COMMON QUESTIONS FAQ */
+  .faq-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+    gap: var(--s-48);
+    align-items: start;
   }
 
-  .ledger-title {
-    margin-bottom: var(--s-24);
+  .faq-sticky {
+    position: sticky;
+    top: 100px;
   }
 
-  .table-scroll {
-    overflow-x: auto;
+  .faq-h2 {
+    margin-bottom: 12px;
   }
 
-  .bench-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
+  .faq-sub {
+    color: var(--pale);
+    max-width: 34ch;
   }
 
-  .bench-table th,
-  .bench-table td {
-    text-align: left;
-    padding: 14px 12px;
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .faq-item {
     border-bottom: 1px solid var(--line-soft);
-    color: var(--pale);
   }
 
-  .bench-table th {
-    font-family: var(--mono);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--steel);
-  }
-
-  .row-sondri td {
-    background: rgba(253, 179, 67, 0.08);
-    color: var(--white);
-  }
-
-  .ok-txt {
-    color: var(--gold);
-  }
-
-  .agency-strip {
-    margin-top: var(--s-32);
-    padding-top: var(--s-24);
-    border-top: 1px solid var(--line);
+  .faq-trigger {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    padding: 20px 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--s-24);
-    flex-wrap: wrap;
+    gap: 20px;
+    text-align: left;
+    cursor: pointer;
+    color: var(--teal);
   }
 
-  .agency-strip p {
+  .faq-q {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .faq-plus {
+    font-size: 22px;
+    font-family: var(--mono);
+    color: var(--teal-mid);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .faq-item.is-open .faq-plus {
+    transform: rotate(45deg);
+    color: var(--gold-2);
+  }
+
+  .faq-panel {
+    padding-bottom: 20px;
+  }
+
+  .faq-a {
     color: var(--pale);
-    margin-top: 6px;
+    font-size: 15.5px;
+    line-height: 1.6;
+    max-width: 66ch;
+  }
+
+  .faq-updated {
+    margin-top: 18px;
+    color: var(--steel);
   }
 
   @media (max-width: 960px) {
     .hero-split,
-    .gates-grid,
+    .bento-2x2,
+    .loop-split,
     .cards-3,
-    .week-main {
+    .routing-strip,
+    .faq-grid,
+    .audit-entry-banner {
       grid-template-columns: 1fr;
     }
 
-    .week-selector {
+    .faq-sticky {
+      position: static;
+    }
+
+    .mini-engines {
+      grid-template-columns: 1fr;
+    }
+
+    .phase-tabs {
       grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Stack 4-Pillar Accordion cleanly on <=960px */
+    .pillars-accordion {
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .pillar-panel {
+      flex: none;
+      border-right: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+      flex-direction: column;
+    }
+
+    .pillar-panel:last-child {
+      border-bottom: 0;
+    }
+
+    .pillar-panel.is-open {
+      flex: none;
+    }
+
+    .pillar-trigger {
+      flex-direction: row;
+      padding: 16px 20px;
+    }
+
+    .pillar-vert-title {
+      writing-mode: horizontal-tb;
+      transform: none;
+      font-size: 20px;
+    }
+
+    .pillar-content {
+      padding: 22px 20px;
     }
   }
 </style>

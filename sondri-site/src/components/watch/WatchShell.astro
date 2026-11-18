@@ -25,7 +25,7 @@ const canonical = new URL(Astro.url.pathname, siteUrl);
 
 const navItems = [
   { id: 'overview', href: `${prefix}/`, label: isEs ? 'Resumen y Test' : 'Overview & Score' },
-  { id: 'playbooks', href: `${prefix}/playbooks/`, label: isEs ? 'Packs por Industria' : 'Playbooks & Packs' },
+  { id: 'playbooks', href: `${prefix}/playbooks/`, label: isEs ? 'Guías y Packs' : 'Reads & Playbooks' },
   { id: 'sample', href: `${prefix}/sample-report/`, label: isEs ? 'Reporte Mensual' : 'Sample Report' },
   { id: 'partners', href: `${prefix}/partners/`, label: isEs ? 'Agencias (Marca Blanca)' : 'Agencies' },
 ];
@@ -52,12 +52,19 @@ const navItems = [
       </>
     )}
     <meta name="theme-color" content="#081f1f" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,600;1,9..144,700&display=swap"
+    />
     <link rel="preload" href="/fonts/florexa.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={`${siteUrl}/og.png`} />
+    <slot name="head" />
   </head>
 
   <body class="watch-body">
@@ -251,6 +258,17 @@ const navItems = [
 </html>
 
 <style>
+  :global(.serif-em) {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-weight: 600;
+    color: var(--gold);
+  }
+  :global(.on-paper .serif-em),
+  :global(.on-off .serif-em) {
+    color: var(--teal-mid);
+  }
+
   .watch-body {
     position: relative;
     background: var(--teal-deep);
