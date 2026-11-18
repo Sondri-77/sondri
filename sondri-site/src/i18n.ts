@@ -67,7 +67,7 @@ export interface Copy {
     flags: string[]; summary1: string; summary2: string;
   };
   homeFaq: { q: string; a: string }[];
-  hero: { h1: string; lede: string; summary: string };
+  hero: { h1: string; lede: string };
   capabilityStrip: { eyebrow: string };
   problem: { eyebrow: string; h2: string; lede: string; close: string };
   knifeHead: { eyebrow: string; h2: string; lede: string; close: string };
@@ -273,8 +273,7 @@ export const en: Copy = {
   /** Section 1 · Hero */
   hero: {
     h1: 'Fix expensive workarounds. (Use AI where it helps)',
-    lede: 'Built into the systems you already run. Live in weeks.',
-    summary: 'Sondri builds custom software, workflow automation, and practical AI integrations directly into the systems small and midsize companies already run—scoped in fixed-price phases, deployed in weeks, and 100% owned by your team.',
+    lede: 'Custom software & AI workflow automation, built into the systems you already run. Live in weeks.',
   },
 
   /** Section 2 · Capability scroll */
@@ -300,7 +299,7 @@ export const en: Copy = {
   solution: {
     eyebrow: 'Value',
     h2: 'We overhaul how work gets done.',
-    lede: 'We build working software into the tools your team already uses, price each phase up front, and hand you the code.',
+    lede: 'Sondri builds custom software, workflow automation, and practical AI integrations directly into the systems small and midsize companies already run—scoped in fixed-price phases, deployed in weeks, and 100% owned by your team.',
   },
 
   /** Section 6 · Endorsements (was "Customers"; captain, 2026-09-21) */
@@ -670,8 +669,7 @@ export const es: Copy = {
 
   hero: {
     h1: 'Eliminamos parches caros. (Usamos IA donde ayuda)',
-    lede: 'Integrado en los sistemas que ya usa. En marcha en semanas.',
-    summary: 'Sondri desarrolla software a medida, automatización de flujos e integraciones prácticas de IA directamente sobre los sistemas que su empresa ya utiliza, en fases a precio fijo, en semanas y con código 100% suyo.',
+    lede: 'Software a medida y automatización con IA, integrados en los sistemas que ya usa. En marcha en semanas.',
   },
 
   capabilityStrip: { eyebrow: 'Qué hacemos' },
@@ -693,7 +691,7 @@ export const es: Copy = {
   solution: {
     eyebrow: 'Valor',
     h2: 'Rehacemos la forma en que se trabaja.',
-    lede: 'Construimos software que funciona dentro de las herramientas que su equipo ya usa, cotizamos cada fase por adelantado y le entregamos el código.',
+    lede: 'Sondri desarrolla software a medida, automatización de flujos e integraciones prácticas de IA directamente sobre los sistemas que su empresa ya utiliza, en fases a precio fijo, en semanas y con código 100% suyo.',
   },
 
   socialProof: {

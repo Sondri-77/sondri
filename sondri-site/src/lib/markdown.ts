@@ -42,7 +42,7 @@ export function renderHomeMarkdown(
     '',
     c.hero.lede,
     '',
-    c.hero.summary,
+    c.solution.lede,
     '',
     `## ${c.problem.eyebrow}`,
     '',

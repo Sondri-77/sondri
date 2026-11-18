@@ -44,7 +44,6 @@ const [h1, dot] = splitDot(line1);
     <div class="copy">
       <h1 class="display"><span class="l"><span data-i18n="hero.h1.text">{h1}</span><span class="gdot" data-i18n="hero.h1.dot">{dot}</span></span> <span class="l" data-i18n="hero.h1.paren">{line2}</span></h1>
       <p class="lede" data-i18n="hero.lede">{t.hero.lede}</p>
-      <p class="hero-summary" data-i18n="hero.summary">{t.hero.summary}</p>
       <div class="actions">
         <a class="btn btn-gold" href={BOOK_HREF}><span data-i18n="cta">{t.cta}</span> <span class="arr">→</span></a>
       </div>
@@ -107,7 +106,6 @@ const [h1, dot] = splitDot(line1);
     text-align: left;
   }
   .lede { max-width: 44ch; color: var(--white); }
-  .hero-summary { max-width: 56ch; font-size: 16px; line-height: 1.55; color: var(--pale); }
   .actions { display: flex; flex-wrap: wrap; gap: var(--s-16); padding-top: var(--s-08); }
   .label { color: var(--muted-inv); }
 
