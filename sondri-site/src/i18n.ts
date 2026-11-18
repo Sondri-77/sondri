@@ -544,7 +544,7 @@ export const es: Copy = {
 
   VALUE_LINE: 'Arreglamos el trabajo que le cuesta tiempo y dinero a su equipo, con IA donde ayuda.',
   footerCols: [
-    { title: 'Empresa', links: [{ label: 'Cómo funciona', href: '#how' }, { label: 'Qué construimos', href: '#features' }, { label: 'Soluciones', href: '#solutions' }, { label: 'Blog', href: '/insights/' }] },
+    { title: 'Empresa', links: [{ label: 'Cómo funciona', href: '#how' }, { label: 'Qué construimos', href: '#features' }, { label: 'Soluciones', href: '#solutions' }, { label: 'Blog', href: '/es/insights/' }] },
     { title: 'Hablemos', links: [{ label: 'Agendar sesión', href: '#book' }, { label: 'Pagar factura', href: '/pay/' }, { label: 'Escríbanos', href: '#contact' }, { label: 'Preguntas', href: '#faq' }] },
   ],
   footerLine: 'Construido en sus sistemas y de su propiedad',

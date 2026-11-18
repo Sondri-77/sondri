@@ -42,6 +42,9 @@ export function toMarkdownPath(pathname: string): string {
   if (pathname === '/insights' || pathname === '/insights/' || pathname === '/insights/index.html') {
     return '/insights/index.md';
   }
+  if (pathname === '/es/insights' || pathname === '/es/insights/' || pathname === '/es/insights/index.html') {
+    return '/es/insights/index.md';
+  }
   const clean = pathname.replace(/\/index\.html$/, '').replace(/\/+$/, '');
   return clean.endsWith('.md') ? clean : `${clean}.md`;
 }
@@ -90,13 +93,19 @@ export default {
     // Consolidate legacy ?lang=es query URLs to static localized routes.
     if (url.searchParams.get('lang') === 'es') {
       if (url.pathname === '/' || url.pathname === '/index.html') {
-        const next = new URL('/es/', url.origin);
-        return Response.redirect(next.href, 301);
+        return Response.redirect(new URL('/es/', url.origin).href, 301);
       }
-      if (url.pathname === '/privacy' || url.pathname === '/privacy/') {
-        const next = new URL('/es/privacy/', url.origin);
-        return Response.redirect(next.href, 301);
+      if (/^\/(?:privacy|insights|solutions)(?:\/|$)/.test(url.pathname)) {
+        const normalized = url.pathname.endsWith('/') ? url.pathname : `${url.pathname}/`;
+        return Response.redirect(new URL(`/es${normalized}`, url.origin).href, 301);
       }
+    }
+
+    // Serve /sitemap.xml as a 200 alias to Astro's /sitemap-index.xml so tools
+    // and crawlers checking the default /sitemap.xml path succeed without redirects.
+    if (url.pathname === '/sitemap.xml') {
+      const sitemapRes = await env.ASSETS.fetch(new URL('/sitemap-index.xml', url));
+      return applyHeaders(sitemapRes, { contentType: 'application/xml; charset=utf-8' });
     }
 
     const isGetOrHead = request.method === 'GET' || request.method === 'HEAD';
