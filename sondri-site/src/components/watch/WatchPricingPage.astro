@@ -1,0 +1,579 @@
+---
+import type { Lang } from '../../i18n';
+import WatchShell from './WatchShell.astro';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const isEs = lang === 'es';
+const prefix = isEs ? '/es/watch' : '/watch';
+
+const alternates = {
+  en: '/watch/pricing/',
+  es: '/es/watch/pricing/',
+};
+---
+
+<WatchShell
+  title={isEs ? 'Planes, Auditoría, Sitios Web y Sprints — Sondri Watch' : 'Transparent Pricing, Websites & Audits — Sondri Watch'}
+  description={isEs
+    ? 'Auditoría Base ($99 abonable al Mes 1), monitoreo Watch mensual ($149–$399/mes), Sitios Web Answer-Ready desde $390 y Sprints únicos ($249–$499).'
+    : 'Clear AI visibility pricing: $99 15-question audit (credited to Month 1), monthly Watch plans ($149–$399/mo), Answer-Ready Websites ($390–$1,190), and fix sprints.'}
+  lang={lang}
+  activeTab="pricing"
+  alternates={alternates}
+>
+  <!-- HERO + 4-CARD SUMMARY STRIP (on-dark) -->
+  <section class="section section-pad on-dark pr-hero">
+    <div class="wrap">
+      <span class="label gold-pill">{isEs ? 'PRECIOS TRANSPARENTES' : 'TRANSPARENT PRICING'}</span>
+      <div class="pr-hero-head">
+        <h1 class="h1">
+          {isEs ? (
+            <>Un camino claro. <em class="serif-em">Cero enredos.</em></>
+          ) : (
+            <>One clear path. <em class="serif-em">Zero confusion.</em></>
+          )}
+        </h1>
+        <p class="lede">
+          {isEs
+            ? 'Empieza gratis o con la auditoría de $99 (abonable al Mes 1), lanza un sitio web rápido desde $390 o delega todo en Sondri Watch mensual.'
+            : 'Start with a free check or $99 full audit (credited to Month 1), launch a fast website from $390, or put visibility on autopilot monthly.'}
+        </p>
+      </div>
+
+      <div class="pr-strip-4">
+        <a href={`${prefix}/#free-check`} class="pr-strip-card">
+          <span class="label s-tag">{isEs ? 'CHEQUEO GRATIS' : 'FREE CHECK'}</span>
+          <p class="s-price">$0</p>
+          <p class="body-s s-desc">{isEs ? '3 preguntas + score técnico + diagnóstico de brechas.' : 'Instant 3-question check, speed scan & gap diagnosis.'}</p>
+        </a>
+        <a href="#audit" class="pr-strip-card">
+          <span class="label s-tag">{isEs ? 'AUDITORÍA BASE' : 'BASELINE AUDIT'}</span>
+          <p class="s-price">{isEs ? '$99 único' : '$99 one-time'}</p>
+          <p class="body-s s-desc">{isEs ? '15 preguntas × 3 corridas + 3 competidores + lista de fixes.' : '15 buyer questions × 3 runs + 3 rivals + fix roadmap.'}</p>
+        </a>
+        <a href="#monthly" class="pr-strip-card">
+          <span class="label s-tag">WATCH MONTHLY</span>
+          <p class="s-price">{isEs ? 'desde $149/mes' : 'from $149/mo'}</p>
+          <p class="body-s s-desc">{isEs ? 'Starter $149 · Growth $299 · Pro $399 con fixes incluidos.' : 'Starter $149 · Growth $299 · Pro $399 with fixes shipped.'}</p>
+        </a>
+        <a href="#websites" class="pr-strip-card">
+          <span class="label s-tag">{isEs ? 'SITIOS WEB' : 'WEBSITES'}</span>
+          <p class="s-price">{isEs ? 'desde $390' : 'from $390'}</p>
+          <p class="body-s s-desc">{isEs ? 'Quick Fix $390 · 5 págs $690 · 10 págs $1,190.' : 'Quick Fix $390 · 5 pages $690 · 10 pages $1,190.'}</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- $99 FULL AUDIT + AT A GLANCE CARD (on-paper) -->
+  <section class="section section-pad on-paper" id="audit">
+    <div class="wrap">
+      <div class="audit-glance-grid">
+        <div class="audit-box">
+          <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? 'PASO 01 · AUDITORÍA COMPLETA' : 'STEP 01 · FULL 15-QUESTION AUDIT'}</span>
+          <h2 class="h2 audit-h2">
+            {isEs ? (
+              <>Radiografía real en 4 motores — <em class="serif-em">$99 USD.</em></>
+            ) : (
+              <>Complete 4-engine baseline audit — <em class="serif-em">$99 one-time.</em></>
+            )}
+          </h2>
+          <p class="lede audit-p">
+            {isEs
+              ? 'Mientras el test gratis solo muestra el diagnóstico base, la Auditoría de $99 prueba 15 preguntas reales × 3 repeticiones en ChatGPT, Gemini, AI Overviews y AI Mode (180 chequeos), mapea 3 competidores y desbloquea tu lista prioritaria de correcciones.'
+              : 'While the free check shows high-level gaps, the $99 Audit runs 15 buyer questions × 3 times across ChatGPT, Gemini, AI Overviews & AI Mode (180 checks), maps 3 competitors, and unlocks your full step-by-step fix roadmap.'}
+          </p>
+          <ul class="audit-bullets">
+            <li>{isEs ? '180 chequeos en vivo sin sesión iniciada (4 motores)' : '180 live logged-out checks across 4 engines'}</li>
+            <li>{isEs ? 'Revisión de exactitud de precios, servicios y citas externas' : 'Factual accuracy audit + sources & competitor breakdown'}</li>
+            <li><strong>{isEs ? '100% abonable al Mes 1 si activas un plan Sondri Watch' : '100% credited toward Month 1 of any Watch plan'}</strong></li>
+          </ul>
+          <button type="button" class="btn btn-gold" data-watch-checkout="aeo_full_audit">
+            <span data-btn-label>{isEs ? 'Ordenar Auditoría Base ($99)' : 'Order Full 15-Question Audit ($99)'}</span> <span class="arr">→</span>
+          </button>
+        </div>
+
+        <aside class="glance-paper">
+          <span class="label gl-kicker">AT A GLANCE</span>
+          <ul class="gl-list">
+            <li>Starter $149 · Growth $299 · Pro $399 /mo</li>
+            <li>{isEs ? 'Auditoría IA $99, abonable al Mes 1' : 'AI visibility audit $99, credited to month one'}</li>
+            <li>{isEs ? 'Webs: Quick Fix $390 · 5 págs $690 · 10 págs $1,190' : 'Websites: Quick Fix $390 · 5 pages $690 · 10 pages $1,190'}</li>
+            <li>{isEs ? '15% ahorro trimestral · 30 días de aviso al cancelar' : 'Save 15% paying quarterly · 30 days’ notice to cancel'}</li>
+            <li>{isEs ? 'Mes 4 gratis si no hay mejora tras 3 meses' : 'Month 4 free if your AI visibility hasn’t improved after 3 months'}</li>
+          </ul>
+          <a href={`${prefix}/#free-check`} class="btn btn-outline-dark gl-cta">
+            {isEs ? 'Probar Check Gratis antes' : 'Try Free 3-Question Check first →'}
+          </a>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- MONTHLY WATCH RETAINERS (on-dark) -->
+  <section class="section section-pad on-dark" id="monthly">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="label gold-pill">{isEs ? 'PASO 02 · MONITOREO Y FIXES MENSUALES' : 'STEP 02 · MONTHLY SONDRI WATCH'}</span>
+          <h2 class="h2">
+            {isEs ? (
+              <>Seguimiento semanal y <em class="serif-em">mejoras implementadas cada mes.</em></>
+            ) : (
+              <>Weekly tracking plus <em class="serif-em">fixes shipped every month.</em></>
+            )}
+          </h2>
+        </div>
+        <div class="intro">
+          <p class="lede">
+            {isEs
+              ? 'Sin contratos anuales forzados. Cancela con 30 días de aviso previo.'
+              : 'Zero annual lock-in. Includes Month 4 free accountability guarantee.'}
+          </p>
+        </div>
+      </div>
+
+      <div class="cards-3">
+        <article class="offer-card">
+          <span class="label card-tag">WATCH STARTER</span>
+          <h3 class="h5">{isEs ? 'Negocios Locales y Clínicas' : 'Local Businesses & Clinics'}</h3>
+          <p class="price-tag"><span class="n">$149</span> <span class="label">USD / mo</span></p>
+          <p class="q-quota-pill label">{isEs ? '25 preguntas · semanal' : '25 buyer questions / week'}</p>
+          <ul class="tier-list">
+            <li>{isEs ? '4 motores sin sesión iniciada' : 'ChatGPT, Gemini, AI Overviews & AI Mode'}</li>
+            <li>{isEs ? 'robots.txt, llms.txt, schema base & hubs oficiales' : 'Crawler access, schema & official AI business hubs'}</li>
+            <li>{isEs ? 'Reporte web mensual + PDF ejecutivo' : 'Monthly live report + downloadable PDF'}</li>
+            <li><strong>{isEs ? '1 corrección implementada al mes' : '1 implemented fix shipped monthly'}</strong></li>
+          </ul>
+          <button type="button" class="btn btn-gold card-btn" data-watch-checkout="watch_local">
+            <span data-btn-label>{isEs ? 'Iniciar Watch Starter ($149/mes)' : 'Start Watch Starter ($149/mo)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+
+        <article class="offer-card is-feat">
+          <span class="label card-tag is-gold">WATCH GROWTH · {isEs ? 'RECOMENDADO' : 'RECOMMENDED'}</span>
+          <h3 class="h5">{isEs ? 'Empresas en Crecimiento y Ecommerce' : 'Growing Brands & Ecommerce'}</h3>
+          <p class="price-tag"><span class="n">$299</span> <span class="label">USD / mo</span></p>
+          <p class="q-quota-pill label is-gold">{isEs ? '40 preguntas · semanal' : '40 buyer & product questions / week'}</p>
+          <ul class="tier-list">
+            <li>{isEs ? 'Schema completo de sitio y Product/Offer ACP/UCP' : 'Full-site JSON-LD + Product/Offer ACP & UCP health'}</li>
+            <li>{isEs ? 'Rastreo de hasta 3 competidores directos' : 'Track up to 3 direct competitors weekly'}</li>
+            <li>{isEs ? 'Alineación de reseñas y directorios de autoridad' : 'Review & authoritative directory alignment'}</li>
+            <li><strong>{isEs ? '2 páginas o mejoras implementadas al mes' : '2 answer-ready pages or fixes shipped/mo'}</strong></li>
+          </ul>
+          <button type="button" class="btn btn-gold card-btn" data-watch-checkout="watch_commerce">
+            <span data-btn-label>{isEs ? 'Iniciar Watch Growth ($299/mes)' : 'Start Watch Growth ($299/mo)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+
+        <article class="offer-card">
+          <span class="label card-tag">WATCH PRO · MULTI-LOCATION / B2B</span>
+          <h3 class="h5">{isEs ? 'B2B, Estudios y Multi-Sede' : 'Multi-Location, Legal & B2B'}</h3>
+          <p class="price-tag"><span class="n">$399</span> <span class="label">USD / mo</span></p>
+          <p class="q-quota-pill label">{isEs ? '75 preguntas · semanal' : '75 buyer questions / week'}</p>
+          <ul class="tier-list">
+            <li>{isEs ? 'Múltiples áreas de práctica, productos o ciudades' : 'Multi-city or multi-practice prompt sets'}</li>
+            <li>{isEs ? 'Hasta 5 competidores rastreados + alertas de caída' : 'Up to 5 competitors tracked + drift alerts'}</li>
+            <li>{isEs ? 'Construcción activa de citas en portales externos' : 'Active third-party citation gap outreach'}</li>
+            <li><strong>{isEs ? '4 páginas citables o mejoras al mes' : '4 answer-ready pages or fixes shipped/mo'}</strong></li>
+          </ul>
+          <button type="button" class="btn btn-outline-light card-btn" data-watch-checkout="watch_pro">
+            <span data-btn-label>{isEs ? 'Iniciar Watch Pro ($399/mes)' : 'Start Watch Pro ($399/mo)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANSWER-READY WEBSITES + ONE-TIME FIX SPRINTS (on-paper) -->
+  <section class="section section-pad on-paper" id="websites">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? 'SITIOS WEB ANSWER-READY · PAGO ÚNICO' : 'ANSWER-READY WEBSITES · FROM $390'}</span>
+          <h2 class="h2">
+            {isEs ? (
+              <>Sitios web construidos para <em class="serif-em">IA y conversión.</em></>
+            ) : (
+              <>Websites built to get picked, <em class="serif-em">not skipped.</em></>
+            )}
+          </h2>
+        </div>
+        <div class="intro">
+          <a href={`${prefix}/services/websites/`} class="btn btn-outline-dark">
+            {isEs ? 'Ver arquitectura web y FAQ →' : 'Inspect Website Specs & FAQ →'}
+          </a>
+        </div>
+      </div>
+
+      <div class="cards-3 web-3">
+        <article class="paper-card">
+          <span class="label p-tag">QUICK FIX · EXISTING DOMAIN</span>
+          <h3 class="h5">Website Quick Fix</h3>
+          <p class="p-price"><span class="n">$390</span> <span class="label">USD one-time</span></p>
+          <p class="body-s p-copy">{isEs ? 'Core Web Vitals + llms.txt + Schema JSON-LD validado + 1 bloque FAQ citable en tu web actual.' : 'Speed tuning, clean AI bot rules, llms.txt, full JSON-LD schema & 1 answer block on your current site.'}</p>
+          <button type="button" class="btn btn-gold card-btn" data-watch-checkout="website_quick_fix">
+            <span data-btn-label>{isEs ? 'Ordenar Quick Fix ($390)' : 'Order Quick Fix ($390)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+
+        <article class="paper-card is-feat">
+          <span class="label p-tag is-gold">{isEs ? '5 PÁGINAS · MÁS POPULAR' : '5 PAGES · MOST POPULAR'}</span>
+          <h3 class="h5">{isEs ? 'Sitio Answer-Ready 5 Págs' : '5-Page Answer-Ready Website'}</h3>
+          <p class="p-price"><span class="n">$690</span> <span class="label">USD one-time</span></p>
+          <p class="body-s p-copy">{isEs ? 'Inicio, Servicios, Hub FAQ, Quiénes Somos y Contacto desde cero con 95+ Lighthouse y schema completo.' : 'Home, Services, FAQ Hub, About & Contact engineered for speed and clear AI extraction.'}</p>
+          <button type="button" class="btn btn-gold card-btn" data-watch-checkout="website_5page">
+            <span data-btn-label>{isEs ? 'Ordenar Sitio 5 Págs ($690)' : 'Order 5-Page Site ($690)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+
+        <article class="paper-card">
+          <span class="label p-tag">10 PAGES · CUSTOM GROWTH</span>
+          <h3 class="h5">{isEs ? 'Sitio Custom 10 Págs' : '10-Page Custom Growth Website'}</h3>
+          <p class="p-price"><span class="n">$1,190</span> <span class="label">USD one-time</span></p>
+          <p class="body-s p-copy">{isEs ? 'Páginas por servicio y ciudad, tablas comparativas, JSON-LD completo y sincronización de perfiles oficiales IA.' : 'Dedicated service/location pages, comparisons, full schema graph & OpenAI/Bing/GBP listing sync.'}</p>
+          <button type="button" class="btn btn-outline-dark card-btn" data-watch-checkout="website_10page">
+            <span data-btn-label>{isEs ? 'Ordenar Sitio 10 Págs ($1,190)' : 'Order 10-Page Site ($1,190)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+      </div>
+
+      <div class="sprints-row" id="sprints">
+        <div class="sprint-box">
+          <div>
+            <span class="label p-tag">ONE-TIME SPRINT · $249</span>
+            <h3 class="h5">AI Listings Sprint</h3>
+            <p class="body-s">{isEs ? 'Reclamamos y verificamos tu entidad en OpenAI Hub, Bing AI, Apple y Google Business Profile.' : 'Claim and sync OpenAI Business Hub, Bing AI Performance, Apple Business & GBP.'}</p>
+          </div>
+          <button type="button" class="btn btn-gold" data-watch-checkout="listings_sprint">
+            <span data-btn-label>{isEs ? 'Book Listings ($249)' : 'Book Sprint ($249)'}</span> <span class="arr">→</span>
+          </button>
+        </div>
+
+        <div class="sprint-box">
+          <div>
+            <span class="label p-tag">ONE-TIME SPRINT · $499</span>
+            <h3 class="h5">Done-For-You Fix Sprint</h3>
+            <p class="body-s">{isEs ? 'Desplegamos todo tu grafo Schema JSON-LD, llms.txt y bloques FAQ citables en producción.' : 'Done-for-you engineering sprint shipping Organization/Service/FAQ schema and answer pages.'}</p>
+          </div>
+          <button type="button" class="btn btn-gold" data-watch-checkout="fix_sprint">
+            <span data-btn-label>{isEs ? 'Book Fix Sprint ($499)' : 'Book Sprint ($499)'}</span> <span class="arr">→</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</WatchShell>
+
+<style>
+  .section-pad {
+    padding-block: clamp(72px, 8vw, 112px);
+  }
+
+  .pr-hero {
+    padding-top: var(--s-48);
+  }
+
+  .gold-pill {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--teal);
+    padding: 5px 10px;
+    font-weight: 700;
+    margin-bottom: var(--s-20);
+  }
+
+  .pr-hero-head {
+    max-width: 70ch;
+    margin-bottom: var(--s-32);
+  }
+
+  .pr-hero-head h1 {
+    margin-bottom: var(--s-16);
+  }
+
+  .pr-strip-4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .pr-strip-card {
+    background: rgba(3, 25, 25, 0.92);
+    border: 1px solid var(--line);
+    padding: 20px;
+    text-decoration: none;
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: border-color 0.18s ease, transform 0.18s ease;
+  }
+
+  .pr-strip-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
+
+  .s-tag {
+    color: var(--gold);
+    font-size: 10px;
+  }
+
+  .s-price {
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .s-desc {
+    color: var(--pale);
+    font-size: 13.5px;
+    line-height: 1.45;
+  }
+
+  .dot-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--steel);
+    margin-bottom: 10px;
+  }
+
+  .dot-gold {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold-2);
+    display: inline-block;
+  }
+
+  .audit-glance-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    gap: var(--s-32);
+    align-items: start;
+  }
+
+  .audit-h2 {
+    margin-bottom: 14px;
+  }
+
+  .audit-p {
+    color: var(--pale);
+    margin-bottom: 20px;
+  }
+
+  .audit-bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+    color: var(--teal);
+    font-size: 15px;
+  }
+
+  .audit-bullets li::before {
+    content: '✓ ';
+    color: var(--gold-2);
+    font-weight: 700;
+  }
+
+  .glance-paper {
+    background: var(--white);
+    border: 1px solid var(--teal);
+    box-shadow: 8px 8px 0 var(--gold-2);
+    padding: var(--s-24);
+  }
+
+  .gl-kicker {
+    display: block;
+    color: var(--teal-mid);
+    margin-bottom: 14px;
+  }
+
+  .gl-list {
+    list-style: none;
+    margin-bottom: 20px;
+  }
+
+  .gl-list li {
+    display: flex;
+    gap: 10px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line-soft);
+    font-size: 14px;
+    color: var(--teal);
+    line-height: 1.4;
+  }
+
+  .gl-list li::before {
+    content: '●';
+    color: var(--gold-2);
+    font-size: 10px;
+    margin-top: 2px;
+  }
+
+  .gl-cta {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .btn-outline-dark {
+    background: transparent;
+    border: 1px solid var(--teal);
+    color: var(--teal);
+  }
+  .btn-outline-dark:hover {
+    background: var(--teal);
+    color: var(--white);
+  }
+
+  .btn-outline-light {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--white);
+  }
+  .btn-outline-light:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .cards-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-24);
+  }
+
+  .web-3 {
+    margin-bottom: var(--s-32);
+  }
+
+  .offer-card {
+    background: rgba(3, 25, 25, 0.92);
+    border: 1px solid var(--line);
+    padding: var(--s-32);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+  }
+
+  .offer-card.is-feat {
+    border-color: var(--gold);
+    box-shadow: 8px 8px 0 var(--gold);
+  }
+
+  .card-tag,
+  .p-tag {
+    color: var(--steel);
+  }
+
+  .is-gold {
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  .price-tag .n,
+  .p-price .n {
+    font-size: 44px;
+    color: var(--gold);
+  }
+
+  .p-price .n {
+    color: var(--teal);
+  }
+
+  .q-quota-pill {
+    display: inline-block;
+    padding: 7px 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--line-soft);
+    color: var(--white);
+    font-weight: 600;
+  }
+
+  .q-quota-pill.is-gold {
+    background: rgba(253, 179, 67, 0.14);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .tier-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--pale);
+  }
+
+  .tier-list li::before {
+    content: '■ ';
+    color: var(--gold);
+    font-size: 10px;
+  }
+
+  .paper-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    box-shadow: 6px 6px 0 var(--teal);
+    padding: var(--s-24);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .paper-card.is-feat {
+    border-color: var(--gold-2);
+    box-shadow: 8px 8px 0 var(--gold-2);
+  }
+
+  .p-copy {
+    color: var(--pale);
+    font-size: 14.5px;
+    line-height: 1.5;
+  }
+
+  .card-btn {
+    margin-top: auto;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .sprints-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-24);
+  }
+
+  .sprint-box {
+    background: var(--white);
+    border: 1px solid var(--line);
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .sprint-box p {
+    color: var(--pale);
+    max-width: 44ch;
+    margin-top: 6px;
+  }
+
+  @media (max-width: 960px) {
+    .pr-strip-4,
+    .audit-glance-grid,
+    .cards-3,
+    .sprints-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

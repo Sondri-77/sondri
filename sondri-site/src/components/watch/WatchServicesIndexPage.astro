@@ -1,0 +1,394 @@
+---
+import type { Lang } from '../../i18n';
+import WatchShell from './WatchShell.astro';
+import { getWatchServices } from '../../data/watch-content';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const isEs = lang === 'es';
+const prefix = isEs ? '/es/watch' : '/watch';
+const servicesList = getWatchServices(lang);
+
+const alternates = {
+  en: '/watch/services/',
+  es: '/es/watch/services/',
+};
+---
+
+<WatchShell
+  title={isEs ? 'Servicios de Visibilidad IA y Sitios Web — Sondri Watch' : 'AI Visibility Services & Websites — Sondri Watch'}
+  description={isEs
+    ? 'Explora cada servicio especialista de Sondri Watch: AEO, GEO, ChatGPT SEO, Google AI Overviews, llms.txt & Schema, Reputación IA y Sitios Web desde $390.'
+    : 'Explore Sondri Watch specialist services: AEO, GEO, ChatGPT SEO, Google AI Overviews, Perplexity & Gemini, llms.txt & Schema, Citations, and Answer-Ready Websites from $390.'}
+  lang={lang}
+  activeTab="services"
+  alternates={alternates}
+>
+  <!-- HERO (on-dark) -->
+  <section class="section section-pad on-dark srv-idx-hero">
+    <div class="wrap">
+      <span class="label gold-pill">{isEs ? 'SERVICIOS ESPECIALISTAS' : 'SPECIALIST SERVICES'}</span>
+      <div class="srv-idx-head">
+        <h1 class="h1">
+          {isEs ? (
+            <>Visible. Confiable. <em class="serif-em">Recomendado.</em></>
+          ) : (
+            <>Found. Trusted. <em class="serif-em">Recommended.</em></>
+          )}
+        </h1>
+        <p class="lede">
+          {isEs
+            ? 'Haz clic en cualquier especialidad para ver qué implementamos, qué esquema JSON-LD exige y qué preguntas frecuentes responde.'
+            : 'Every capability below opens its own blueprint, deliverables checklist, and FAQ-structured specification.'}
+        </p>
+      </div>
+      <div class="srv-idx-actions">
+        <a href={`${prefix}/#free-check`} class="btn btn-gold">
+          {isEs ? 'Probar Test Gratis primero' : 'Run Free Check First'} <span class="arr">→</span>
+        </a>
+        <a href={`${prefix}/pricing/`} class="btn btn-outline-light">
+          {isEs ? 'Comparar Planes y Precios' : 'Compare Plans & Website Pricing'}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8-CARD SPECIALIST SERVICES GRID (on-paper) -->
+  <section class="section section-pad on-paper">
+    <div class="wrap">
+      <div class="sec-intro">
+        <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? 'CATÁLOGO COMPLETO' : 'AI SEARCH & WEB CAPABILITIES'}</span>
+        <h2 class="h2">
+          {isEs ? (
+            <>Servicios de visibilidad, <em class="serif-em">uno por uno.</em></>
+          ) : (
+            <>AI search services, <em class="serif-em">one by one.</em></>
+          )}
+        </h2>
+      </div>
+
+      <div class="spec-grid-4">
+        {servicesList.map((srv) => (
+          <a href={`${prefix}/services/${srv.slug}/`} class="spec-card">
+            <div class="spec-icon" aria-hidden="true">
+              {srv.icon === 'question' && (
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                  <path d="M12 17h.01" />
+                </svg>
+              )}
+              {srv.icon === 'star' && (
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+              )}
+              {srv.icon === 'eye' && (
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+              {srv.icon === 'code' && (
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="16 18 22 12 16 6" />
+                  <polyline points="8 6 2 12 8 18" />
+                </svg>
+              )}
+              {srv.icon === 'doc' && (
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="8" y1="13" x2="16" y2="13" />
+                  <line x1="8" y1="17" x2="13" y2="17" />
+                </svg>
+              )}
+              {srv.icon === 'globe' && (
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+              )}
+            </div>
+            <span class="label pillar-chip">{srv.pillar}</span>
+            <h3 class="h5 spec-title">{srv.shortTitle}</h3>
+            <p class="body-s spec-desc">{srv.cardDesc}</p>
+            <span class="label spec-link">{srv.ctaLabel}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ANSWER-READY WEBSITES SHOWCASE (on-dark) -->
+  <section class="section section-pad on-dark">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="label gold-pill">{isEs ? 'DISEÑO WEB ANSWER-READY' : 'ANSWER-READY WEBSITES'}</span>
+          <h2 class="h2">
+            {isEs ? (
+              <>Sitios rápidos diseñados para <em class="serif-em">convertir y ser citados.</em></>
+            ) : (
+              <>Websites built to win trust <em class="serif-em">and AI referrals.</em></>
+            )}
+          </h2>
+        </div>
+        <div class="intro">
+          <p class="lede">
+            {isEs
+              ? 'Código 100% tuyo, velocidad 95+ en Lighthouse, Service & FAQPage schema incluido.'
+              : '100% code ownership, 95+ Lighthouse speed, and Service + FAQPage schema built into every page.'}
+          </p>
+        </div>
+      </div>
+
+      <div class="cards-3">
+        <article class="web-card">
+          <span class="label w-tag">QUICK FIX · EXISTING SITE</span>
+          <h3 class="h4">Website Quick Fix</h3>
+          <p class="w-price"><span class="n">$390</span> <span class="label">USD one-time</span></p>
+          <p class="body-s w-copy">
+            {isEs
+              ? 'Optimización de velocidad Core Web Vitals, robots.txt, llms.txt, schema JSON-LD validado y 1 bloque FAQ citable sobre tu sitio actual.'
+              : 'Mobile Core Web Vitals tuning, robots.txt + llms.txt, validated JSON-LD schema & 1 answer block on your current website.'}
+          </p>
+          <button type="button" class="btn btn-outline-light card-btn" data-watch-checkout="website_quick_fix">
+            <span data-btn-label>{isEs ? 'Ordenar Quick Fix ($390)' : 'Order Quick Fix ($390)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+
+        <article class="web-card is-feat">
+          <span class="label w-tag is-gold">{isEs ? '5 PÁGINAS · MÁS POPULAR' : '5 PAGES · MOST POPULAR'}</span>
+          <h3 class="h4">{isEs ? 'Sitio Answer-Ready 5 Páginas' : '5-Page Answer-Ready Website'}</h3>
+          <p class="w-price"><span class="n">$690</span> <span class="label">USD one-time</span></p>
+          <p class="body-s w-copy">
+            {isEs
+              ? 'Inicio, Servicios, Hub FAQ, Quiénes Somos y Contacto construidos desde cero para respuesta rápida y citación directa en IA.'
+              : 'Home, Services, FAQ Hub, About & Contact built from scratch for speed, conversion, and direct AI citations.'}
+          </p>
+          <button type="button" class="btn btn-gold card-btn" data-watch-checkout="website_5page">
+            <span data-btn-label>{isEs ? 'Ordenar Sitio 5 Págs ($690)' : 'Order 5-Page Site ($690)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+
+        <article class="web-card">
+          <span class="label w-tag">10 PAGES · CUSTOM GROWTH</span>
+          <h3 class="h4">{isEs ? 'Sitio Custom de 10 Páginas' : '10-Page Custom Growth Website'}</h3>
+          <p class="w-price"><span class="n">$1,190</span> <span class="label">USD one-time</span></p>
+          <p class="body-s w-copy">
+            {isEs
+              ? 'Páginas dedicadas por especialidad/ciudad, comparativas HTML limpias, grafo JSON-LD local y sincronización en OpenAI, Bing y GBP.'
+              : 'Dedicated practice/city pages, comparison blocks, full schema graph & OpenAI/Bing/GBP listing sync.'}
+          </p>
+          <button type="button" class="btn btn-outline-light card-btn" data-watch-checkout="website_10page">
+            <span data-btn-label>{isEs ? 'Ordenar Sitio 10 Págs ($1,190)' : 'Order 10-Page Site ($1,190)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+      </div>
+
+      <div class="packs-banner">
+        <div>
+          <span class="label gold-tag">{isEs ? 'PACKS VERTICALES' : 'INDUSTRY PLAYBOOKS'}</span>
+          <p class="body-s">{isEs ? '¿Tienes clínica dental en Chile, estudio jurídico o marca Shopify?' : 'Run a dental clinic, law firm, or Shopify store? See industry-specific playbooks.'}</p>
+        </div>
+        <a href={`${prefix}/playbooks/`} class="btn btn-outline-light">
+          {isEs ? 'Ver Packs por Industria' : 'Explore Industry Playbooks'} <span class="arr">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</WatchShell>
+
+<style>
+  .section-pad {
+    padding-block: clamp(72px, 8vw, 112px);
+  }
+
+  .srv-idx-hero {
+    padding-top: var(--s-48);
+  }
+
+  .gold-pill {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--teal);
+    padding: 5px 10px;
+    font-weight: 700;
+    margin-bottom: var(--s-20);
+  }
+
+  .srv-idx-head {
+    max-width: 72ch;
+    margin-bottom: var(--s-24);
+  }
+
+  .srv-idx-head h1 {
+    margin-bottom: var(--s-16);
+  }
+
+  .srv-idx-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .btn-outline-light {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--white);
+  }
+  .btn-outline-light:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .sec-intro {
+    margin-bottom: var(--s-40);
+  }
+
+  .dot-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--steel);
+    margin-bottom: 10px;
+  }
+
+  .dot-gold {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold-2);
+    display: inline-block;
+  }
+
+  .spec-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .spec-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    padding: 24px;
+    text-decoration: none;
+    color: var(--teal);
+    box-shadow: 5px 5px 0 var(--teal);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .spec-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 7px 7px 0 var(--gold-2);
+  }
+
+  .spec-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: rgba(253, 179, 67, 0.18);
+    border: 1px solid rgba(210, 132, 16, 0.35);
+    color: var(--teal);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pillar-chip {
+    color: var(--steel);
+    font-size: 10px;
+  }
+
+  .spec-desc {
+    color: var(--pale);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .spec-link {
+    margin-top: auto;
+    padding-top: 8px;
+    color: var(--teal);
+    font-weight: 700;
+  }
+
+  .cards-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-24);
+    margin-bottom: var(--s-32);
+  }
+
+  .web-card {
+    background: rgba(3, 25, 25, 0.92);
+    border: 1px solid var(--line);
+    padding: var(--s-32);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .web-card.is-feat {
+    border-color: var(--gold);
+    box-shadow: 8px 8px 0 var(--gold);
+  }
+
+  .w-tag {
+    color: var(--steel);
+  }
+
+  .w-tag.is-gold,
+  .gold-tag {
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  .w-price .n {
+    font-size: 44px;
+    color: var(--gold);
+  }
+
+  .w-copy {
+    color: var(--pale);
+    font-size: 14.5px;
+    line-height: 1.5;
+  }
+
+  .card-btn {
+    margin-top: auto;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .packs-banner {
+    border: 1px solid var(--line-soft);
+    background: rgba(255, 255, 255, 0.03);
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .packs-banner p {
+    color: var(--pale);
+    margin-top: 6px;
+  }
+
+  @media (max-width: 960px) {
+    .spec-grid-4,
+    .cards-3 {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

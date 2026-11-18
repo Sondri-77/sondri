@@ -64,7 +64,7 @@ const siblingServices = allServices.filter((s) => s.slug !== service.slug);
   title={`${service.title} — Sondri Watch | watch.sondri.ai`}
   description={service.summary}
   lang={lang}
-  activeTab="playbooks"
+  activeTab="services"
   alternates={alternates}
 >
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLdGraph)} />
@@ -75,7 +75,7 @@ const siblingServices = allServices.filter((s) => s.slug !== service.slug);
       <nav class="srv-crumb label" aria-label="Breadcrumb">
         <a href={`${prefix}/`}>{isEs ? 'Inicio Watch' : 'Watch Overview'}</a>
         <span aria-hidden="true">/</span>
-        <a href={`${prefix}/#act-services`}>{isEs ? 'Servicios' : 'Services'}</a>
+        <a href={`${prefix}/services/`}>{isEs ? 'Servicios' : 'Services'}</a>
         <span aria-hidden="true">/</span>
         <span class="crumb-cur">{service.shortTitle}</span>
       </nav>
@@ -227,7 +227,7 @@ const siblingServices = allServices.filter((s) => s.slug !== service.slug);
     <div class="wrap">
       <div class="sib-head">
         <span class="label gold-pill">{isEs ? 'OTROS SERVICIOS ESPECIALISTAS' : 'EXPLORE ALL SPECIALIST SERVICES'}</span>
-        <a href={`${prefix}/#pricing-ladder`} class="label text-link">
+        <a href={`${prefix}/pricing/`} class="label text-link">
           {isEs ? 'Ver planes Watch completos →' : 'Compare all Watch plans →'}
         </a>
       </div>

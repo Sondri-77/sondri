@@ -13,7 +13,7 @@ interface Props {
   title: string;
   description: string;
   lang?: Lang;
-  activeTab: 'overview' | 'playbooks' | 'sample' | 'partners';
+  activeTab: 'overview' | 'services' | 'pricing' | 'guides' | 'playbooks' | 'sample' | 'partners';
   alternates?: { en: string; es: string };
 }
 
@@ -24,10 +24,12 @@ const siteUrl = Astro.site ? Astro.site.origin : 'https://sondri.ai';
 const canonical = new URL(Astro.url.pathname, siteUrl);
 
 const navItems = [
-  { id: 'overview', href: `${prefix}/`, label: isEs ? 'Resumen y Test' : 'Overview & Score' },
-  { id: 'playbooks', href: `${prefix}/playbooks/`, label: isEs ? 'Guías y Packs' : 'Reads & Playbooks' },
-  { id: 'sample', href: `${prefix}/sample-report/`, label: isEs ? 'Reporte Mensual' : 'Sample Report' },
-  { id: 'partners', href: `${prefix}/partners/`, label: isEs ? 'Agencias (Marca Blanca)' : 'Agencies' },
+  { id: 'overview', href: `${prefix}/`, label: isEs ? 'Resumen' : 'Overview' },
+  { id: 'services', href: `${prefix}/services/`, label: isEs ? 'Servicios' : 'Services' },
+  { id: 'pricing', href: `${prefix}/pricing/`, label: isEs ? 'Precios' : 'Pricing' },
+  { id: 'guides', href: `${prefix}/guides/`, label: isEs ? 'Guías' : 'Guides' },
+  { id: 'sample', href: `${prefix}/sample-report/`, label: isEs ? 'Reporte' : 'Sample Report' },
+  { id: 'partners', href: `${prefix}/partners/`, label: isEs ? 'Agencias' : 'Agencies' },
 ];
 ---
 
@@ -200,12 +202,12 @@ const navItems = [
           <div>
             <p class="label col-head">{isEs ? 'SERVICIOS' : 'SERVICES'}</p>
             <ul class="f-list">
-              <li><a href={`${prefix}/#act-services`} class="label">{isEs ? 'Todos los servicios' : 'All services'}</a></li>
+              <li><a href={`${prefix}/services/`} class="label">{isEs ? 'Todos los servicios' : 'All services'}</a></li>
               <li><a href={`${prefix}/services/websites/`} class="label">{isEs ? 'Sitios Web (desde $390)' : 'Answer-Ready Websites ($390+)'}</a></li>
               <li><a href={`${prefix}/services/llms-txt-schema/`} class="label">llms.txt &amp; Schema</a></li>
               <li><a href={`${prefix}/services/citation-building/`} class="label">{isEs ? 'Reputación y citas IA' : 'Reputation & citations'}</a></li>
-              <li><a href={`${prefix}/playbooks/#sprints`} class="label">Website Quick Fix ($390)</a></li>
-              <li><a href={`${prefix}/playbooks/#sprints`} class="label">Done-For-You Fix Sprint ($499)</a></li>
+              <li><a href={`${prefix}/pricing/#sprints`} class="label">Website Quick Fix ($390)</a></li>
+              <li><a href={`${prefix}/pricing/#sprints`} class="label">Done-For-You Fix Sprint ($499)</a></li>
             </ul>
           </div>
 
@@ -217,7 +219,7 @@ const navItems = [
               <li><a href={`${prefix}/services/chatgpt-seo/`} class="label">ChatGPT SEO</a></li>
               <li><a href={`${prefix}/services/google-ai-overviews/`} class="label">Google AI Overviews</a></li>
               <li><a href={`${prefix}/services/perplexity-gemini/`} class="label">Perplexity &amp; Gemini</a></li>
-              <li><a href={`${prefix}/#pricing-ladder`} class="label">{isEs ? 'Auditoría Base ($99)' : 'AI Search Audit ($99)'}</a></li>
+              <li><a href={`${prefix}/pricing/#audit`} class="label">{isEs ? 'Auditoría Base ($99)' : 'AI Search Audit ($99)'}</a></li>
               <li><a href={`${prefix}/sample-report/`} class="label">{isEs ? 'Reporte Mensual' : 'Monthly Watch Reporting'}</a></li>
             </ul>
           </div>
@@ -227,9 +229,9 @@ const navItems = [
             <ul class="f-list">
               <li><a href={`${prefix}/playbooks/#industry-packs`} class="label">{isEs ? 'Clínicas y Salud Dental' : 'Dental & Medical Clinics'}</a></li>
               <li><a href={`${prefix}/playbooks/#industry-packs`} class="label">{isEs ? 'Estudios Jurídicos' : 'Law Firms & Legal'}</a></li>
-              <li><a href={`${prefix}/#act-shift`} class="label">B2B &amp; SaaS Companies</a></li>
+              <li><a href={`${prefix}/playbooks/#industry-packs`} class="label">B2B &amp; SaaS Companies</a></li>
               <li><a href={`${prefix}/playbooks/#industry-packs`} class="label">Shopify &amp; Ecommerce</a></li>
-              <li><a href={`${prefix}/#act-shift`} class="label">{isEs ? 'Inmobiliaria y Hogar' : 'Real Estate & Home'}</a></li>
+              <li><a href={`${prefix}/pricing/`} class="label">{isEs ? 'Todos los planes y packs' : 'All Plans & Packs'}</a></li>
               <li><a href={`${prefix}/partners/`} class="label">{isEs ? 'Agencias (Marca Blanca)' : 'Agencies (White-Label)'}</a></li>
             </ul>
           </div>
@@ -237,11 +239,11 @@ const navItems = [
           <div>
             <p class="label col-head">{isEs ? 'GUÍAS Y SONDRI' : 'GUIDES & COMPANY'}</p>
             <ul class="f-list">
+              <li><a href={`${prefix}/guides/`} class="label">{isEs ? 'Todas las guías' : 'All Plain-English Guides'}</a></li>
               <li><a href={`${prefix}/guides/what-is-ai-visibility/`} class="label">{isEs ? '¿Qué es visibilidad IA?' : 'What is AI visibility?'}</a></li>
               <li><a href={`${prefix}/guides/geo-vs-aeo-vs-seo/`} class="label">GEO vs AEO vs SEO</a></li>
               <li><a href={`${prefix}/guides/how-ai-chooses-businesses/`} class="label">{isEs ? 'Cómo elige la IA' : 'How AI chooses firms'}</a></li>
-              <li><a href={`${prefix}/guides/why-chatgpt-doesnt-recommend-you/`} class="label">{isEs ? 'Por qué ChatGPT te omite' : 'Why ChatGPT skips you'}</a></li>
-              <li><a href={`${prefix}/guides/how-much-does-ai-visibility-cost/`} class="label">{isEs ? 'Precios visibilidad IA' : 'AI visibility pricing'}</a></li>
+              <li><a href={`${prefix}/pricing/`} class="label">{isEs ? 'Precios y planes' : 'AI visibility pricing'}</a></li>
               <li><a href={isEs ? '/es/' : '/'} class="label">← {isEs ? 'Software y Automatización' : 'sondri.ai (Custom AI)'}</a></li>
               <li><a href="/pay/" class="label">{isEs ? 'Pagos y Facturación' : 'Client Payments'}</a></li>
               <li><a href={isEs ? '/es/privacy/' : '/privacy/'} class="label">{isEs ? 'Privacidad' : 'Privacy'}</a></li>
@@ -415,7 +417,7 @@ const navItems = [
   .watch-links {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 18px;
     margin-right: auto;
     margin-left: 16px;
   }
