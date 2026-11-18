@@ -1114,33 +1114,49 @@ const faqSchema = {
         </article>
       </div>
 
-      <!-- STEP 3: Single Clean Bar Routing to Websites ($390–$1,190), Sprints & All Pricing -->
-      <div class="pricing-more-bar" data-watch-reveal>
-        <div class="pmb-copy">
+      <!-- STEP 3: Spacious 2-Card Split Routing to Websites/Full Pricing & Agency Partners -->
+      <div class="pricing-routes-grid" data-watch-reveal>
+        <article class="offer-card route-card is-websites">
           <span class="label gold-tag">
-            {isEs
-              ? 'SITIOS WEB ($390–$1,190) · SPRINTS ÚNICOS · PACKS POR INDUSTRIA'
-              : 'WEBSITES ($390–$1,190) · ONE-TIME SPRINTS · FULL COMPARISON'}
+            {isEs ? 'SITIOS WEB ($390–$1,190) · SPRINTS ÚNICOS' : 'WEBSITES ($390–$1,190) · ONE-TIME SPRINTS'}
           </span>
-          <h3 class="h4 pmb-title">
+          <h3 class="h4 route-title">
             {isEs
-              ? '¿Buscas un sitio web Answer-Ready desde $390, un sprint único o ver todos los planes?'
-              : 'Need an answer-ready website (from $390), a one-time sprint, or full plan specs?'}
+              ? '¿Necesitas un sitio web Answer-Ready desde $390 o ver todos los planes?'
+              : 'Need an answer-ready website (from $390) or full plan specs?'}
           </h3>
-          <p class="body-s pmb-sub">
+          <p class="body-s route-copy">
             {isEs
-              ? 'Compara Website Quick Fix ($390), sitios de 5 págs ($690) y 10 págs ($1,190), sprints ($249–$499) y programa marca blanca para agencias.'
-              : 'Explore Website Quick Fix ($390), 5-Page ($690) & 10-Page ($1,190) builds, standalone fix sprints ($249–$499), and agency white-label plans.'}
+              ? 'Compara Website Quick Fix ($390), sitios de 5 páginas ($690) y 10 páginas ($1,190), sprints únicos ($249–$499) y la tabla completa de planes.'
+              : 'Compare Website Quick Fix ($390), 5-Page ($690) & 10-Page ($1,190) builds, standalone fix sprints ($249–$499), and our full pricing breakdown.'}
           </p>
-        </div>
-        <div class="pmb-actions">
-          <a href={`${prefix}/pricing/`} class="btn btn-gold">
-            {isEs ? 'Ver Sitios Web y Todos los Precios' : 'Explore Websites & All Pricing'} <span class="arr">→</span>
-          </a>
-          <a href={`${prefix}/partners/`} class="btn btn-outline-light">
-            {isEs ? 'Programa Agencias' : 'Agency Partners'} <span class="arr">→</span>
-          </a>
-        </div>
+          <div class="route-cta">
+            <a href={`${prefix}/pricing/`} class="btn btn-gold">
+              {isEs ? 'Ver Sitios Web y Todos los Precios' : 'Explore Websites & All Pricing'} <span class="arr">→</span>
+            </a>
+          </div>
+        </article>
+
+        <article class="offer-card route-card">
+          <span class="label card-tag">
+            {isEs ? 'PARA AGENCIAS Y CONSULTORAS' : 'FOR AGENCIES & CONSULTANTS'}
+          </span>
+          <h3 class="h4 route-title">
+            {isEs
+              ? 'Sondri Watch marca blanca para tus clientes.'
+              : 'White-label Watch for your agency clients.'}
+          </h3>
+          <p class="body-s route-copy">
+            {isEs
+              ? 'Reportes bajo tu propio dominio y entregas mensuales hechas por nuestro equipo desde $79/cliente/mes.'
+              : 'Wholesale AI visibility tracking and done-for-you monthly fixes under your own brand, from $79/client/mo.'}
+          </p>
+          <div class="route-cta">
+            <a href={`${prefix}/partners/`} class="btn btn-outline-light">
+              {isEs ? 'Ver Programa de Agencias' : 'See Agency Partner Program'} <span class="arr">→</span>
+            </a>
+          </div>
+        </article>
       </div>
     </div>
   </section>
@@ -2262,17 +2278,17 @@ const faqSchema = {
   .audit-entry-banner {
     background: rgba(3, 25, 25, 0.94);
     border: 1px solid var(--gold);
-    padding: var(--s-24) var(--s-32);
+    padding: var(--s-32);
     margin-bottom: var(--s-32);
     display: grid;
     grid-template-columns: minmax(0, 1.35fr) auto;
-    gap: var(--s-24);
+    gap: var(--s-32);
     align-items: center;
   }
 
   .aeb-title {
     color: var(--white);
-    margin: 8px 0;
+    margin: 10px 0 10px;
   }
 
   .aeb-copy {
@@ -2368,43 +2384,43 @@ const faqSchema = {
     padding-inline: 16px;
   }
 
-  .pricing-more-bar {
-    background: rgba(3, 25, 25, 0.94);
-    border: 1px solid var(--line);
-    padding: var(--s-24) var(--s-32);
+  .pricing-routes-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.35fr) auto;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
     gap: var(--s-24);
-    align-items: center;
+    margin-top: var(--s-40);
+    align-items: stretch;
   }
 
-  .pmb-copy,
-  .pmb-actions {
-    min-width: 0;
+  .route-card {
+    padding: var(--s-32);
+    gap: var(--s-16);
+    justify-content: flex-start;
   }
 
-  .pmb-title {
+  .route-card.is-websites {
+    border-color: rgba(253, 179, 67, 0.55);
+    background: rgba(6, 33, 32, 0.94);
+  }
+
+  .route-title {
     color: var(--white);
-    margin: 8px 0 6px;
+    line-height: 1.22;
+    margin: 2px 0;
   }
 
-  .pmb-sub {
+  .route-copy {
     color: var(--pale);
-    font-size: 14.5px;
-    line-height: 1.5;
-    max-width: 68ch;
+    font-size: 15px;
+    line-height: 1.58;
+    max-width: 58ch;
   }
 
-  .pmb-actions {
+  .route-cta {
+    margin-top: auto;
+    padding-top: var(--s-16);
     display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    justify-content: flex-end;
     align-items: center;
-  }
-
-  .pmb-actions .btn {
-    white-space: nowrap;
   }
 
   /* COMMON QUESTIONS FAQ */
@@ -2491,23 +2507,18 @@ const faqSchema = {
     .bento-2x2,
     .loop-split,
     .cards-3,
-    .pricing-more-bar,
+    .pricing-routes-grid,
     .audit-entry-banner,
     .faq-grid {
       grid-template-columns: minmax(0, 1fr);
     }
 
-    .pricing-more-bar,
+    .route-card,
     .audit-entry-banner {
       padding: var(--s-24);
     }
 
-    .pmb-actions {
-      justify-content: flex-start;
-      width: 100%;
-    }
-
-    .pmb-actions .btn,
+    .route-cta .btn,
     .aeb-btn {
       white-space: normal;
       width: 100%;
