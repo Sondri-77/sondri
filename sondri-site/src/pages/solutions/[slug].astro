@@ -15,25 +15,58 @@ export async function getStaticPaths() {
 }
 
 const { solution } = Astro.props;
-const { name, tagline, summary, audience, industry, areas, highlights, post, media, draft } = solution.data;
+const { name, seoTitle, seoDescription, tagline, summary, audience, industry, areas, highlights, post, media, draft } = solution.data;
 const { Content } = await render(solution);
 const postLive = post ? (await getPosts()).some((p) => p.id === post) : false;
 
-const canonical = new URL(Astro.url.pathname, Astro.site);
+const siteUrl = Astro.site ? Astro.site.origin : 'https://sondri.ai';
+const canonical = new URL(Astro.url.pathname, siteUrl);
 const serviceSchema = {
   '@context': 'https://schema.org',
   '@type': 'Service',
+  '@id': `${canonical.href}#service`,
   name,
-  description: summary,
+  description: seoDescription ?? summary,
   serviceType: areas.map(areaName),
+  keywords: [name, industryName(industry), ...areas.map(areaName)],
   audience: { '@type': 'Audience', audienceType: audience },
-  provider: { '@type': 'Organization', name: 'Sondri', url: 'https://sondri.ai' },
+  provider: { '@id': `${siteUrl}/#organization` },
+  areaServed: ['United States', 'Latin America'],
   url: canonical.href,
+};
+const videoSchema = media
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'VideoObject',
+      name: `${name} — Demo`,
+      description: media.alt,
+      thumbnailUrl: new URL(media.poster, siteUrl).href,
+      contentUrl: new URL(media.src, siteUrl).href,
+      embedUrl: canonical.href,
+      publisher: { '@id': `${siteUrl}/#organization` },
+    }
+  : null;
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${siteUrl}/` },
+    { '@type': 'ListItem', position: 2, name: 'Solutions', item: `${siteUrl}/#solutions` },
+    { '@type': 'ListItem', position: 3, name, item: canonical.href },
+  ],
 };
 ---
 
-<Base title={`${name} — Solutions — Sondri`} description={summary} titleKey="solutions.page.title" descriptionKey="solutions.page.description">
+<Base
+  title={seoTitle ?? `${name} — Solutions — Sondri`}
+  description={seoDescription ?? summary}
+  titleKey="solutions.page.title"
+  descriptionKey="solutions.page.description"
+  mdPath={`/solutions/${solution.id}.md`}
+>
   <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(serviceSchema)} />
+  <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  {videoSchema && <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(videoSchema)} />}
 
   <article>
     <header class="section on-dark head">

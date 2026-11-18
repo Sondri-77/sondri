@@ -14,7 +14,7 @@ const { title, excerpt, category, date, author } = post.data;
     <span class="chip">{category}</span>
     <span class="label">{readMins(post.body)} min read</span>
   </div>
-  <h3 class:list={[feature ? 'h3' : 'h5', 'title']}>{title}</h3>
+  <h2 class:list={[feature ? 'h3' : 'h5', 'title']}>{title}</h2>
   <p class="excerpt">{excerpt}</p>
   <p class="label meta"><time datetime={date.toISOString()}>{fmtDate(date)}</time> · {author}</p>
   {feature && <span class="label read">Read the post <span class="arr">→</span></span>}

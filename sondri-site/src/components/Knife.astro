@@ -1,7 +1,14 @@
 ---
-import { calculator, knifeHead } from '../home-data';
+import { copy, type Lang } from '../i18n';
 import { money, weeklyCost, yearlyCost } from '../lib/cost';
 import { splitDot } from '../lib/dot';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const { calculator, knifeHead } = copy[lang];
 const [h2, dot] = splitDot(knifeHead.h2);
 // Server-rendered defaults: the sentence reads with real numbers before (or without) JS.
 const by = Object.fromEntries(calculator.inputs.map((i) => [i.id, i])) as Record<string, (typeof calculator.inputs)[number]>;
@@ -50,7 +57,7 @@ const key = (i: (typeof calculator.inputs)[number]) => `calculator.inputs.${calc
                 />
               </span>
             </span>
-            {n === 0 && <span data-people-word>{people === 1 ? calculator.person : calculator.people}</span>}
+            {n === 0 && <span data-people-word data-person={calculator.person} data-people={calculator.people}>{people === 1 ? calculator.person : calculator.people}</span>}
             {n === 1 && <span data-i18n="calculator.week">{calculator.week}</span>}
             {n === 2 && <span data-i18n="calculator.on">{calculator.on}</span>}
           </Fragment>
@@ -157,7 +164,11 @@ const key = (i: (typeof calculator.inputs)[number]) => `calculator.inputs.${calc
       const total = money(yearlyCost(weeklyCost(wage, hours, people)));
       years.forEach((y) => (y.textContent = total));
       // The verb agrees with the head count, in the page's language.
-      if (word) word.textContent = people === 1 ? t('calculator.person') : t('calculator.people');
+      if (word) {
+        const keyName = people === 1 ? 'calculator.person' : 'calculator.people';
+        const fallback = people === 1 ? word.dataset.person : word.dataset.people;
+        word.textContent = (document.documentElement.lang === 'es' ? t(keyName) : '') || fallback || t(keyName);
+      }
       inputs.forEach(show);
     };
     inputs.forEach((i) => i.addEventListener('input', update));

@@ -1,8 +1,14 @@
 ---
-import { benefits, solution, valueCases, valuePanel } from '../home-data';
-import type { ValueMetric } from '../home-data';
+import { copy, type Lang, type ValueMetric } from '../i18n';
 import { money } from '../lib/cost';
 import { splitDot } from '../lib/dot';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const { benefits, solution, valueCases, valuePanel } = copy[lang];
 const [h2, dot] = splitDot(solution.h2);
 
 // The first case is the one the server renders open, so the panel reads

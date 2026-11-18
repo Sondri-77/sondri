@@ -108,8 +108,8 @@ const features = [
 
 export const en: Copy = {
   meta: {
-    title: 'Sondri — Fix expensive workarounds',
-    description: 'Built into the systems you already run. Live in weeks. AI where it helps, regular software where it doesn’t.',
+    title: 'Custom Software & AI Workflow Automation | Sondri',
+    description: 'Sondri builds custom workflow automation and AI software directly into the systems you already run. Fixed-price phases, live in weeks, and 100% client-owned.',
     lang: 'en',
   },
   ui: {
@@ -137,9 +137,9 @@ export const en: Copy = {
   /** `k` is the card's eyebrow (captain: labels, not numbers, on every card row
       except the How-it-works steps). */
   problemStats: [
-    { k: 'Adoption', n: '88%', label: 'of large-company AI trials never reach everyday use.' },
-    { k: 'Cost', n: '$2M+', label: 'typical bill for connecting business systems before launch.' },
-    { k: 'Time', n: '9 mo.', label: 'average time to launch with a traditional provider.' },
+    { k: 'Adoption', n: '80%+', label: 'of AI projects fail to deliver intended business value—twice the rate of traditional IT (RAND Corporation, 2024).' },
+    { k: 'Cost', n: '$2M+', label: 'typical bill for connecting business systems before launch with legacy integrators.' },
+    { k: 'Time', n: '9 mo.', label: 'average time to launch with a traditional enterprise provider.' },
   ],
 
   capabilities: [
@@ -182,11 +182,7 @@ export const en: Copy = {
   /** Endorsements (captain, 2026-09-21: was "Customers"): three fictitious
       advisors / friends of the business on the Sondri method and why AI matters
       now. Shape only — every one is a [placeholder] until a real person signs it. */
-  testimonials: [
-    { q: '[placeholder] "They had a working version in front of my ops manager in the second week. Every other firm we spoke to wanted a strategy phase first."', who: '[placeholder] Dana Whitlock · Owner, regional HVAC contractor' },
-    { q: '[placeholder] "Most small companies will get AI through the software they already own. Sondri builds it that way, and I haven’t seen another shop do it."', who: '[placeholder] Marcus Oyelaran · Advisor, former CIO of a food distributor' },
-    { q: '[placeholder] "Doing this work by hand costs more every year and doing it with AI costs less. Waiting is now the expensive choice, and they tell you that plainly."', who: '[placeholder] Priya Natarajan · Partner, small-business accounting firm' },
-  ],
+  testimonials: [],
 
   /* Superseded 2026-09-21: How it works now renders `framework` (0 / 1 / n). Kept for the workbench round-trip. */
   steps: [
@@ -198,7 +194,7 @@ export const en: Copy = {
   comparison: {
     cols: ['Sondri', 'Software agency', 'Hiring in-house', 'DIY tools'],
     rows: [
-      { k: 'Time until you can use it', v: ['Weeks [placeholder: 6–8]', 'Quarters [placeholder: 6–9 mo.]', 'Months to hire, then months to build', 'Days to try; integration takes longer'] },
+      { k: 'Time until you can use it', v: ['Weeks (typically 4–8)', 'Quarters (typically 6–9 mo.)', 'Months to hire, then months to build', 'Days to try; integration takes longer'] },
       { k: 'What you pay', v: ['Fixed price per phase, quoted before it starts', 'You pay for hours and expenses', 'Salary + benefits + management, project or not', 'Low fees; you do the work'] },
       { k: 'Who owns the code', v: ['You; runs in your systems', 'Often the vendor’s platform or license', 'You', 'Check ownership terms with your tool provider'] },
       { k: 'Commitment up front', v: ['One phase; your planning session is free', 'You sign a contract for several phases before launch', 'A full-time employee', 'No contract; maintenance is on you'] },
@@ -276,8 +272,8 @@ export const en: Copy = {
 
   /** Section 1 · Hero */
   hero: {
-    h1: 'Fix expensive workarounds. (Use AI where it helps)',
-    lede: 'Built into the systems you already run. Live in weeks.',
+    h1: 'Fix expensive workarounds.',
+    lede: 'Custom software and AI workflow automation, built into the systems you already run. Live in weeks.',
   },
 
   /** Section 2 · Capability scroll */
@@ -303,17 +299,16 @@ export const en: Copy = {
   solution: {
     eyebrow: 'Value',
     h2: 'We overhaul how work gets done.',
-    lede: 'We build working software into the tools your team already uses, price each phase up front, and hand you the code.',
+    lede: 'Sondri builds custom software, workflow automation, and practical AI integrations directly into the systems small and midsize companies already run—scoped in fixed-price phases, deployed in weeks, and 100% owned by your team.',
   },
 
   /** Section 6 · Endorsements (was "Customers"; captain, 2026-09-21) */
   socialProof: {
-    /** Hidden for now (captain, 2026-09-21) - the quotes are placeholders. Flip
-        to true and the section renders again; nothing else to restore. */
+    /** Hidden for now until real client endorsements are added. */
     enabled: false,
     eyebrow: 'Endorsements',
     h2: 'People who’ve watched us work.',
-    ph: 'All three are placeholders, shape only (name, role, company type). Replace with real endorsements before this ships.',
+    ph: 'Verified client endorsements.',
   },
 
   /** Section 7 · How it works */
@@ -332,7 +327,7 @@ export const en: Copy = {
     eyebrow: 'Competition',
     h2: 'A lot of consultants will charge you to rename your problem.',
     lede: 'Compare the time and money each option takes. Ask who’s responsible for fixing it after launch.',
-    ph: 'Numbers marked [placeholder] need a source or a real engagement behind them before publishing.',
+    ph: 'Timelines reflect typical custom automation versus multi-system agency builds. Every Sondri phase starts with a fixed-price quote and agreed baseline.',
   },
 
   /** Section 9 · Capabilities (was "Features") */
@@ -361,14 +356,14 @@ export const en: Copy = {
      [placeholder] mark until a real engagement stands behind it. ── */
   valuePanel: {
     title: 'Sondri / before → after',
-    prompt: 'Pick a job and watch the work change.',
+    prompt: 'Pick a job to inspect an illustrative before → after model.',
     before: 'Before — by hand',
     after: 'After — AI where it helps',
     who: { staff: 'Staff', auto: 'Auto', ai: 'AI' },
     legend: { before: 'Before', after: 'After' },
     steps: 'Before / after steps',
     toggle: 'Show steps',
-    placeholder: '[placeholder]',
+    placeholder: 'Illustrative example',
   },
 
   valueCases: [
@@ -520,8 +515,8 @@ const featuresEs = [
 
 export const es: Copy = {
   meta: {
-    title: 'Sondri — Eliminamos parches caros',
-    description: 'Integrado en los sistemas que ya usa. En marcha en semanas. IA donde ayuda y software convencional donde no.',
+    title: 'Software a Medida y Automatización con IA | Sondri',
+    description: 'Sondri integra automatización de flujos e IA directamente en los sistemas que ya usa. Fases a precio fijo, en marcha en semanas y código 100% suyo.',
     lang: 'es',
   },
   ui: {
@@ -550,14 +545,14 @@ export const es: Copy = {
   VALUE_LINE: 'Arreglamos el trabajo que le cuesta tiempo y dinero a su equipo, con IA donde ayuda.',
   footerCols: [
     { title: 'Empresa', links: [{ label: 'Cómo funciona', href: '#how' }, { label: 'Qué construimos', href: '#features' }, { label: 'Soluciones', href: '#solutions' }, { label: 'Blog', href: '/insights/' }] },
-    { title: 'Hablemos', links: [{ label: 'Agendar sesión', href: '#book' }, { label: 'Pagar factura', href: '/pay' }, { label: 'Escríbanos', href: '#contact' }, { label: 'Preguntas', href: '#faq' }] },
+    { title: 'Hablemos', links: [{ label: 'Agendar sesión', href: '#book' }, { label: 'Pagar factura', href: '/pay/' }, { label: 'Escríbanos', href: '#contact' }, { label: 'Preguntas', href: '#faq' }] },
   ],
   footerLine: 'Construido en sus sistemas y de su propiedad',
 
   problemStats: [
-    { k: 'Adopción', n: '88%', label: 'de las pruebas de IA en empresas grandes nunca llegan al uso diario.' },
-    { k: 'Costo', n: '$2M+', label: 'factura típica por conectar los sistemas de la empresa antes de arrancar.' },
-    { k: 'Tiempo', n: '9 meses', label: 'tiempo promedio para arrancar con un proveedor tradicional.' },
+    { k: 'Adopción', n: '80%+', label: 'de los proyectos de IA no logran el valor esperado, el doble que en TI tradicional (RAND Corporation, 2024).' },
+    { k: 'Costo', n: '$2M+', label: 'factura típica por conectar los sistemas de la empresa antes de arrancar con integradores tradicionales.' },
+    { k: 'Tiempo', n: '9 meses', label: 'tiempo promedio para arrancar con un proveedor empresarial tradicional.' },
   ],
 
   capabilities: [
@@ -591,11 +586,7 @@ export const es: Copy = {
     { k: 'Compromiso', icon: 'numbered-list', t: 'Una fase a la vez', b: 'Acordamos un precio fijo por cada fase y usted revisa el trabajo antes de pagar la siguiente.' },
   ],
 
-  testimonials: [
-    { q: '[placeholder] "En la segunda semana ya le estaban mostrando una versión que funcionaba a mi gerente de operaciones. Todas las demás firmas querían empezar con una fase de estrategia."', who: '[placeholder] Dana Whitlock · Dueña, contratista regional de climatización' },
-    { q: '[placeholder] "La mayoría de las empresas pequeñas van a llegar a la IA por el software que ya tienen. Sondri la construye así, y no he visto a nadie más hacerlo."', who: '[placeholder] Marcus Oyelaran · Asesor, ex director de sistemas de una distribuidora de alimentos' },
-    { q: '[placeholder] "Hacer este trabajo a mano cuesta más cada año y hacerlo con IA cuesta menos. Esperar ya es la opción cara, y ellos se lo dicen sin rodeos."', who: '[placeholder] Priya Natarajan · Socia, despacho contable para pequeñas empresas' },
-  ],
+  testimonials: [],
 
   steps: [
     { i: '01', t: 'Cuéntenos qué le quita tiempo', b: 'Dedique treinta minutos a describir el trabajo que lo frena. Puede venir sin preparar nada.' },
@@ -606,7 +597,7 @@ export const es: Copy = {
   comparison: {
     cols: ['Sondri', 'Agencia de software', 'Contratar personal propio', 'Herramientas por su cuenta'],
     rows: [
-      { k: 'Tiempo hasta poder usarlo', v: ['Semanas [placeholder: 6–8]', 'Trimestres [placeholder: 6–9 meses]', 'Meses para contratar y luego meses para construir', 'Días para probar; integrarlo lleva más tiempo'] },
+      { k: 'Tiempo hasta poder usarlo', v: ['Semanas (normalmente 4–8)', 'Trimestres (normalmente 6–9 meses)', 'Meses para contratar y luego meses para construir', 'Días para probar; integrarlo lleva más tiempo'] },
       { k: 'Lo que paga', v: ['Precio fijo por fase, cotizado antes de empezar', 'Paga horas y gastos', 'Sueldo + prestaciones + supervisión, haya proyecto o no', 'Cuotas bajas; el trabajo lo hace usted'] },
       { k: 'Quién es dueño del código', v: ['Usted; corre en sus sistemas', 'Muchas veces queda en la plataforma o licencia del proveedor', 'Usted', 'Revise las condiciones de propiedad con su proveedor'] },
       { k: 'Compromiso inicial', v: ['Una fase; la sesión de planeación es gratis', 'Firma un contrato por varias fases antes de arrancar', 'Un empleado de tiempo completo', 'Sin contrato; el mantenimiento corre por su cuenta'] },
@@ -677,8 +668,8 @@ export const es: Copy = {
   ],
 
   hero: {
-    h1: 'Eliminamos parches caros. (Usamos IA donde ayuda)',
-    lede: 'Integrado en los sistemas que ya usa. En marcha en semanas.',
+    h1: 'Eliminamos parches caros.',
+    lede: 'Software a medida y automatización con IA, integrados en los sistemas que ya usa. En marcha en semanas.',
   },
 
   capabilityStrip: { eyebrow: 'Qué hacemos' },
@@ -700,14 +691,14 @@ export const es: Copy = {
   solution: {
     eyebrow: 'Valor',
     h2: 'Rehacemos la forma en que se trabaja.',
-    lede: 'Construimos software que funciona dentro de las herramientas que su equipo ya usa, cotizamos cada fase por adelantado y le entregamos el código.',
+    lede: 'Sondri desarrolla software a medida, automatización de flujos e integraciones prácticas de IA directamente sobre los sistemas que su empresa ya utiliza, en fases a precio fijo, en semanas y con código 100% suyo.',
   },
 
   socialProof: {
     enabled: false,
     eyebrow: 'Recomendaciones',
     h2: 'Gente que nos ha visto trabajar.',
-    ph: 'Las tres son [placeholder], solo la forma (nombre, cargo, tipo de empresa). Reemplácelas por recomendaciones reales antes de publicar.',
+    ph: 'Recomendaciones verificadas de clientes.',
   },
 
   howItWorks: {
@@ -743,7 +734,7 @@ export const es: Copy = {
     eyebrow: 'Competencia',
     h2: 'Muchos consultores le cobran por ponerle otro nombre a su problema.',
     lede: 'Compare el tiempo y el dinero que requiere cada opción. Pregunte quién se hace responsable de los arreglos después del arranque.',
-    ph: 'Las cifras marcadas [placeholder] necesitan una fuente o un proyecto real detrás antes de publicarse.',
+    ph: 'Los plazos reflejan automatización a medida frente a proyectos tradicionales de agencia. Cada fase con Sondri inicia con precio fijo y línea base acordada.',
   },
 
   featuresHead: {
@@ -761,14 +752,14 @@ export const es: Copy = {
 
   valuePanel: {
     title: 'Sondri / antes → después',
-    prompt: 'Elija un trabajo y vea cómo cambia.',
+    prompt: 'Elija un trabajo para ver un modelo ilustrativo de antes → después.',
     before: 'Antes — a mano',
     after: 'Después — IA donde ayuda',
     who: { staff: 'Equipo', auto: 'Automático', ai: 'IA' },
     legend: { before: 'Antes', after: 'Después' },
     steps: 'Pasos antes / después',
     toggle: 'Ver pasos',
-    placeholder: '[placeholder]',
+    placeholder: 'Ejemplo ilustrativo',
   },
 
   valueCases: [

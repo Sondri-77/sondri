@@ -1,7 +1,13 @@
 ---
-import { framework } from '../data';
-import { howItWorks } from '../home-data';
+import { copy, type Lang } from '../i18n';
 import { splitDot } from '../lib/dot';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const { framework, howItWorks } = copy[lang];
 const [h2, dot] = splitDot(howItWorks.h2);
 const labels = { does: howItWorks.does, gets: howItWorks.gets };
 ---
