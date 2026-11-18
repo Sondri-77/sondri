@@ -617,8 +617,8 @@ const faqSchema = {
             <a class="btn btn-gold" href="#free-check">
               {isEs ? 'Probar mi Sitio Gratis' : 'Check My Website Free'} <span class="arr">→</span>
             </a>
-            <a class="btn btn-outline-light" href={`${prefix}/pricing/`}>
-              {isEs ? 'Planes y Sitios Web' : 'See Plans & Websites'}
+            <a class="btn btn-outline-light" href={`${prefix}/sample-report/`}>
+              {isEs ? 'Ver Reporte de Ejemplo' : 'See Sample Report'} <span class="arr">→</span>
             </a>
           </div>
 
@@ -1114,102 +1114,31 @@ const faqSchema = {
         </article>
       </div>
 
-      <!-- STEP 3: ANSWER-READY WEBSITES + AT A GLANCE SPLIT ROW -->
-      <div class="web-glance-split" id="websites-section" data-watch-reveal>
-        <div class="websites-panel">
-          <div class="wp-head">
-            <div>
-              <span class="label gold-kicker">{isEs ? 'DISEÑO WEB ANSWER-READY · PAGO ÚNICO' : 'ANSWER-READY WEBSITES · ONE-TIME'}</span>
-              <h3 class="h3 wp-title">
-                {isEs ? (
-                  <>Sitios web que venden, <em class="serif-em">desde $390.</em></>
-                ) : (
-                  <>Websites built to get picked, <em class="serif-em">from $390.</em></>
-                )}
-              </h3>
-            </div>
-            <a href={`${prefix}/services/websites/`} class="label text-link">
-              {isEs ? 'Ver arquitectura web →' : 'Website specs & FAQ →'}
-            </a>
-          </div>
-
-          <div class="web-tier-rows">
-            <div class="wt-row">
-              <div>
-                <p class="wt-name">Website Quick Fix <span class="wt-money">$390</span></p>
-                <p class="body-s wt-note">
-                  {isEs
-                    ? 'llms.txt, bots IA, schema JSON-LD validado y 1 bloque FAQ en tu sitio actual.'
-                    : 'llms.txt, clean AI bots, validated JSON-LD & 1 answer block on your current site.'}
-                </p>
-              </div>
-              <button type="button" class="btn btn-outline-light wt-btn" data-watch-checkout="website_quick_fix">
-                <span data-btn-label>{isEs ? 'Ordenar $390' : 'Order $390'}</span> <span class="arr">→</span>
-              </button>
-            </div>
-
-            <div class="wt-row is-popular">
-              <div>
-                <p class="wt-name">{isEs ? 'Sitio Answer-Ready 5 Páginas' : '5-Page Answer-Ready Site'} <span class="wt-money">$690</span></p>
-                <p class="body-s wt-note">
-                  {isEs
-                    ? 'Inicio, Servicios, Hub FAQ, Quiénes Somos y Contacto listos para IA.'
-                    : 'Home, Services, FAQ Hub, About & Contact built clean with Service + FAQ schema.'}
-                </p>
-              </div>
-              <button type="button" class="btn btn-gold wt-btn" data-watch-checkout="website_5page">
-                <span data-btn-label>{isEs ? 'Ordenar $690' : 'Order $690'}</span> <span class="arr">→</span>
-              </button>
-            </div>
-
-            <div class="wt-row">
-              <div>
-                <p class="wt-name">{isEs ? 'Sitio Growth 10 Páginas' : '10-Page Custom Growth Site'} <span class="wt-money">$1,190</span></p>
-                <p class="body-s wt-note">
-                  {isEs
-                    ? 'Páginas por servicio y ciudad, comparativas AEO, JSON-LD y OpenAI/Bing/GBP.'
-                    : 'Dedicated practice/city pages, comparison blocks, schema graph & AI hubs synced.'}
-                </p>
-              </div>
-              <button type="button" class="btn btn-outline-light wt-btn" data-watch-checkout="website_10page">
-                <span data-btn-label>{isEs ? 'Ordenar $1,190' : 'Order $1,190'}</span> <span class="arr">→</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <aside class="at-a-glance">
-          <span class="label glance-kicker">{isEs ? 'EN RESUMEN · AT A GLANCE' : 'AT A GLANCE'}</span>
-          <ul class="glance-list">
-            <li>Starter $149 · Growth $299 · Pro $399 /mo</li>
-            <li>{isEs ? 'Auditoría IA $99, abonable al Mes 1' : 'AI visibility audit $99, credited to month one'}</li>
-            <li>{isEs ? 'Webs: Quick Fix $390 · 5 págs $690 · 10 págs $1,190' : 'Websites: Quick Fix $390 · 5 pages $690 · 10 pages $1,190'}</li>
-            <li>{isEs ? '15% descuento trimestral · aviso previo de 30 días' : 'Save 15% paying quarterly · 30 days’ notice to cancel'}</li>
-            <li>{isEs ? 'Mes 4 gratis si tu visibilidad no mejora tras 3 meses' : 'Month 4 free if your AI visibility hasn’t improved after 3 months'}</li>
-          </ul>
-          <button type="button" class="btn btn-gold glance-btn" data-watch-checkout="aeo_full_audit">
-            <span data-btn-label>{isEs ? 'Solicitar Auditoría ($99)' : 'Order the $99 audit'}</span> <span class="arr">→</span>
-          </button>
-        </aside>
-      </div>
-
-      <!-- Contextual Routing Strip to Dedicated Pages -->
-      <div class="routing-strip" data-watch-reveal>
-        <div class="route-box">
-          <p class="body-s">
-            <strong>{isEs ? '¿Prefieres sprints únicos ($249–$499), packs verticales o guías?' : 'Want standalone Sprints ($249–$499), Industry Packs, or detailed pricing?'}</strong>
+      <!-- STEP 3: Single Clean Bar Routing to Websites ($390–$1,190), Sprints & All Pricing -->
+      <div class="pricing-more-bar" data-watch-reveal>
+        <div class="pmb-copy">
+          <span class="label gold-tag">
+            {isEs
+              ? 'SITIOS WEB ($390–$1,190) · SPRINTS ÚNICOS · PACKS POR INDUSTRIA'
+              : 'WEBSITES ($390–$1,190) · ONE-TIME SPRINTS · FULL COMPARISON'}
+          </span>
+          <h3 class="h4 pmb-title">
+            {isEs
+              ? '¿Buscas un sitio web Answer-Ready desde $390, un sprint único o ver todos los planes?'
+              : 'Need an answer-ready website (from $390), a one-time sprint, or full plan specs?'}
+          </h3>
+          <p class="body-s pmb-sub">
+            {isEs
+              ? 'Compara Website Quick Fix ($390), sitios de 5 págs ($690) y 10 págs ($1,190), sprints ($249–$499) y programa marca blanca para agencias.'
+              : 'Explore Website Quick Fix ($390), 5-Page ($690) & 10-Page ($1,190) builds, standalone fix sprints ($249–$499), and agency white-label plans.'}
           </p>
-          <a href={`${prefix}/pricing/`} class="btn btn-outline-light">
-            {isEs ? 'Ver Precios Completos y Sprints' : 'Full Pricing & Sprints'} <span class="arr">→</span>
+        </div>
+        <div class="pmb-actions">
+          <a href={`${prefix}/pricing/`} class="btn btn-gold">
+            {isEs ? 'Ver Sitios Web y Todos los Precios' : 'Explore Websites & All Pricing'} <span class="arr">→</span>
           </a>
-        </div>
-        <div class="route-box">
-          <p class="body-s">
-            <strong>{isEs ? '¿Diriges una agencia web o SEO?' : 'Run a web, design, or SEO agency?'}</strong>{' '}
-            {isEs ? 'Planes marca blanca desde $79/cliente/mes.' : 'White-label Watch from $79/client/mo.'}
-          </p>
           <a href={`${prefix}/partners/`} class="btn btn-outline-light">
-            {isEs ? 'Ver Programa Agencias' : 'Agency Partner Pricing'} <span class="arr">→</span>
+            {isEs ? 'Programa Agencias' : 'Agency Partners'} <span class="arr">→</span>
           </a>
         </div>
       </div>
@@ -2439,160 +2368,43 @@ const faqSchema = {
     padding-inline: 16px;
   }
 
-  .web-glance-split {
-    display: grid;
-    grid-template-columns: minmax(0, 1.28fr) minmax(0, 0.72fr);
-    gap: var(--s-24);
-    margin-bottom: var(--s-32);
-    align-items: stretch;
-  }
-
-  .websites-panel {
-    background: rgba(3, 25, 25, 0.92);
+  .pricing-more-bar {
+    background: rgba(3, 25, 25, 0.94);
     border: 1px solid var(--line);
-    padding: var(--s-24);
-    display: flex;
-    flex-direction: column;
-    gap: var(--s-20);
-  }
-
-  .wp-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 12px;
-    flex-wrap: wrap;
-    padding-bottom: 14px;
-    border-bottom: 1px solid var(--line-soft);
-  }
-
-  .gold-kicker {
-    color: var(--gold);
-  }
-
-  .wp-title {
-    margin-top: 6px;
-    color: var(--white);
-  }
-
-  .text-link {
-    color: var(--gold);
-    text-decoration: none;
-    border-bottom: 1px solid var(--gold);
-  }
-
-  .web-tier-rows {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .wt-row {
+    padding: var(--s-24) var(--s-32);
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 16px;
+    grid-template-columns: minmax(0, 1.35fr) auto;
+    gap: var(--s-24);
     align-items: center;
-    padding: 14px 16px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.14);
   }
 
-  .wt-row.is-popular {
-    border-color: var(--gold);
-    background: rgba(253, 179, 67, 0.07);
+  .pmb-copy,
+  .pmb-actions {
+    min-width: 0;
   }
 
-  .wt-name {
-    font-size: 16px;
-    font-weight: 700;
+  .pmb-title {
     color: var(--white);
-    margin-bottom: 4px;
+    margin: 8px 0 6px;
   }
 
-  .wt-money {
-    color: var(--gold);
-    font-family: var(--mono);
-    margin-left: 8px;
-  }
-
-  .wt-note {
+  .pmb-sub {
     color: var(--pale);
-    font-size: 13.5px;
-    line-height: 1.45;
+    font-size: 14.5px;
+    line-height: 1.5;
+    max-width: 68ch;
   }
 
-  .wt-btn {
+  .pmb-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .pmb-actions .btn {
     white-space: nowrap;
-    padding-inline: 14px;
-    font-size: 12.5px;
-  }
-
-  .at-a-glance {
-    background: rgba(11, 37, 36, 0.96);
-    border: 1px solid var(--gold);
-    box-shadow: 8px 8px 0 var(--gold);
-    padding: var(--s-24);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 16px;
-  }
-
-  .glance-kicker {
-    color: var(--gold);
-    letter-spacing: 0.08em;
-  }
-
-  .glance-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .glance-list li {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 11px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-    color: var(--white);
-    font-size: 14px;
-    line-height: 1.4;
-  }
-
-  .glance-list li::before {
-    content: '●';
-    color: var(--gold);
-    font-size: 10px;
-    margin-top: 2px;
-    flex-shrink: 0;
-  }
-
-  .glance-btn {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .routing-strip {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--s-20);
-  }
-
-  .route-box {
-    border: 1px solid var(--line-soft);
-    background: rgba(255, 255, 255, 0.03);
-    padding: 18px 22px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  .route-box p {
-    color: var(--pale);
-    max-width: 44ch;
   }
 
   /* COMMON QUESTIONS FAQ */
@@ -2679,12 +2491,30 @@ const faqSchema = {
     .bento-2x2,
     .loop-split,
     .cards-3,
-    .web-glance-split,
-    .wt-row,
-    .routing-strip,
+    .pricing-more-bar,
     .audit-entry-banner,
     .faq-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .pricing-more-bar,
+    .audit-entry-banner {
+      padding: var(--s-24);
+    }
+
+    .pmb-actions {
+      justify-content: flex-start;
+      width: 100%;
+    }
+
+    .pmb-actions .btn,
+    .aeb-btn {
+      white-space: normal;
+      width: 100%;
+      justify-content: space-between;
+      text-align: left;
+      padding-inline: 16px;
+      font-size: 12.5px;
     }
 
     .hero-steps-flow {
