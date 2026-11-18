@@ -617,8 +617,11 @@ const faqSchema = {
             <a class="btn btn-gold" href="#free-check">
               {isEs ? 'Probar mi Sitio Gratis' : 'Check My Website Free'} <span class="arr">→</span>
             </a>
-            <a class="btn btn-outline-light" href={`${prefix}/sample-report/`}>
-              {isEs ? 'Ver Reporte de Ejemplo' : 'See Sample Report'} <span class="arr">→</span>
+            <a class="btn btn-outline-light" href={`${prefix}/pricing/`}>
+              {isEs ? 'Planes y Sitios Web' : 'See Plans & Websites'}
+            </a>
+            <a class="label hero-sample-link" href={`${prefix}/sample-report/`}>
+              {isEs ? 'Ver reporte de ejemplo →' : 'See sample report →'}
             </a>
           </div>
 
@@ -1502,8 +1505,22 @@ const faqSchema = {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 14px 18px;
+    gap: 14px 20px;
     margin-bottom: var(--s-32);
+  }
+
+  .hero-sample-link {
+    color: var(--pale);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    padding-bottom: 3px;
+    white-space: nowrap;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .hero-sample-link:hover {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
   }
 
   .btn-outline-light {
