@@ -119,6 +119,16 @@ const siteGraph = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {!omitCanonical && (
+      <>
+        <script is:inline async src="https://www.googletagmanager.com/gtm.js?id=GTM-KWBL7TXV"></script>
+        <script is:inline>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+        </script>
+      </>
+    )}
     {!alternates && lang === 'en' && (
       <script is:inline>
         (function () {
