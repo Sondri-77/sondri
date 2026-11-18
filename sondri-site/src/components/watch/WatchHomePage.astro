@@ -1061,151 +1061,153 @@ const faqSchema = {
         </div>
       </div>
 
-      <!-- STEP 2: Full-Width 3 Clean Monthly Watch Plans -->
+      <!-- STEP 2: 3 Clean Offering Cards (Monthly Watch from $149, One-Time Sprints from $249, Websites from $390) -->
       <div class="cards-3" data-watch-reveal>
-        <article class="offer-card watch-tier">
-          <span class="label card-tag">WATCH STARTER</span>
-          <h3 class="h5">{isEs ? 'Negocios Locales y Clínicas' : 'Local Businesses & Clinics'}</h3>
-          <p class="price-tag"><span class="n">$149</span> <span class="label">USD / mo</span></p>
-          <p class="q-quota-pill label">
-            {isEs ? '25 preguntas de compra · seguimiento semanal' : '25 buyer questions tracked weekly'}
-          </p>
-          <ul class="tier-list">
-            <li>{isEs ? '4 motores: ChatGPT, Gemini, AI Overviews y AI Mode' : '4 engines: ChatGPT, Gemini, AI Overviews & AI Mode'}</li>
-            <li>{isEs ? 'robots.txt, llms.txt, schema base y fichas oficiales' : 'Technical setup (robots.txt, llms.txt, core schema) & official hubs'}</li>
-            <li>{isEs ? 'Reporte web mensual en vivo + PDF descargable' : 'Monthly live report + downloadable executive PDF'}</li>
-            <li><strong>{isEs ? '1 mejora técnica implementada cada mes' : '1 fix shipped for you every month'}</strong></li>
-          </ul>
-          <button type="button" class="btn btn-gold card-btn" data-watch-checkout="watch_local">
-            <span data-btn-label>{isEs ? 'Iniciar Watch Starter ($149/mes)' : 'Start Watch Starter ($149/mo)'}</span> <span class="arr">→</span>
-          </button>
-        </article>
-
         <article class="offer-card watch-tier featured-pro">
-          <span class="label card-tag gold-tag">WATCH GROWTH · {isEs ? 'MÁS ELEGIDO' : 'MOST POPULAR'}</span>
-          <h3 class="h5">{isEs ? 'Empresas en Crecimiento y Ecommerce' : 'Growing Practices & Ecommerce'}</h3>
-          <p class="price-tag"><span class="n">$299</span> <span class="label">USD / mo</span></p>
+          <span class="label card-tag gold-tag">
+            {isEs ? 'SONDRI WATCH · PILOTO AUTOMÁTICO MENSUAL' : 'SONDRI WATCH · MONTHLY AUTOPILOT'}
+          </span>
+          <h3 class="h5">{isEs ? 'Visibilidad IA y Mejoras Mensuales' : 'Monthly AI Visibility & Fixes'}</h3>
+          <p class="price-tag">
+            <span class="label from-txt">{isEs ? 'desde' : 'from'}</span>
+            <span class="n">$149</span>
+            <span class="label">USD / mo</span>
+          </p>
           <p class="q-quota-pill label is-gold">
-            {isEs ? '40 preguntas de compra y producto · semanal' : '40 buyer & product questions tracked weekly'}
+            {isEs ? 'Starter $149 · Growth $299 · Pro $399 /mes' : 'Starter $149 · Growth $299 · Pro $399 /mo'}
           </p>
           <ul class="tier-list">
-            <li>{isEs ? 'Schema completo (LocalBusiness, Service, Product/Offer, FAQPage)' : 'Full-site schema (LocalBusiness, Service, Product/Offer, FAQPage)'}</li>
-            <li>{isEs ? 'Rastreo de hasta 3 competidores directos' : 'Track up to 3 competitors across all 4 engines'}</li>
-            <li>{isEs ? 'Alineación de reseñas y directorios de autoridad' : 'Review, ACP/UCP & directory citation alignment'}</li>
-            <li><strong>{isEs ? '2 páginas citables o mejoras técnicas al mes' : '2 answer-ready pages or fixes shipped every month'}</strong></li>
+            <li>
+              {isEs ? (
+                <><strong>25 a 75 preguntas de compra</strong> medidas cada semana en ChatGPT, Gemini, AI Overviews y AI Mode</>
+              ) : (
+                <><strong>25 to 75 buyer questions</strong> tracked weekly across ChatGPT, Gemini, AI Overviews &amp; AI Mode</>
+              )}
+            </li>
+            <li>
+              {isEs ? (
+                <><strong>1 a 4 mejoras técnicas o páginas citables</strong> publicadas por nuestro equipo cada mes</>
+              ) : (
+                <><strong>1 to 4 done-for-you fixes</strong> or answer-ready pages shipped to your site every month</>
+              )}
+            </li>
+            <li>
+              {isEs ? (
+                <><strong>Sin contrato anual</strong> + garantía del Mes 4 gratis si tu visibilidad no sube</>
+              ) : (
+                <><strong>Zero annual lock-in</strong> + Month 4 free accountability guarantee</>
+              )}
+            </li>
           </ul>
-          <button type="button" class="btn btn-gold card-btn" data-watch-checkout="watch_commerce">
-            <span data-btn-label>{isEs ? 'Iniciar Watch Growth ($299/mes)' : 'Start Watch Growth ($299/mo)'}</span> <span class="arr">→</span>
-          </button>
+          <a href={`${prefix}/pricing/#monthly`} class="btn btn-gold card-btn">
+            <span>{isEs ? 'Ver Planes Watch ($149–$399)' : 'Compare Watch Plans ($149–$399)'}</span> <span class="arr">→</span>
+          </a>
         </article>
 
         <article class="offer-card watch-tier">
-          <span class="label card-tag">WATCH PRO · MULTI-LOCATION / B2B</span>
-          <h3 class="h5">{isEs ? 'B2B, Estudios y Multi-Sede' : 'Multi-Location, Legal & B2B'}</h3>
-          <p class="price-tag"><span class="n">$399</span> <span class="label">USD / mo</span></p>
+          <span class="label card-tag">
+            {isEs ? 'SPRINTS ÚNICOS · SIN SUSCRIPCIÓN' : 'ONE-TIME SPRINTS · NO SUBSCRIPTION'}
+          </span>
+          <h3 class="h5">{isEs ? 'Sprints de Implementación Única' : 'One-Time Implementation Sprints'}</h3>
+          <p class="price-tag">
+            <span class="label from-txt">{isEs ? 'desde' : 'from'}</span>
+            <span class="n">$249</span>
+            <span class="label">{isEs ? 'USD pago único' : 'USD one-time'}</span>
+          </p>
           <p class="q-quota-pill label">
-            {isEs ? '75 preguntas por servicio o ciudad · semanal' : '75 buyer questions tracked weekly'}
+            {isEs ? 'Listings IA $249 · Fix Técnico $499' : 'AI Listings $249 · Technical Fix $499'}
           </p>
           <ul class="tier-list">
-            <li>{isEs ? 'Múltiples áreas de práctica, comunas o sedes' : 'Multi-city or multi-practice prompt sets across 4 engines'}</li>
-            <li>{isEs ? 'Alertas semanales + hasta 5 competidores' : 'Up to 5 competitors tracked + drift & accuracy alerts'}</li>
-            <li>{isEs ? 'Construcción activa de citas externas' : 'Third-party citation & directory gap outreach'}</li>
-            <li><strong>{isEs ? '4 páginas citables o mejoras de impacto al mes' : '4 answer-ready pages or fixes shipped monthly'}</strong></li>
+            <li>
+              {isEs ? (
+                <><strong>AI Listings Sprint ($249):</strong> reclama y sincroniza OpenAI Hub, Bing AI, Apple y GBP en 5 días</>
+              ) : (
+                <><strong>AI Listings Sprint ($249):</strong> claim &amp; sync OpenAI Business Hub, Bing AI, Apple &amp; GBP in 5 days</>
+              )}
+            </li>
+            <li>
+              {isEs ? (
+                <><strong>Technical Fix Sprint ($499):</strong> desplegamos <code>/llms.txt</code>, schema JSON-LD y 2 bloques FAQ en 7 días</>
+              ) : (
+                <><strong>Technical Fix Sprint ($499):</strong> ship <code>/llms.txt</code>, validated JSON-LD schema &amp; 2 answer blocks in 7 days</>
+              )}
+            </li>
+            <li>
+              {isEs ? (
+                <><strong>Alcance fijo de pago único</strong> entregado directo en producción sin cuota mensual</>
+              ) : (
+                <><strong>Flat one-time scope</strong> deployed directly to production with zero recurring fee</>
+              )}
+            </li>
           </ul>
-          <button type="button" class="btn btn-outline-light card-btn" data-watch-checkout="watch_pro">
-            <span data-btn-label>{isEs ? 'Iniciar Watch Pro ($399/mes)' : 'Start Watch Pro ($399/mo)'}</span> <span class="arr">→</span>
-          </button>
+          <a href={`${prefix}/pricing/#sprints`} class="btn btn-outline-light card-btn">
+            <span>{isEs ? 'Ver Sprints ($249–$499)' : 'See One-Time Sprints ($249–$499)'}</span> <span class="arr">→</span>
+          </a>
+        </article>
+
+        <article class="offer-card watch-tier">
+          <span class="label card-tag">
+            {isEs ? 'SITIOS WEB ANSWER-READY · PAGO ÚNICO' : 'ANSWER-READY WEBSITES · ONE-TIME'}
+          </span>
+          <h3 class="h5">{isEs ? 'Sitios Web Hechos para IA' : 'Fast Answer-Ready Websites'}</h3>
+          <p class="price-tag">
+            <span class="label from-txt">{isEs ? 'desde' : 'from'}</span>
+            <span class="n">$390</span>
+            <span class="label">{isEs ? 'USD pago único' : 'USD one-time'}</span>
+          </p>
+          <p class="q-quota-pill label">
+            {isEs ? 'Quick Fix $390 · 5 Págs $690 · 10 Págs $1,190' : 'Quick Fix $390 · 5-Page $690 · 10-Page $1,190'}
+          </p>
+          <ul class="tier-list">
+            <li>
+              {isEs ? (
+                <><strong>Website Quick Fix ($390):</strong> prepara tu web actual con bots IA limpios, <code>llms.txt</code> y schema</>
+              ) : (
+                <><strong>Website Quick Fix ($390):</strong> upgrade your current site with clean AI bot rules, <code>llms.txt</code> &amp; schema</>
+              )}
+            </li>
+            <li>
+              {isEs ? (
+                <><strong>Sitios de 5 págs ($690) y 10 págs ($1,190):</strong> diseño rápido desde cero listo para ser citado</>
+              ) : (
+                <><strong>5-Page ($690) &amp; 10-Page ($1,190):</strong> fast custom websites built from scratch to get cited</>
+              )}
+            </li>
+            <li>
+              {isEs ? (
+                <><strong>Código 100% tuyo</strong> con grafo JSON-LD <code>Service</code> + <code>FAQPage</code> integrado</>
+              ) : (
+                <><strong>100% code ownership</strong> with <code>Service</code> + <code>FAQPage</code> JSON-LD baked into every page</>
+              )}
+            </li>
+          </ul>
+          <a href={`${prefix}/pricing/#websites`} class="btn btn-outline-light card-btn">
+            <span>{isEs ? 'Explorar Sitios Web ($390+)' : 'Explore Website Packages ($390+)'}</span> <span class="arr">→</span>
+          </a>
         </article>
       </div>
 
-      <!-- STEP 3: Symmetrical 3-Card Split Routing to Sprints, Websites & Agency Partners -->
-      <div class="pricing-routes-grid" data-watch-reveal>
-        <article class="offer-card route-card is-sprints">
-          <span class="label gold-tag">
-            {isEs ? 'SPRINTS ÚNICOS · $249–$499' : 'ONE-TIME FIX SPRINTS · $249–$499'}
-          </span>
-          <h3 class="h4 route-title">
-            {isEs
-              ? '¿Prefieres un sprint único sin plan mensual?'
-              : 'Want a one-time fix sprint without a monthly plan?'}
-          </h3>
-          <p class="body-s route-copy">
+      <!-- STEP 3: Compact Agency White-Label Footer Strip -->
+      <div class="agency-inline-bar" data-watch-reveal>
+        <div class="aib-copy">
+          <span class="label card-tag">{isEs ? 'PARA AGENCIAS Y CONSULTORAS' : 'FOR AGENCIES & CONSULTANTS'}</span>
+          <p class="body-s">
             {isEs ? (
               <>
-                <strong>AI Listings Sprint ($249)</strong> sincroniza OpenAI, Bing, Apple y GBP en 5 días.{' '}
-                <strong>Done-For-You Fix Sprint ($499)</strong> publica <code>llms.txt</code>, schema JSON-LD y 2 bloques FAQ en 7 días.
-              </>
-            ) : (
-              <>
-                <strong>AI Listings Sprint ($249)</strong> claims &amp; syncs OpenAI, Bing, Apple &amp; GBP in 5 days.{' '}
-                <strong>Done-For-You Fix Sprint ($499)</strong> ships <code>llms.txt</code>, JSON-LD schema &amp; 2 answer blocks in 7 days.
-              </>
-            )}
-          </p>
-          <div class="route-cta">
-            <a href={`${prefix}/pricing/#sprints`} class="btn btn-gold">
-              {isEs ? 'Ver Sprints ($249–$499)' : 'See One-Time Sprints ($249–$499)'} <span class="arr">→</span>
-            </a>
-          </div>
-        </article>
-
-        <article class="offer-card route-card is-websites">
-          <span class="label gold-tag">
-            {isEs ? 'SITIOS WEB · DESDE $390' : 'ANSWER-READY WEBSITES · FROM $390'}
-          </span>
-          <h3 class="h4 route-title">
-            {isEs
-              ? '¿Necesitas un sitio rápido hecho para IA?'
-              : 'Need a fast website built to get picked by AI?'}
-          </h3>
-          <p class="body-s route-copy">
-            {isEs ? (
-              <>
-                Mejora tu sitio actual con <strong>Website Quick Fix ($390)</strong>, o lanza un sitio nuevo de{' '}
-                <strong>5 páginas ($690)</strong> o <strong>10 páginas ($1,190)</strong> listo para citar.
-              </>
-            ) : (
-              <>
-                Upgrade your existing site with <strong>Website Quick Fix ($390)</strong>, or launch a new{' '}
-                <strong>5-Page ($690)</strong> or <strong>10-Page ($1,190)</strong> answer-ready website.
-              </>
-            )}
-          </p>
-          <div class="route-cta">
-            <a href={`${prefix}/pricing/#websites`} class="btn btn-gold">
-              {isEs ? 'Explorar Sitios Web (desde $390)' : 'Explore Websites (from $390)'} <span class="arr">→</span>
-            </a>
-          </div>
-        </article>
-
-        <article class="offer-card route-card">
-          <span class="label card-tag">
-            {isEs ? 'PARA AGENCIAS Y CONSULTORAS' : 'FOR AGENCIES & CONSULTANTS'}
-          </span>
-          <h3 class="h4 route-title">
-            {isEs
-              ? 'Sondri Watch marca blanca para tus clientes.'
-              : 'White-label Watch for your agency clients.'}
-          </h3>
-          <p class="body-s route-copy">
-            {isEs ? (
-              <>
-                Seguimiento de visibilidad IA bajo tu propia marca y mejoras mensuales desde{' '}
+                <strong>¿Diriges una agencia web, de diseño o SEO?</strong> Ofrece Sondri Watch bajo tu propia marca desde{' '}
                 <strong>$79/cliente/mes</strong>.
               </>
             ) : (
               <>
-                Wholesale AI visibility tracking and done-for-you monthly fixes under your own brand, from{' '}
+                <strong>Run a web, design, or SEO agency?</strong> White-label Sondri Watch under your own brand from{' '}
                 <strong>$79/client/mo</strong>.
               </>
             )}
           </p>
-          <div class="route-cta">
-            <a href={`${prefix}/partners/`} class="btn btn-outline-light">
-              {isEs ? 'Ver Programa de Agencias' : 'See Agency Partner Program'} <span class="arr">→</span>
-            </a>
-          </div>
-        </article>
+        </div>
+        <a href={`${prefix}/partners/`} class="btn btn-outline-light aib-btn">
+          <span>{isEs ? 'Ver Programa de Agencias' : 'See Agency Partner Program'}</span> <span class="arr">→</span>
+        </a>
       </div>
     </div>
   </section>
@@ -2401,6 +2403,11 @@ const faqSchema = {
     gap: 8px;
   }
 
+  .price-tag .from-txt {
+    color: var(--steel);
+    font-size: 11px;
+  }
+
   .price-tag .n {
     font-size: 46px;
     color: var(--gold);
@@ -2438,6 +2445,12 @@ const faqSchema = {
     font-size: 10px;
   }
 
+  .tier-list code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--gold);
+  }
+
   .card-btn {
     margin-top: auto;
     width: 100%;
@@ -2447,62 +2460,26 @@ const faqSchema = {
     padding-inline: 16px;
   }
 
-  .pricing-routes-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--s-24);
-    margin-top: var(--s-40);
-    align-items: stretch;
-  }
-
-  .route-card {
-    padding: var(--s-32);
-    gap: var(--s-16);
-    justify-content: flex-start;
-  }
-
-  .route-card.is-sprints {
-    border-color: var(--gold);
-    background: rgba(6, 33, 32, 0.96);
-  }
-
-  .route-card.is-websites {
-    border-color: rgba(253, 179, 67, 0.55);
-    background: rgba(6, 33, 32, 0.92);
-  }
-
-  .route-title {
-    color: var(--white);
-    line-height: 1.22;
-    margin: 2px 0;
-  }
-
-  .route-copy {
-    color: var(--pale);
-    font-size: 14.5px;
-    line-height: 1.58;
-  }
-
-  .route-copy code {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--gold);
-  }
-
-  .route-cta {
-    margin-top: auto;
-    padding-top: var(--s-16);
+  .agency-inline-bar {
+    background: rgba(3, 25, 25, 0.92);
+    border: 1px solid var(--line-soft);
+    padding: 20px 28px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: var(--s-24);
+    flex-wrap: wrap;
   }
 
-  .route-cta .btn {
-    width: 100%;
-    justify-content: space-between;
-    white-space: normal;
-    text-align: left;
-    font-size: 13px;
-    padding-inline: 16px;
+  .aib-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: var(--pale);
+  }
+
+  .aib-btn {
+    white-space: nowrap;
   }
 
   /* COMMON QUESTIONS FAQ */
@@ -2589,18 +2566,18 @@ const faqSchema = {
     .bento-2x2,
     .loop-split,
     .cards-3,
-    .pricing-routes-grid,
     .audit-entry-banner,
     .faq-grid {
       grid-template-columns: minmax(0, 1fr);
     }
 
-    .route-card,
+    .agency-inline-bar,
     .audit-entry-banner {
       padding: var(--s-24);
     }
 
-    .route-cta .btn,
+    .aib-btn,
+    .card-btn,
     .aeb-btn {
       white-space: normal;
       width: 100%;
