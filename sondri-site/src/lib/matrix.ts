@@ -1,7 +1,8 @@
 /* The solutions matrix: solution areas across, industries down. A named
    solution (src/content/solutions/) sits on one industry row and is marked in
    every area it uses. Plain data, so content.config.ts can read it too. Add a
-   column or a row here. */
+   column or a row here. An industry's `tab` overrides its name on the home
+   Solutions tab only. */
 export const areas = [
   {
     id: 'market-intel',
@@ -37,7 +38,7 @@ export const industries = [
   { id: 'real-estate', name: 'Real Estate' },
   { id: 'medical', name: 'Medical' },
   { id: 'events', name: 'Events' },
-  { id: 'tourism', name: 'Tourism' },
+  { id: 'tourism', name: 'Tourism', tab: 'AEO & SEO' },
   { id: 'legal', name: 'Legal' },
 ] as const;
 
