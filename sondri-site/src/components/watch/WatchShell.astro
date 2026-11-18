@@ -1,0 +1,621 @@
+---
+import '@fontsource/ibm-plex-sans/400.css';
+import '@fontsource/ibm-plex-sans/500.css';
+import '@fontsource/ibm-plex-sans/600.css';
+import '@fontsource/ibm-plex-sans/700.css';
+import '@fontsource-variable/jetbrains-mono';
+import '../../styles/brutal.css';
+import CalModal from '../CalModal.astro';
+import { BOOK_HREF, CONTACT_EMAIL, mailto } from '../../data';
+import type { Lang } from '../../i18n';
+
+interface Props {
+  title: string;
+  description: string;
+  lang?: Lang;
+  activeTab: 'overview' | 'playbooks' | 'sample' | 'partners';
+  alternates?: { en: string; es: string };
+}
+
+const { title, description, lang = 'en', activeTab, alternates } = Astro.props;
+const isEs = lang === 'es';
+const prefix = isEs ? '/es/watch' : '/watch';
+const siteUrl = Astro.site ? Astro.site.origin : 'https://sondri.ai';
+const canonical = new URL(Astro.url.pathname, siteUrl);
+
+const navItems = [
+  { id: 'overview', href: `${prefix}/`, label: isEs ? 'Resumen y Test' : 'Overview & Score' },
+  { id: 'playbooks', href: `${prefix}/playbooks/`, label: isEs ? 'Packs por Industria' : 'Playbooks & Packs' },
+  { id: 'sample', href: `${prefix}/sample-report/`, label: isEs ? 'Reporte Mensual' : 'Sample Report' },
+  { id: 'partners', href: `${prefix}/partners/`, label: isEs ? 'Agencias (Marca Blanca)' : 'Agencies' },
+];
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline async src="https://www.googletagmanager.com/gtm.js?id=GTM-KWBL7TXV"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    </script>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {alternates && (
+      <>
+        <link rel="alternate" hreflang="en" href={new URL(alternates.en, siteUrl).href} />
+        <link rel="alternate" hreflang="es" href={new URL(alternates.es, siteUrl).href} />
+      </>
+    )}
+    <meta name="theme-color" content="#081f1f" />
+    <link rel="preload" href="/fonts/florexa.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={`${siteUrl}/og.png`} />
+  </head>
+
+  <body class="watch-body">
+    <a class="skip" href="#main">{isEs ? 'Saltar al contenido' : 'Skip to content'}</a>
+
+    <!-- Fixed Pixelated Bayer-Dithered WebGL Topographical Background -->
+    <canvas id="watch-topo-canvas" aria-hidden="true"></canvas>
+
+    <!-- Announcement Bar -->
+    <div class="watch-ann">
+      <div class="wrap watch-ann-in">
+        <span class="label">
+          <span class="sq" aria-hidden="true"></span>
+          {isEs
+            ? 'SONDRI WATCH · VISIBILIDAD EN CHATGPT, GEMINI, AI OVERVIEWS Y AI MODE'
+            : 'SONDRI WATCH · DONE-FOR-YOU AI VISIBILITY ACROSS CHATGPT, GEMINI & GOOGLE AI'}
+        </span>
+        <a class="label watch-ann-cta" href={BOOK_HREF}>
+          {isEs ? 'Agendar llamada 15 min →' : 'Book a 15-min walkthrough →'}
+        </a>
+      </div>
+    </div>
+
+    <!-- Watch Top Header -->
+    <header class="watch-header on-dark" id="watchHeader">
+      <div class="wrap watch-nav-in">
+        <a class="watch-brand" href={`${prefix}/`} aria-label="Sondri Watch Home">
+          <img src="/brand/florexa-white-gold.svg" alt="Sondri" width="952" height="367" />
+          <span class="watch-slash" aria-hidden="true">/</span>
+          <span class="watch-badge label">WATCH</span>
+        </a>
+
+        <nav class="watch-links" aria-label={isEs ? 'Navegación principal' : 'Watch navigation'}>
+          {navItems.map((item) => (
+            <a
+              href={item.href}
+              class:list={['label', 'watch-nav-link', activeTab === item.id && 'is-active']}
+              aria-current={activeTab === item.id ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+
+        <div class="watch-right">
+          <a class="label parent-link" href={isEs ? '/es/' : '/'}>
+            ← {isEs ? 'Sondri Software' : 'sondri.ai'}
+          </a>
+          <a class="btn btn-gold watch-cta-sm" href={`${prefix}/#free-check`}>
+            {isEs ? 'Score Gratis' : 'Free AI Score'} <span class="arr">→</span>
+          </a>
+
+          {alternates && (
+            <div class="lang-switch" role="group" aria-label="Language">
+              <a
+                href={alternates.en}
+                hreflang="en"
+                class:list={['label', 'lang-item', !isEs && 'is-current']}
+              >
+                EN
+              </a>
+              <span class="lang-sep" aria-hidden="true">|</span>
+              <a
+                href={alternates.es}
+                hreflang="es"
+                class:list={['label', 'lang-item', isEs && 'is-current']}
+              >
+                ES
+              </a>
+            </div>
+          )}
+
+          <button
+            id="watchMenuBtn"
+            class="watch-toggle label"
+            type="button"
+            aria-expanded="false"
+            aria-controls="watchMobileMenu"
+          >
+            {isEs ? 'Menú' : 'Menu'}
+          </button>
+        </div>
+      </div>
+
+      <div id="watchMobileMenu" hidden>
+        {navItems.map((item) => (
+          <a href={item.href} class:list={['watch-m-link', activeTab === item.id && 'is-active']}>
+            {item.label}
+          </a>
+        ))}
+        <a href={isEs ? '/es/' : '/'} class="watch-m-link">
+          ← {isEs ? 'Volver a sondri.ai (Software a Medida)' : 'Back to sondri.ai (Custom AI & Software)'}
+        </a>
+        {alternates && (
+          <div class="watch-m-lang">
+            <a href={alternates.en} class="label">EN</a>
+            <span>·</span>
+            <a href={alternates.es} class="label">ES</a>
+          </div>
+        )}
+      </div>
+    </header>
+
+    <main id="main" class="watch-main">
+      <slot />
+    </main>
+
+    <!-- Watch Footer -->
+    <footer class="on-dark watch-footer">
+      <div class="wrap">
+        <div class="rule-cols cols-3 watch-f-grid">
+          <div>
+            <p class="label col-head">/ Sondri Watch</p>
+            <p class="body-s footer-desc">
+              {isEs
+                ? 'Monitoreo continuo y optimización llave en mano para que los motores de IA nombren y citen a su empresa.'
+                : 'Done-for-you AI search monitoring, schema engineering, and monthly visibility fixes built by Sondri.'}
+            </p>
+            <a class="mail-link label" href={mailto('Hello from watch.sondri.ai')}>
+              {CONTACT_EMAIL}
+            </a>
+          </div>
+
+          <div>
+            <p class="label col-head">/ {isEs ? 'Plataforma Watch' : 'Watch Platform'}</p>
+            <ul class="f-list">
+              {navItems.map((item) => (
+                <li><a href={item.href} class="label">{item.label}</a></li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <p class="label col-head">/ {isEs ? 'Sondri Principal' : 'Parent Company'}</p>
+            <ul class="f-list">
+              <li><a href={isEs ? '/es/' : '/'} class="label">{isEs ? 'Software e IA a Medida' : 'Custom Software & AI Ops'}</a></li>
+              <li><a href={isEs ? '/es/solutions/aeo-seo/' : '/solutions/aeo-seo/'} class="label">AEO &amp; SEO Visibility</a></li>
+              <li><a href="/pay/" class="label">{isEs ? 'Pagos y Facturación' : 'Client Payments'}</a></li>
+              <li><a href={isEs ? '/es/privacy/' : '/privacy/'} class="label">{isEs ? 'Privacidad' : 'Privacy'}</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="watch-f-bottom">
+          <span class="label">&copy; {new Date().getFullYear()} Sondri · watch.sondri.ai</span>
+          <span class="label">{isEs ? 'Monitoreo EN/ES · 4 Motores de IA' : 'Bilingual EN/ES · ChatGPT, Gemini, AI Overviews & AI Mode'}</span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Compact Mobile Bottom Adviser Bar (<= 900px) -->
+    <div id="watchMobileBar" class="watch-mobile-bar">
+      <div class="mobile-bar-meta">
+        <span class="label mobile-stage-kicker">{isEs ? 'SECCIÓN' : 'STAGE'}</span>
+        <span id="watchMobileStage" class="mobile-stage-title">{isEs ? '01 Diagnóstico' : '01 Overview'}</span>
+      </div>
+      <div class="mobile-bar-actions">
+        <span id="watchMobileScore" class="label mobile-score-pill" style="display: none;">--</span>
+        <a href={`${prefix}/#free-check`} class="btn btn-gold mobile-cta">
+          {isEs ? 'Test Gratis' : 'Free Score'}
+        </a>
+        <a href={`${prefix}/#pricing-ladder`} class="btn mobile-cta-sec">
+          {isEs ? 'Planes' : 'Plans'}
+        </a>
+      </div>
+    </div>
+
+    <CalModal />
+
+    <script>
+      import { initWatchTopoBackground } from '../../scripts/watch-topo-gl';
+      import { initWatchScrollAndCheckout } from '../../scripts/watch-scroll';
+
+      initWatchTopoBackground('watch-topo-canvas');
+      initWatchScrollAndCheckout();
+
+      const header = document.getElementById('watchHeader');
+      const syncHeader = () => header?.classList.toggle('is-stuck', window.scrollY > 12);
+      syncHeader();
+      window.addEventListener('scroll', syncHeader, { passive: true });
+
+      const menuBtn = document.getElementById('watchMenuBtn');
+      const mobileMenu = document.getElementById('watchMobileMenu');
+      menuBtn?.addEventListener('click', () => {
+        const open = menuBtn.getAttribute('aria-expanded') === 'true';
+        menuBtn.setAttribute('aria-expanded', String(!open));
+        if (mobileMenu) mobileMenu.hidden = open;
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  .watch-body {
+    position: relative;
+    background: var(--teal-deep);
+  }
+
+  #watch-topo-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+
+  .watch-ann {
+    position: relative;
+    z-index: 55;
+    background: var(--gold);
+    color: var(--teal);
+  }
+
+  .watch-ann-in {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    min-height: 38px;
+    padding-block: 8px;
+  }
+
+  .watch-ann .label {
+    color: var(--teal);
+    font-weight: 600;
+  }
+
+  .sq {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--teal);
+    margin-right: 8px;
+    vertical-align: 1px;
+  }
+
+  .watch-ann-cta {
+    text-decoration: none;
+    border-bottom: 1px solid var(--teal);
+  }
+
+  .watch-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(3, 25, 25, 0.72);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line-soft);
+    transition: background-color 0.2s ease;
+  }
+
+  .watch-header.is-stuck {
+    background: rgba(8, 31, 31, 0.96);
+    border-bottom-color: var(--line);
+  }
+
+  .watch-nav-in {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    height: 70px;
+  }
+
+  .watch-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .watch-brand img {
+    height: 24px;
+    width: auto;
+  }
+
+  .watch-slash {
+    color: var(--steel);
+    font-family: var(--mono);
+    font-size: 16px;
+  }
+
+  .watch-badge {
+    background: var(--gold);
+    color: var(--teal);
+    padding: 4px 8px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .watch-links {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-right: auto;
+    margin-left: 16px;
+  }
+
+  .watch-nav-link {
+    color: var(--pale);
+    text-decoration: none;
+    padding: 6px 0;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+
+  .watch-nav-link:hover,
+  .watch-nav-link.is-active {
+    color: var(--white);
+    border-bottom-color: var(--gold);
+  }
+
+  .watch-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .parent-link {
+    color: var(--steel);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .parent-link:hover {
+    color: var(--gold);
+  }
+
+  .watch-cta-sm {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+
+  .lang-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .lang-item {
+    color: var(--pale);
+    text-decoration: none;
+    padding: 4px 6px;
+  }
+
+  .lang-item.is-current {
+    background: var(--gold);
+    color: var(--teal);
+    font-weight: 700;
+  }
+
+  .lang-sep {
+    color: var(--line);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  .watch-toggle {
+    display: none;
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--white);
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+
+  #watchMobileMenu {
+    border-top: 1px solid var(--line);
+    background: var(--teal-deep);
+    padding: 16px var(--pad-x) 24px;
+  }
+
+  .watch-m-link {
+    display: block;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line-soft);
+    font-family: var(--mono);
+    font-size: 13px;
+    text-transform: uppercase;
+    color: var(--pale);
+    text-decoration: none;
+  }
+
+  .watch-m-link.is-active {
+    color: var(--gold);
+  }
+
+  .watch-m-lang {
+    display: flex;
+    gap: 12px;
+    padding-top: 16px;
+  }
+
+  .watch-m-lang a {
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  .watch-main {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Make .on-dark sections slightly translucent over the WebGL topographical canvas */
+  :global(.watch-body .section.on-dark),
+  :global(.watch-body .watch-footer.on-dark) {
+    background: rgba(8, 31, 31, 0.84);
+  }
+
+  :global(.watch-body .section.on-paper),
+  :global(.watch-body .section.on-off) {
+    position: relative;
+    z-index: 2;
+  }
+
+  .watch-footer {
+    border-top: 1px solid var(--line);
+    padding-block: var(--s-64) var(--s-48);
+  }
+
+  .watch-f-grid {
+    gap: var(--s-32);
+  }
+
+  .col-head {
+    color: var(--white);
+    margin-bottom: var(--s-16);
+  }
+
+  .footer-desc {
+    color: var(--pale);
+    font-size: 15px;
+    line-height: 1.55;
+    max-width: 34ch;
+    margin-bottom: var(--s-16);
+  }
+
+  .mail-link {
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid var(--gold);
+  }
+
+  .f-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .f-list a {
+    color: var(--pale);
+    text-decoration: none;
+  }
+
+  .f-list a:hover {
+    color: var(--gold);
+  }
+
+  .watch-f-bottom {
+    margin-top: var(--s-48);
+    padding-top: var(--s-24);
+    border-top: 1px solid var(--line-soft);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--s-16);
+    color: var(--steel);
+  }
+
+  .watch-mobile-bar {
+    display: none;
+  }
+
+  @media (max-width: 1080px) {
+    .watch-links,
+    .parent-link,
+    .watch-cta-sm {
+      display: none;
+    }
+
+    .watch-toggle {
+      display: inline-block;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .watch-body {
+      padding-bottom: 72px;
+    }
+
+    .watch-mobile-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 60;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 16px;
+      background: rgba(3, 25, 25, 0.96);
+      border-top: 2px solid var(--gold);
+      backdrop-filter: blur(8px);
+    }
+
+    .mobile-bar-meta {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .mobile-stage-kicker {
+      font-size: 10px;
+      color: var(--gold);
+    }
+
+    .mobile-stage-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mobile-bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .mobile-score-pill {
+      padding: 6px 8px;
+      background: rgba(253, 179, 67, 0.16);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .mobile-cta {
+      padding: 9px 14px;
+      font-size: 12px;
+    }
+
+    .mobile-cta-sec {
+      padding: 9px 12px;
+      font-size: 12px;
+      background: transparent;
+      color: var(--white);
+      border: 1px solid var(--line);
+    }
+  }
+</style>

@@ -12,6 +12,7 @@ const { lang = 'en', alternates } = Astro.props;
 const t = copy[lang];
 const { ui, announcement, nav } = t;
 const homeHref = lang === 'es' ? '/es/' : '/';
+const watchHref = lang === 'es' ? '/es/watch/' : '/watch/';
 const at = (h: string) => sectionHref(h, Astro.url.pathname, lang);
 ---
 
@@ -33,6 +34,9 @@ const at = (h: string) => sectionHref(h, Astro.url.pathname, lang);
     </nav>
 
     <div class="right">
+      <a class="link watch-nav-pill" href={watchHref}>
+        <span class="watch-dot" aria-hidden="true"></span>Sondri Watch
+      </a>
       <a class="link log" href="#contact" data-i18n="ui.contact">{ui.contact}</a>
       <a class="btn btn-white" href={BOOK_HREF} data-i18n="cta">{t.cta}</a>
     </div>
@@ -73,6 +77,7 @@ const at = (h: string) => sectionHref(h, Astro.url.pathname, lang);
 
   <div id="navpanel" hidden>
     {nav.map((i, n) => <a class="panel-link" href={at(i.href)} data-i18n={`nav.${n}.label`}>{i.label}</a>)}
+    <a class="panel-link" href={watchHref}>Sondri Watch (AI Search) →</a>
     <a class="panel-link" href="#contact" data-i18n="ui.contact">{ui.contact}</a>
     <a class="btn btn-white panel-btn" href={BOOK_HREF} data-i18n="cta">{t.cta}</a>
   </div>
@@ -122,6 +127,8 @@ const at = (h: string) => sectionHref(h, Astro.url.pathname, lang);
 
   .right { display: flex; align-items: center; gap: clamp(var(--s-16), 1.7vw, var(--s-24)); }
   .right .btn, .right .link { white-space: nowrap; }
+  .watch-nav-pill { display: inline-flex; align-items: center; gap: 7px; color: var(--gold); }
+  .watch-dot { width: 6px; height: 6px; background: var(--gold); display: inline-block; }
   /* The bar's CTA is the white pill, not the gold one: gold stays the hero's.
      Same grammar as .btn-gold with paper for the fill, in both bar states. */
   .btn-white { background: var(--white); border-color: var(--white); color: var(--teal); font-weight: 500; }

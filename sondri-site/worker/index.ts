@@ -8,9 +8,37 @@ export interface Env {
 
 const APEX_HOST = 'sondri.ai';
 const WWW_HOST = 'www.sondri.ai';
+const WATCH_HOST = 'watch.sondri.ai';
 const ASSET_EXT_RE = /\.(?:css|js|mjs|json|txt|xml|svg|png|jpe?g|webp|gif|ico|woff2?|mp4|webm|webmanifest|map)$/i;
 const ASSET_PREFIX_RE = /^\/(?:_astro|brand|fonts|icons|img|i18n|\.well-known)\//;
+const SHARED_ROOT_PREFIX_RE = /^\/(?:ai-audit|audit|pay|success|privacy|es\/privacy|llms\.txt|llms-full\.txt|robots\.txt|sitemap\.xml|sitemap-index\.xml)(?:\/|$)/;
 const NOINDEX_PREFIX_RE = /^\/(?:pay|success|i18n)(?:\/|$)/;
+
+function rewriteWatchHostnamePath(url: URL): URL {
+  const path = url.pathname;
+  if (
+    ASSET_PREFIX_RE.test(path) ||
+    ASSET_EXT_RE.test(path) ||
+    SHARED_ROOT_PREFIX_RE.test(path) ||
+    path.startsWith('/watch') ||
+    path.startsWith('/es/watch')
+  ) {
+    return url;
+  }
+
+  let targetPath: string;
+  if (path === '/es' || path === '/es/') {
+    targetPath = '/es/watch/';
+  } else if (path.startsWith('/es/')) {
+    targetPath = `/es/watch${path.slice(3)}`;
+  } else if (path === '/') {
+    targetPath = '/watch/';
+  } else {
+    targetPath = `/watch${path}`;
+  }
+
+  return new URL(`${targetPath}${url.search}`, url.origin);
+}
 
 function parseQuality(accept: string, mediaType: string): number {
   for (const part of accept.split(',')) {
@@ -82,22 +110,33 @@ function applyHeaders(
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url);
+    const rawUrl = new URL(request.url);
 
-    // Enforce canonical https://sondri.ai for production hostnames.
-    if (url.hostname === WWW_HOST || (url.hostname === APEX_HOST && url.protocol !== 'https:')) {
-      const canonical = new URL(url.pathname + url.search, `https://${APEX_HOST}`);
+    // Enforce canonical https://sondri.ai and https://watch.sondri.ai in production.
+    if (
+      rawUrl.hostname === WWW_HOST ||
+      ((rawUrl.hostname === APEX_HOST || rawUrl.hostname === WATCH_HOST) && rawUrl.protocol !== 'https:')
+    ) {
+      const targetHost = rawUrl.hostname === WATCH_HOST ? WATCH_HOST : APEX_HOST;
+      const canonical = new URL(rawUrl.pathname + rawUrl.search, `https://${targetHost}`);
       return Response.redirect(canonical.href, 301);
     }
+
+    const url = rawUrl.hostname === WATCH_HOST ? rewriteWatchHostnamePath(rawUrl) : rawUrl;
+    const assetRequest = url.href !== rawUrl.href ? new Request(url.href, request) : request;
 
     // Consolidate legacy ?lang=es query URLs to static localized routes.
     if (url.searchParams.get('lang') === 'es') {
       if (url.pathname === '/' || url.pathname === '/index.html') {
-        return Response.redirect(new URL('/es/', url.origin).href, 301);
+        return Response.redirect(new URL('/es/', rawUrl.origin).href, 301);
       }
-      if (/^\/(?:privacy|insights|solutions)(?:\/|$)/.test(url.pathname)) {
+      if (/^\/(?:privacy|insights|solutions|watch)(?:\/|$)/.test(url.pathname)) {
         const normalized = url.pathname.endsWith('/') ? url.pathname : `${url.pathname}/`;
-        return Response.redirect(new URL(`/es${normalized}`, url.origin).href, 301);
+        const cleanPath =
+          rawUrl.hostname === WATCH_HOST && normalized.startsWith('/watch/')
+            ? normalized.slice('/watch'.length)
+            : normalized;
+        return Response.redirect(new URL(`/es${cleanPath}`, rawUrl.origin).href, 301);
       }
     }
 
@@ -124,7 +163,7 @@ export default {
       }
 
       // Preserve _redirects (e.g. /about -> /) before falling back to Markdown 404.
-      const origRes = await env.ASSETS.fetch(request);
+      const origRes = await env.ASSETS.fetch(assetRequest);
       if (origRes.status >= 300 && origRes.status < 400) {
         return origRes;
       }
@@ -146,7 +185,7 @@ export default {
       });
     }
 
-    const assetRes = await env.ASSETS.fetch(request);
+    const assetRes = await env.ASSETS.fetch(assetRequest);
     if (isNoindex) {
       return applyHeaders(assetRes, {
         varyAccept: assetRes.headers.get('Content-Type')?.includes('text/html') ?? false,

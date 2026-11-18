@@ -1,28 +1,37 @@
 ---
 interface Props {
   defaultLang?: 'en' | 'es';
+  embedded?: boolean;
 }
 
-const { defaultLang = 'en' } = Astro.props;
+const { defaultLang = 'en', embedded = false } = Astro.props;
 ---
 
-<div id="mini-audit" data-default-lang={defaultLang}>
+<div id="mini-audit" data-default-lang={defaultLang} data-embedded={embedded ? 'true' : 'false'}>
   <!-- SECTION 1: HERO & UNIFIED INTAKE FORM (on-dark) -->
-  <section class="section section-pad on-dark">
+  <section class="section section-pad on-dark" id={embedded ? 'free-check' : undefined}>
     <div class="wrap">
-      <div class="top-bar">
-        <a href="/" class="label back-link">← <span data-audit-i18n="backHome">Back to Sondri</span></a>
-        <div class="lang-switch" role="group" aria-label="Audit language">
-          <button type="button" class="lang-btn active" data-set-lang="en">EN (US)</button>
-          <button type="button" class="lang-btn" data-set-lang="es">ES (Chile)</button>
+      {!embedded && (
+        <div class="top-bar">
+          <a href="/" class="label back-link">← <span data-audit-i18n="backHome">Back to Sondri</span></a>
+          <div class="lang-switch" role="group" aria-label="Audit language">
+            <button type="button" class="lang-btn active" data-set-lang="en">EN (US)</button>
+            <button type="button" class="lang-btn" data-set-lang="es">ES (Chile)</button>
+          </div>
         </div>
-      </div>
+      )}
 
       <div class="sec-head">
         <div>
-          <h1 class="h2">
-            <span data-audit-i18n="title">Does AI name your business when a buyer asks</span><span class="gdot">?</span>
-          </h1>
+          {embedded ? (
+            <h2 class="h2">
+              <span data-audit-i18n="title">Does AI name your business when a buyer asks</span><span class="gdot">?</span>
+            </h2>
+          ) : (
+            <h1 class="h2">
+              <span data-audit-i18n="title">Does AI name your business when a buyer asks</span><span class="gdot">?</span>
+            </h1>
+          )}
         </div>
         <div class="intro">
           <p class="lede" data-audit-i18n="subtitle">
@@ -456,9 +465,10 @@ const { defaultLang = 'en' } = Astro.props;
     });
   }
 
+  const isEmbedded = sectionEl?.getAttribute('data-embedded') === 'true';
   const urlLang = new URLSearchParams(window.location.search).get('lang');
   const savedLang = localStorage.getItem('sondri.lang');
-  if (urlLang === 'es' || savedLang === 'es') {
+  if (!isEmbedded && (urlLang === 'es' || savedLang === 'es')) {
     applyAuditLang('es');
   } else {
     applyAuditLang(currentLang);

@@ -45,6 +45,8 @@ const privacyLabel = lang === 'es' ? 'Privacidad' : 'Privacy';
     <div class="f-bottom">
       <p class="label">&copy; {year} Sondri</p>
       <div class="f-links">
+        <a class="label pay-link" href={lang === 'es' ? '/es/watch/' : '/watch/'}>Sondri Watch</a>
+        <a class="label pay-link" href={lang === 'es' ? '/es/watch/partners/' : '/watch/partners/'}>{lang === 'es' ? 'Agencias' : 'Agency Partners'}</a>
         <a class="label pay-link" href={privacyHref}>{privacyLabel}</a>
         <a class="label pay-link" href="/llms.txt">llms.txt</a>
         <a class="label pay-link" href="/pay/" data-i18n="ui.pay">{t.ui.pay} →</a>

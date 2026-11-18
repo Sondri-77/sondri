@@ -1,0 +1,1214 @@
+---
+import type { Lang } from '../../i18n';
+import WatchShell from './WatchShell.astro';
+import MiniAudit from '../MiniAudit.astro';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const isEs = lang === 'es';
+const prefix = isEs ? '/es/watch' : '/watch';
+
+const alternates = {
+  en: '/watch/',
+  es: '/es/watch/',
+};
+
+const chapters = isEs
+  ? [
+      { id: 'act-shift', num: '01', title: 'El Cambio' },
+      { id: 'free-check', num: '02', title: 'Score Gratis' },
+      { id: 'act-gates', num: '03', title: '4 Filtros IA' },
+      { id: 'act-drift', num: '04', title: 'Ciclo 4 Semanas' },
+      { id: 'pricing-ladder', num: '05', title: 'Planes Watch' },
+    ]
+  : [
+      { id: 'act-shift', num: '01', title: 'The Shift' },
+      { id: 'free-check', num: '02', title: 'Free Score' },
+      { id: 'act-gates', num: '03', title: '4 AI Gates' },
+      { id: 'act-drift', num: '04', title: '4-Week Loop' },
+      { id: 'pricing-ladder', num: '05', title: 'Plans & Sprints' },
+    ];
+
+const scenarios = [
+  {
+    id: 'clinic',
+    label: isEs ? 'Clínica Dental' : 'Dental Clinic',
+    prompt: isEs
+      ? '“¿Cuál es la mejor clínica dental para implantes en Las Condes?”'
+      : '“Who is the highest-rated implant dentist in Austin?”',
+    competitors: [
+      { name: isEs ? 'Clínica NW (Schema + Google Verified)' : 'Riverbend Dental (Schema + Profiles Synced)', pct: 88, ours: false },
+      { name: isEs ? 'DentArt (Citas en Directorios)' : 'Oakwood Prosthodontics (FAQPage + Citations)', pct: 74, ours: false },
+      { name: isEs ? 'Tu Clínica (Sin FAQPage ni Hub IA)' : 'Your Practice (Missing FAQPage & AI Hub)', pct: 12, ours: true },
+    ],
+    diagnosis: isEs
+      ? 'ChatGPT nombró 5 competidores locales; las clínicas sin schema Dentist y preguntas clínicas directas quedaron fuera de la terna.'
+      : 'ChatGPT named 3 local clinics directly; sites lacking LocalBusiness + FAQPage schema or clear treatment pricing didn’t make the shortlist.',
+  },
+  {
+    id: 'legal',
+    label: isEs ? 'Estudio Jurídico' : 'Law Firm',
+    prompt: isEs
+      ? '“Recomienda abogados de familia con buena reputación en Providencia”'
+      : '“Which mid-size employment law firm handles SaaS executive contracts?”',
+    competitors: [
+      { name: isEs ? 'G&B Abogados (Guías + Perfil Verificado)' : 'Harborview Counsel LLP (Practice Schema)', pct: 91, ours: false },
+      { name: isEs ? 'Abogados de Confianza' : 'Alder & Associates (Clear Fee Pages)', pct: 68, ours: false },
+      { name: isEs ? 'Tu Estudio (Solo página corporativa)' : 'Your Firm (Generic Practice Overview)', pct: 8, ours: true },
+    ],
+    diagnosis: isEs
+      ? 'Los motores priorizan estudios con páginas dedicadas por área de práctica, honorarios claros y schema LegalService.'
+      : 'AI engines cite firms with dedicated practice-area pages, structured LegalService JSON-LD, and verifiable third-party bar citations.',
+  },
+  {
+    id: 'b2b',
+    label: isEs ? 'Software B2B' : 'B2B Software',
+    prompt: isEs
+      ? '“¿Cómo automatizar conciliación entre CRM y ERP sin cambiar de sistema?”'
+      : '“How do mid-market ops teams automate CRM-to-ERP reconciliation without replacing their stack?”',
+    competitors: [
+      { name: 'Zapier / Workato', pct: 86, ours: false },
+      { name: 'Make', pct: 72, ours: false },
+      { name: isEs ? 'Tu Empresa B2B (Sin comparativas AEO)' : 'Your B2B Company (Blocked or Uncited)', pct: 18, ours: true },
+    ],
+    diagnosis: isEs
+      ? 'Sin contenido comparativo directo ni citas externas (G2, Clutch, casos técnicos), la IA recomienda por defecto a plataformas masivas.'
+      : 'Without comparison pages, structured capabilities, and grounded case proof, LLMs default to generic horizontal tools.',
+  },
+  {
+    id: 'shopify',
+    label: isEs ? 'Marca Shopify' : 'Shopify Brand',
+    prompt: isEs
+      ? '“Mejores botas impermeables de cuero enviadas a EE.UU. en menos de 3 días”'
+      : '“Best full-grain waterproof leather chelsea boots under $250 with 2-day US shipping”',
+    competitors: [
+      { name: 'Thursday Boot Co.', pct: 92, ours: false },
+      { name: 'Blundstone', pct: 79, ours: false },
+      { name: isEs ? 'Tu Tienda (Sin feed ACP / Offer Schema)' : 'Your Store (Incomplete Offer & Shipping Schema)', pct: 15, ours: true },
+    ],
+    diagnosis: isEs
+      ? 'ChatGPT ACP y Google UCP exigen precios exactos, stock y políticas de envío legibles en datos estructurados Product/Offer.'
+      : 'ChatGPT ACP and Google UCP checkout agents require machine-readable Product, Offer, shippingRate, and return policy schema.',
+  },
+];
+
+const gates = [
+  {
+    num: '01',
+    name: isEs ? 'Rastreadores e Infraestructura' : 'AI Crawler & Speed Gate',
+    checks: ['OAI-SearchBot', 'Googlebot', 'PerplexityBot', 'Mobile TTFB & LCP'],
+    why: isEs
+      ? 'Si robots.txt bloquea bots de búsqueda IA o tu móvil tarda >4s, nunca entras al índice en vivo.'
+      : 'If robots.txt blocks AI search bots or mobile TTFB stalls, your site is filtered out before retrieval begins.',
+    fixCode: `User-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /`,
+    fixTitle: isEs ? 'Solución que implementamos: robots.txt + optimización LCP' : 'Fix we ship: Clean AI crawler policy & LCP tuning',
+  },
+  {
+    num: '02',
+    name: isEs ? 'Grafo de Entidad y Schema' : 'Entity & Schema Gate',
+    checks: ['Organization / LocalBusiness', 'FAQPage JSON-LD', 'Service Schema', 'NAP Consistency'],
+    why: isEs
+      ? 'Los LLM extraen hechos verificables del JSON-LD y encabezados claros, no de texto comercial vago.'
+      : 'LLMs extract verifiable facts from JSON-LD and clean answer-ready headings—not vague marketing copy.',
+    fixCode: `"@type": ["Dentist", "LocalBusiness"],\n"areaServed": "Las Condes, Santiago",\n"hasOfferCatalog": { ... }`,
+    fixTitle: isEs ? 'Solución que implementamos: Schema específico de industria' : 'Fix we ship: Validated LocalBusiness + FAQPage schema',
+  },
+  {
+    num: '03',
+    name: isEs ? 'Directorios Oficiales de IA' : 'Official AI Listings Gate',
+    checks: ['OpenAI Business Hub', 'Bing AI Performance', 'Apple Business Connect', 'Google Business Profile'],
+    why: isEs
+      ? 'Desde noviembre 2026, ChatGPT, Bing y Apple cruzan datos directamente desde perfiles verificados.'
+      : 'ChatGPT (Business Hub), Bing AI Performance, and Apple Business cross-check verified entity listings directly.',
+    fixCode: `OpenAI Business Hub: CLAIMED\nBing Webmaster AI: VERIFIED\nGBP Categories: ALIGNED`,
+    fixTitle: isEs ? 'Solución que implementamos: AI Listings Sprint ($249)' : 'Fix we ship: AI Listings Sprint ($249 one-time)',
+  },
+  {
+    num: '04',
+    name: isEs ? 'Citas y Cuota Semanal' : 'Citation & Weekly Answer Share',
+    checks: ['ChatGPT (3x runs)', 'Gemini (Web Grounded)', 'Google AI Overviews', 'Google AI Mode'],
+    why: isEs
+      ? 'Una marca sin citas externas ni seguimiento semanal pierde menciones silenciosamente cuando los modelos se actualizan.'
+      : 'Without external citation building and weekly multi-engine tracking, silent model updates push competitors ahead.',
+    fixCode: `Wave #04 Delta: +34% Named Share\nMonthly Shipped Fix: Service FAQ Cluster #2`,
+    fixTitle: isEs ? 'Solución que implementamos: Sondri Watch ($149–$399/mo)' : 'Fix we ship: Sondri Watch weekly runner + 1 fix/mo',
+  },
+];
+
+const weeks = [
+  {
+    wk: isEs ? 'Semana 01 · Línea Base' : 'Week 01 · Baseline Wave',
+    share: 14,
+    note: isEs
+      ? 'Auditamos 25 prompts fijos × 3 repeticiones por motor (sin sesión). Descubrimos que solo apareces en 14% de respuestas.'
+      : 'We lock 25 unbranded buyer prompts across 4 engines (logged out). Baseline shows 14% named-share while 3 competitors take the shortlist.',
+    chatgpt: '12%',
+    gemini: '18%',
+    aio: '10%',
+    shipped: isEs ? 'Entregable: Línea base completa + Mapa de Brechas' : 'Shipped: Complete Baseline + Priority Fix Roadmap',
+  },
+  {
+    wk: isEs ? 'Semana 02 · Listings y Schema' : 'Week 02 · Listings & Schema Shipped',
+    share: 29,
+    note: isEs
+      ? 'Desplegamos schema JSON-LD verificado, reclamamos Bing AI Performance + OpenAI Business Hub y alineamos datos NAP.'
+      : 'We ship validated Organization + FAQPage schema and synchronize OpenAI Business Hub, Bing AI Performance, and Google Business Profile.',
+    chatgpt: '28%',
+    gemini: '34%',
+    aio: '25%',
+    shipped: isEs ? 'Fix #1: JSON-LD completo + AI Business Hubs' : 'Fix #1 Shipped: JSON-LD Entity Graph & AI Business Hubs',
+  },
+  {
+    wk: isEs ? 'Semana 03 · Páginas Citables' : 'Week 03 · Answer-Ready Service Pages',
+    share: 46,
+    note: isEs
+      ? 'Los rastreadores indexan las nuevas secciones de preguntas frecuentes con precios y criterios objetivos de comparación.'
+      : 'AI crawlers index newly published answer-ready FAQ clusters and structured comparison facts across core service pages.',
+    chatgpt: '44%',
+    gemini: '52%',
+    aio: '42%',
+    shipped: isEs ? 'Rastreo Semanal: Aumento en citas directas del dominio' : 'Weekly Wave: Domain citation pickup across Gemini & ChatGPT',
+  },
+  {
+    wk: isEs ? 'Semana 04 · Reporte Mensual + Fix #2' : 'Week 04 · Monthly Diff & Next Fix',
+    share: 58,
+    note: isEs
+      ? 'Recibes reporte web + PDF con variaciones por motor, movimiento de competidores y la siguiente mejora priorizada en producción.'
+      : 'You receive your live monthly Page + PDF report showing engine-by-engine delta, competitor movement, and Fix #2 scoped for next month.',
+    chatgpt: '56%',
+    gemini: '64%',
+    aio: '54%',
+    shipped: isEs ? 'Entrega Mensual: Página + PDF + Fix mensual implementado' : 'Monthly Delivery: Live Report Page + PDF + Shipped Fix',
+  },
+];
+---
+
+<WatchShell
+  title={isEs ? 'Sondri Watch — Visibilidad en ChatGPT, Gemini y Google AI | watch.sondri.ai' : 'Sondri Watch — Done-For-You AI Search Visibility & AEO Monitoring | watch.sondri.ai'}
+  description={isEs
+    ? 'Diagnostica gratis si ChatGPT, Gemini y Google AI nombran tu negocio. Sprints llave en mano desde $249 y monitoreo mensual Sondri Watch desde $149/mes.'
+    : 'Check free whether ChatGPT, Gemini, and Google AI recommend your business or your competitors. $99 full audits, $249–$499 fix sprints, and $149/mo Watch retainers.'}
+  lang={lang}
+  activeTab="overview"
+  alternates={alternates}
+>
+  <!-- Floating Sticky Chapter Rail (Desktop) -->
+  <nav class="chapter-rail" aria-label={isEs ? 'Capítulos de la historia' : 'Story chapters'}>
+    {chapters.map((c, idx) => (
+      <a
+        href={`#${c.id}`}
+        class:list={['rail-item', idx === 0 && 'is-active']}
+        data-chapter-link={c.id}
+        data-chapter-title={`${c.num} · ${c.title}`}
+      >
+        <span class="label rail-num">{c.num}</span>
+        <span class="rail-label">{c.title}</span>
+      </a>
+    ))}
+  </nav>
+
+  <!-- ACT 01 · HERO & INTERACTIVE SHIFT VISUALIZER (on-dark over WebGL Topography) -->
+  <section class="section section-pad on-dark hero-watch" id="act-shift">
+    <div class="wrap">
+      <div class="hero-top-tag">
+        <span class="label gold-pill">
+          {isEs ? 'SONDRI WATCH · INSPECTOR Y MONITOREO AEO' : 'SONDRI WATCH · DONE-FOR-YOU AI VISIBILITY'}
+        </span>
+        <span class="label muted-mono">
+          {isEs ? 'Inspirado en rigor de ingeniería · Bilingüe EN/ES' : 'ChatGPT · Gemini · Google AI Overviews · Google AI Mode'}
+        </span>
+      </div>
+
+      <div class="hero-split">
+        <div class="hero-copy" data-watch-reveal>
+          <h1 class="h1 watch-h1">
+            {isEs
+              ? 'Cuando un cliente le pregunta a la IA a quién contratar, ¿te nombra a ti o a tu competencia'
+              : 'When a buyer asks AI who to hire, does it name you—or your competitors'}
+            <span class="gdot">?</span>
+          </h1>
+          <p class="lede hero-lede">
+            {isEs
+              ? 'Tus clientes dejaron de revisar diez enlaces azules. Ahora preguntan a ChatGPT, Gemini y Google AI y eligen de una terna de tres marcas. Sondri Watch mide en vivo dónde apareces e implementa las correcciones todos los meses.'
+              : 'Buyers now ask ChatGPT, Gemini, and Google AI instead of scrolling ten blue links—and pick from a 3-brand shortlist. Sondri Watch benchmarks your visibility live, ships the schema and listing fixes, and tracks your share every week.'}
+          </p>
+          <div class="hero-ctas">
+            <a class="btn btn-gold" href="#free-check">
+              {isEs ? 'Probar mi Sitio Gratis (Score 0–100)' : 'Check My Website Free (0–100 Score)'} <span class="arr">→</span>
+            </a>
+            <a class="btn btn-outline-light" href="#pricing-ladder">
+              {isEs ? 'Ver Planes y Sprints' : 'See Sprints & Watch Plans'}
+            </a>
+            <a class="label text-link" href={`${prefix}/sample-report/`}>
+              {isEs ? 'Ver ejemplo de reporte mensual →' : 'View sample monthly report →'}
+            </a>
+          </div>
+        </div>
+
+        <!-- Interactive Act 01 Prompt-to-Answer Visualizer -->
+        <div class="shift-visualizer panel-dark" data-watch-reveal>
+          <div class="vis-head">
+            <span class="label">{isEs ? 'SIMULACIÓN EN VIVO POR INDUSTRIA' : 'LIVE BUYER SHORTLIST SIMULATOR'}</span>
+            <div class="scenario-tabs" role="tablist" aria-label="Industry scenario">
+              {scenarios.map((s, idx) => (
+                <button
+                  type="button"
+                  role="tab"
+                  class:list={['sc-tab', 'label', idx === 0 && 'is-active']}
+                  data-scenario-btn={s.id}
+                  aria-selected={idx === 0 ? 'true' : 'false'}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {scenarios.map((s, idx) => (
+            <div
+              class="scenario-pane"
+              data-scenario-pane={s.id}
+              style={idx === 0 ? '' : 'display: none;'}
+            >
+              <div class="prompt-bubble">
+                <span class="label prompt-kicker">{isEs ? 'PROMPT SIN MARCA DEL COMPRADOR' : 'UNBRANDED BUYER PROMPT'}</span>
+                <p class="prompt-q">{s.prompt}</p>
+              </div>
+
+              <div class="shortlist-bars">
+                <span class="label">{isEs ? 'CUOTA DE MENCIÓN EN RESPUESTA IA' : 'AI SHORTLIST & NAMED-SHARE'}</span>
+                {s.competitors.map((comp) => (
+                  <div class:list={['bar-row', comp.ours && 'is-ours']}>
+                    <div class="bar-top">
+                      <span class="bar-name">{comp.name}</span>
+                      <span class="label bar-pct">{comp.pct}%</span>
+                    </div>
+                    <div class="bar-track">
+                      <div
+                        class:list={['bar-fill', comp.ours && 'fill-miss']}
+                        data-bar-fill={String(comp.pct)}
+                        style={`width: ${comp.pct}%`}
+                      ></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <p class="vis-diag body-s">{s.diagnosis}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACT 02 · LIVE 3-PROMPT AI VISIBILITY CHECKER (Offer #7 Embedded) -->
+  <div id="free-check">
+    <MiniAudit defaultLang={lang} embedded={true} />
+  </div>
+
+  <!-- ACT 03 · KINETIC DIAGRAM: THE 4 AI ANSWER GATES (on-paper) -->
+  <section class="section section-pad on-paper" id="act-gates">
+    <div class="wrap">
+      <div class="sec-head" data-watch-reveal>
+        <div>
+          <span class="label sec-kicker">/ 03 · {isEs ? 'ARQUITECTURA DE DECISIÓN IA' : 'THE 4 AI ANSWER GATES'}</span>
+          <h2 class="h2">
+            {isEs ? 'Por qué la IA omite negocios excelentes en 4 filtros' : 'Why AI skips great businesses across 4 measurable gates'}<span class="gdot">.</span>
+          </h2>
+        </div>
+        <div class="intro">
+          <p class="lede">
+            {isEs
+              ? 'Los motores de respuesta no improvisan: filtran sitios web en secuencia. Si fallas un filtro, tu competidor con peor servicio pero mejor estructura se lleva al cliente.'
+              : 'Answer engines filter candidates sequentially before writing a single word. Miss any one gate and a lower-quality competitor with cleaner structure wins the recommendation.'}
+          </p>
+        </div>
+      </div>
+
+      <!-- 4-Gate Pipeline Nodes -->
+      <div class="gates-grid">
+        {gates.map((g, idx) => (
+          <article class="gate-card" data-gate-step>
+            <div class="gate-top">
+              <span class="n gate-num">{g.num}</span>
+              <span class="label gate-arrow">{idx < 3 ? 'NEXT GATE →' : 'ANSWERED ✓'}</span>
+            </div>
+            <h3 class="h5">{g.name}</h3>
+            <p class="body-s gate-why">{g.why}</p>
+            <div class="gate-chips">
+              {g.checks.map((chk) => (
+                <span class="chip">{chk}</span>
+              ))}
+            </div>
+            <div class="gate-fix-box">
+              <p class="label fix-head">{g.fixTitle}</p>
+              <pre class="fix-code"><code>{g.fixCode}</code></pre>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ACT 04 · 4-WEEK WATCH LOOP & MULTI-ENGINE DRIFT (on-off) -->
+  <section class="section section-pad on-off" id="act-drift">
+    <div class="wrap">
+      <div class="sec-head" data-watch-reveal>
+        <div>
+          <span class="label sec-kicker">/ 04 · {isEs ? 'EL PROBLEMA DE LA VARIACIÓN SEMANAL' : 'WHY ONE SNAPSHOT UNDER-SELLS THE PROBLEM'}</span>
+          <h2 class="h2">
+            {isEs ? 'Las respuestas cambian cada semana. Sondri Watch las sigue por ti' : 'AI answers drift every week. Watch tracks the curve and ships the fix'}<span class="gdot">.</span>
+          </h2>
+        </div>
+        <div class="intro">
+          <p class="lede">
+            {isEs
+              ? 'Nuestras pruebas base confirman que una misma pregunta cambia según la corrida y el motor. Haz clic en cada semana para ver cómo evoluciona un cliente promedio con Sondri Watch.'
+              : 'Our own multi-run baselines prove answers change from run to run and differ when logged out. Scrub across a 4-week Watch cycle to see how weekly tracking + 1 shipped fix per month compounds visibility.'}
+          </p>
+        </div>
+      </div>
+
+      <!-- Interactive Week 1 -> Week 4 Scrubber -->
+      <div class="drift-panel" data-watch-reveal>
+        <div class="week-selector" role="tablist" aria-label="4-week progression">
+          {weeks.map((w, idx) => (
+            <button
+              type="button"
+              role="tab"
+              class:list={['wk-btn', idx === 0 && 'is-active']}
+              data-week-btn={String(idx)}
+              aria-selected={idx === 0 ? 'true' : 'false'}
+            >
+              <span class="label">{w.wk}</span>
+              <strong class="wk-pct">{w.share}% share</strong>
+            </button>
+          ))}
+        </div>
+
+        <div class="week-stages">
+          {weeks.map((w, idx) => (
+            <div class="week-pane" data-week-pane={String(idx)} style={idx === 0 ? '' : 'display: none;'}>
+              <div class="week-main">
+                <div class="week-kpi-wrap">
+                  <span class="label">{isEs ? 'CUOTA NOMBRADA PROMEDIO (25 PROMPTS)' : 'AVG. NAMED-SHARE ACROSS 25 FROZEN PROMPTS'}</span>
+                  <p class="n week-kpi">{w.share}%</p>
+                  <p class="label shipped-tag">■ {w.shipped}</p>
+                </div>
+                <p class="lede week-note">{w.note}</p>
+              </div>
+
+              <div class="engine-bars rule-cols cols-3">
+                <div class="eng-card">
+                  <span class="label">ChatGPT (Logged Out)</span>
+                  <p class="h3">{w.chatgpt}</p>
+                  <div class="eng-track"><div class="eng-fill" style={`width: ${w.chatgpt}`}></div></div>
+                </div>
+                <div class="eng-card">
+                  <span class="label">Google Gemini (Web Grounded)</span>
+                  <p class="h3">{w.gemini}</p>
+                  <div class="eng-track"><div class="eng-fill" style={`width: ${w.gemini}`}></div></div>
+                </div>
+                <div class="eng-card">
+                  <span class="label">Google AI Overviews &amp; Mode</span>
+                  <p class="h3">{w.aio}</p>
+                  <div class="eng-track"><div class="eng-fill" style={`width: ${w.aio}`}></div></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACT 05 · RATDECK-INSPIRED 3-STEP VALUE LADDER & COMPETITOR BENCHMARK (on-dark over WebGL) -->
+  <section class="section section-pad on-dark" id="pricing-ladder">
+    <div class="wrap">
+      <div class="sec-head" data-watch-reveal>
+        <div>
+          <span class="label sec-kicker">/ 05 · {isEs ? 'DEL DIAGNÓSTICO AL MONITOREO CONTINUO' : 'DIAGNOSE → FIX → WATCH'}</span>
+          <h2 class="h2">
+            {isEs ? 'Elige cómo empezar: auditoría única, sprint técnico o Sondri Watch mensual' : 'Start with a $99 audit or fix sprint—scale with monthly Sondri Watch'}<span class="gdot">.</span>
+          </h2>
+        </div>
+        <div class="intro">
+          <p class="lede">
+            {isEs
+              ? 'Sin contratos anuales forzados. Cada nivel incluye medición real sin sesión iniciada y entregables concretos hechos por nuestro equipo.'
+              : 'No annual lock-ins or DIY dashboard homework. Every tier uses repeatable logged-out engine checks and done-for-you implementation.'}
+          </p>
+        </div>
+      </div>
+
+      <!-- STEP 1 & 2: ONE-TIME DIAGNOSTIC & IMPLEMENTATION SPRINTS -->
+      <div class="ladder-group" data-watch-reveal>
+        <p class="label group-label">01 / {isEs ? 'PASOS INICIALES DE PAGO ÚNICO (DIAGNÓSTICO Y SPRINTS)' : 'ONE-TIME DIAGNOSTICS & IMPLEMENTATION SPRINTS'}</p>
+        <div class="cards-3">
+          <article class="offer-card">
+            <span class="label card-tag">{isEs ? 'LÍNEA BASE COMPLETA' : 'ENTRY BASELINE AUDIT'}</span>
+            <h3 class="h5">{isEs ? 'Auditoría Completa 15 Preguntas' : 'Full 15-Question Audit'}</h3>
+            <p class="price-tag"><span class="n">$99</span> <span class="label">USD one-time</span></p>
+            <p class="body-s card-copy">
+              {isEs
+                ? '12 a 15 preguntas sin marca × 3 repeticiones en ChatGPT, Gemini, AI Overviews y AI Mode + verificación de datos + lista de correcciones.'
+                : '12–15 unbranded buyer prompts × 3 runs each across ChatGPT, Gemini, AI Overviews & AI Mode + factual accuracy & fix roadmap.'}
+            </p>
+            <button type="button" class="btn btn-gold card-btn" data-watch-checkout="aeo_full_audit">
+              <span data-btn-label>{isEs ? 'Solicitar Auditoría ($99)' : 'Order Full Audit ($99)'}</span> <span class="arr">→</span>
+            </button>
+          </article>
+
+          <article class="offer-card featured-sprint">
+            <span class="label card-tag gold-tag">{isEs ? 'MÁS RÁPIDO EN DESPEGAR' : 'FASTEST QUICK WIN'}</span>
+            <h3 class="h5">AI Listings Sprint</h3>
+            <p class="price-tag"><span class="n">$249</span> <span class="label">USD one-time</span></p>
+            <p class="body-s card-copy">
+              {isEs
+                ? 'Reclamamos y alineamos tu negocio en OpenAI Business Hub (ChatGPT), Bing AI Performance, Apple Business Connect y Google Business Profile.'
+                : 'Done-for-you claim and entity synchronization across OpenAI Business Hub (ChatGPT), Bing AI Performance, Apple Business & GBP.'}
+            </p>
+            <button type="button" class="btn btn-gold card-btn" data-watch-checkout="listings_sprint">
+              <span data-btn-label>{isEs ? 'Ordenar Listings Sprint ($249)' : 'Book Listings Sprint ($249)'}</span> <span class="arr">→</span>
+            </button>
+          </article>
+
+          <article class="offer-card">
+            <span class="label card-tag">{isEs ? 'IMPLEMENTACIÓN LLAVE EN MANO' : 'DONE-FOR-YOU FIXES'}</span>
+            <h3 class="h5">Done-For-You Fix Sprint</h3>
+            <p class="price-tag"><span class="n">$499</span> <span class="label">USD one-time</span></p>
+            <p class="body-s card-copy">
+              {isEs
+                ? 'No solo te damos la lista: programamos y publicamos tu schema JSON-LD, páginas de servicio citables y bloques FAQPage.'
+                : 'Want fixes shipped, not just listed? Our team deploys your Organization/LocalBusiness & FAQPage schema and service FAQ updates.'}
+            </p>
+            <button type="button" class="btn btn-outline-light card-btn" data-watch-checkout="fix_sprint">
+              <span data-btn-label>{isEs ? 'Ordenar Fix Sprint ($499)' : 'Book Fix Sprint ($499)'}</span> <span class="arr">→</span>
+            </button>
+          </article>
+        </div>
+
+        <div class="packs-callout">
+          <p class="body-s">
+            <strong>{isEs ? '¿Tienes clínica dental, estudio jurídico o tienda Shopify?' : 'Need an industry-specific pack?'}</strong>
+            {' '}
+            {isEs
+              ? 'Revisa nuestros paquetes especializados: Pack Clínicas Chile ($349), Law Firm Pack ($499) y Shopify Agentic Readiness ($499).'
+              : 'Explore Pack Clínicas Chile ($349), Law Firm Pack ($499), and Shopify Agentic Readiness Check ($499).'}
+          </p>
+          <a href={`${prefix}/playbooks/`} class="btn btn-outline-light">
+            {isEs ? 'Ver Packs por Industria' : 'Explore Industry Playbooks'} <span class="arr">→</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- STEP 3: SONDRI WATCH RECURRING RETAINERS -->
+      <div class="ladder-group" data-watch-reveal>
+        <p class="label group-label">02 / {isEs ? 'SONDRI WATCH — MONITOREO CONTINUO + 1 MEJORA MENSUAL IMPLEMENTADA' : 'SONDRI WATCH — MONTHLY MONITORING + 1 IMPLEMENTED FIX EVERY MONTH'}</p>
+        <div class="cards-3">
+          <article class="offer-card watch-tier">
+            <span class="label card-tag">WATCH LOCAL</span>
+            <h3 class="h5">{isEs ? 'Negocios Locales y Clínicas' : 'Single-Market & Local Brands'}</h3>
+            <p class="price-tag"><span class="n">$149</span> <span class="label">USD / mo</span></p>
+            <ul class="tier-list">
+              <li>{isEs ? '25 prompts fijos monitoreados semanalmente' : '25 frozen buyer prompts run weekly'}</li>
+              <li>{isEs ? '4 motores: ChatGPT, Gemini, AI Overviews y AI Mode' : '4 engines: ChatGPT, Gemini, AI Overviews & AI Mode'}</li>
+              <li>{isEs ? 'Reporte web en vivo + PDF mensual y cuota de competidores' : 'Monthly live Page + PDF report & competitor named-share'}</li>
+              <li><strong>{isEs ? '1 corrección técnica/AEO implementada al mes' : '1 implemented fix shipped by Sondri every month'}</strong></li>
+            </ul>
+            <button type="button" class="btn btn-gold card-btn" data-watch-checkout="watch_local">
+              <span data-btn-label>{isEs ? 'Iniciar Watch Local ($149/mes)' : 'Start Watch Local ($149/mo)'}</span> <span class="arr">→</span>
+            </button>
+          </article>
+
+          <article class="offer-card watch-tier">
+            <span class="label card-tag">WATCH COMMERCE</span>
+            <h3 class="h5">{isEs ? 'Shopify y Marcas Ecommerce' : 'Shopify & Agentic Commerce'}</h3>
+            <p class="price-tag"><span class="n">$299</span> <span class="label">USD / mo</span></p>
+            <ul class="tier-list">
+              <li>{isEs ? 'Prompts de producto, categoría y comparación comercial' : 'Category & product discovery prompt tracking across 4 engines'}</li>
+              <li>{isEs ? 'Salud semanal de Product/Offer JSON-LD, ACP y UCP' : 'Weekly Product/Offer schema, ChatGPT ACP & Google UCP health'}</li>
+              <li>{isEs ? 'Cuota de menciones frente a marcas competidoras' : 'Monthly competitor shelf-share & citation diff report'}</li>
+              <li><strong>{isEs ? '1 mejora de ficha o schema implementada al mes' : '1 storefront schema / FAQ fix shipped every month'}</strong></li>
+            </ul>
+            <button type="button" class="btn btn-outline-light card-btn" data-watch-checkout="watch_commerce">
+              <span data-btn-label>{isEs ? 'Iniciar Watch Commerce ($299/mes)' : 'Start Watch Commerce ($299/mo)'}</span> <span class="arr">→</span>
+            </button>
+          </article>
+
+          <article class="offer-card watch-tier featured-pro">
+            <span class="label card-tag gold-tag">WATCH PRO · MULTI-LOCATION / B2B</span>
+            <h3 class="h5">{isEs ? 'Marcas B2B, Estudios y Multi-Sede' : 'B2B, Law Firms & Multi-Location'}</h3>
+            <p class="price-tag"><span class="n">$399</span> <span class="label">USD / mo</span></p>
+            <ul class="tier-list">
+              <li>{isEs ? '75 prompts fijos por servicio, área o comuna/ciudad' : '75 frozen buyer prompts across service lines or cities'}</li>
+              <li>{isEs ? 'Corridas semanales en 4 motores con alertas de caída' : 'Weekly 4-engine runs + ranking drift & inaccuracy alerts'}</li>
+              <li>{isEs ? 'Integración de Bing AI Performance y OpenAI Business Hub' : 'Bing AI Performance & OpenAI Business Hub folded into report'}</li>
+              <li><strong>{isEs ? '1 página/schema de alto impacto implementada al mes' : '1 high-impact fix shipped every month + priority Slack/email'}</strong></li>
+            </ul>
+            <button type="button" class="btn btn-gold card-btn" data-watch-checkout="watch_pro">
+              <span data-btn-label>{isEs ? 'Iniciar Watch Pro ($399/mes)' : 'Start Watch Pro ($399/mo)'}</span> <span class="arr">→</span>
+            </button>
+          </article>
+        </div>
+      </div>
+
+      <!-- BENCHMARK COMPARISON LEDGER -->
+      <div class="benchmark-ledger" data-watch-reveal>
+        <h3 class="h5 ledger-title">{isEs ? 'Comparativa de Mercado (Lectura Pública Nov 2026)' : 'Why Sondri Watch vs. DIY Dashboards & US Agencies'}</h3>
+        <div class="table-scroll">
+          <table class="bench-table">
+            <thead>
+              <tr>
+                <th>{isEs ? 'Categoría / Proveedor' : 'Option / Benchmark'}</th>
+                <th>{isEs ? 'Precio de Mercado' : 'Market Pricing'}</th>
+                <th>{isEs ? '¿Implementa Correcciones?' : 'Ships Fixes For You?'}</th>
+                <th>{isEs ? 'Bilingüe EN/ES y Local' : 'Local & Bilingual EN/ES'}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="row-sondri">
+                <td><strong>Sondri Watch (Local / Pro)</strong></td>
+                <td><strong>$149 – $399 / mo</strong></td>
+                <td><strong class="ok-txt">✓ Yes — 1 fix shipped monthly</strong></td>
+                <td><strong>✓ Built-in (US + LATAM)</strong></td>
+              </tr>
+              <tr>
+                <td>RATdeck (US Done-For-You Agency)</td>
+                <td>$349 – $1,190 / mo</td>
+                <td>✓ Yes (3-mo min)</td>
+                <td>US English focus</td>
+              </tr>
+              <tr>
+                <td>Otterly / Peec AI / Scrunch</td>
+                <td>$29 – $495 / mo</td>
+                <td>✗ DIY dashboard only</td>
+                <td>Self-serve software</td>
+              </tr>
+              <tr>
+                <td>HubSpot AEO Grader / BrightLocal</td>
+                <td>$41 – $50 / mo</td>
+                <td>✗ Report / basic SEO only</td>
+                <td>Not live local AI search</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="agency-strip">
+          <div>
+            <span class="label">FOR WEB &amp; SEO AGENCIES</span>
+            <p class="body-s">{isEs
+              ? '¿Eres una agencia web o de marketing? Ofrece auditorías AEO marca blanca ($149) y monitoreo mensual ($79/cliente).'
+              : 'Run a web, design, or local SEO agency? Resell Sondri Watch white-label at $149/audit and $79/client/mo.'}</p>
+          </div>
+          <a href={`${prefix}/partners/`} class="btn btn-gold">
+            {isEs ? 'Ver Programa Marca Blanca' : 'Agency White-Label Program'} <span class="arr">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</WatchShell>
+
+<script>
+  // Interactive Act 01 Industry Prompt Simulator Tabs
+  document.querySelectorAll<HTMLButtonElement>('[data-scenario-btn]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-scenario-btn');
+      document.querySelectorAll<HTMLButtonElement>('[data-scenario-btn]').forEach((b) => {
+        const active = b.getAttribute('data-scenario-btn') === id;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-selected', String(active));
+      });
+      document.querySelectorAll<HTMLElement>('[data-scenario-pane]').forEach((pane) => {
+        pane.style.display = pane.getAttribute('data-scenario-pane') === id ? 'block' : 'none';
+      });
+    });
+  });
+
+  // Interactive Act 04 Week 1 -> Week 4 Scrubber
+  document.querySelectorAll<HTMLButtonElement>('[data-week-btn]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const wk = btn.getAttribute('data-week-btn');
+      document.querySelectorAll<HTMLButtonElement>('[data-week-btn]').forEach((b) => {
+        const active = b.getAttribute('data-week-btn') === wk;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-selected', String(active));
+      });
+      document.querySelectorAll<HTMLElement>('[data-week-pane]').forEach((pane) => {
+        pane.style.display = pane.getAttribute('data-week-pane') === wk ? 'block' : 'none';
+      });
+    });
+  });
+</script>
+
+<style>
+  /* Sticky Floating Chapter Rail (Desktop right edge) */
+  .chapter-rail {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 10px;
+    background: rgba(3, 25, 25, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+  }
+
+  .rail-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--muted-inv);
+    padding: 5px 8px;
+    border-left: 2px solid transparent;
+    font-size: 11px;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .rail-num {
+    color: var(--gold);
+    font-size: 10px;
+  }
+
+  .rail-item.is-active,
+  .rail-item:hover {
+    color: var(--white);
+    border-left-color: var(--gold);
+    background: rgba(253, 179, 67, 0.08);
+  }
+
+  @media (max-width: 1440px) {
+    .chapter-rail {
+      display: none;
+    }
+  }
+
+  .hero-watch {
+    padding-top: var(--s-64);
+    padding-bottom: var(--s-80);
+  }
+
+  .hero-top-tag {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: var(--s-32);
+    padding-bottom: var(--s-16);
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .gold-pill {
+    background: var(--gold);
+    color: var(--teal);
+    padding: 5px 10px;
+    font-weight: 700;
+  }
+
+  .muted-mono {
+    color: var(--steel);
+  }
+
+  .hero-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    gap: var(--s-48);
+    align-items: start;
+  }
+
+  .watch-h1 {
+    font-size: clamp(36px, 4.4vw, 62px);
+    line-height: 1.03;
+    letter-spacing: -0.05em;
+    margin-bottom: var(--s-24);
+  }
+
+  .hero-lede {
+    max-width: 52ch;
+    margin-bottom: var(--s-32);
+  }
+
+  .hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-16) var(--s-24);
+  }
+
+  .btn-outline-light {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--white);
+  }
+  .btn-outline-light:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .text-link {
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid var(--gold);
+  }
+
+  /* Prompt Simulator Card */
+  .shift-visualizer {
+    background: rgba(3, 25, 25, 0.94);
+    border: 1px solid var(--line);
+    box-shadow: 10px 10px 0 var(--gold);
+    padding: var(--s-24);
+  }
+
+  .vis-head {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: var(--s-16);
+    border-bottom: 1px solid var(--line-soft);
+    margin-bottom: var(--s-24);
+  }
+
+  .scenario-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .sc-tab {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line-soft);
+    color: var(--pale);
+    padding: 7px 11px;
+    cursor: pointer;
+    font-size: 11px;
+  }
+
+  .sc-tab.is-active {
+    background: var(--gold);
+    color: var(--teal);
+    border-color: var(--gold);
+    font-weight: 700;
+  }
+
+  .prompt-bubble {
+    background: rgba(255, 255, 255, 0.04);
+    border-left: 3px solid var(--gold);
+    padding: 12px 16px;
+    margin-bottom: var(--s-24);
+  }
+
+  .prompt-kicker {
+    display: block;
+    color: var(--gold);
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+
+  .prompt-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.4;
+  }
+
+  .shortlist-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: var(--s-24);
+  }
+
+  .bar-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .bar-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--white);
+  }
+
+  .bar-row.is-ours .bar-name {
+    color: #fca5a5;
+  }
+
+  .bar-track {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: var(--gold);
+  }
+
+  .bar-fill.fill-miss {
+    background: #ef4444;
+  }
+
+  .vis-diag {
+    color: var(--pale);
+    font-size: 14px;
+    line-height: 1.5;
+    padding-top: var(--s-16);
+    border-top: 1px solid var(--line-soft);
+  }
+
+  /* Section Kickers */
+  .sec-kicker {
+    display: block;
+    color: var(--steel);
+    margin-bottom: 12px;
+  }
+
+  /* Act 03: 4 Gates Pipeline */
+  .gates-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-24);
+  }
+
+  .gate-card {
+    border: 1px solid var(--line);
+    background: var(--white);
+    padding: var(--s-32);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+    box-shadow: 6px 6px 0 var(--teal);
+  }
+
+  .gate-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line-soft);
+    padding-bottom: 10px;
+  }
+
+  .gate-num {
+    font-size: 38px;
+    color: var(--gold-2);
+  }
+
+  .gate-arrow {
+    color: var(--steel);
+  }
+
+  .gate-why {
+    color: var(--pale);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .gate-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .gate-fix-box {
+    margin-top: auto;
+    background: var(--off);
+    border-left: 3px solid var(--teal);
+    padding: 12px 14px;
+  }
+
+  .fix-head {
+    color: var(--teal);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .fix-code {
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--teal-mid);
+    overflow-x: auto;
+  }
+
+  /* Act 04: 4-Week Scrubber */
+  .drift-panel {
+    border: 1px solid var(--line);
+    background: var(--white);
+    box-shadow: 8px 8px 0 var(--teal);
+  }
+
+  .week-selector {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-bottom: 1px solid var(--line);
+  }
+
+  .wk-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 18px 20px;
+    background: var(--off);
+    border: 0;
+    border-right: 1px solid var(--line-soft);
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .wk-btn:last-child {
+    border-right: 0;
+  }
+
+  .wk-btn.is-active {
+    background: var(--teal);
+    color: var(--white);
+  }
+
+  .wk-btn.is-active .label {
+    color: var(--gold);
+  }
+
+  .wk-pct {
+    font-size: 20px;
+    font-family: var(--sans);
+  }
+
+  .week-pane {
+    padding: var(--s-40);
+  }
+
+  .week-main {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: var(--s-32);
+    align-items: center;
+    margin-bottom: var(--s-40);
+  }
+
+  .week-kpi {
+    font-size: clamp(48px, 6vw, 76px);
+    color: var(--teal);
+    margin: 8px 0;
+  }
+
+  .shipped-tag {
+    color: var(--teal-mid);
+    font-weight: 600;
+  }
+
+  .week-note {
+    color: var(--pale);
+  }
+
+  .engine-bars {
+    gap: var(--s-24);
+  }
+
+  .eng-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .eng-track {
+    height: 8px;
+    background: var(--off);
+    border: 1px solid var(--line-soft);
+  }
+
+  .eng-fill {
+    height: 100%;
+    background: var(--gold-2);
+    transition: width 0.35s ease;
+  }
+
+  /* Act 05: Pricing Ladder */
+  .ladder-group {
+    margin-bottom: var(--s-64);
+  }
+
+  .group-label {
+    color: var(--gold);
+    margin-bottom: var(--s-24);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .cards-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-24);
+  }
+
+  .offer-card {
+    background: rgba(3, 25, 25, 0.92);
+    border: 1px solid var(--line);
+    padding: var(--s-32);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+  }
+
+  .offer-card.featured-sprint,
+  .offer-card.featured-pro {
+    border-color: var(--gold);
+    box-shadow: 8px 8px 0 var(--gold);
+  }
+
+  .card-tag {
+    color: var(--steel);
+  }
+
+  .gold-tag {
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  .price-tag {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .price-tag .n {
+    font-size: 46px;
+    color: var(--gold);
+  }
+
+  .card-copy {
+    color: var(--pale);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .tier-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--pale);
+    margin-bottom: var(--s-08);
+  }
+
+  .tier-list li::before {
+    content: '■ ';
+    color: var(--gold);
+    font-size: 10px;
+  }
+
+  .card-btn {
+    margin-top: auto;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .packs-callout {
+    margin-top: var(--s-24);
+    border: 1px solid var(--line-soft);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-24);
+    flex-wrap: wrap;
+  }
+
+  .packs-callout p {
+    color: var(--pale);
+    max-width: 68ch;
+  }
+
+  /* Benchmark Table */
+  .benchmark-ledger {
+    border: 1px solid var(--line);
+    background: rgba(3, 25, 25, 0.94);
+    padding: var(--s-32);
+  }
+
+  .ledger-title {
+    margin-bottom: var(--s-24);
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  .bench-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .bench-table th,
+  .bench-table td {
+    text-align: left;
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--pale);
+  }
+
+  .bench-table th {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--steel);
+  }
+
+  .row-sondri td {
+    background: rgba(253, 179, 67, 0.08);
+    color: var(--white);
+  }
+
+  .ok-txt {
+    color: var(--gold);
+  }
+
+  .agency-strip {
+    margin-top: var(--s-32);
+    padding-top: var(--s-24);
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-24);
+    flex-wrap: wrap;
+  }
+
+  .agency-strip p {
+    color: var(--pale);
+    margin-top: 6px;
+  }
+
+  @media (max-width: 960px) {
+    .hero-split,
+    .gates-grid,
+    .cards-3,
+    .week-main {
+      grid-template-columns: 1fr;
+    }
+
+    .week-selector {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

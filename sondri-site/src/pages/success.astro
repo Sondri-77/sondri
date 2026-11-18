@@ -45,11 +45,17 @@ import Base from '../layouts/Base.astro';
     const sessionId = urlParams.get('session_id');
     const checkoutType = urlParams.get('type');
 
-    if (checkoutType === 'aeo_audit') {
+    if (checkoutType === 'aeo_audit' || checkoutType === 'aeo_full_audit') {
       const ledeEl = document.getElementById('successLede');
       if (ledeEl) {
         ledeEl.textContent =
           'Your $99 Full AEO / GEO Audit is confirmed. We have queued your 12–15 unbranded buyer questions across ChatGPT, Gemini, Google AI Overviews, and Google AI Mode (3 runs per engine) and will email your full report and prioritized fix list.';
+      }
+    } else if (checkoutType && (checkoutType.startsWith('watch_') || ['listings_sprint', 'clinicas_pack', 'law_pack', 'shopify_check', 'fix_sprint', 'agency_pilot_audit', 'agency_reaudit', 'portfolio_snapshot'].includes(checkoutType))) {
+      const ledeEl = document.getElementById('successLede');
+      if (ledeEl) {
+        ledeEl.textContent =
+          'Your Sondri Watch order is confirmed. Our team has received your domain and tier details and will follow up by email with your onboarding checklist and live baseline schedule.';
       }
     }
 
