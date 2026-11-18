@@ -273,7 +273,16 @@ const promptRows = [
   }
 
   .paper-sheet {
-    border: 1px solid var(--line);
+    /* Reset light paper tokens inside .on-dark section so the sample sheet reads like an actual printed AEO deliverable */
+    --surface: var(--white);
+    --text-hi: var(--teal);
+    --pale: var(--teal-mid);
+    --steel: var(--muted);
+    --line: var(--teal);
+    --line-soft: rgba(8, 31, 31, 0.16);
+    background: var(--white);
+    color: var(--teal);
+    border: 1px solid var(--teal);
     box-shadow: 10px 10px 0 var(--gold);
     padding: var(--s-40);
     display: flex;
@@ -282,8 +291,9 @@ const promptRows = [
   }
 
   .sheet-heading {
+    color: var(--teal);
     padding-bottom: 12px;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--teal);
     margin-bottom: var(--s-24);
   }
 
@@ -302,12 +312,17 @@ const promptRows = [
   .eng-top {
     display: flex;
     justify-content: space-between;
+    color: var(--teal);
+  }
+
+  .eng-top .label {
+    color: var(--teal);
   }
 
   .eng-track {
     height: 10px;
-    background: var(--off);
-    border: 1px solid var(--line-soft);
+    background: rgba(8, 31, 31, 0.1);
+    border: 1px solid rgba(8, 31, 31, 0.18);
   }
 
   .eng-bar {
@@ -330,14 +345,14 @@ const promptRows = [
     text-align: left;
     padding: 14px 12px;
     border-bottom: 1px solid var(--line-soft);
-    color: var(--text-hi);
+    color: var(--teal);
   }
 
   .rpt-table th {
     font-family: var(--mono);
     font-size: 11px;
     text-transform: uppercase;
-    color: var(--steel);
+    color: var(--muted);
   }
 
   .two-diff {
@@ -348,8 +363,13 @@ const promptRows = [
 
   .diff-card {
     padding: var(--s-24);
-    border: 1px solid var(--line);
+    border: 1px solid rgba(8, 31, 31, 0.22);
     background: var(--off);
+    color: var(--teal);
+  }
+
+  .diff-card p {
+    color: var(--teal-mid);
   }
 
   .ok-card {
