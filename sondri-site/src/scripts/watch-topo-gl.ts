@@ -96,13 +96,6 @@ void main() {
   float rMid  = 0.18 + ridgeHeight(xCoord + uScroll * 0.45, 1.85, 4.3, 0.012) * 0.25 - parMid;
   float rNear = 0.09 + ridgeHeight(xCoord + uScroll * 0.68, 2.45, 8.9, 0.016) * 0.19 - parNear;
 
-  // Star & signal nodes in upper sky
-  vec2 starCell = floor(frag / 4.0);
-  float starRand = hash21(starCell + vec2(floor(uScroll * 2.0), 0.0));
-  float twinkle = 0.6 + 0.4 * sin(uTime * 1.3 + starRand * 32.0);
-  float isStar = step(0.992, starRand) * smoothstep(0.28, 0.75, uv.y) * twinkle;
-  float isGoldStar = step(0.9965, starRand) * smoothstep(0.35, 0.85, uv.y) * twinkle;
-
   // Exact Sondri palette
   vec3 cSky0 = vec3(3.0, 25.0, 25.0) / 255.0;     // #031919 deepest obsidian teal
   vec3 cSky1 = vec3(8.0, 31.0, 31.0) / 255.0;     // #081f1f slate teal
@@ -111,9 +104,9 @@ void main() {
   vec3 cNear = vec3(40.0, 94.0, 89.0) / 255.0;    // #285e59 near ridge
   vec3 cGold = vec3(253.0, 179.0, 67.0) / 255.0;  // #fdb343 warm gold crest
 
-  // Sky dithering gradient toward horizon
-  float skyGrad = clamp((1.0 - uv.y) * 0.42 + mouseGlow, 0.0, 1.0);
-  vec3 col = (skyGrad + (b - 0.5) * 0.22 > 0.28) ? cSky1 : cSky0;
+  // Clean #031919 sky above horizon with subtle Bayer transition near ridge tops
+  float skyGrad = smoothstep(rFar + 0.14, rFar - 0.02, uv.y) * 0.55 + mouseGlow * 0.35;
+  vec3 col = (skyGrad + (b - 0.5) * 0.18 > 0.36) ? cSky1 : cSky0;
 
   // Far mountain layer with dithered soft transition near crest
   float dFar = rFar - uv.y;
@@ -148,15 +141,6 @@ void main() {
     }
     if (abs(dNear) < 0.006 && b < 0.22) {
       col = mix(cNear, cGold, 0.65);
-    }
-  }
-
-  // Paint crisp star/signal pixels strictly above ridges
-  if (uv.y > rFar + 0.02) {
-    if (isGoldStar > 0.35) {
-      col = mix(cSky1, cGold, 0.85);
-    } else if (isStar > 0.35) {
-      col = mix(cSky1, vec3(95.0, 196.0, 188.0) / 255.0, 0.45);
     }
   }
 

@@ -44,11 +44,11 @@ const alternates = {
         </p>
       </div>
 
-      <div class="pr-strip-4">
+      <div class="pr-strip-5">
         <a href={`${prefix}/#free-check`} class="pr-strip-card">
           <span class="label s-tag">{isEs ? 'CHEQUEO GRATIS' : 'FREE CHECK'}</span>
           <p class="s-price">$0</p>
-          <p class="body-s s-desc">{isEs ? '3 preguntas + score técnico + diagnóstico de brechas.' : 'Instant 3-question check, speed scan & gap diagnosis.'}</p>
+          <p class="body-s s-desc">{isEs ? '3 preguntas + score técnico + diagnóstico de brechas.' : 'Instant 3-question check & entity readiness diagnosis.'}</p>
         </a>
         <a href="#audit" class="pr-strip-card">
           <span class="label s-tag">{isEs ? 'AUDITORÍA BASE' : 'BASELINE AUDIT'}</span>
@@ -64,6 +64,11 @@ const alternates = {
           <span class="label s-tag">{isEs ? 'SITIOS WEB' : 'WEBSITES'}</span>
           <p class="s-price">{isEs ? 'desde $390' : 'from $390'}</p>
           <p class="body-s s-desc">{isEs ? 'Quick Fix $390 · 5 págs $690 · 10 págs $1,190.' : 'Quick Fix $390 · 5 pages $690 · 10 pages $1,190.'}</p>
+        </a>
+        <a href="#sprints" class="pr-strip-card">
+          <span class="label s-tag">{isEs ? 'SPRINTS ÚNICOS' : 'ONE-TIME SPRINTS'}</span>
+          <p class="s-price">$249 – $499</p>
+          <p class="body-s s-desc">{isEs ? 'Listings IA ($249) o Fix Técnico completo ($499) sin suscripción.' : 'AI Listings ($249) or Done-For-You Technical Fix ($499).'}</p>
         </a>
       </div>
     </div>
@@ -102,6 +107,7 @@ const alternates = {
           <ul class="gl-list">
             <li>Starter $149 · Growth $299 · Pro $399 /mo</li>
             <li>{isEs ? 'Auditoría IA $99, abonable al Mes 1' : 'AI visibility audit $99, credited to month one'}</li>
+            <li>{isEs ? 'Sprints únicos: Listings IA $249 · Fix Técnico $499' : 'One-time Sprints: AI Listings $249 · Technical Fix $499'}</li>
             <li>{isEs ? 'Webs: Quick Fix $390 · 5 págs $690 · 10 págs $1,190' : 'Websites: Quick Fix $390 · 5 pages $690 · 10 pages $1,190'}</li>
             <li>{isEs ? '15% ahorro trimestral · 30 días de aviso al cancelar' : 'Save 15% paying quarterly · 30 days’ notice to cancel'}</li>
             <li>{isEs ? 'Mes 4 gratis si no hay mejora tras 3 meses' : 'Month 4 free if your AI visibility hasn’t improved after 3 months'}</li>
@@ -241,29 +247,68 @@ const alternates = {
           </button>
         </article>
       </div>
+    </div>
+  </section>
 
-      <div class="sprints-row" id="sprints">
-        <div class="sprint-box">
-          <div>
-            <span class="label p-tag">ONE-TIME SPRINT · $249</span>
-            <h3 class="h5">AI Listings Sprint</h3>
-            <p class="body-s">{isEs ? 'Reclamamos y verificamos tu entidad en OpenAI Hub, Bing AI, Apple y Google Business Profile.' : 'Claim and sync OpenAI Business Hub, Bing AI Performance, Apple Business & GBP.'}</p>
-          </div>
-          <button type="button" class="btn btn-gold" data-watch-checkout="listings_sprint">
-            <span data-btn-label>{isEs ? 'Book Listings ($249)' : 'Book Sprint ($249)'}</span> <span class="arr">→</span>
-          </button>
+  <!-- ONE-TIME IMPLEMENTATION SPRINTS (on-dark) -->
+  <section class="section section-pad on-dark" id="sprints">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="label gold-pill">{isEs ? 'PASO 03 · SPRINTS ÚNICOS ($249–$499)' : 'STEP 03 · ONE-TIME IMPLEMENTATION SPRINTS'}</span>
+          <h2 class="h2">
+            {isEs ? (
+              <>¿Prefieres arreglar todo una vez <em class="serif-em">sin plan mensual?</em></>
+            ) : (
+              <>Want us to fix it once <em class="serif-em">without a monthly plan?</em></>
+            )}
+          </h2>
         </div>
+        <div class="intro">
+          <p class="lede">
+            {isEs
+              ? 'Pago único, entrega en 5 a 7 días hábiles directo en producción. Ideal tras la auditoría de $99.'
+              : 'Flat one-time scope shipped directly to production in 5–7 business days. Zero recurring commitment.'}
+          </p>
+        </div>
+      </div>
 
-        <div class="sprint-box">
-          <div>
-            <span class="label p-tag">ONE-TIME SPRINT · $499</span>
-            <h3 class="h5">Done-For-You Fix Sprint</h3>
-            <p class="body-s">{isEs ? 'Desplegamos todo tu grafo Schema JSON-LD, llms.txt y bloques FAQ citables en producción.' : 'Done-for-you engineering sprint shipping Organization/Service/FAQ schema and answer pages.'}</p>
-          </div>
-          <button type="button" class="btn btn-gold" data-watch-checkout="fix_sprint">
-            <span data-btn-label>{isEs ? 'Book Fix Sprint ($499)' : 'Book Sprint ($499)'}</span> <span class="arr">→</span>
+      <div class="sprints-grid-2">
+        <article class="offer-card">
+          <span class="label card-tag">{isEs ? 'SPRINT 01 · IDENTIDAD Y DIRECTORIOS IA' : 'SPRINT 01 · AI LISTINGS & ENTITY'}</span>
+          <h3 class="h4">AI Listings &amp; Entity Sprint</h3>
+          <p class="price-tag"><span class="n">$249</span> <span class="label">USD one-time</span></p>
+          <p class="q-quota-pill label">
+            {isEs ? 'Entrega en 5 días hábiles · Sin suscripción' : 'Delivered in 5 business days · No recurring fee'}
+          </p>
+          <ul class="tier-list">
+            <li>{isEs ? 'Reclama y sincroniza OpenAI Business Hub y Bing AI Performance' : 'Claim, verify & optimize OpenAI Business Hub and Bing AI Performance'}</li>
+            <li>{isEs ? 'Alineación de Google Business Profile y Apple Business Connect' : 'Align Google Business Profile & Apple Business Connect entity data'}</li>
+            <li>{isEs ? 'Vinculación cruzada sameAs en directorios clave del rubro' : 'Cross-link official directory sameAs graph so AI resolves one profile'}</li>
+            <li>{isEs ? 'Informe de verificación antes/después en ChatGPT, Gemini y Google AI' : 'Before/after verification report across ChatGPT, Gemini & Google AI'}</li>
+          </ul>
+          <button type="button" class="btn btn-gold card-btn" data-watch-checkout="listings_sprint">
+            <span data-btn-label>{isEs ? 'Reservar AI Listings Sprint ($249)' : 'Book AI Listings Sprint ($249)'}</span> <span class="arr">→</span>
           </button>
-        </div>
+        </article>
+
+        <article class="offer-card is-feat">
+          <span class="label card-tag is-gold">{isEs ? 'SPRINT 02 · FIX TÉCNICO COMPLETO' : 'SPRINT 02 · DONE-FOR-YOU TECHNICAL FIX'}</span>
+          <h3 class="h4">Done-For-You Technical Fix Sprint</h3>
+          <p class="price-tag"><span class="n">$499</span> <span class="label">USD one-time</span></p>
+          <p class="q-quota-pill label is-gold">
+            {isEs ? 'Entrega en 7 días hábiles · Publicado en producción' : 'Delivered in 7 business days · Shipped to production'}
+          </p>
+          <ul class="tier-list">
+            <li>{isEs ? 'Desbloqueo de crawlers (OAI-SearchBot, ClaudeBot, PerplexityBot) + /llms.txt' : 'Unblock AI crawlers (OAI-SearchBot, ClaudeBot, PerplexityBot) & ship /llms.txt'}</li>
+            <li>{isEs ? 'Autoría y validación JSON-LD completa (Organization, Service, FAQPage)' : 'Author & validate full JSON-LD schema (LocalBusiness/Organization, Service, FAQPage)'}</li>
+            <li>{isEs ? 'Redacción y publicación de 2 bloques comparativos / FAQ listos para citar' : 'Write & publish 2 answer-ready FAQ / service comparison blocks on your site'}</li>
+            <li>{isEs ? 'Re-test completo de 15 preguntas × 4 motores tras el despliegue' : 'Post-deploy validation + 15-question re-test across all 4 AI engines'}</li>
+          </ul>
+          <button type="button" class="btn btn-gold card-btn" data-watch-checkout="fix_sprint">
+            <span data-btn-label>{isEs ? 'Reservar Technical Fix Sprint ($499)' : 'Book Technical Fix Sprint ($499)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
       </div>
     </div>
   </section>
@@ -296,9 +341,9 @@ const alternates = {
     margin-bottom: var(--s-16);
   }
 
-  .pr-strip-4 {
+  .pr-strip-5 {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 16px;
   }
 
@@ -545,35 +590,24 @@ const alternates = {
     justify-content: space-between;
   }
 
-  .sprints-row {
+  .sprints-grid-2 {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--s-24);
   }
 
-  .sprint-box {
-    background: var(--white);
-    border: 1px solid var(--line);
-    padding: 20px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  .sprint-box p {
-    color: var(--pale);
-    max-width: 44ch;
-    margin-top: 6px;
+  @media (max-width: 1120px) {
+    .pr-strip-5 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   @media (max-width: 960px) {
-    .pr-strip-4,
+    .pr-strip-5,
     .audit-glance-grid,
     .cards-3,
-    .sprints-row {
-      grid-template-columns: 1fr;
+    .sprints-grid-2 {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 </style>

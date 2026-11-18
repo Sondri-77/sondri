@@ -467,6 +467,7 @@ const servicePillars = [
       { label: 'ChatGPT SEO', href: `${prefix}/services/chatgpt-seo/` },
       { label: 'Google AI Overviews', href: `${prefix}/services/google-ai-overviews/` },
       { label: isEs ? 'llms.txt y Schema JSON-LD' : 'llms.txt & Schema Setup', href: `${prefix}/services/llms-txt-schema/` },
+      { label: isEs ? 'Done-For-You Fix Sprint ($499)' : 'Done-For-You Fix Sprint ($499)', href: `${prefix}/pricing/#sprints` },
     ],
   },
   {
@@ -1117,25 +1118,62 @@ const faqSchema = {
         </article>
       </div>
 
-      <!-- STEP 3: Spacious 2-Card Split Routing to Websites/Full Pricing & Agency Partners -->
+      <!-- STEP 3: Symmetrical 3-Card Split Routing to Sprints, Websites & Agency Partners -->
       <div class="pricing-routes-grid" data-watch-reveal>
-        <article class="offer-card route-card is-websites">
+        <article class="offer-card route-card is-sprints">
           <span class="label gold-tag">
-            {isEs ? 'SITIOS WEB ($390–$1,190) · SPRINTS ÚNICOS' : 'WEBSITES ($390–$1,190) · ONE-TIME SPRINTS'}
+            {isEs ? 'SPRINTS ÚNICOS · $249–$499' : 'ONE-TIME FIX SPRINTS · $249–$499'}
           </span>
           <h3 class="h4 route-title">
             {isEs
-              ? '¿Necesitas un sitio web Answer-Ready desde $390 o ver todos los planes?'
-              : 'Need an answer-ready website (from $390) or full plan specs?'}
+              ? '¿Prefieres un sprint único sin plan mensual?'
+              : 'Want a one-time fix sprint without a monthly plan?'}
           </h3>
           <p class="body-s route-copy">
-            {isEs
-              ? 'Compara Website Quick Fix ($390), sitios de 5 páginas ($690) y 10 páginas ($1,190), sprints únicos ($249–$499) y la tabla completa de planes.'
-              : 'Compare Website Quick Fix ($390), 5-Page ($690) & 10-Page ($1,190) builds, standalone fix sprints ($249–$499), and our full pricing breakdown.'}
+            {isEs ? (
+              <>
+                <strong>AI Listings Sprint ($249)</strong> sincroniza OpenAI, Bing, Apple y GBP en 5 días.{' '}
+                <strong>Done-For-You Fix Sprint ($499)</strong> publica <code>llms.txt</code>, schema JSON-LD y 2 bloques FAQ en 7 días.
+              </>
+            ) : (
+              <>
+                <strong>AI Listings Sprint ($249)</strong> claims &amp; syncs OpenAI, Bing, Apple &amp; GBP in 5 days.{' '}
+                <strong>Done-For-You Fix Sprint ($499)</strong> ships <code>llms.txt</code>, JSON-LD schema &amp; 2 answer blocks in 7 days.
+              </>
+            )}
           </p>
           <div class="route-cta">
-            <a href={`${prefix}/pricing/`} class="btn btn-gold">
-              {isEs ? 'Ver Sitios Web y Todos los Precios' : 'Explore Websites & All Pricing'} <span class="arr">→</span>
+            <a href={`${prefix}/pricing/#sprints`} class="btn btn-gold">
+              {isEs ? 'Ver Sprints ($249–$499)' : 'See One-Time Sprints ($249–$499)'} <span class="arr">→</span>
+            </a>
+          </div>
+        </article>
+
+        <article class="offer-card route-card is-websites">
+          <span class="label gold-tag">
+            {isEs ? 'SITIOS WEB · DESDE $390' : 'ANSWER-READY WEBSITES · FROM $390'}
+          </span>
+          <h3 class="h4 route-title">
+            {isEs
+              ? '¿Necesitas un sitio rápido hecho para IA?'
+              : 'Need a fast website built to get picked by AI?'}
+          </h3>
+          <p class="body-s route-copy">
+            {isEs ? (
+              <>
+                Mejora tu sitio actual con <strong>Website Quick Fix ($390)</strong>, o lanza un sitio nuevo de{' '}
+                <strong>5 páginas ($690)</strong> o <strong>10 páginas ($1,190)</strong> listo para citar.
+              </>
+            ) : (
+              <>
+                Upgrade your existing site with <strong>Website Quick Fix ($390)</strong>, or launch a new{' '}
+                <strong>5-Page ($690)</strong> or <strong>10-Page ($1,190)</strong> answer-ready website.
+              </>
+            )}
+          </p>
+          <div class="route-cta">
+            <a href={`${prefix}/pricing/#websites`} class="btn btn-gold">
+              {isEs ? 'Explorar Sitios Web (desde $390)' : 'Explore Websites (from $390)'} <span class="arr">→</span>
             </a>
           </div>
         </article>
@@ -1150,9 +1188,17 @@ const faqSchema = {
               : 'White-label Watch for your agency clients.'}
           </h3>
           <p class="body-s route-copy">
-            {isEs
-              ? 'Reportes bajo tu propio dominio y entregas mensuales hechas por nuestro equipo desde $79/cliente/mes.'
-              : 'Wholesale AI visibility tracking and done-for-you monthly fixes under your own brand, from $79/client/mo.'}
+            {isEs ? (
+              <>
+                Seguimiento de visibilidad IA bajo tu propia marca y mejoras mensuales desde{' '}
+                <strong>$79/cliente/mes</strong>.
+              </>
+            ) : (
+              <>
+                Wholesale AI visibility tracking and done-for-you monthly fixes under your own brand, from{' '}
+                <strong>$79/client/mo</strong>.
+              </>
+            )}
           </p>
           <div class="route-cta">
             <a href={`${prefix}/partners/`} class="btn btn-outline-light">
@@ -2403,7 +2449,7 @@ const faqSchema = {
 
   .pricing-routes-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--s-24);
     margin-top: var(--s-40);
     align-items: stretch;
@@ -2415,9 +2461,14 @@ const faqSchema = {
     justify-content: flex-start;
   }
 
+  .route-card.is-sprints {
+    border-color: var(--gold);
+    background: rgba(6, 33, 32, 0.96);
+  }
+
   .route-card.is-websites {
     border-color: rgba(253, 179, 67, 0.55);
-    background: rgba(6, 33, 32, 0.94);
+    background: rgba(6, 33, 32, 0.92);
   }
 
   .route-title {
@@ -2428,9 +2479,14 @@ const faqSchema = {
 
   .route-copy {
     color: var(--pale);
-    font-size: 15px;
+    font-size: 14.5px;
     line-height: 1.58;
-    max-width: 58ch;
+  }
+
+  .route-copy code {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--gold);
   }
 
   .route-cta {
@@ -2438,6 +2494,15 @@ const faqSchema = {
     padding-top: var(--s-16);
     display: flex;
     align-items: center;
+  }
+
+  .route-cta .btn {
+    width: 100%;
+    justify-content: space-between;
+    white-space: normal;
+    text-align: left;
+    font-size: 13px;
+    padding-inline: 16px;
   }
 
   /* COMMON QUESTIONS FAQ */

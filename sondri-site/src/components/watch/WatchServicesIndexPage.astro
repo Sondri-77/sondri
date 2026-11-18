@@ -124,6 +124,69 @@ const alternates = {
     </div>
   </section>
 
+  <!-- ONE-TIME IMPLEMENTATION SPRINTS ($249–$499) (on-dark) -->
+  <section class="section section-pad on-dark sprints-sec" id="sprints">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="label gold-pill">{isEs ? 'SPRINTS ÚNICOS ($249–$499)' : 'ONE-TIME IMPLEMENTATION SPRINTS'}</span>
+          <h2 class="h2">
+            {isEs ? (
+              <>¿Solo necesitas ejecución puntual? <em class="serif-em">Sprints sin suscripción.</em></>
+            ) : (
+              <>One-time execution sprints, <em class="serif-em">shipped in days.</em></>
+            )}
+          </h2>
+        </div>
+        <div class="intro">
+          <p class="lede">
+            {isEs
+              ? 'Pago único directo a producción en 5 a 7 días hábiles—ideal después de tu auditoría o sin plan mensual.'
+              : 'Flat one-time scope without a monthly retainer—ideal for fast entity & technical remediation.'}
+          </p>
+        </div>
+      </div>
+
+      <div class="sprints-2">
+        <article class="web-card">
+          <span class="label w-tag">{isEs ? 'SPRINT 01 · $249 PAGO ÚNICO' : 'SPRINT 01 · AI LISTINGS & ENTITY'}</span>
+          <h3 class="h4">AI Listings &amp; Entity Sprint</h3>
+          <p class="w-price"><span class="n">$249</span> <span class="label">USD one-time</span></p>
+          <p class="sp-pill label">
+            {isEs ? '5 días hábiles · Sin plan mensual' : '5 business days · No recurring fee'}
+          </p>
+          <ul class="sp-list">
+            <li>{isEs ? 'Reclamo y verificación en OpenAI Business Hub y Bing AI Performance' : 'Claim, verify & optimize OpenAI Business Hub & Bing AI Performance'}</li>
+            <li>{isEs ? 'Alineación oficial en Google Business Profile y Apple Business' : 'Align Google Business Profile & Apple Business Connect entity data'}</li>
+            <li>{isEs ? 'Vinculación sameAs cruzada en directorios de autoridad del sector' : 'Cross-link official directory sameAs graph for unified resolution'}</li>
+            <li>{isEs ? 'Reporte de verificación antes/después en los 4 motores' : 'Before/after verification report across ChatGPT, Gemini & Google AI'}</li>
+          </ul>
+          <button type="button" class="btn btn-outline-light card-btn" data-watch-checkout="listings_sprint">
+            <span data-btn-label>{isEs ? 'Reservar AI Listings Sprint ($249)' : 'Book AI Listings Sprint ($249)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+
+        <article class="web-card is-feat">
+          <span class="label w-tag is-gold">{isEs ? 'SPRINT 02 · $499 FIX COMPLETO' : 'SPRINT 02 · DONE-FOR-YOU TECHNICAL FIX'}</span>
+          <h3 class="h4">Done-For-You Technical Fix Sprint</h3>
+          <p class="w-price"><span class="n">$499</span> <span class="label">USD one-time</span></p>
+          <p class="sp-pill label is-gold">
+            {isEs ? '7 días hábiles · Desplegado en producción' : '7 business days · Shipped to production'}
+          </p>
+          <ul class="sp-list">
+            <li>{isEs ? 'Desbloqueo de crawlers (OAI-SearchBot, ClaudeBot, PerplexityBot) + /llms.txt' : 'Unblock AI crawlers (OAI-SearchBot, ClaudeBot, PerplexityBot) & ship /llms.txt'}</li>
+            <li>{isEs ? 'Esquema JSON-LD completo (Organization/Service/FAQPage) validado' : 'Author & validate full JSON-LD schema (Organization, Service, FAQPage)'}</li>
+            <li>{isEs ? 'Redacción y publicación de 2 bloques comparativos / FAQ citables' : 'Write & publish 2 answer-ready FAQ / comparison blocks on your site'}</li>
+            <li>{isEs ? 'Re-test completo de 15 preguntas × 4 motores tras el lanzamiento' : 'Post-deploy validation + 15-question re-test across all 4 engines'}</li>
+          </ul>
+          <button type="button" class="btn btn-gold card-btn" data-watch-checkout="fix_sprint">
+            <span data-btn-label>{isEs ? 'Reservar Technical Fix Sprint ($499)' : 'Book Technical Fix Sprint ($499)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <!-- ANSWER-READY WEBSITES SHOWCASE (on-dark) -->
   <section class="section section-pad on-dark">
     <div class="wrap">
@@ -369,6 +432,48 @@ const alternates = {
     justify-content: space-between;
   }
 
+  .sprints-sec {
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .sprints-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-24);
+  }
+
+  .sp-pill {
+    display: inline-block;
+    padding: 7px 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--line-soft);
+    color: var(--white);
+    font-weight: 600;
+  }
+
+  .sp-pill.is-gold {
+    background: rgba(253, 179, 67, 0.14);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .sp-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--pale);
+    margin-bottom: var(--s-08);
+  }
+
+  .sp-list li::before {
+    content: '■ ';
+    color: var(--gold);
+    font-size: 10px;
+  }
+
   .packs-banner {
     border: 1px solid var(--line-soft);
     background: rgba(255, 255, 255, 0.03);
@@ -387,8 +492,9 @@ const alternates = {
 
   @media (max-width: 960px) {
     .spec-grid-4,
+    .sprints-2,
     .cards-3 {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 </style>
