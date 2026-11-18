@@ -36,60 +36,300 @@ const chapters = isEs
       { id: 'act-faq', num: '07', title: 'FAQ' },
     ];
 
-const previews = [
+const industries = [
   {
-    id: 'local',
-    label: isEs ? 'Clínicas y Local' : 'Clinics & Local',
+    id: 'medical',
+    label: isEs ? 'Salud y Dental' : 'Medical & Dental',
     servicePrefill: isEs ? 'Clínica dental e implantes' : 'Dental implants clinic',
     score: 42,
-    speed: 88,
-    botsLabel: isEs ? '✓ Permitidos' : '✓ Allowed',
-    schemaLabel: isEs ? '✗ Faltan' : '✗ Missing',
-    q1: isEs ? 'P1 · ¿Mejor en mi ciudad?' : 'Q1 · Best in city?',
-    r1: isEs ? '✗ Omitida (3 rivales)' : '✗ Not named (3 rivals)',
-    s1: 'miss',
-    q2: isEs ? 'P2 · ¿Servicio específico?' : 'Q2 · Specific service?',
-    r2: isEs ? '⚠ Datos antiguos' : '⚠ Outdated info',
-    s2: 'warn',
-    q3: isEs ? 'P3 · ¿Qué dicen de tu marca?' : 'Q3 · Direct brand check?',
-    r3: isEs ? '✓ Perfil desactualizado' : '✓ Old listing only',
-    s3: 'ok',
+    checks: [
+      { label: isEs ? 'Schema y FAQ' : 'Entity & FAQ Schema', val: isEs ? '✗ Faltan' : '✗ Missing', state: 'miss' },
+      { label: isEs ? 'Bots IA' : 'AI Crawler Access', val: isEs ? '✓ Permitidos' : '✓ Allowed', state: 'ok' },
+      { label: isEs ? 'OpenAI y Bing Hubs' : 'Official AI Hubs', val: isEs ? '⚠ Sin verificar' : '⚠ Unclaimed', state: 'warn' },
+    ],
+    questions: [
+      {
+        tab: isEs ? 'P1 · Categoría' : 'Q1 · Category',
+        prompt: isEs
+          ? '“¿Cuál es la mejor clínica dental para implantes en mi ciudad?”'
+          : '“Who is the highest-rated dental implant clinic in my city?”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '✗ 3 rivales' : '✗ 3 rivals named', state: 'miss' },
+          { name: 'Gemini', val: isEs ? '✗ Omitida' : '✗ Not named', state: 'miss' },
+          { name: 'AI Overviews', val: isEs ? '⚠ Directorio' : '⚠ Directory only', state: 'warn' },
+          { name: 'AI Mode', val: isEs ? '✗ Omitida' : '✗ Skipped', state: 'miss' },
+        ],
+      },
+      {
+        tab: isEs ? 'P2 · Servicio' : 'Q2 · Specialty',
+        prompt: isEs
+          ? '“¿Qué clínica atiende urgencias y coronas en el día con precios claros?”'
+          : '“Which practice offers same-day crowns with transparent pricing?”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '⚠ Sin precios' : '⚠ No pricing found', state: 'warn' },
+          { name: 'Gemini', val: isEs ? '✗ Otro centro' : '✗ Competitor cited', state: 'miss' },
+          { name: 'AI Overviews', val: isEs ? '✓ Nombrada' : '✓ Listed', state: 'ok' },
+          { name: 'AI Mode', val: isEs ? '⚠ Dato antiguo' : '⚠ Stale info', state: 'warn' },
+        ],
+      },
+      {
+        tab: isEs ? 'P3 · Marca' : 'Q3 · Brand Check',
+        prompt: isEs
+          ? '“¿Es recomendable [Tu Clínica] para pacientes?”'
+          : '“Is [Your Clinic] a good choice for dental care?”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '⚠ Ficha vieja' : '⚠ Old directory', state: 'warn' },
+          { name: 'Gemini', val: isEs ? '✓ 4.8 reseñas' : '✓ Reviews cited', state: 'ok' },
+          { name: 'AI Overviews', val: isEs ? '⚠ Horario mal' : '⚠ Wrong hours', state: 'warn' },
+          { name: 'AI Mode', val: isEs ? '✓ Positiva' : '✓ Summary ok', state: 'ok' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'legal',
+    label: isEs ? 'Legal y Asesoría' : 'Law & Advisory',
+    servicePrefill: isEs ? 'Estudio jurídico familia y laboral' : 'Employment & corporate law firm',
+    score: 36,
+    checks: [
+      { label: isEs ? 'LegalService Schema' : 'Entity & FAQ Schema', val: isEs ? '✗ Faltan' : '✗ Missing', state: 'miss' },
+      { label: isEs ? 'Bots IA' : 'AI Crawler Access', val: isEs ? '⚠ Restringido' : '⚠ Throttled', state: 'warn' },
+      { label: isEs ? 'OpenAI y Bing Hubs' : 'Official AI Hubs', val: isEs ? '✗ Sin alta' : '✗ Unclaimed', state: 'miss' },
+    ],
+    questions: [
+      {
+        tab: isEs ? 'P1 · Categoría' : 'Q1 · Category',
+        prompt: isEs
+          ? '“Recomienda estudios jurídicos especialistas en derecho laboral y corporativo”'
+          : '“Which boutique employment law firm advises growing companies?”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '✗ 5 firmas' : '✗ 5 rivals named', state: 'miss' },
+          { name: 'Gemini', val: isEs ? '✗ Omitido' : '✗ Not named', state: 'miss' },
+          { name: 'AI Overviews', val: isEs ? '✗ Omitido' : '✗ Not cited', state: 'miss' },
+          { name: 'AI Mode', val: isEs ? '⚠ Directorio' : '⚠ Bar listing only', state: 'warn' },
+        ],
+      },
+      {
+        tab: isEs ? 'P2 · Especialidad' : 'Q2 · Specialty',
+        prompt: isEs
+          ? '“¿Qué abogado revisa contratos ejecutivos y pactos de socios?”'
+          : '“Who handles executive equity and commercial contract reviews?”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '✗ Sin página' : '✗ No practice page', state: 'miss' },
+          { name: 'Gemini', val: isEs ? '⚠ Rival #2' : '⚠ Competitor #2', state: 'warn' },
+          { name: 'AI Overviews', val: isEs ? '✗ Omitido' : '✗ Skipped', state: 'miss' },
+          { name: 'AI Mode', val: isEs ? '✗ Sin respuesta' : '✗ Missing scope', state: 'miss' },
+        ],
+      },
+      {
+        tab: isEs ? 'P3 · Marca' : 'Q3 · Brand Check',
+        prompt: isEs
+          ? '“¿Qué experiencia y socios tiene [Tu Estudio]?”'
+          : '“What does [Your Firm] specialize in and who leads it?”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '⚠ Faltan socios' : '⚠ Missing bios', state: 'warn' },
+          { name: 'Gemini', val: isEs ? '✓ Mención base' : '✓ Basic match', state: 'ok' },
+          { name: 'AI Overviews', val: isEs ? '⚠ Sin área clara' : '⚠ Vague focus', state: 'warn' },
+          { name: 'AI Mode', val: isEs ? '✓ Preciso' : '✓ Listed', state: 'ok' },
+        ],
+      },
+    ],
   },
   {
     id: 'b2b',
-    label: isEs ? 'Legal y B2B' : 'Legal & B2B',
-    servicePrefill: isEs ? 'Estudio jurídico o software B2B' : 'Law firm or B2B software',
-    score: 36,
-    speed: 74,
-    botsLabel: isEs ? '⚠ Restringido' : '⚠ Throttled',
-    schemaLabel: isEs ? '✗ Incompleto' : '✗ Incomplete',
-    q1: isEs ? 'P1 · ¿Firma recomendada?' : 'Q1 · Top firm asked?',
-    r1: isEs ? '✗ Omitida (5 firmas)' : '✗ Skipped (5 rivals)',
-    s1: 'miss',
-    q2: isEs ? 'P2 · ¿Especialidad clave?' : 'Q2 · Specialty niche?',
-    r2: isEs ? '✗ Sin página dedicada' : '✗ No dedicated page',
-    s2: 'miss',
-    q3: isEs ? 'P3 · ¿Socios y trayectoria?' : 'Q3 · Brand accuracy?',
-    r3: isEs ? '⚠ Bios incompletas' : '⚠ Thin proof cited',
-    s3: 'warn',
+    label: 'B2B & SaaS',
+    servicePrefill: isEs ? 'Automatización e integración B2B' : 'B2B workflow software',
+    score: 44,
+    checks: [
+      { label: isEs ? '/llms.txt y Offer' : 'Entity & FAQ Schema', val: isEs ? '✗ Faltan' : '✗ Missing', state: 'miss' },
+      { label: isEs ? 'Bots IA' : 'AI Crawler Access', val: isEs ? '✓ Permitidos' : '✓ Allowed', state: 'ok' },
+      { label: isEs ? 'OpenAI y Bing Hubs' : 'Official AI Hubs', val: isEs ? '⚠ Sin verificar' : '⚠ Unclaimed', state: 'warn' },
+    ],
+    questions: [
+      {
+        tab: isEs ? 'P1 · Solución' : 'Q1 · Category',
+        prompt: isEs
+          ? '“¿Cómo automatizar conciliación CRM–ERP sin cambiar de sistema?”'
+          : '“How do ops teams automate CRM-to-ERP sync without replatforming?”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '✗ Tools masivas' : '✗ Legacy tools only', state: 'miss' },
+          { name: 'Gemini', val: isEs ? '✗ No citado' : '✗ Not cited', state: 'miss' },
+          { name: 'AI Overviews', val: isEs ? '⚠ Blog genérico' : '⚠ Generic blog', state: 'warn' },
+          { name: 'AI Mode', val: isEs ? '✗ Omitido' : '✗ Skipped', state: 'miss' },
+        ],
+      },
+      {
+        tab: isEs ? 'P2 · Comparativa' : 'Q2 · Specialty',
+        prompt: isEs
+          ? '“Mejores socios técnicos de automatización para equipos B2B”'
+          : '“Best custom workflow automation partners for mid-market teams”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '⚠ Sin métricas' : '⚠ No proof cited', state: 'warn' },
+          { name: 'Gemini', val: isEs ? '✗ 3 agencias' : '✗ 3 rivals named', state: 'miss' },
+          { name: 'AI Overviews', val: isEs ? '✓ Mencionado' : '✓ Cited once', state: 'ok' },
+          { name: 'AI Mode', val: isEs ? '⚠ Falta tabla' : '⚠ No comparison', state: 'warn' },
+        ],
+      },
+      {
+        tab: isEs ? 'P3 · Marca' : 'Q3 · Brand Check',
+        prompt: isEs
+          ? '“¿Para quién está diseñado [Tu Empresa] y cómo opera?”'
+          : '“Who is [Your Company] best suited for and how does it work?”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '⚠ Precio confuso' : '⚠ Unclear scope', state: 'warn' },
+          { name: 'Gemini', val: isEs ? '✓ Sitio citado' : '✓ Accurate bio', state: 'ok' },
+          { name: 'AI Overviews', val: isEs ? '✓ Match ICP' : '✓ Listed', state: 'ok' },
+          { name: 'AI Mode', val: isEs ? '⚠ Faltan casos' : '⚠ Needs case proof', state: 'warn' },
+        ],
+      },
+    ],
   },
   {
-    id: 'ecom',
+    id: 'ecommerce',
     label: 'Ecommerce',
-    servicePrefill: isEs ? 'Tienda online y productos' : 'Ecommerce & Shopify store',
+    servicePrefill: isEs ? 'Tienda online y catálogo de productos' : 'Direct-to-consumer ecommerce brand',
     score: 48,
-    speed: 91,
-    botsLabel: isEs ? '✓ Permitidos' : '✓ Allowed',
-    schemaLabel: isEs ? '⚠ Sin Offer/ACP' : '⚠ Missing Offer',
-    q1: isEs ? 'P1 · ¿Mejor bajo $250?' : 'Q1 · Top pick under $250?',
-    r1: isEs ? '✗ Fuera del carrusel' : '✗ Excluded by agents',
-    s1: 'miss',
-    q2: isEs ? 'P2 · ¿Envío y cambios?' : 'Q2 · Returns & shipping?',
-    r2: isEs ? '⚠ Política ilegible' : '⚠ Policy unreadable',
-    s2: 'warn',
-    q3: isEs ? 'P3 · ¿Opiniones verificadas?' : 'Q3 · Verified reviews?',
-    r3: isEs ? '✓ 4.7 en terceros' : '✓ External reviews ok',
-    s3: 'ok',
+    checks: [
+      { label: isEs ? 'Offer & Return Schema' : 'Entity & FAQ Schema', val: isEs ? '⚠ Parcial' : '⚠ Missing Offer', state: 'warn' },
+      { label: isEs ? 'Bots IA' : 'AI Crawler Access', val: isEs ? '✓ Permitidos' : '✓ Allowed', state: 'ok' },
+      { label: isEs ? 'OpenAI Merchant ACP' : 'Official AI Hubs', val: isEs ? '✗ Sin feed' : '✗ Unclaimed', state: 'miss' },
+    ],
+    questions: [
+      {
+        tab: isEs ? 'P1 · Compra' : 'Q1 · Category',
+        prompt: isEs
+          ? '“Mejores botas impermeables de cuero bajo $250 con envío rápido”'
+          : '“Best waterproof leather boots under $250 with 2-day shipping”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '✗ Sin feed ACP' : '✗ Excluded (no ACP)', state: 'miss' },
+          { name: 'Gemini', val: isEs ? '✗ Rivales DTO' : '✗ 3 brands named', state: 'miss' },
+          { name: 'AI Overviews', val: isEs ? '⚠ Sin precio' : '⚠ Missing Offer', state: 'warn' },
+          { name: 'AI Mode', val: isEs ? '✗ Omitido' : '✗ Skipped', state: 'miss' },
+        ],
+      },
+      {
+        tab: isEs ? 'P2 · Políticas' : 'Q2 · Specialty',
+        prompt: isEs
+          ? '“¿Qué tienda ofrece cambios gratis y despacho garantizado en 48 h?”'
+          : '“Which stores offer free returns and guaranteed fast shipping?”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '⚠ No legible' : '⚠ Unparsed policy', state: 'warn' },
+          { name: 'Gemini', val: isEs ? '⚠ Sin schema' : '⚠ No shipping tag', state: 'warn' },
+          { name: 'AI Overviews', val: isEs ? '✗ Omitido' : '✗ Not listed', state: 'miss' },
+          { name: 'AI Mode', val: isEs ? '✓ En FAQ' : '✓ Text found', state: 'ok' },
+        ],
+      },
+      {
+        tab: isEs ? 'P3 · Marca' : 'Q3 · Brand Check',
+        prompt: isEs
+          ? '“¿Es confiable comprar en [Tu Tienda]?”'
+          : '“Are [Your Brand] products durable and worth buying?”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '✓ 4.7 estrellas' : '✓ Good sentiment', state: 'ok' },
+          { name: 'Gemini', val: isEs ? '✓ Reseñas ok' : '✓ Verified', state: 'ok' },
+          { name: 'AI Overviews', val: isEs ? '⚠ Pocas citas' : '⚠ Thin reviews', state: 'warn' },
+          { name: 'AI Mode', val: isEs ? '✓ Positiva' : '✓ Recommended', state: 'ok' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'realestate',
+    label: isEs ? 'Inmobiliaria y Hogar' : 'Real Estate & Home',
+    servicePrefill: isEs ? 'Remodelación o asesoría inmobiliaria' : 'Home remodeling & real estate',
+    score: 39,
+    checks: [
+      { label: isEs ? 'LocalBusiness Schema' : 'Entity & FAQ Schema', val: isEs ? '✗ Faltan' : '✗ Missing', state: 'miss' },
+      { label: isEs ? 'Bots IA' : 'AI Crawler Access', val: isEs ? '✓ Permitidos' : '✓ Allowed', state: 'ok' },
+      { label: isEs ? 'GBP y Apple Maps' : 'Official AI Hubs', val: isEs ? '⚠ Desalineado' : '⚠ Out of sync', state: 'warn' },
+    ],
+    questions: [
+      {
+        tab: isEs ? 'P1 · Categoría' : 'Q1 · Category',
+        prompt: isEs
+          ? '“¿Qué empresa confiable hace remodelaciones llave en mano en mi ciudad?”'
+          : '“Who are the most reliable design-build remodelers in this metro?”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '✗ Portales' : '✗ Directories win', state: 'miss' },
+          { name: 'Gemini', val: isEs ? '✗ 3 competidores' : '✗ 3 rivals named', state: 'miss' },
+          { name: 'AI Overviews', val: isEs ? '⚠ Directorio' : '⚠ Aggregator link', state: 'warn' },
+          { name: 'AI Mode', val: isEs ? '✗ Omitida' : '✗ Not named', state: 'miss' },
+        ],
+      },
+      {
+        tab: isEs ? 'P2 · Alcance' : 'Q2 · Specialty',
+        prompt: isEs
+          ? '“¿Cuánto tarda una remodelación completa y qué garantía entregan?”'
+          : '“How long does a full kitchen remodel take and what warranties apply?”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '⚠ Promedio gen.' : '⚠ Generic range', state: 'warn' },
+          { name: 'Gemini', val: isEs ? '✗ Sin tu web' : '✗ Rival FAQ cited', state: 'miss' },
+          { name: 'AI Overviews', val: isEs ? '✗ Omitida' : '✗ Skipped', state: 'miss' },
+          { name: 'AI Mode', val: isEs ? '⚠ Falta guía' : '⚠ Needs FAQ', state: 'warn' },
+        ],
+      },
+      {
+        tab: isEs ? 'P3 · Marca' : 'Q3 · Brand Check',
+        prompt: isEs
+          ? '“¿En qué comunas o zonas trabaja [Tu Empresa]?”'
+          : '“What neighborhoods does [Your Brand] serve?”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '⚠ Zona antigua' : '⚠ Stale area list', state: 'warn' },
+          { name: 'Gemini', val: isEs ? '✓ Coincide' : '✓ Synced GBP', state: 'ok' },
+          { name: 'AI Overviews', val: isEs ? '⚠ Incompleto' : '⚠ Partial match', state: 'warn' },
+          { name: 'AI Mode', val: isEs ? '✓ Mencionada' : '✓ Cited', state: 'ok' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'local',
+    label: isEs ? 'Servicios Locales' : 'Local Services',
+    servicePrefill: isEs ? 'Servicios profesionales locales' : 'Local service business',
+    score: 41,
+    checks: [
+      { label: isEs ? 'Service y FAQ Schema' : 'Entity & FAQ Schema', val: isEs ? '✗ Faltan' : '✗ Missing', state: 'miss' },
+      { label: isEs ? 'Bots IA' : 'AI Crawler Access', val: isEs ? '⚠ En revisión' : '⚠ Partial', state: 'warn' },
+      { label: isEs ? 'OpenAI y Bing Hubs' : 'Official AI Hubs', val: isEs ? '✗ Sin alta' : '✗ Unclaimed', state: 'miss' },
+    ],
+    questions: [
+      {
+        tab: isEs ? 'P1 · Categoría' : 'Q1 · Category',
+        prompt: isEs
+          ? '“¿A quién contratar en mi ciudad para [tu servicio principal]?”'
+          : '“Who is the most dependable service provider for [your specialty]?”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '✗ No apareces' : '✗ Omitted', state: 'miss' },
+          { name: 'Gemini', val: isEs ? '✗ 3 locales más' : '✗ 3 rivals cited', state: 'miss' },
+          { name: 'AI Overviews', val: isEs ? '⚠ Lista maps' : '⚠ Map pack only', state: 'warn' },
+          { name: 'AI Mode', val: isEs ? '✗ Omitido' : '✗ Skipped', state: 'miss' },
+        ],
+      },
+      {
+        tab: isEs ? 'P2 · Detalles' : 'Q2 · Specialty',
+        prompt: isEs
+          ? '“¿Quién atiende urgencias la misma semana con precios transparentes?”'
+          : '“Who offers same-week service visits with clear upfront scope?”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '⚠ Sin alcance' : '⚠ No scope clear', state: 'warn' },
+          { name: 'Gemini', val: isEs ? '✗ No hallado' : '✗ Competitor won', state: 'miss' },
+          { name: 'AI Overviews', val: isEs ? '⚠ FAQ faltante' : '⚠ No FAQ block', state: 'warn' },
+          { name: 'AI Mode', val: isEs ? '✗ Omitido' : '✗ Not cited', state: 'miss' },
+        ],
+      },
+      {
+        tab: isEs ? 'P3 · Marca' : 'Q3 · Brand Check',
+        prompt: isEs
+          ? '“Opiniones y reputación general de [Tu Negocio]”'
+          : '“Reviews and overview of [Your Business] before hiring.”',
+        engines: [
+          { name: 'ChatGPT', val: isEs ? '✓ Ficha base' : '✓ Basic profile', state: 'ok' },
+          { name: 'Gemini', val: isEs ? '✓ Reseñas' : '✓ Good rating', state: 'ok' },
+          { name: 'AI Overviews', val: isEs ? '⚠ Horario viejo' : '⚠ Stale hours', state: 'warn' },
+          { name: 'AI Mode', val: isEs ? '✓ Mencionada' : '✓ Listed', state: 'ok' },
+        ],
+      },
+    ],
   },
 ];
 
@@ -98,8 +338,8 @@ const offerStrip = [
     kicker: isEs ? 'CHEQUEO GRATIS' : 'FREE CHECK',
     price: '$0',
     desc: isEs
-      ? 'Velocidad web + 3 preguntas en vivo en 60 seg.'
-      : 'Page speed check + 3 live buyer answers in 60s.',
+      ? 'Auditoría técnica IA + 3 preguntas en vivo en 60 seg.'
+      : 'AI readiness check + 3 live buyer answers in 60s.',
     href: '#free-check',
   },
   {
@@ -141,8 +381,8 @@ const reportCards = [
   },
   {
     icon: 'pin',
-    title: isEs ? 'Salud web y fuentes citadas' : 'Page speed & cited sources',
-    desc: isEs ? 'Lighthouse móvil, crawlers y directorios que la IA lee.' : 'Core Web Vitals, bot access & trusted directories.',
+    title: isEs ? 'Schema, entidades y fuentes citadas' : 'Entity signals & sources cited',
+    desc: isEs ? 'JSON-LD, crawlers y directorios en los que la IA confía.' : 'Schema markup, bot access & trusted directories.',
   },
   {
     icon: 'bolt',
@@ -268,7 +508,7 @@ const servicePillars = [
       { label: isEs ? 'Sitios Web (desde $390)' : 'Answer-Ready Websites (from $390)', href: `${prefix}/services/websites/` },
       { label: isEs ? 'Website Quick Fix ($390)' : 'Website Quick Fix ($390)', href: `${prefix}/pricing/#websites` },
       { label: isEs ? 'Sitios de 5 págs ($690) y 10 págs ($1,190)' : '5-Page ($690) & 10-Page ($1,190) Builds', href: `${prefix}/pricing/#websites` },
-      { label: isEs ? 'llms.txt, Schema y Velocidad' : 'Speed, Schema & llms.txt', href: `${prefix}/services/llms-txt-schema/` },
+      { label: isEs ? 'llms.txt, Schema y Datos JSON-LD' : 'Entity Schema & llms.txt', href: `${prefix}/services/llms-txt-schema/` },
     ],
   },
 ];
@@ -283,8 +523,8 @@ const faqs = [
   {
     q: isEs ? '¿Qué incluye el chequeo gratis vs. la auditoría de $99?' : 'What is included in the free check vs. the $99 audit?',
     a: isEs
-      ? 'El chequeo gratis evalúa velocidad web, bots/schema y 3 preguntas para detectar brechas. La auditoría de $99 corre 15 preguntas × 3 veces en 4 motores (180 chequeos), mapea 3 competidores y entrega la hoja completa de fixes (abonable al Mes 1).'
-      : 'The free check scores your page speed, AI bot access, schema, and 3 sample questions to flag blockers. The $99 Audit runs 15 questions × 3 times across 4 engines (180 checks), maps 3 competitors, and unlocks the full fix roadmap (credited toward Month 1).',
+      ? 'El chequeo gratis evalúa acceso de bots IA, schema JSON-LD, fichas oficiales y 3 preguntas de compra para detectar brechas. La auditoría de $99 corre 15 preguntas × 3 veces en 4 motores (180 chequeos), mapea 3 competidores y entrega la hoja completa de fixes (abonable al Mes 1).'
+      : 'The free check inspects your AI bot access, entity & FAQ schema, official AI hubs, and 3 sample questions to flag blockers. The $99 Audit runs 15 questions × 3 times across 4 engines (180 checks), maps 3 competitors, and unlocks the full fix roadmap (credited toward Month 1).',
   },
   {
     q: isEs ? '¿También diseñan sitios web optimizados para IA?' : 'Do you build websites too, or only optimize existing ones?',
@@ -323,8 +563,8 @@ const faqSchema = {
 <WatchShell
   title={isEs ? 'Sondri Watch — Visibilidad IA y Sitios Web | watch.sondri.ai' : 'Sondri Watch — Get Found When Buyers Ask AI | watch.sondri.ai'}
   description={isEs
-    ? 'Revisa gratis tu velocidad web y cómo ChatGPT, Gemini y Google AI describen tu negocio. Auditoría $99, Webs desde $390 y planes Watch desde $149/mes.'
-    : 'Free 60-second page speed & AI visibility check across ChatGPT, Gemini, and Google AI. $99 full audit, websites from $390, monthly plans from $149/mo.'}
+    ? 'Revisa gratis cómo ChatGPT, Gemini y Google AI describen tu negocio. Auditoría $99, Webs desde $390 y planes Watch desde $149/mes.'
+    : 'Free 60-second AI visibility & readiness check across ChatGPT, Gemini, and Google AI. $99 full audit, websites from $390, monthly plans from $149/mo.'}
   lang={lang}
   activeTab="overview"
   alternates={alternates}
@@ -369,142 +609,131 @@ const faqSchema = {
           </h1>
           <p class="lede hero-lede">
             {isEs
-              ? 'Escaneamos tu web y respuestas en ChatGPT, Gemini y Google AI en 60 segundos—y luego implementamos las mejoras por ti.'
-              : 'Audit your website readiness and live AI answers in 60 seconds—then let our engineers build and ship the fixes.'}
+              ? 'Comprobamos cómo ChatGPT, Gemini y Google AI responden a tus compradores—y desplegamos las mejoras para que te recomienden.'
+              : 'We check how ChatGPT, Gemini, and Google AI answer your buyers’ real questions—and ship the fixes that get you recommended.'}
           </p>
 
           <div class="hero-ctas">
             <a class="btn btn-gold" href="#free-check">
-              {isEs ? 'Escanear mi Sitio Gratis' : 'Scan My Website Free'} <span class="arr">→</span>
+              {isEs ? 'Probar mi Sitio Gratis' : 'Check My Website Free'} <span class="arr">→</span>
             </a>
             <a class="btn btn-outline-light" href={`${prefix}/pricing/`}>
-              {isEs ? 'Precios y Sitios Web' : 'See Pricing & Websites'}
+              {isEs ? 'Planes y Sitios Web' : 'See Plans & Websites'}
             </a>
           </div>
 
-          <!-- Spacious Plain-English 3-Step Signal Flow -->
-          <div class="hero-signal-box" aria-hidden="true">
-            <svg viewBox="0 0 510 88" class="hero-flow-svg" fill="none">
-              <line x1="79" y1="44" x2="431" y2="44" stroke="rgba(255,255,255,0.22)" stroke-width="1.5" stroke-dasharray="4 4" />
-              <circle data-hero-packet cx="74" cy="44" r="4" fill="#fdb343" />
-              <circle data-hero-packet cx="170" cy="44" r="3" fill="#5fc4bc" />
+          <!-- Spacious Plain-English 3-Step Flow (HTML Nodes + Animated Connectors, Zero Text Clipping) -->
+          <div class="hero-steps-flow" aria-hidden="true">
+            <div class="hs-node">
+              <span class="label hs-kicker">{isEs ? '01 · CLIENTE PREGUNTA' : '01 · BUYER ASKS AI'}</span>
+              <span class="hs-sub">{isEs ? '“¿A quién contratar?”' : '“Who is best in town?”'}</span>
+            </div>
 
-              <rect x="2" y="15" width="154" height="58" rx="4" fill="#081f1f" stroke="rgba(255,255,255,0.26)" stroke-width="1.2" />
-              <text x="79" y="38" text-anchor="middle" fill="#fdb343" font-family="JetBrains Mono, monospace" font-size="9" font-weight="700">
-                {isEs ? '01 · CLIENTE PREGUNTA' : '01 · BUYER ASKS AI'}
-              </text>
-              <text x="79" y="55" text-anchor="middle" fill="#e5ecea" font-family="IBM Plex Sans, sans-serif" font-size="10.5">
-                {isEs ? '“¿A quién contratar?”' : '“Who should I hire?”'}
-              </text>
+            <div class="hs-conn"><span class="hs-dot"></span></div>
 
-              <rect x="178" y="15" width="154" height="58" rx="4" fill="#0d2a29" stroke="#fdb343" stroke-width="1.3" />
-              <text x="255" y="38" text-anchor="middle" fill="#fdb343" font-family="JetBrains Mono, monospace" font-size="9" font-weight="700">
-                {isEs ? '02 · AUDITAMOS TODO' : '02 · WE SCAN SITE & AI'}
-              </text>
-              <text x="255" y="55" text-anchor="middle" fill="#ffffff" font-family="IBM Plex Sans, sans-serif" font-size="10.5">
-                {isEs ? 'Web, velocidad e IA' : 'Page, speed & 4 AIs'}
-              </text>
+            <div class="hs-node is-mid">
+              <span class="label hs-kicker">{isEs ? '02 · TEST EN 4 MOTORES' : '02 · WE TEST 4 ENGINES'}</span>
+              <span class="hs-sub">ChatGPT, Gemini &amp; Google</span>
+            </div>
 
-              <rect x="354" y="15" width="154" height="58" rx="4" fill="#081f1f" stroke="#5fc4bc" stroke-width="1.3" />
-              <text x="431" y="38" text-anchor="middle" fill="#5fc4bc" font-family="JetBrains Mono, monospace" font-size="9" font-weight="700">
-                {isEs ? '03 · SALES ELEGIDO' : '03 · YOU GET FOUND'}
-              </text>
-              <text x="431" y="55" text-anchor="middle" fill="#ffffff" font-family="IBM Plex Sans, sans-serif" font-size="10.5">
-                {isEs ? 'Score + fixes reales' : 'Score + shipped fixes'}
-              </text>
-            </svg>
+            <div class="hs-conn"><span class="hs-dot is-delay"></span></div>
+
+            <div class="hs-node is-end">
+              <span class="label hs-kicker">{isEs ? '03 · SALES ELEGIDO' : '03 · YOU GET FOUND'}</span>
+              <span class="hs-sub">{isEs ? 'Score + fixes publicados' : 'Score + shipped fixes'}</span>
+            </div>
           </div>
         </div>
 
-        <!-- Right Column: Visual Dual-Core Telemetry Card (Page Audit 45 pts + AI Answers 55 pts) -->
-        <div class="telemetry-card" data-watch-reveal>
+        <!-- Right Column: Auto-Cycling Live Buyer Question & 4-Engine AI Verdict Card (NO Page Speed Bar) -->
+        <div class="telemetry-card" id="heroVerdictCard" data-watch-reveal>
           <div class="tel-head">
-            <span class="label tel-kicker">{isEs ? 'VISTA PREVIA DEL CHEQUEO GRATIS' : 'FREE AUDIT TELEMETRY PREVIEW'}</span>
-            <div class="tel-pills" role="tablist" aria-label={isEs ? 'Ejemplo por industria' : 'Industry preview'}>
-              {previews.map((pv, idx) => (
-                <button
-                  type="button"
-                  role="tab"
-                  class:list={['sc-tab', 'label', idx === 0 && 'is-active']}
-                  data-tel-btn={pv.id}
-                  data-tel-score={String(pv.score)}
-                  data-tel-service={pv.servicePrefill}
-                  aria-selected={idx === 0 ? 'true' : 'false'}
-                >
-                  {pv.label}
-                </button>
-              ))}
-            </div>
+            <span class="label tel-kicker">{isEs ? 'QUÉ MUESTRA TU AUDITORÍA GRATIS' : 'WHAT THE FREE AUDIT REVEALS'}</span>
+            <span class="label muted-mono">{isEs ? '6 industrias · 3 preguntas' : '3 live prompts · 4 engines'}</span>
           </div>
 
-          <!-- Score Ring Header -->
-          <div class="ring-row">
-            <div class="ring-wrap" aria-hidden="true">
-              <svg viewBox="0 0 84 84" class="score-ring-svg">
-                <circle cx="42" cy="42" r="34" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="6" />
-                <circle
-                  id="heroRingArc"
-                  cx="42"
-                  cy="42"
-                  r="34"
-                  fill="none"
-                  stroke="#fdb343"
-                  stroke-width="6"
-                  stroke-linecap="round"
-                  stroke-dasharray="213.6"
-                  stroke-dashoffset="123.9"
-                  transform="rotate(-90 42 42)"
-                />
-              </svg>
-              <span class="ring-val" id="heroRingNum">42</span>
-            </div>
-            <div class="ring-meta">
-              <p class="ring-title">{isEs ? 'Score Base Combinado (0–100)' : 'Combined Audit Score (0–100)'}</p>
-              <p class="body-s ring-sub">
-                {isEs
-                  ? 'Combina auditoría técnica de página (45 pts) + 3 preguntas reales en IA (55 pts).'
-                  : 'Combines live Page & Speed scan (45 pts) + 3 real buyer questions (55 pts).'}
-              </p>
-            </div>
+          <div class="tel-pills" role="tablist" aria-label={isEs ? 'Elegir industria' : 'Choose industry'}>
+            {industries.map((ind, idx) => (
+              <button
+                type="button"
+                role="tab"
+                class:list={['sc-tab', 'label', idx === 0 && 'is-active']}
+                data-tel-btn={ind.id}
+                data-tel-score={String(ind.score)}
+                data-tel-service={ind.servicePrefill}
+                aria-selected={idx === 0 ? 'true' : 'false'}
+              >
+                {ind.label}
+              </button>
+            ))}
           </div>
 
-          <!-- Dual Core Visual Panels -->
-          {previews.map((pv, idx) => (
-            <div class="core-split-2" data-tel-pane={pv.id} style={idx === 0 ? '' : 'display: none;'}>
-              <!-- LEFT CORE: PAGE & TECH AUDIT -->
-              <div class="core-box">
-                <span class="label core-lbl">{isEs ? '01 · AUDITORÍA WEB (45 PTS)' : '01 · PAGE AUDIT (45 PTS)'}</span>
-                <div class="metric-row">
-                  <div class="m-top">
-                    <span>Lighthouse Speed</span>
-                    <strong class="label">{pv.speed}/100</strong>
-                  </div>
-                  <div class="m-bar"><span style={`width: ${pv.speed}%`}></span></div>
-                </div>
-                <div class="kv-row">
-                  <span>{isEs ? 'Bots IA (robots.txt)' : 'AI Crawler Access'}</span>
-                  <span class="pill-tag is-teal label">{pv.botsLabel}</span>
-                </div>
-                <div class="kv-row">
-                  <span>Schema &amp; llms.txt</span>
-                  <span class="pill-tag is-miss label">{pv.schemaLabel}</span>
-                </div>
+          {industries.map((ind, iIdx) => (
+            <div class="ind-stage" data-tel-pane={ind.id} style={iIdx === 0 ? '' : 'display: none;'}>
+              <!-- Q1 / Q2 / Q3 Interactive + Auto-Cycling Tabs -->
+              <div class="q-cycle-tabs" role="tablist" aria-label="Sample buyer questions">
+                {ind.questions.map((qObj, qIdx) => (
+                  <button
+                    type="button"
+                    role="tab"
+                    class:list={['qc-tab', 'label', qIdx === 0 && 'is-active']}
+                    data-qc-tab={String(qIdx)}
+                    aria-selected={qIdx === 0 ? 'true' : 'false'}
+                  >
+                    <span>{qObj.tab}</span>
+                    <span class="qc-progress" aria-hidden="true"><span></span></span>
+                  </button>
+                ))}
               </div>
 
-              <!-- RIGHT CORE: 3 LIVE AI QUESTIONS -->
-              <div class="core-box">
-                <span class="label core-lbl">{isEs ? '02 · RESPUESTAS IA (55 PTS)' : '02 · LIVE AI (55 PTS)'}</span>
-                <div class="kv-row">
-                  <span>{pv.q1}</span>
-                  <span class:list={['pill-tag', 'label', pv.s1 === 'miss' ? 'is-miss' : pv.s1 === 'warn' ? 'is-warn' : 'is-teal']}>{pv.r1}</span>
+              <!-- Active Single Question Spotlight + 4-Engine Verdict Grid -->
+              {ind.questions.map((qObj, qIdx) => (
+                <div class="q-spotlight" data-qc-pane={String(qIdx)} style={qIdx === 0 ? '' : 'display: none;'}>
+                  <p class="qs-prompt">{qObj.prompt}</p>
+                  <div class="eng-verdict-grid">
+                    {qObj.engines.map((eng) => (
+                      <div class="ev-cell">
+                        <span class="label ev-name">{eng.name}</span>
+                        <span class:list={['label', 'pill-tag', eng.state === 'miss' ? 'is-miss' : eng.state === 'warn' ? 'is-warn' : 'is-ok']}>
+                          {eng.val}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div class="kv-row">
-                  <span>{pv.q2}</span>
-                  <span class:list={['pill-tag', 'label', pv.s2 === 'miss' ? 'is-miss' : pv.s2 === 'warn' ? 'is-warn' : 'is-teal']}>{pv.r2}</span>
+              ))}
+
+              <!-- AI Readiness Score Ring + Tech Entity Signals Strip (No Page Speed) -->
+              <div class="ring-row">
+                <div class="ring-wrap" aria-hidden="true">
+                  <svg viewBox="0 0 84 84" class="score-ring-svg">
+                    <circle cx="42" cy="42" r="34" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="6" />
+                    <circle
+                      class="hero-ring-arc"
+                      cx="42"
+                      cy="42"
+                      r="34"
+                      fill="none"
+                      stroke="#fdb343"
+                      stroke-width="6"
+                      stroke-linecap="round"
+                      stroke-dasharray="213.6"
+                      style={`stroke-dashoffset: ${(213.6 - (ind.score / 100) * 213.6).toFixed(1)};`}
+                      transform="rotate(-90 42 42)"
+                    />
+                  </svg>
+                  <span class="ring-val">{ind.score}</span>
                 </div>
-                <div class="kv-row">
-                  <span>{pv.q3}</span>
-                  <span class:list={['pill-tag', 'label', pv.s3 === 'miss' ? 'is-miss' : pv.s3 === 'warn' ? 'is-warn' : 'is-teal']}>{pv.r3}</span>
+
+                <div class="checks-strip">
+                  {ind.checks.map((chk) => (
+                    <div class="chk-mini">
+                      <span class="chk-name">{chk.label}</span>
+                      <span class:list={['label', 'pill-tag', chk.state === 'miss' ? 'is-miss' : chk.state === 'warn' ? 'is-warn' : 'is-ok']}>
+                        {chk.val}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -512,10 +741,10 @@ const faqSchema = {
 
           <div class="tel-foot">
             <span class="label lock-txt">
-              {isEs ? '🔒 Gratis diagnostica brechas · Planes pagos publican fixes' : '🔒 Free flags blockers · Paid unlocks fixes'}
+              {isEs ? '🔒 Gratis diagnostica brechas · Pagos publican los fixes' : '🔒 Free check flags gaps · Paid plans ship fixes'}
             </span>
             <button type="button" class="label jump-check-btn" id="heroRunOwnBtn">
-              {isEs ? 'Escanear mi sitio ↓' : 'Scan my site free ↓'}
+              {isEs ? 'Probar con mi sitio ↓' : 'Test my own site free ↓'}
             </button>
           </div>
         </div>
@@ -781,12 +1010,12 @@ const faqSchema = {
     </div>
   </section>
 
-  <!-- CHAPTER 06 · COMPACT AT-A-GLANCE & PLANS + ROUTE TO FULL /watch/pricing/ -->
+  <!-- CHAPTER 06 · RESTORED "ONE CLEAR PATH. ZERO CONFUSION." ($99 AUDIT BANNER + WATCH PLANS + WEBSITES & AT A GLANCE) -->
   <section class="section section-pad on-dark" id="pricing-ladder">
     <div class="wrap">
       <div class="sec-head" data-watch-reveal>
         <div>
-          <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? 'PLANES CLAROS' : 'PLANS & PRICING'}</span>
+          <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? 'PLANES CLAROS' : 'PRICING'}</span>
           <h2 class="h2">
             {isEs ? (
               <>Un camino claro. <em class="serif-em">Cero enredos.</em></>
@@ -796,70 +1025,193 @@ const faqSchema = {
           </h2>
         </div>
         <div class="intro">
-          <a href={`${prefix}/pricing/`} class="btn btn-gold">
-            {isEs ? 'Ver Precios Webs ($390+), Sprints y Auditoría' : 'See Full Pricing, Websites ($390+) & Audit'} <span class="arr">→</span>
-          </a>
+          <p class="lede">
+            {isEs
+              ? 'Empieza con la auditoría base de $99 (abonable al Mes 1), contrata un sitio web rápido o activa monitoreo Watch mensual.'
+              : 'Start with a $99 baseline audit (credited to Month 1), launch a fast website, or let our engineers ship fixes every month.'}
+          </p>
         </div>
       </div>
 
-      <div class="plans-glance-wrap" data-watch-reveal>
-        <div class="cards-3">
-          <article class="offer-card watch-tier">
-            <span class="label card-tag">WATCH STARTER</span>
-            <p class="price-tag"><span class="n">$149</span> <span class="label">USD / mo</span></p>
-            <p class="q-quota-pill label">{isEs ? '25 preguntas · semanal' : '25 buyer questions / wk'}</p>
-            <ul class="tier-list">
-              <li>{isEs ? '4 motores sin sesión' : '4 engines checked weekly'}</li>
-              <li>{isEs ? 'Schema, bots y perfiles oficiales' : 'Schema & official AI hubs'}</li>
-              <li><strong>{isEs ? '1 fix publicado al mes' : '1 fix shipped monthly'}</strong></li>
-            </ul>
-            <button type="button" class="btn btn-gold card-btn" data-watch-checkout="watch_local">
-              <span data-btn-label>{isEs ? 'Iniciar Starter' : 'Start Starter ($149)'}</span> <span class="arr">→</span>
-            </button>
-          </article>
+      <!-- STEP 1: Full-Width $99 Entry Audit Banner -->
+      <div class="audit-entry-banner" data-watch-reveal>
+        <div class="aeb-left">
+          <span class="label gold-tag">
+            {isEs ? 'PASO OPCIONAL · ABONABLE AL MES 1 DE WATCH' : 'ONE-TIME BASELINE · CREDITED TO MONTH 1 OF WATCH'}
+          </span>
+          <h3 class="h4 aeb-title">
+            {isEs
+              ? '¿Aún no buscas plan mensual? Empieza con la Auditoría Base de 15 Preguntas — $99 USD'
+              : 'Not ready for a monthly plan? Start with the Full 15-Question Baseline Audit — $99'}
+          </h3>
+          <p class="body-s aeb-copy">
+            {isEs
+              ? 'Probamos 15 preguntas reales × 3 corridas en ChatGPT, Gemini, AI Overviews y AI Mode (180 chequeos en vivo), comparamos 3 competidores y entregamos tu hoja de correcciones en 48 h.'
+              : 'We test 15 real buyer questions × 3 runs across ChatGPT, Gemini, AI Overviews & AI Mode (180 live checks), map 3 competitors, and deliver your prioritized 3-fix roadmap in 48 hours.'}
+          </p>
+        </div>
+        <div class="aeb-cta">
+          <button type="button" class="btn btn-gold aeb-btn" data-watch-checkout="aeo_full_audit">
+            <span data-btn-label>{isEs ? 'Solicitar Auditoría Base ($99)' : 'Order $99 Baseline Audit'}</span> <span class="arr">→</span>
+          </button>
+        </div>
+      </div>
 
-          <article class="offer-card watch-tier featured-pro">
-            <span class="label card-tag gold-tag">WATCH GROWTH</span>
-            <p class="price-tag"><span class="n">$299</span> <span class="label">USD / mo</span></p>
-            <p class="q-quota-pill label is-gold">{isEs ? '40 preguntas · semanal' : '40 buyer & product Qs / wk'}</p>
-            <ul class="tier-list">
-              <li>{isEs ? 'Hasta 3 competidores seguidos' : 'Up to 3 rivals tracked'}</li>
-              <li>{isEs ? 'Reseñas y citaciones externas' : 'Review & ACP/UCP sync'}</li>
-              <li><strong>{isEs ? '2 páginas/fixes al mes' : '2 pages or fixes/mo'}</strong></li>
-            </ul>
-            <button type="button" class="btn btn-gold card-btn" data-watch-checkout="watch_commerce">
-              <span data-btn-label>{isEs ? 'Iniciar Growth' : 'Start Growth ($299)'}</span> <span class="arr">→</span>
-            </button>
-          </article>
+      <!-- STEP 2: Full-Width 3 Clean Monthly Watch Plans -->
+      <div class="cards-3" data-watch-reveal>
+        <article class="offer-card watch-tier">
+          <span class="label card-tag">WATCH STARTER</span>
+          <h3 class="h5">{isEs ? 'Negocios Locales y Clínicas' : 'Local Businesses & Clinics'}</h3>
+          <p class="price-tag"><span class="n">$149</span> <span class="label">USD / mo</span></p>
+          <p class="q-quota-pill label">
+            {isEs ? '25 preguntas de compra · seguimiento semanal' : '25 buyer questions tracked weekly'}
+          </p>
+          <ul class="tier-list">
+            <li>{isEs ? '4 motores: ChatGPT, Gemini, AI Overviews y AI Mode' : '4 engines: ChatGPT, Gemini, AI Overviews & AI Mode'}</li>
+            <li>{isEs ? 'robots.txt, llms.txt, schema base y fichas oficiales' : 'Technical setup (robots.txt, llms.txt, core schema) & official hubs'}</li>
+            <li>{isEs ? 'Reporte web mensual en vivo + PDF descargable' : 'Monthly live report + downloadable executive PDF'}</li>
+            <li><strong>{isEs ? '1 mejora técnica implementada cada mes' : '1 fix shipped for you every month'}</strong></li>
+          </ul>
+          <button type="button" class="btn btn-gold card-btn" data-watch-checkout="watch_local">
+            <span data-btn-label>{isEs ? 'Iniciar Watch Starter ($149/mes)' : 'Start Watch Starter ($149/mo)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
 
-          <article class="offer-card watch-tier">
-            <span class="label card-tag">WATCH PRO</span>
-            <p class="price-tag"><span class="n">$399</span> <span class="label">USD / mo</span></p>
-            <p class="q-quota-pill label">{isEs ? '75 preguntas · semanal' : '75 buyer questions / wk'}</p>
-            <ul class="tier-list">
-              <li>{isEs ? 'Multi-sede / áreas legales / B2B' : 'Multi-city / B2B coverage'}</li>
-              <li>{isEs ? 'Hasta 5 competidores + alertas' : 'Up to 5 rivals + alerts'}</li>
-              <li><strong>{isEs ? '4 páginas/fixes al mes' : '4 pages or fixes/mo'}</strong></li>
-            </ul>
-            <button type="button" class="btn btn-outline-light card-btn" data-watch-checkout="watch_pro">
-              <span data-btn-label>{isEs ? 'Iniciar Pro' : 'Start Pro ($399)'}</span> <span class="arr">→</span>
-            </button>
-          </article>
+        <article class="offer-card watch-tier featured-pro">
+          <span class="label card-tag gold-tag">WATCH GROWTH · {isEs ? 'MÁS ELEGIDO' : 'MOST POPULAR'}</span>
+          <h3 class="h5">{isEs ? 'Empresas en Crecimiento y Ecommerce' : 'Growing Practices & Ecommerce'}</h3>
+          <p class="price-tag"><span class="n">$299</span> <span class="label">USD / mo</span></p>
+          <p class="q-quota-pill label is-gold">
+            {isEs ? '40 preguntas de compra y producto · semanal' : '40 buyer & product questions tracked weekly'}
+          </p>
+          <ul class="tier-list">
+            <li>{isEs ? 'Schema completo (LocalBusiness, Service, Product/Offer, FAQPage)' : 'Full-site schema (LocalBusiness, Service, Product/Offer, FAQPage)'}</li>
+            <li>{isEs ? 'Rastreo de hasta 3 competidores directos' : 'Track up to 3 competitors across all 4 engines'}</li>
+            <li>{isEs ? 'Alineación de reseñas y directorios de autoridad' : 'Review, ACP/UCP & directory citation alignment'}</li>
+            <li><strong>{isEs ? '2 páginas citables o mejoras técnicas al mes' : '2 answer-ready pages or fixes shipped every month'}</strong></li>
+          </ul>
+          <button type="button" class="btn btn-gold card-btn" data-watch-checkout="watch_commerce">
+            <span data-btn-label>{isEs ? 'Iniciar Watch Growth ($299/mes)' : 'Start Watch Growth ($299/mo)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+
+        <article class="offer-card watch-tier">
+          <span class="label card-tag">WATCH PRO · MULTI-LOCATION / B2B</span>
+          <h3 class="h5">{isEs ? 'B2B, Estudios y Multi-Sede' : 'Multi-Location, Legal & B2B'}</h3>
+          <p class="price-tag"><span class="n">$399</span> <span class="label">USD / mo</span></p>
+          <p class="q-quota-pill label">
+            {isEs ? '75 preguntas por servicio o ciudad · semanal' : '75 buyer questions tracked weekly'}
+          </p>
+          <ul class="tier-list">
+            <li>{isEs ? 'Múltiples áreas de práctica, comunas o sedes' : 'Multi-city or multi-practice prompt sets across 4 engines'}</li>
+            <li>{isEs ? 'Alertas semanales + hasta 5 competidores' : 'Up to 5 competitors tracked + drift & accuracy alerts'}</li>
+            <li>{isEs ? 'Construcción activa de citas externas' : 'Third-party citation & directory gap outreach'}</li>
+            <li><strong>{isEs ? '4 páginas citables o mejoras de impacto al mes' : '4 answer-ready pages or fixes shipped monthly'}</strong></li>
+          </ul>
+          <button type="button" class="btn btn-outline-light card-btn" data-watch-checkout="watch_pro">
+            <span data-btn-label>{isEs ? 'Iniciar Watch Pro ($399/mes)' : 'Start Watch Pro ($399/mo)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+      </div>
+
+      <!-- STEP 3: ANSWER-READY WEBSITES + AT A GLANCE SPLIT ROW -->
+      <div class="web-glance-split" id="websites-section" data-watch-reveal>
+        <div class="websites-panel">
+          <div class="wp-head">
+            <div>
+              <span class="label gold-kicker">{isEs ? 'DISEÑO WEB ANSWER-READY · PAGO ÚNICO' : 'ANSWER-READY WEBSITES · ONE-TIME'}</span>
+              <h3 class="h3 wp-title">
+                {isEs ? (
+                  <>Sitios web que venden, <em class="serif-em">desde $390.</em></>
+                ) : (
+                  <>Websites built to get picked, <em class="serif-em">from $390.</em></>
+                )}
+              </h3>
+            </div>
+            <a href={`${prefix}/services/websites/`} class="label text-link">
+              {isEs ? 'Ver arquitectura web →' : 'Website specs & FAQ →'}
+            </a>
+          </div>
+
+          <div class="web-tier-rows">
+            <div class="wt-row">
+              <div>
+                <p class="wt-name">Website Quick Fix <span class="wt-money">$390</span></p>
+                <p class="body-s wt-note">
+                  {isEs
+                    ? 'llms.txt, bots IA, schema JSON-LD validado y 1 bloque FAQ en tu sitio actual.'
+                    : 'llms.txt, clean AI bots, validated JSON-LD & 1 answer block on your current site.'}
+                </p>
+              </div>
+              <button type="button" class="btn btn-outline-light wt-btn" data-watch-checkout="website_quick_fix">
+                <span data-btn-label>{isEs ? 'Ordenar $390' : 'Order $390'}</span> <span class="arr">→</span>
+              </button>
+            </div>
+
+            <div class="wt-row is-popular">
+              <div>
+                <p class="wt-name">{isEs ? 'Sitio Answer-Ready 5 Páginas' : '5-Page Answer-Ready Site'} <span class="wt-money">$690</span></p>
+                <p class="body-s wt-note">
+                  {isEs
+                    ? 'Inicio, Servicios, Hub FAQ, Quiénes Somos y Contacto listos para IA.'
+                    : 'Home, Services, FAQ Hub, About & Contact built clean with Service + FAQ schema.'}
+                </p>
+              </div>
+              <button type="button" class="btn btn-gold wt-btn" data-watch-checkout="website_5page">
+                <span data-btn-label>{isEs ? 'Ordenar $690' : 'Order $690'}</span> <span class="arr">→</span>
+              </button>
+            </div>
+
+            <div class="wt-row">
+              <div>
+                <p class="wt-name">{isEs ? 'Sitio Growth 10 Páginas' : '10-Page Custom Growth Site'} <span class="wt-money">$1,190</span></p>
+                <p class="body-s wt-note">
+                  {isEs
+                    ? 'Páginas por servicio y ciudad, comparativas AEO, JSON-LD y OpenAI/Bing/GBP.'
+                    : 'Dedicated practice/city pages, comparison blocks, schema graph & AI hubs synced.'}
+                </p>
+              </div>
+              <button type="button" class="btn btn-outline-light wt-btn" data-watch-checkout="website_10page">
+                <span data-btn-label>{isEs ? 'Ordenar $1,190' : 'Order $1,190'}</span> <span class="arr">→</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         <aside class="at-a-glance">
-          <span class="label glance-kicker">AT A GLANCE</span>
+          <span class="label glance-kicker">{isEs ? 'EN RESUMEN · AT A GLANCE' : 'AT A GLANCE'}</span>
           <ul class="glance-list">
             <li>Starter $149 · Growth $299 · Pro $399 /mo</li>
             <li>{isEs ? 'Auditoría IA $99, abonable al Mes 1' : 'AI visibility audit $99, credited to month one'}</li>
-            <li>{isEs ? 'Sitios Web: Quick Fix $390 · 5 págs $690 · 10 págs $1,190' : 'Websites: Quick Fix $390 · 5 pages $690 · 10 pages $1,190'}</li>
-            <li>{isEs ? '15% ahorro trimestral · 30 días de aviso' : 'Save 15% quarterly · 30 days’ notice to cancel'}</li>
-            <li>{isEs ? 'Mes 4 gratis si no mejoras tras 3 meses' : 'Month 4 free if visibility hasn’t improved after 3 months'}</li>
+            <li>{isEs ? 'Webs: Quick Fix $390 · 5 págs $690 · 10 págs $1,190' : 'Websites: Quick Fix $390 · 5 pages $690 · 10 pages $1,190'}</li>
+            <li>{isEs ? '15% descuento trimestral · aviso previo de 30 días' : 'Save 15% paying quarterly · 30 days’ notice to cancel'}</li>
+            <li>{isEs ? 'Mes 4 gratis si tu visibilidad no mejora tras 3 meses' : 'Month 4 free if your AI visibility hasn’t improved after 3 months'}</li>
           </ul>
           <button type="button" class="btn btn-gold glance-btn" data-watch-checkout="aeo_full_audit">
-            <span data-btn-label>{isEs ? 'Ordenar Auditoría ($99)' : 'Order the $99 audit'}</span> <span class="arr">→</span>
+            <span data-btn-label>{isEs ? 'Solicitar Auditoría ($99)' : 'Order the $99 audit'}</span> <span class="arr">→</span>
           </button>
         </aside>
+      </div>
+
+      <!-- Contextual Routing Strip to Dedicated Pages -->
+      <div class="routing-strip" data-watch-reveal>
+        <div class="route-box">
+          <p class="body-s">
+            <strong>{isEs ? '¿Prefieres sprints únicos ($249–$499), packs verticales o guías?' : 'Want standalone Sprints ($249–$499), Industry Packs, or detailed pricing?'}</strong>
+          </p>
+          <a href={`${prefix}/pricing/`} class="btn btn-outline-light">
+            {isEs ? 'Ver Precios Completos y Sprints' : 'Full Pricing & Sprints'} <span class="arr">→</span>
+          </a>
+        </div>
+        <div class="route-box">
+          <p class="body-s">
+            <strong>{isEs ? '¿Diriges una agencia web o SEO?' : 'Run a web, design, or SEO agency?'}</strong>{' '}
+            {isEs ? 'Planes marca blanca desde $79/cliente/mes.' : 'White-label Watch from $79/client/mo.'}
+          </p>
+          <a href={`${prefix}/partners/`} class="btn btn-outline-light">
+            {isEs ? 'Ver Programa Agencias' : 'Agency Partner Pricing'} <span class="arr">→</span>
+          </a>
+        </div>
       </div>
     </div>
   </section>
@@ -912,23 +1264,59 @@ const faqSchema = {
 </WatchShell>
 
 <script>
-  // 1. Hero Dual-Core Telemetry Switcher & Animated Readiness Ring
-  const ringArc = document.getElementById('heroRingArc') as SVGCircleElement | null;
-  const ringNum = document.getElementById('heroRingNum');
-  const circumference = 213.6;
-
-  const updateRing = (score: number) => {
-    const offset = circumference - (Math.max(0, Math.min(100, score)) / 100) * circumference;
-    if (ringArc) ringArc.style.strokeDashoffset = offset.toFixed(1);
-    if (ringNum) ringNum.textContent = String(score);
-  };
-  updateRing(42);
-
+  // 1. Hero 6-Industry Switcher + Auto-Cycling 3 Buyer Questions (pauses on interaction/hover)
   let activeService = '';
+  let activeIndId = 'medical';
+  let activeQIdx = 0;
+  let cycleTimer: number | null = null;
+  let isPaused = false;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const setQuestionTab = (qIdx: number) => {
+    activeQIdx = qIdx;
+    const activeStage = document.querySelector<HTMLElement>(`[data-tel-pane="${activeIndId}"]`);
+    if (!activeStage) return;
+
+    activeStage.querySelectorAll<HTMLButtonElement>('[data-qc-tab]').forEach((tab) => {
+      const idx = Number(tab.getAttribute('data-qc-tab') || '0');
+      const match = idx === qIdx;
+      tab.classList.toggle('is-active', match);
+      tab.setAttribute('aria-selected', String(match));
+      // Restart progress bar CSS animation cleanly
+      const bar = tab.querySelector<HTMLElement>('.qc-progress > span');
+      if (bar) {
+        bar.classList.remove('is-running');
+        void bar.offsetWidth;
+        if (match && !isPaused && !reduceMotion) {
+          bar.classList.add('is-running');
+        }
+      }
+    });
+
+    activeStage.querySelectorAll<HTMLElement>('[data-qc-pane]').forEach((pane) => {
+      pane.style.display = Number(pane.getAttribute('data-qc-pane') || '0') === qIdx ? 'block' : 'none';
+    });
+  };
+
+  const stopCycle = () => {
+    if (cycleTimer !== null) {
+      window.clearInterval(cycleTimer);
+      cycleTimer = null;
+    }
+  };
+
+  const startCycle = () => {
+    stopCycle();
+    if (reduceMotion || isPaused) return;
+    cycleTimer = window.setInterval(() => {
+      setQuestionTab((activeQIdx + 1) % 3);
+    }, 4200);
+  };
+
   document.querySelectorAll<HTMLButtonElement>('[data-tel-btn]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const id = btn.getAttribute('data-tel-btn');
-      const score = Number(btn.getAttribute('data-tel-score') || '42');
+      const id = btn.getAttribute('data-tel-btn') || 'medical';
+      activeIndId = id;
       activeService = btn.getAttribute('data-tel-service') || '';
 
       document.querySelectorAll<HTMLButtonElement>('[data-tel-btn]').forEach((b) => {
@@ -937,11 +1325,32 @@ const faqSchema = {
         b.setAttribute('aria-selected', String(active));
       });
       document.querySelectorAll<HTMLElement>('[data-tel-pane]').forEach((pane) => {
-        pane.style.display = pane.getAttribute('data-tel-pane') === id ? 'grid' : 'none';
+        pane.style.display = pane.getAttribute('data-tel-pane') === id ? 'block' : 'none';
       });
-      updateRing(score);
+      setQuestionTab(activeQIdx);
+      startCycle();
     });
   });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-qc-tab]').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const idx = Number(tab.getAttribute('data-qc-tab') || '0');
+      isPaused = true;
+      stopCycle();
+      setQuestionTab(idx);
+    });
+  });
+
+  const verdictCard = document.getElementById('heroVerdictCard');
+  verdictCard?.addEventListener('mouseenter', () => {
+    stopCycle();
+  });
+  verdictCard?.addEventListener('mouseleave', () => {
+    if (!isPaused) startCycle();
+  });
+
+  setQuestionTab(0);
+  startCycle();
 
   const jumpBtn = document.getElementById('heroRunOwnBtn');
   jumpBtn?.addEventListener('click', () => {
@@ -1172,26 +1581,91 @@ const faqSchema = {
     color: var(--white);
   }
 
-  .hero-signal-box {
-    max-width: 480px;
-    padding-top: var(--s-16);
+  /* HTML+SVG 3-STEP HERO PIPELINE (Zero text clipping) */
+  .hero-steps-flow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-top: var(--s-08);
   }
 
-  .hero-flow-svg {
-    width: 100%;
-    height: auto;
-    display: block;
+  .hs-node {
+    flex: 1 1 0;
+    min-width: 0;
+    background: #081f1f;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 4px;
+    padding: 11px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
   }
 
-  /* HERO RIGHT COLUMN: COMPACT VISUAL DUAL-CORE TELEMETRY CARD */
+  .hs-node.is-mid {
+    background: #0d2a29;
+    border-color: var(--gold);
+  }
+
+  .hs-node.is-end {
+    border-color: #5fc4bc;
+  }
+
+  .hs-kicker {
+    color: var(--gold);
+    font-size: 9px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .hs-node.is-end .hs-kicker {
+    color: #5fc4bc;
+  }
+
+  .hs-sub {
+    color: #e5ecea;
+    font-size: 11.5px;
+    line-height: 1.3;
+  }
+
+  .hs-conn {
+    position: relative;
+    width: 18px;
+    height: 2px;
+    border-top: 1.5px dashed rgba(255, 255, 255, 0.28);
+    flex-shrink: 0;
+  }
+
+  .hs-dot {
+    position: absolute;
+    top: -3.5px;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: hsPulse 1.8s infinite ease-in-out;
+  }
+
+  .hs-dot.is-delay {
+    background: #5fc4bc;
+    animation-delay: 0.7s;
+  }
+
+  @keyframes hsPulse {
+    0% { left: 0; opacity: 0.2; }
+    50% { opacity: 1; }
+    100% { left: 12px; opacity: 0.2; }
+  }
+
+  /* HERO RIGHT COLUMN: AUTO-CYCLING LIVE BUYER QUESTION & AI VERDICT CARD */
   .telemetry-card {
     background: rgba(3, 25, 25, 0.94);
     border: 1px solid var(--line);
     box-shadow: 10px 10px 0 var(--gold);
-    padding: clamp(20px, 2.5vw, 30px);
+    padding: clamp(20px, 2.4vw, 28px);
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
   }
 
   .tel-head {
@@ -1199,9 +1673,7 @@ const faqSchema = {
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid var(--line-soft);
+    gap: 10px;
   }
 
   .tel-kicker {
@@ -1213,6 +1685,8 @@ const faqSchema = {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line-soft);
   }
 
   .sc-tab {
@@ -1231,108 +1705,97 @@ const faqSchema = {
     font-weight: 700;
   }
 
-  .ring-row {
+  .ind-stage {
     display: flex;
-    align-items: center;
-    gap: 18px;
-  }
-
-  .ring-wrap {
-    position: relative;
-    width: 78px;
-    height: 78px;
-    flex-shrink: 0;
-  }
-
-  .score-ring-svg {
-    width: 78px;
-    height: 78px;
-    display: block;
-  }
-
-  #heroRingArc {
-    transition: stroke-dashoffset 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .ring-val {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--mono);
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--gold);
-  }
-
-  .ring-title {
-    color: var(--white);
-    font-weight: 700;
-    font-size: 16px;
-    margin-bottom: 4px;
-  }
-
-  .ring-sub {
-    color: var(--pale);
-    font-size: 13.5px;
-    line-height: 1.45;
-  }
-
-  .core-split-2 {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex-direction: column;
     gap: 14px;
   }
 
-  .core-box {
+  /* Question Selector Tabs with Animated Countdown Underline */
+  .q-cycle-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .qc-tab {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.14);
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 11px;
-  }
-
-  .core-lbl {
-    color: var(--gold);
+    color: var(--pale);
+    padding: 8px 10px 6px;
+    cursor: pointer;
     font-size: 10px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .metric-row {
+    text-align: left;
     display: flex;
     flex-direction: column;
     gap: 6px;
   }
 
-  .m-top {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
+  .qc-tab.is-active {
+    background: rgba(253, 179, 67, 0.1);
+    border-color: var(--gold);
     color: var(--white);
+    font-weight: 700;
   }
 
-  .m-bar {
-    height: 6px;
-    background: rgba(255, 255, 255, 0.1);
+  .qc-progress {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.12);
+    overflow: hidden;
   }
 
-  .m-bar span {
+  .qc-progress > span {
     display: block;
     height: 100%;
-    background: #5fc4bc;
-    transition: width 0.45s ease;
+    width: 0;
+    background: var(--gold);
   }
 
-  .kv-row {
+  .qc-progress > span.is-running {
+    animation: qcFill 4.2s linear forwards;
+  }
+
+  @keyframes qcFill {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
+  /* Active Buyer Question Spotlight */
+  .q-spotlight {
+    background: rgba(255, 255, 255, 0.035);
+    border-left: 3px solid var(--gold);
+    padding: 14px 16px;
+  }
+
+  .qs-prompt {
+    color: var(--white);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 14px;
+  }
+
+  .eng-verdict-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 12px;
+  }
+
+  .ev-cell {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 8px;
-    font-size: 12.5px;
+    padding: 7px 10px;
+    background: rgba(3, 25, 25, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .ev-name {
     color: var(--pale);
+    font-size: 10px;
   }
 
   .pill-tag {
@@ -1342,7 +1805,7 @@ const faqSchema = {
     flex-shrink: 0;
   }
 
-  .pill-tag.is-teal {
+  .pill-tag.is-ok {
     background: rgba(95, 196, 188, 0.16);
     color: #5fc4bc;
     border: 1px solid rgba(95, 196, 188, 0.35);
@@ -1358,6 +1821,61 @@ const faqSchema = {
     background: rgba(239, 68, 68, 0.16);
     color: #fca5a5;
     border: 1px solid rgba(239, 68, 68, 0.35);
+  }
+
+  /* AI Readiness Score Ring + Entity Signals Row (No Page Speed) */
+  .ring-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .ring-wrap {
+    position: relative;
+    width: 68px;
+    height: 68px;
+    flex-shrink: 0;
+  }
+
+  .score-ring-svg {
+    width: 68px;
+    height: 68px;
+    display: block;
+  }
+
+  .hero-ring-arc {
+    transition: stroke-dashoffset 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .ring-val {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  .checks-strip {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .chk-mini {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--pale);
   }
 
   .tel-foot {
@@ -1811,37 +2329,57 @@ const faqSchema = {
     color: var(--gold);
   }
 
-  /* COMPACT PLANS + AT A GLANCE SIDE-BY-SIDE */
-  .plans-glance-wrap {
+  /* CHAPTER 06: RESTORED FULL PRICING LAYOUT ($99 AUDIT BANNER + WATCH + WEBSITES & AT A GLANCE) */
+  .audit-entry-banner {
+    background: rgba(3, 25, 25, 0.94);
+    border: 1px solid var(--gold);
+    padding: var(--s-24) var(--s-32);
+    margin-bottom: var(--s-32);
     display: grid;
-    grid-template-columns: minmax(0, 1.48fr) minmax(0, 0.85fr);
+    grid-template-columns: minmax(0, 1.35fr) auto;
     gap: var(--s-24);
-    align-items: stretch;
+    align-items: center;
+  }
+
+  .aeb-title {
+    color: var(--white);
+    margin: 8px 0;
+  }
+
+  .aeb-copy {
+    color: var(--pale);
+    font-size: 14.5px;
+    line-height: 1.5;
+    max-width: 68ch;
+  }
+
+  .aeb-btn {
+    white-space: nowrap;
   }
 
   .cards-3 {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
+    gap: var(--s-24);
+    margin-bottom: var(--s-32);
   }
 
   .offer-card {
     background: rgba(3, 25, 25, 0.92);
     border: 1px solid var(--line);
-    padding: 22px;
+    padding: var(--s-32);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--s-16);
   }
 
   .offer-card.featured-pro {
     border-color: var(--gold);
-    box-shadow: 6px 6px 0 var(--gold);
+    box-shadow: 8px 8px 0 var(--gold);
   }
 
   .card-tag {
     color: var(--steel);
-    font-size: 10.5px;
   }
 
   .gold-tag {
@@ -1852,21 +2390,20 @@ const faqSchema = {
   .price-tag {
     display: flex;
     align-items: baseline;
-    gap: 6px;
+    gap: 8px;
   }
 
   .price-tag .n {
-    font-size: 38px;
+    font-size: 46px;
     color: var(--gold);
   }
 
   .q-quota-pill {
     display: inline-block;
-    padding: 6px 8px;
+    padding: 7px 10px;
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid var(--line-soft);
     color: var(--white);
-    font-size: 10.5px;
     font-weight: 600;
   }
 
@@ -1880,16 +2417,17 @@ const faqSchema = {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    font-size: 13.5px;
-    line-height: 1.4;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.45;
     color: var(--pale);
+    margin-bottom: var(--s-08);
   }
 
   .tier-list li::before {
     content: '■ ';
     color: var(--gold);
-    font-size: 9px;
+    font-size: 10px;
   }
 
   .card-btn {
@@ -1897,15 +2435,103 @@ const faqSchema = {
     width: 100%;
     justify-content: space-between;
     white-space: nowrap;
-    font-size: 12px;
-    padding-inline: 12px;
+    font-size: 13px;
+    padding-inline: 16px;
+  }
+
+  .web-glance-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.28fr) minmax(0, 0.72fr);
+    gap: var(--s-24);
+    margin-bottom: var(--s-32);
+    align-items: stretch;
+  }
+
+  .websites-panel {
+    background: rgba(3, 25, 25, 0.92);
+    border: 1px solid var(--line);
+    padding: var(--s-24);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-20);
+  }
+
+  .wp-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .gold-kicker {
+    color: var(--gold);
+  }
+
+  .wp-title {
+    margin-top: 6px;
+    color: var(--white);
+  }
+
+  .text-link {
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid var(--gold);
+  }
+
+  .web-tier-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .wt-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .wt-row.is-popular {
+    border-color: var(--gold);
+    background: rgba(253, 179, 67, 0.07);
+  }
+
+  .wt-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .wt-money {
+    color: var(--gold);
+    font-family: var(--mono);
+    margin-left: 8px;
+  }
+
+  .wt-note {
+    color: var(--pale);
+    font-size: 13.5px;
+    line-height: 1.45;
+  }
+
+  .wt-btn {
+    white-space: nowrap;
+    padding-inline: 14px;
+    font-size: 12.5px;
   }
 
   .at-a-glance {
     background: rgba(11, 37, 36, 0.96);
     border: 1px solid var(--gold);
     box-shadow: 8px 8px 0 var(--gold);
-    padding: 24px;
+    padding: var(--s-24);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1927,10 +2553,10 @@ const faqSchema = {
     display: flex;
     align-items: flex-start;
     gap: 10px;
-    padding: 10px 0;
+    padding: 11px 0;
     border-top: 1px solid rgba(255, 255, 255, 0.14);
     color: var(--white);
-    font-size: 13.5px;
+    font-size: 14px;
     line-height: 1.4;
   }
 
@@ -1945,6 +2571,28 @@ const faqSchema = {
   .glance-btn {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .routing-strip {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-20);
+  }
+
+  .route-box {
+    border: 1px solid var(--line-soft);
+    background: rgba(255, 255, 255, 0.03);
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .route-box p {
+    color: var(--pale);
+    max-width: 44ch;
   }
 
   /* COMMON QUESTIONS FAQ */
@@ -2023,21 +2671,37 @@ const faqSchema = {
     max-width: 66ch;
   }
 
-  @media (max-width: 1120px) {
-    .plans-glance-wrap {
-      grid-template-columns: 1fr;
-    }
-  }
-
   @media (max-width: 960px) {
     .hero-split,
-    .core-split-2,
+    .eng-verdict-grid,
+    .q-cycle-tabs,
     .offer-strip-4,
     .bento-2x2,
     .loop-split,
     .cards-3,
+    .web-glance-split,
+    .wt-row,
+    .routing-strip,
+    .audit-entry-banner,
     .faq-grid {
       grid-template-columns: 1fr;
+    }
+
+    .hero-steps-flow {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .hs-conn {
+      width: 2px;
+      height: 14px;
+      border-top: 0;
+      border-left: 1.5px dashed rgba(255, 255, 255, 0.28);
+      margin-inline: auto;
+    }
+
+    .hs-dot {
+      display: none;
     }
 
     .faq-sticky {
