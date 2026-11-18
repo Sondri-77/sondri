@@ -1,0 +1,117 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from './Hero.astro';
+import Marquee from './Marquee.astro';
+import Problem from './Problem.astro';
+import Knife from './Knife.astro';
+import Solution from './Solution.astro';
+import SocialProof from './SocialProof.astro';
+import HowItWorks from './HowItWorks.astro';
+import Comparison from './Comparison.astro';
+import Features from './Features.astro';
+import AeoPromo from './AeoPromo.astro';
+import Faq from './Faq.astro';
+import Solutions from './Solutions.astro';
+import FinalCta from './FinalCta.astro';
+import { copy, type Lang } from '../i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = copy[lang];
+const siteUrl = Astro.site ? Astro.site.origin : 'https://sondri.ai';
+const pageUrl = lang === 'es' ? `${siteUrl}/es/` : `${siteUrl}/`;
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  inLanguage: lang,
+  mainEntity: t.homeFaq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+
+const serviceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': `${pageUrl}#service`,
+  inLanguage: lang,
+  name:
+    lang === 'es'
+      ? 'Software a Medida y Automatización de Flujos con IA'
+      : 'Custom Software & AI Workflow Automation',
+  serviceType:
+    lang === 'es'
+      ? 'Software a Medida y Automatización de Flujos con IA'
+      : 'Custom Software & AI Workflow Automation',
+  description: t.meta.description,
+  url: pageUrl,
+  provider: { '@id': `${siteUrl}/#organization` },
+  areaServed: ['United States', 'Latin America'],
+  keywords:
+    lang === 'es'
+      ? [
+          'automatización de flujos',
+          'software a medida',
+          'integración de IA',
+          'visibilidad AEO y SEO',
+          'reportes automáticos',
+          'conciliación administrativa',
+        ]
+      : [
+          'workflow automation',
+          'custom business software',
+          'AI integration',
+          'answer engine optimization',
+          'data reporting automation',
+          'back office automation',
+        ],
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: lang === 'es' ? 'Capacidades de Sondri' : 'Sondri Capabilities',
+    itemListElement: t.features.map((f) => ({
+      '@type': 'Offer',
+      itemOffered: {
+        '@type': 'Service',
+        name: f.t,
+        description: f.b,
+      },
+    })),
+  },
+};
+---
+
+<Base
+  title={t.meta.title}
+  description={t.meta.description}
+  lang={lang}
+  alternates={{ en: '/', es: '/es/' }}
+  mdPath={lang === 'es' ? '/es/index.md' : '/index.md'}
+>
+  <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+  <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(serviceSchema)} />
+  <Hero lang={lang} />
+  <Marquee lang={lang} />
+  <Problem lang={lang} />
+  <Knife lang={lang} />
+  <!-- From here the scroll follows the nav: How it works, Framework,
+       Solutions, Compare, FAQ. -->
+  <HowItWorks lang={lang} />
+  <Solution lang={lang} />
+  {t.socialProof.enabled && <SocialProof lang={lang} />}
+  <Solutions lang={lang} />
+  <Comparison lang={lang} />
+  <Features lang={lang} />
+  <AeoPromo />
+  <Faq lang={lang} />
+  <FinalCta lang={lang} />
+</Base>
+
+<script>
+  import { initDitherBlocks } from '../scripts/dither-block';
+  initDitherBlocks();
+</script>

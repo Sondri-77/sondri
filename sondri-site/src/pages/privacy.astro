@@ -1,0 +1,92 @@
+---
+import Base from '../layouts/Base.astro';
+import { CONTACT_EMAIL, mailto } from '../data';
+import '../styles/prose.css';
+
+const title = 'Privacy Policy | Sondri';
+const description = 'How Sondri handles website analytics, scheduling, Stripe invoice payments, and client-environment software deployments.';
+---
+
+<Base
+  title={title}
+  description={description}
+  lang="en"
+  alternates={{ en: '/privacy/', es: '/es/privacy/' }}
+  mdPath="/privacy.md"
+>
+  <article>
+    <header class="section on-dark head">
+      <div class="wrap">
+        <a class="label back" href="/">← Back to home</a>
+        <h1 class="h2 title">Privacy Policy<span class="gdot">.</span></h1>
+        <p class="lede">
+          Plain summary of what data this website collects, how scheduling and invoice payments work,
+          and how Sondri handles operational data in client engagements.
+        </p>
+        <p class="label meta">Effective date: November 18, 2026</p>
+      </div>
+    </header>
+
+    <div class="section section-pad">
+      <div class="wrap">
+        <div class="prose">
+          <h2>Website analytics &amp; local storage</h2>
+          <p>
+            <code>sondri.ai</code> is a static marketing website. We use Google Tag
+            (<code>googletagmanager.com</code> / Google Analytics) to measure aggregate traffic and
+            discovery-call clicks. Google Tag may use first-party measurement cookies and read
+            standard request metadata (visited URL, referrer, browser type, and approximate region).
+            We do not run third-party advertising trackers or sell visitor data. When you toggle
+            between English and Spanish, your language preference may be stored locally in your
+            browser via <code>localStorage</code> under the key <code>sondri.lang</code>.
+          </p>
+
+          <h2>Discovery scheduling</h2>
+          <p>
+            When you click <strong>Book a Free Discovery</strong>, scheduling is handled through our
+            embedded Cal.com booking modal (<code>cal.com/sondri/discovery</code>). Information you
+            submit in the booking form (such as your name, email address, and meeting notes) is
+            processed by Cal.com and used solely to prepare for and conduct your discovery session.
+          </p>
+
+          <h2>Invoice &amp; deposit payments</h2>
+          <p>
+            Payments submitted through <a href="/pay/">/pay/</a> are processed over HTTPS through
+            <strong>Stripe Checkout</strong> via our billing service at
+            <code>billing.sondri.ai</code>. Sondri does not store credit card numbers or bank
+            credentials on this site. Stripe collects and processes payment details according to
+            PCI-DSS standards in order to complete your transaction and issue tax invoices and receipts.
+          </p>
+
+          <h2>Client software &amp; operational data</h2>
+          <p>
+            Custom software, workflow automations, and AI integrations built by Sondri deploy
+            directly into the client’s own environment and systems of record. Client operational
+            data stays inside client-controlled infrastructure with audit trails and approval gates
+            defined for each engagement.
+          </p>
+
+          <h2>Contact &amp; requests</h2>
+          <p>
+            If you have questions about this privacy policy, want to request deletion of contact
+            details shared during discovery, or need security documentation for an engagement,
+            email <a href={mailto('Privacy inquiry')}>{CONTACT_EMAIL}</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style is:global>
+  #siteheader { background: var(--ink); }
+</style>
+
+<style>
+  .head { padding-block: var(--s-64) var(--s-80); }
+  .back { display: inline-block; text-decoration: none; color: var(--pale); margin-bottom: var(--s-40); }
+  .back:hover { color: var(--gold); }
+  .title { margin-bottom: var(--s-24); }
+  .head .lede { max-width: 60ch; margin-bottom: var(--s-24); }
+  .meta { color: var(--pale); }
+</style>

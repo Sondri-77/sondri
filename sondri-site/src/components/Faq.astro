@@ -1,6 +1,13 @@
 ---
-import { faqHead, homeFaq } from '../home-data';
+import { copy, type Lang } from '../i18n';
 import { splitDot } from '../lib/dot';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const { faqHead, homeFaq } = copy[lang];
 const [h2, dot] = splitDot(faqHead.h2);
 ---
 

@@ -2,8 +2,14 @@
 /* Playground card 01 · Workflow builder, ported: the six-node map draws
    itself, nodes popping in turn, gold packets running the wires. Colours
    come from the site's tokens (the window is paper; see Console.astro). */
-import { en } from '../../i18n';
-const w = en.workflowAnim;
+import { copy, type Lang } from '../../i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const w = copy[lang].workflowAnim;
 const N = (i: number) => `workflowAnim.nodes.${i}`;
 ---
 

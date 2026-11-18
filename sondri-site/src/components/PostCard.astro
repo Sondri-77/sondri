@@ -2,22 +2,27 @@
 /* One post on the Insights index: category, title, excerpt, date · author.
    `feature` lays the lead post out wide, title at h3. */
 import type { CollectionEntry } from 'astro:content';
-import { fmtDate, readMins } from '../lib/insights';
+import type { Lang } from '../i18n';
+import { fmtDate, readMins, slugOf } from '../lib/insights';
 
-interface Props { post: CollectionEntry<'insights'>; feature?: boolean }
-const { post, feature = false } = Astro.props;
+interface Props { post: CollectionEntry<'insights'>; feature?: boolean; lang?: Lang }
+const { post, feature = false, lang = 'en' } = Astro.props;
 const { title, excerpt, category, date, author } = post.data;
+const prefix = lang === 'es' ? '/es' : '';
+const mins = readMins(post.body);
+const minsLabel = lang === 'es' ? `${mins} min de lectura` : `${mins} min read`;
+const readLabel = lang === 'es' ? 'Leer el artículo' : 'Read the post';
 ---
 
-<a class:list={['card', { feature }]} href={`/insights/${post.id}/`} data-reveal>
+<a class:list={['card', { feature }]} href={`${prefix}/insights/${slugOf(post)}/`} data-reveal>
   <div class="top">
     <span class="chip">{category}</span>
-    <span class="label">{readMins(post.body)} min read</span>
+    <span class="label">{minsLabel}</span>
   </div>
-  <h3 class:list={[feature ? 'h3' : 'h5', 'title']}>{title}</h3>
+  <h2 class:list={[feature ? 'h3' : 'h5', 'title']}>{title}</h2>
   <p class="excerpt">{excerpt}</p>
-  <p class="label meta"><time datetime={date.toISOString()}>{fmtDate(date)}</time> · {author}</p>
-  {feature && <span class="label read">Read the post <span class="arr">→</span></span>}
+  <p class="label meta"><time datetime={date.toISOString()}>{fmtDate(date, lang)}</time> · {author}</p>
+  {feature && <span class="label read">{readLabel} <span class="arr">→</span></span>}
 </a>
 
 <style>

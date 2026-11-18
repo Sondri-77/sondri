@@ -1,0 +1,92 @@
+---
+import Base from '../../layouts/Base.astro';
+import { CONTACT_EMAIL, mailto } from '../../data';
+import '../../styles/prose.css';
+
+const title = 'Política de Privacidad | Sondri';
+const description = 'Cómo maneja Sondri el sitio web, la agenda de sesiones, los pagos con Stripe y los datos operativos en entornos del cliente.';
+---
+
+<Base
+  title={title}
+  description={description}
+  lang="es"
+  alternates={{ en: '/privacy/', es: '/es/privacy/' }}
+  mdPath="/es/privacy.md"
+>
+  <article>
+    <header class="section on-dark head">
+      <div class="wrap">
+        <a class="label back" href="/es/">← Volver al inicio</a>
+        <h1 class="h2 title">Política de Privacidad<span class="gdot">.</span></h1>
+        <p class="lede">
+          Resumen claro de qué datos recopila este sitio, cómo funcionan las sesiones de diagnóstico
+          y los pagos de facturas, y cómo protegemos los datos operativos en proyectos con clientes.
+        </p>
+        <p class="label meta">Fecha de vigencia: 18 de noviembre de 2026</p>
+      </div>
+    </header>
+
+    <div class="section section-pad">
+      <div class="wrap">
+        <div class="prose">
+          <h2>Analítica web y almacenamiento local</h2>
+          <p>
+            <code>sondri.ai</code> es un sitio web estático. Utilizamos Google Tag
+            (<code>googletagmanager.com</code> / Google Analytics) para medir el tráfico agregado y
+            los clics hacia llamadas de descubrimiento. Google Tag puede utilizar cookies propias de
+            medición y leer metadatos estándar de la solicitud (URL visitada, referente, navegador y
+            región aproximada). No utilizamos rastreadores publicitarios de terceros ni vendemos
+            datos de visitantes. Si selecciona un idioma en páginas en inglés, su preferencia puede
+            guardarse localmente en su navegador mediante <code>localStorage</code> bajo la clave
+            <code>sondri.lang</code>.
+          </p>
+
+          <h2>Agenda de sesiones de diagnóstico</h2>
+          <p>
+            Al hacer clic en <strong>Agende una sesión gratuita</strong>, la reserva se gestiona
+            mediante nuestra ventana de Cal.com (<code>cal.com/sondri/discovery</code>). Los datos
+            que envíe en el formulario (como nombre, correo y notas) se procesan en Cal.com
+            exclusivamente para preparar y realizar la sesión.
+          </p>
+
+          <h2>Pagos de facturas y anticipos</h2>
+          <p>
+            Los pagos realizados en <a href="/pay/">/pay/</a> se procesan por HTTPS mediante
+            <strong>Stripe Checkout</strong> a través de nuestro servicio de facturación en
+            <code>billing.sondri.ai</code>. Sondri no almacena números de tarjeta ni credenciales
+            bancarias en este sitio. Stripe procesa los pagos bajo estándares PCI-DSS para completar
+            la operación y emitir comprobantes fiscales.
+          </p>
+
+          <h2>Software del cliente y datos operativos</h2>
+          <p>
+            El software a medida, las automatizaciones de flujos y las integraciones con IA que
+            construye Sondri se despliegan directamente en la infraestructura y los sistemas del
+            propio cliente, con registros de auditoría y controles de aprobación acordados.
+          </p>
+
+          <h2>Contacto y solicitudes</h2>
+          <p>
+            Si tiene preguntas sobre esta política, desea solicitar la eliminación de datos de
+            contacto compartidos durante el diagnóstico o requiere documentación de seguridad, escriba
+            a <a href={mailto('Consulta de privacidad')}>{CONTACT_EMAIL}</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style is:global>
+  #siteheader { background: var(--ink); }
+</style>
+
+<style>
+  .head { padding-block: var(--s-64) var(--s-80); }
+  .back { display: inline-block; text-decoration: none; color: var(--pale); margin-bottom: var(--s-40); }
+  .back:hover { color: var(--gold); }
+  .title { margin-bottom: var(--s-24); }
+  .head .lede { max-width: 60ch; margin-bottom: var(--s-24); }
+  .meta { color: var(--pale); }
+</style>

@@ -1,0 +1,13 @@
+---
+import SolutionPage from '../../../components/SolutionPage.astro';
+import { getSolutions, slugOf } from '../../../lib/solutions';
+
+export async function getStaticPaths() {
+  const solutions = await getSolutions('es');
+  return solutions.map((solution) => ({ params: { slug: slugOf(solution) }, props: { solution } }));
+}
+
+const { solution } = Astro.props;
+---
+
+<SolutionPage solution={solution} lang="es" />

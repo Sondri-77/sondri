@@ -16,8 +16,6 @@ import { CAL_LINK } from '../data';
         if (!cal.loaded) {
           cal.ns = {};
           cal.q = cal.q || [];
-          d.head.appendChild(d.createElement('script')).src = A;
-          cal.loaded = true;
         }
         if (ar[0] === L) {
           const api = function () {
@@ -34,6 +32,18 @@ import { CAL_LINK } from '../data';
         }
         p(cal, ar);
       };
+    C.__loadCalEmbed = function (onReady) {
+      if (C.Cal.loaded) {
+        if (onReady) onReady();
+        return;
+      }
+      C.Cal.loaded = true;
+      const s = d.createElement('script');
+      s.src = A;
+      s.async = true;
+      if (onReady) s.addEventListener('load', onReady, { once: true });
+      d.head.appendChild(s);
+    };
   })(window, 'https://app.cal.com/embed/embed.js', 'init');
 
   Cal('init', 'discovery', { origin: 'https://cal.com' });
@@ -76,11 +86,31 @@ import { CAL_LINK } from '../data';
 
   function bindCalButtons() {
     if (!calLink) return;
+    let scriptReady = false;
     const links = document.querySelectorAll(`a[href*="cal.com/${calLink}"], a[data-cal-link]`);
     links.forEach((link) => {
       link.setAttribute('data-cal-link', calLink);
       link.setAttribute('data-cal-namespace', 'discovery');
       link.setAttribute('data-cal-config', JSON.stringify(sondriThemeConfig));
+      const warm = () => window.__loadCalEmbed(() => { scriptReady = true; });
+      link.addEventListener('pointerenter', warm, { once: true });
+      link.addEventListener('focus', warm, { once: true });
+      link.addEventListener('click', (e) => {
+        if (e.isTrusted) {
+          if (Array.isArray(window.dataLayer)) {
+            window.dataLayer.push({ event: 'book_discovery_click', link_url: calLink });
+          }
+          if (typeof window.gtag === 'function') {
+            window.gtag('event', 'book_discovery_click', { link_url: calLink });
+          }
+        }
+        if (scriptReady) return;
+        e.preventDefault();
+        window.__loadCalEmbed(() => {
+          scriptReady = true;
+          link.click();
+        });
+      });
     });
   }
 
