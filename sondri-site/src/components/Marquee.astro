@@ -1,5 +1,12 @@
 ---
-import { capabilities, capabilityStrip } from '../home-data';
+import { copy, type Lang } from '../i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const { capabilities } = copy[lang];
 // Two copies so the loop is seamless; the second is hidden from a11y.
 const track = [...capabilities, ...capabilities];
 ---

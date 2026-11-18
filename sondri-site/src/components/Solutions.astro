@@ -8,10 +8,16 @@ import { getSolutions, industryTabs } from '../lib/solutions';
 import { getPosts } from '../lib/insights';
 import { areas } from '../lib/matrix';
 import { BOOK_HREF } from '../data';
-import { en } from '../i18n';
+import { copy, type Lang } from '../i18n';
 import { splitDot } from '../lib/dot';
 
-const t = en.solutionsHead;
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const c = copy[lang];
+const t = c.solutionsHead;
 const [h2, dot] = splitDot(t.h2);
 const solutions = await getSolutions();
 const tabs = industryTabs(solutions);
@@ -36,7 +42,7 @@ const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
         <div class="tablist" role="tablist" aria-label={t.byIndustry}>
           {tabs.map((tab, i) => (
             <button class="tab" role="tab" id={`tab-${tab.id}`} aria-controls={`panel-${tab.id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-i18n={`solutionIndustries.${tab.id}`}>
-              {en.solutionIndustries[tab.id]}
+              {c.solutionIndustries[tab.id]}
             </button>
           ))}
         </div>
@@ -60,7 +66,7 @@ const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
                 <div class="story-side panel">
                   {s.data.media && (
                     <a class="thumb" href={`/solutions/${s.id}/`} aria-label={`${t.see} ${s.data.name}`}>
-                      <img src={s.data.media.poster} alt="" width="1280" height="720" loading="lazy" decoding="async" />
+                      <img src={s.data.media.poster} alt={s.data.media.alt} width="1280" height="720" loading="lazy" decoding="async" />
                       <span class="play" aria-hidden="true">▶</span>
                     </a>
                   )}
@@ -71,7 +77,7 @@ const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
                   <p class="label side-title">/ <span data-i18n="solutionsHead.areasLabel">{t.areasLabel}</span></p>
                   <div class="chips">
                     {s.data.areas.map((a) => (
-                      <a class="chip" href={`#area-${a}`} data-i18n={`solutionAreas.${areaIndex(a)}.name`}>{en.solutionAreas[areaIndex(a)].name}</a>
+                      <a class="chip" href={`#area-${a}`} data-i18n={`solutionAreas.${areaIndex(a)}.name`}>{c.solutionAreas[areaIndex(a)].name}</a>
                     ))}
                   </div>
                 </div>
@@ -91,17 +97,17 @@ const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
     <div class="area-grid">
       {areas.map((a, i) => {
         const proof = solutions.filter((s) => s.data.areas.includes(a.id));
-        const c = en.solutionAreas[i];
+        const areaCopy = c.solutionAreas[i];
         return (
           <article class="area" id={`area-${a.id}`} data-reveal style={`transition-delay:${(i % 2) * 80}ms`}>
             <p class="label num">{String(i + 1).padStart(2, '0')}</p>
-            <h3 class="h5"><span data-i18n={`solutionAreas.${i}.name`}>{c.name}</span><span class="gdot">.</span></h3>
+            <h3 class="h5"><span data-i18n={`solutionAreas.${i}.name`}>{areaCopy.name}</span><span class="gdot">.</span></h3>
             <div class="workaround">
               <p class="label" data-i18n="solutionsHead.workaround">{t.workaround}</p>
-              <p data-i18n={`solutionAreas.${i}.workaround`}>{c.workaround}</p>
+              <p data-i18n={`solutionAreas.${i}.workaround`}>{areaCopy.workaround}</p>
             </div>
-            <p class="builds" data-i18n={`solutionAreas.${i}.builds`}>{c.builds}</p>
-            <div class="chips">{c.items.map((it, j) => <span class="chip chip-quiet" data-i18n={`solutionAreas.${i}.items.${j}`}>{it}</span>)}</div>
+            <p class="builds" data-i18n={`solutionAreas.${i}.builds`}>{areaCopy.builds}</p>
+            <div class="chips">{areaCopy.items.map((it, j) => <span class="chip chip-quiet" data-i18n={`solutionAreas.${i}.items.${j}`}>{it}</span>)}</div>
             <p class="label proof">
               {proof.length > 0 ? (
                 <><span data-i18n="solutionsHead.built">{t.built}</span> {proof.map((s, j) => (

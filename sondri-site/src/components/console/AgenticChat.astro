@@ -1,11 +1,17 @@
 ---
 /* Playground card 03 · Agentic chat, ported: a question types in, the agent
    thinks, calls a tool, reads the result, and types the answer back. */
-import { en } from '../../i18n';
-const c = en.chatAnim;
+import { copy, type Lang } from '../../i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const c = copy[lang].chatAnim;
 ---
 
-<div class="anim win-body" data-anim="chat" data-anim-root>
+<div class="anim win-body" data-anim="chat" data-anim-root data-exchanges={JSON.stringify(c.exchanges)}>
   <div class="stage">
     <div class="chat">
       <div class="bar"><span data-i18n="chatAnim.assistant">{c.assistant}</span><span class="live" data-i18n="chatAnim.online">{c.online}</span></div>
@@ -48,8 +54,10 @@ const c = en.chatAnim;
   import { EVENT, t } from '../../scripts/i18n';
   const root = document.querySelector<HTMLElement>('[data-anim="chat"]');
   if (root) {
+    const initial = JSON.parse(root.dataset.exchanges || '[]') as string[][];
     // The three exchanges, read in the page's language on every frame.
-    const exchange = (n: number) => [0, 1, 2, 3].map((j) => t(`chatAnim.exchanges.${n}.${j}`));
+    const exchange = (n: number) =>
+      [0, 1, 2, 3].map((j) => t(`chatAnim.exchanges.${n}.${j}`) || initial[n]?.[j] || '');
     const q = (s: string) => root.querySelector<HTMLElement>(s)!;
     const user = q('.user'), agent = q('.agent'), chip = q('.chip'), tool = q('.tool');
     const result = q('.result'), reply = q('.reply'), tick = q('.tick'), messages = q('.messages');

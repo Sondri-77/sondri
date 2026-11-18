@@ -1,8 +1,15 @@
 ---
-import { features, featuresHead } from '../home-data';
-import { en } from '../i18n';
+import { copy, type Lang } from '../i18n';
 import { splitDot } from '../lib/dot';
 import Mark from './Mark.astro';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = copy[lang];
+const { features, featuresHead } = t;
 const [h2, dot] = splitDot(featuresHead.h2);
 ---
 
@@ -17,7 +24,7 @@ const [h2, dot] = splitDot(featuresHead.h2);
       </div>
     </div>
 
-    <div class="rule-cols cols-3 grid" aria-label={en.consoleStripLabel} data-i18n-attr="aria-label=consoleStripLabel">
+    <div class="rule-cols cols-3 grid" aria-label={t.consoleStripLabel} data-i18n-attr="aria-label=consoleStripLabel">
       {features.map((f, i) => (
         <article data-reveal style={`transition-delay:${(i % 3) * 80}ms`}>
           <Mark icon={f.icon} seed={40 + i} />

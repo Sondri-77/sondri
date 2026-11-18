@@ -8,6 +8,13 @@
 import WorkflowBuilder from './console/WorkflowBuilder.astro';
 import AgenticChat from './console/AgenticChat.astro';
 import ContractReview from './console/ContractReview.astro';
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
 const slides = [WorkflowBuilder, AgenticChat, ContractReview];
 const pad = (n: number) => String(n).padStart(2, '0');
 ---
@@ -21,7 +28,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
     <div class="slides">
       {slides.map((Slide, i) => (
         <div class="slide" data-slide class:list={{ 'is-active': i === 0 }} {...(i === 0 ? {} : { 'data-anim-paused': '' })}>
-          <Slide />
+          <Slide lang={lang} />
         </div>
       ))}
     </div>

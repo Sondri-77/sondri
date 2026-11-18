@@ -2,8 +2,14 @@
 /* Playground card 09 · Contract review, ported: a read line runs down the
    agreement, clauses go green as they pass, the three risky ones get
    flagged, and the tally counts up beside the paper. */
-import { en } from '../../i18n';
-const c = en.contractAnim;
+import { copy, type Lang } from '../../i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const c = copy[lang].contractAnim;
 const { clauses, flags } = c;
 const risks = [3, 7, 12];
 ---
@@ -15,10 +21,10 @@ const risks = [3, 7, 12];
       <div class="view">
         <div class="readline"></div>
         <div class="clauses">
-          {clauses.map((c, i) => (
+          {clauses.map((clause, i) => (
             <div class:list={['clause', { risk: risks.includes(i) }]}>
-              <i class="hi"></i><span class="txt" data-i18n={`contractAnim.clauses.${i}`}>{c}</span>
-              {risks.includes(i) && <span class="risk-chip" data-i18n="contractAnim.risk">{en.contractAnim.risk}</span>}
+              <i class="hi"></i><span class="txt" data-i18n={`contractAnim.clauses.${i}`}>{clause}</span>
+              {risks.includes(i) && <span class="risk-chip" data-i18n="contractAnim.risk">{c.risk}</span>}
             </div>
           ))}
         </div>

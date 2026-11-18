@@ -1,5 +1,7 @@
 ---
 title: "Land Platform: from parcel to offer in one screen"
+seoTitle: "Land Platform: Parcel to Offer in One Screen | Sondri"
+seoDescription: "How Sondri built a unified land acquisition workspace with parcel maps, comparable-sales valuation, side-by-side offers, and deal team chat."
 excerpt: "Land buyers lose days on one question: what should we offer? The Land Platform maps the parcel, prices it from comparable sales and writes two offers side by side. Here's what the pilot does today, and what comes next."
 category: "Solutions"
 date: 2026-10-10
