@@ -488,7 +488,7 @@ export const en: Copy = {
     talk: 'Talk to us about it',
   },
   /** Single-sourced from the matrix (src/lib/matrix.ts). */
-  solutionIndustries: Object.fromEntries(industries.map((i) => [i.id, i.name])) as Record<IndustryId, string>,
+  solutionIndustries: Object.fromEntries(industries.map((i) => [i.id, 'tab' in i ? i.tab : i.name])) as Record<IndustryId, string>,
   solutionAreas: areas.map((a) => ({ name: a.name, workaround: a.workaround, builds: a.builds, items: [...a.items] })),
   notFound: {
     title: '404 — Sondri',
@@ -887,7 +887,7 @@ export const es: Copy = {
     built: 'Construido:',
     talk: 'Hablemos de esto',
   },
-  solutionIndustries: { 'real-estate': 'Bienes raíces', medical: 'Salud', events: 'Eventos', tourism: 'Turismo', legal: 'Legal' },
+  solutionIndustries: { 'real-estate': 'Bienes raíces', medical: 'Salud', events: 'Eventos', tourism: 'AEO y SEO', legal: 'Legal' },
   solutionAreas: [
     {
       name: 'Inteligencia de mercado y generación de prospectos',
