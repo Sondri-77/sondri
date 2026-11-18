@@ -272,8 +272,8 @@ export const en: Copy = {
 
   /** Section 1 · Hero */
   hero: {
-    h1: 'Fix expensive workarounds. (Use AI where it helps)',
-    lede: 'Custom software & AI workflow automation, built into the systems you already run. Live in weeks.',
+    h1: 'Fix expensive workarounds.',
+    lede: 'Custom software and AI workflow automation, built into the systems you already run. Live in weeks.',
   },
 
   /** Section 2 · Capability scroll */
@@ -668,7 +668,7 @@ export const es: Copy = {
   ],
 
   hero: {
-    h1: 'Eliminamos parches caros. (Usamos IA donde ayuda)',
+    h1: 'Eliminamos parches caros.',
     lede: 'Software a medida y automatización con IA, integrados en los sistemas que ya usa. En marcha en semanas.',
   },
 

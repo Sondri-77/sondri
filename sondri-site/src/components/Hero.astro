@@ -10,9 +10,8 @@ interface Props {
 
 const { lang = 'en' } = Astro.props;
 const t = copy[lang];
-// The H1 sets as two lines on desktop: the claim, then the parenthetical.
-// The copy string stays verbatim; the break falls before the "(".
-const [line1, line2] = t.hero.h1.split(/ (?=\()/);
+// Split off optional parenthetical if present; otherwise renders as one balanced headline.
+const [line1, line2 = ''] = t.hero.h1.split(/ (?=\()/);
 const [h1, dot] = splitDot(line1);
 ---
 
@@ -42,7 +41,7 @@ const [h1, dot] = splitDot(line1);
 
   <div class="wrap cols">
     <div class="copy">
-      <h1 class="display"><span class="l"><span data-i18n="hero.h1.text">{h1}</span><span class="gdot" data-i18n="hero.h1.dot">{dot}</span></span> <span class="l" data-i18n="hero.h1.paren">{line2}</span></h1>
+      <h1 class="display"><span data-i18n="hero.h1.text">{h1}</span><span class="gdot" data-i18n="hero.h1.dot">{dot}</span>{line2 && <> <span class="l" data-i18n="hero.h1.paren">{line2}</span></>}</h1>
       <p class="lede" data-i18n="hero.lede">{t.hero.lede}</p>
       <div class="actions">
         <a class="btn btn-gold" href={BOOK_HREF}><span data-i18n="cta">{t.cta}</span> <span class="arr">→</span></a>
@@ -109,28 +108,22 @@ const [h1, dot] = splitDot(line1);
   .actions { display: flex; flex-wrap: wrap; gap: var(--s-16); padding-top: var(--s-08); }
   .label { color: var(--muted-inv); }
 
-  /* Florexa, the brand's pixel display face. Sized so the claim line fits
-     the copy column beside the window; the v2 study's 6.6vw / 100px is
-     what it runs at when the window sits below. */
+  /* Florexa, the brand's pixel display face. Balanced two-line wrap beside the
+     carousel on desktop, scaled to fit the longest single word cleanly. */
   .display {
     font-family: var(--display); font-weight: 400;
-    font-size: clamp(44px, 6.6vw, 100px); line-height: 1.02;
+    font-size: clamp(44px, 6.8vw, 96px); line-height: 1.02;
     letter-spacing: 0; text-transform: uppercase;
     color: var(--white);
+    text-wrap: balance;
+    max-width: 14ch;
   }
-  /* Exactly two line boxes from tablet up; phones wrap naturally. Because
-     the lines never wrap there, the size is also capped by the copy column's
-     own width (cqi): the widest line, EN "FIX EXPENSIVE WORKAROUNDS.", runs
-     ~12.9 em, so 7.6cqi keeps it inside the column beside the window in
-     every language, with a little room to spare. Re-measure if the H1 copy
-     gets longer. */
   @media (min-width: 900px) {
-    .display .l { display: block; white-space: nowrap; }
-    .display { font-size: min(clamp(44px, 6.6vw, 100px), 7.6cqi); }
+    .display { font-size: min(clamp(46px, 6.8vw, 96px), 12.2cqi); }
   }
   @media (min-width: 1100px) {
     .cols { grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); gap: var(--s-64); }
-    .display { font-size: min(clamp(36px, 4.3vw, 66px), 7.6cqi); }
+    .display { font-size: min(clamp(44px, 5.6vw, 84px), 12.2cqi); }
   }
 
   @media (max-width: 640px) {
