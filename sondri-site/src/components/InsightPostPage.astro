@@ -1,0 +1,132 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import FinalCta from './FinalCta.astro';
+import type { Lang } from '../i18n';
+import { fmtDate, readMins, slugOf } from '../lib/insights';
+import '../styles/prose.css';
+
+interface Props {
+  post: CollectionEntry<'insights'>;
+  lang?: Lang;
+}
+
+const { post, lang = 'en' } = Astro.props;
+const isEs = lang === 'es';
+const prefix = isEs ? '/es' : '';
+const slug = slugOf(post);
+const { title, seoTitle, seoDescription, excerpt, category, date, updated, author, draft } = post.data;
+const { Content, headings } = await render(post);
+const toc = headings.filter((h) => h.depth === 2);
+
+const siteUrl = Astro.site ? Astro.site.origin : 'https://sondri.ai';
+const canonical = new URL(Astro.url.pathname, siteUrl);
+const modified = (updated ?? date).toISOString();
+const mins = readMins(post.body);
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  '@id': `${canonical.href}#article`,
+  inLanguage: lang,
+  headline: title,
+  description: seoDescription ?? excerpt,
+  datePublished: date.toISOString(),
+  dateModified: modified,
+  image: new URL('/og.png', siteUrl).href,
+  author: { '@type': 'Organization', name: author, url: siteUrl },
+  publisher: { '@id': `${siteUrl}/#organization` },
+  isPartOf: { '@id': `${siteUrl}/#website` },
+  mainEntityOfPage: canonical.href,
+};
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: isEs ? 'Inicio' : 'Home', item: `${siteUrl}${prefix}/` },
+    { '@type': 'ListItem', position: 2, name: 'Insights', item: `${siteUrl}${prefix}/insights/` },
+    { '@type': 'ListItem', position: 3, name: title, item: canonical.href },
+  ],
+};
+---
+
+<Base
+  title={seoTitle ?? `${title} | Sondri`}
+  description={seoDescription ?? excerpt}
+  lang={lang}
+  alternates={{ en: `/insights/${slug}/`, es: `/es/insights/${slug}/` }}
+  titleKey="insights.post.title"
+  descriptionKey="insights.post.description"
+  ogType="article"
+  publishedTime={date.toISOString()}
+  modifiedTime={modified}
+  mdPath={`${prefix}/insights/${slug}.md`}
+>
+  <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+  <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+
+  <article>
+    <header class="section on-dark head">
+      <div class="wrap">
+        <a class="label back" href={`${prefix}/insights/`}>{isEs ? '← Todos los artículos' : '← All insights'}</a>
+        <div class="kick">
+          <span class="chip">{category}</span>
+          {draft && <span class="chip draft">{isEs ? 'Borrador' : 'Draft'}</span>}
+        </div>
+        <h1 class="h2 title">{title}</h1>
+        <p class="lede">{excerpt}</p>
+        <p class="label meta">
+          <time datetime={date.toISOString()}>{fmtDate(date, lang)}</time>
+          {updated && <> · {isEs ? 'Actualizado' : 'Updated'} <time datetime={updated.toISOString()}>{fmtDate(updated, lang)}</time></>}
+          {' '}· {author} · {isEs ? `${mins} min de lectura` : `${mins} min read`}
+        </p>
+      </div>
+    </header>
+
+    <div class="section section-pad">
+      <div class="wrap">
+        <div class="layout">
+          <div class="prose">
+            <Content />
+          </div>
+          {toc.length > 1 && (
+            <nav class="toc" aria-label={isEs ? 'En este artículo' : 'In this post'}>
+              <p class="label toc-title">/ {isEs ? 'En este artículo' : 'In this post'}</p>
+              <ol>
+                {toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+              </ol>
+            </nav>
+          )}
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <FinalCta lang={lang} />
+</Base>
+
+<style is:global>
+  #siteheader { background: var(--ink); }
+</style>
+
+<style>
+  .head { padding-block: var(--s-64) var(--s-80); }
+  .back { display: inline-block; text-decoration: none; color: var(--pale); margin-bottom: var(--s-40); }
+  .back:hover { color: var(--gold); }
+  .kick { display: flex; gap: var(--s-08); margin-bottom: var(--s-24); }
+  .draft { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
+  .title { max-width: 22ch; margin-bottom: var(--s-24); }
+  .head .lede { max-width: 60ch; margin-bottom: var(--s-32); }
+  .meta { color: var(--pale); }
+
+  /* Body left at a reading measure; the contents rail sticks on the right. */
+  .layout { display: grid; grid-template-columns: minmax(0, 68ch) 260px; justify-content: space-between; gap: var(--s-64); }
+  .toc { position: sticky; top: calc(var(--nav-h) + var(--s-32)); align-self: start; border-top: 1px solid var(--line); padding-top: var(--s-24); }
+  .toc-title { color: var(--text-hi); margin-bottom: var(--s-16); }
+  .toc ol { list-style: none; display: flex; flex-direction: column; gap: 12px; counter-reset: toc; }
+  .toc li { counter-increment: toc; display: grid; grid-template-columns: 28px 1fr; }
+  .toc li::before { content: counter(toc, decimal-leading-zero); font: 12px/22px var(--mono); color: var(--steel); }
+  .toc a { color: var(--pale); text-decoration: none; font-size: 15px; line-height: 22px; }
+  .toc a:hover { color: var(--text-hi); text-decoration: underline; text-decoration-color: var(--gold-2); text-underline-offset: 3px; }
+  @media (max-width: 1080px) { .layout { grid-template-columns: minmax(0, 1fr); } .toc { display: none; } }
+</style>

@@ -4,8 +4,8 @@
    src/lib/solutions.ts) each tell one built story and link to that
    solution's own page; then the solution areas across every industry. The
    story text comes from the solution's Markdown and stays English. */
-import { getSolutions, industryTabs } from '../lib/solutions';
-import { getPosts } from '../lib/insights';
+import { getSolutions, industryTabs, slugOf as solSlug } from '../lib/solutions';
+import { getPosts, slugOf as postSlug } from '../lib/insights';
 import { areas } from '../lib/matrix';
 import { BOOK_HREF } from '../data';
 import { copy, type Lang } from '../i18n';
@@ -16,12 +16,13 @@ interface Props {
 }
 
 const { lang = 'en' } = Astro.props;
+const prefix = lang === 'es' ? '/es' : '';
 const c = copy[lang];
 const t = c.solutionsHead;
 const [h2, dot] = splitDot(t.h2);
-const solutions = await getSolutions();
+const solutions = await getSolutions(lang);
 const tabs = industryTabs(solutions);
-const posts = new Set((await getPosts()).map((p) => p.id));
+const posts = new Set((await getPosts(lang)).map((p) => postSlug(p)));
 const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
 ---
 
@@ -57,15 +58,15 @@ const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
                   <p class="tagline">{s.data.tagline}</p>
                   <p class="summary">{s.data.summary}</p>
                   <div class="actions">
-                    <a class="btn btn-gold" href={`/solutions/${s.id}/`}><span data-i18n="solutionsHead.see">{t.see}</span> {s.data.name} <span class="arr">→</span></a>
+                    <a class="btn btn-gold" href={`${prefix}/solutions/${solSlug(s)}/`}><span data-i18n="solutionsHead.see">{t.see}</span> {s.data.name} <span class="arr">→</span></a>
                     {s.data.post && posts.has(s.data.post) && (
-                      <a class="btn" href={`/insights/${s.data.post}/`}><span data-i18n="solutionsHead.readBuild">{t.readBuild}</span> <span class="arr">→</span></a>
+                      <a class="btn" href={`${prefix}/insights/${s.data.post}/`}><span data-i18n="solutionsHead.readBuild">{t.readBuild}</span> <span class="arr">→</span></a>
                     )}
                   </div>
                 </div>
                 <div class="story-side panel">
                   {s.data.media && (
-                    <a class="thumb" href={`/solutions/${s.id}/`} aria-label={`${t.see} ${s.data.name}`}>
+                    <a class="thumb" href={`${prefix}/solutions/${solSlug(s)}/`} aria-label={`${t.see} ${s.data.name}`}>
                       <img src={s.data.media.poster} alt={s.data.media.alt} width="1280" height="720" loading="lazy" decoding="async" />
                       <span class="play" aria-hidden="true">▶</span>
                     </a>
@@ -111,7 +112,7 @@ const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
             <p class="label proof">
               {proof.length > 0 ? (
                 <><span data-i18n="solutionsHead.built">{t.built}</span> {proof.map((s, j) => (
-                  <>{j > 0 && ', '}<a href={`/solutions/${s.id}/`}>{s.data.name}</a></>
+                  <>{j > 0 && ', '}<a href={`${prefix}/solutions/${solSlug(s)}/`}>{s.data.name}</a></>
                 ))}</>
               ) : (
                 <a href={BOOK_HREF}><span data-i18n="solutionsHead.talk">{t.talk}</span> <span class="arr">→</span></a>

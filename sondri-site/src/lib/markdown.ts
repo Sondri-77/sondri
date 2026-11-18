@@ -2,7 +2,8 @@ import type { CollectionEntry } from 'astro:content';
 import { BOOK_HREF, CONTACT_EMAIL, CTA_PRIMARY } from '../data';
 import { copy, type Lang } from '../i18n';
 import { money, weeklyCost, yearlyCost } from './cost';
-import { areaName, industryName } from './matrix';
+import { slugOf as postSlug } from './insights';
+import { localizedAreaName, localizedIndustryName, slugOf as solSlug } from './solutions';
 
 const mdResponse = (body: string, status = 200) =>
   new Response(body, {
@@ -26,7 +27,8 @@ export function renderHomeMarkdown(
 ): string {
   const c = copy[lang];
   const isEs = lang === 'es';
-  const url = isEs ? `${origin}/es/` : `${origin}/`;
+  const prefix = isEs ? '/es' : '';
+  const url = `${origin}${prefix}/`;
   const [wage, hours, people] = c.calculator.inputs.map((i) => i.value);
   const calcTotal = money(yearlyCost(weeklyCost(wage, hours, people)));
 
@@ -96,7 +98,7 @@ export function renderHomeMarkdown(
     '',
     ...solutions.map(
       (s) =>
-        `- [${s.data.name}](${origin}/solutions/${s.id}/) (${industryName(s.data.industry)} · ${s.data.audience}): ${s.data.tagline}`,
+        `- [${s.data.name}](${origin}${prefix}/solutions/${solSlug(s)}/) (${localizedIndustryName(s.data.industry, lang)} · ${s.data.audience}): ${s.data.tagline}`,
     ),
     '',
     `## ${c.comparisonHead.eyebrow}`,
@@ -113,7 +115,7 @@ export function renderHomeMarkdown(
     '## Insights',
     '',
     ...posts.map(
-      (p) => `- [${p.data.title}](${origin}/insights/${p.id}/): ${p.data.excerpt}`,
+      (p) => `- [${p.data.title}](${origin}${prefix}/insights/${postSlug(p)}/): ${p.data.excerpt}`,
     ),
     '',
     `## ${c.finalCta.eyebrow}`,
@@ -122,7 +124,7 @@ export function renderHomeMarkdown(
     `- **Email:** ${CONTACT_EMAIL}`,
     `- **LLM Context:** ${origin}/llms.txt`,
     `- **Full Site Markdown:** ${origin}/llms-full.txt`,
-    `- **${isEs ? 'Política de Privacidad' : 'Privacy Policy'}:** ${origin}${isEs ? '/es/privacy/' : '/privacy/'}`,
+    `- **${isEs ? 'Política de Privacidad' : 'Privacy Policy'}:** ${origin}${prefix}/privacy/`,
     '',
   ];
   return lines.join('\n');
@@ -131,16 +133,25 @@ export function renderHomeMarkdown(
 export function renderSolutionMarkdown(
   origin: string,
   s: CollectionEntry<'solutions'>,
+  lang: Lang = 'en',
 ): string {
-  const url = `${origin}/solutions/${s.id}/`;
+  const isEs = lang === 'es';
+  const prefix = isEs ? '/es' : '';
+  const slug = solSlug(s);
+  const url = `${origin}${prefix}/solutions/${slug}/`;
+  const c = copy[lang];
+  const ind = localizedIndustryName(s.data.industry, lang);
+  const areaList = s.data.areas.map((a) => localizedAreaName(a, lang));
+
   const lines = [
     '---',
     `title: "${s.data.seoTitle ?? s.data.name}"`,
     `description: "${s.data.seoDescription ?? s.data.summary}"`,
     `url: "${url}"`,
-    `industry: "${industryName(s.data.industry)}"`,
+    `language: ${lang}`,
+    `industry: "${ind}"`,
     `audience: "${s.data.audience}"`,
-    `areas: [${s.data.areas.map(areaName).map((a) => `"${a}"`).join(', ')}]`,
+    `areas: [${areaList.map((a) => `"${a}"`).join(', ')}]`,
     '---',
     '',
     `# ${s.data.name}`,
@@ -149,21 +160,21 @@ export function renderSolutionMarkdown(
     '',
     s.data.summary,
     '',
-    `- **Industry:** ${industryName(s.data.industry)}`,
-    `- **Built for:** ${s.data.audience}`,
-    `- **Solution areas:** ${s.data.areas.map(areaName).join(', ')}`,
+    `- **${isEs ? 'Industria' : 'Industry'}:** ${ind}`,
+    `- **${isEs ? 'Diseñado para' : 'Built for'}:** ${s.data.audience}`,
+    `- **${c.solutionsHead.areasLabel}:** ${areaList.join(', ')}`,
     '',
-    '## What It Does',
+    `## ${c.solutionsHead.whatItDoes}`,
     '',
     ...s.data.highlights.map((h) => `- ${h}`),
     '',
     (s.body ?? '').trim(),
     '',
-    '## Next Steps',
+    `## ${isEs ? 'Siguientes pasos' : 'Next Steps'}`,
     '',
-    `- **${CTA_PRIMARY}:** ${BOOK_HREF}`,
-    ...(s.data.post ? [`- **Build write-up:** ${origin}/insights/${s.data.post}/`] : []),
-    `- **All solutions:** ${origin}/#solutions`,
+    `- **${c.cta}:** ${BOOK_HREF}`,
+    ...(s.data.post ? [`- **${c.solutionsHead.readBuild}:** ${origin}${prefix}/insights/${s.data.post}/`] : []),
+    `- **${isEs ? 'Todas las soluciones' : 'All solutions'}:** ${origin}${prefix}/#solutions`,
     '',
   ];
   return lines.join('\n');
@@ -172,26 +183,36 @@ export function renderSolutionMarkdown(
 export function renderInsightsIndexMarkdown(
   origin: string,
   posts: CollectionEntry<'insights'>[],
+  lang: Lang = 'en',
 ): string {
+  const isEs = lang === 'es';
+  const prefix = isEs ? '/es' : '';
   const lines = [
     '---',
-    'title: "Software & AI Automation Insights | Sondri"',
-    'description: "Engineering write-ups on custom software, workflow automation, and AI answer-engine systems Sondri builds directly into clients’ existing tools."',
-    `url: "${origin}/insights/"`,
+    isEs
+      ? 'title: "Insights sobre Software e IA Aplicada | Sondri"'
+      : 'title: "Software & AI Automation Insights | Sondri"',
+    isEs
+      ? 'description: "Artículos técnicos sobre software a medida, automatización de flujos y sistemas de visibilidad AEO y SEO integrados en las herramientas del cliente."'
+      : 'description: "Engineering write-ups on custom software, workflow automation, and AI answer-engine systems Sondri builds directly into clients’ existing tools."',
+    `url: "${origin}${prefix}/insights/"`,
+    `language: ${lang}`,
     '---',
     '',
     '# Insights',
     '',
-    'What we build and how it works. Each post takes one solution and covers the problem, what we shipped, and the decisions behind it.',
+    isEs
+      ? 'Qué construimos y cómo funciona. Cada artículo toma una solución y detalla el problema, lo que implementamos y las decisiones técnicas detrás.'
+      : 'What we build and how it works. Each post takes one solution and covers the problem, what we shipped, and the decisions behind it.',
     '',
-    '## Articles',
+    `## ${isEs ? 'Artículos' : 'Articles'}`,
     '',
     ...posts.map(
       (p) =>
-        `- [${p.data.title}](${origin}/insights/${p.id}/) (${p.data.date.toISOString().slice(0, 10)} · ${p.data.category}): ${p.data.excerpt}`,
+        `- [${p.data.title}](${origin}${prefix}/insights/${postSlug(p)}/) (${p.data.date.toISOString().slice(0, 10)} · ${p.data.category}): ${p.data.excerpt}`,
     ),
     '',
-    `- **Home:** ${origin}/`,
+    `- **${isEs ? 'Inicio' : 'Home'}:** ${origin}${prefix}/`,
     `- **LLM Context:** ${origin}/llms.txt`,
     '',
   ];
@@ -201,13 +222,19 @@ export function renderInsightsIndexMarkdown(
 export function renderPostMarkdown(
   origin: string,
   p: CollectionEntry<'insights'>,
+  lang: Lang = 'en',
 ): string {
-  const url = `${origin}/insights/${p.id}/`;
+  const isEs = lang === 'es';
+  const prefix = isEs ? '/es' : '';
+  const slug = postSlug(p);
+  const url = `${origin}${prefix}/insights/${slug}/`;
+  const c = copy[lang];
   const lines = [
     '---',
     `title: "${p.data.seoTitle ?? p.data.title}"`,
     `description: "${p.data.seoDescription ?? p.data.excerpt}"`,
     `url: "${url}"`,
+    `language: ${lang}`,
     `category: "${p.data.category}"`,
     `datePublished: "${p.data.date.toISOString().slice(0, 10)}"`,
     ...(p.data.updated ? [`dateModified: "${p.data.updated.toISOString().slice(0, 10)}"`] : []),
@@ -218,15 +245,15 @@ export function renderPostMarkdown(
     '',
     `> ${p.data.excerpt}`,
     '',
-    `Published ${p.data.date.toISOString().slice(0, 10)}${p.data.updated ? ` · Updated ${p.data.updated.toISOString().slice(0, 10)}` : ''} by ${p.data.author} · ${p.data.category}`,
+    `${isEs ? 'Publicado' : 'Published'} ${p.data.date.toISOString().slice(0, 10)}${p.data.updated ? ` · ${isEs ? 'Actualizado' : 'Updated'} ${p.data.updated.toISOString().slice(0, 10)}` : ''} ${isEs ? 'por' : 'by'} ${p.data.author} · ${p.data.category}`,
     '',
     (p.body ?? '').trim(),
     '',
-    '## Links',
+    `## ${isEs ? 'Enlaces' : 'Links'}`,
     '',
-    ...(p.data.solution ? [`- **Related solution:** ${origin}/solutions/${p.data.solution}/`] : []),
-    `- **All insights:** ${origin}/insights/`,
-    `- **${CTA_PRIMARY}:** ${BOOK_HREF}`,
+    ...(p.data.solution ? [`- **${isEs ? 'Solución relacionada' : 'Related solution'}:** ${origin}${prefix}/solutions/${p.data.solution}/`] : []),
+    `- **${isEs ? 'Todos los artículos' : 'All insights'}:** ${origin}${prefix}/insights/`,
+    `- **${c.cta}:** ${BOOK_HREF}`,
     '',
   ];
   return lines.join('\n');
@@ -246,9 +273,9 @@ export function renderPrivacyMarkdown(origin: string, lang: Lang = 'en'): string
       '',
       'Fecha de vigencia: 18 de noviembre de 2026',
       '',
-      '## Sitio web y almacenamiento local',
+      '## Analítica web y almacenamiento local',
       '',
-      '`sondri.ai` es un sitio web estático. No colocamos rastreadores publicitarios ni cookies de seguimiento entre sitios. Si selecciona idioma en páginas en inglés, su preferencia puede guardarse localmente bajo `localStorage` (`sondri.lang`).',
+      '`sondri.ai` es un sitio web estático. Utilizamos Google Tag (`googletagmanager.com` / Google Analytics) para medir el tráfico agregado y los clics hacia llamadas de descubrimiento. Google Tag puede utilizar cookies propias de medición y leer metadatos estándar de la solicitud (URL visitada, referente, navegador y región aproximada). No utilizamos rastreadores publicitarios de terceros ni vendemos datos de visitantes. Si selecciona idioma en páginas en inglés, su preferencia puede guardarse localmente bajo `localStorage` (`sondri.lang`).',
       '',
       '## Agenda de sesiones',
       '',
@@ -281,9 +308,9 @@ export function renderPrivacyMarkdown(origin: string, lang: Lang = 'en'): string
     '',
     'Effective date: November 18, 2026',
     '',
-    '## Website & Local Storage',
+    '## Website Analytics & Local Storage',
     '',
-    '`sondri.ai` is a static marketing website. We do not place advertising trackers or cross-site tracking cookies on visitors. Language preference on English-only pages may be stored locally in the browser under `localStorage` key `sondri.lang`.',
+    '`sondri.ai` is a static marketing website. We use Google Tag (`googletagmanager.com` / Google Analytics) to measure aggregate traffic and discovery-call clicks. Google Tag may use first-party measurement cookies and read standard request metadata (visited URL, referrer, browser type, and approximate region). We do not run third-party advertising trackers or sell visitor data. Language preference on English-only pages may be stored locally in the browser under `localStorage` key `sondri.lang`.',
     '',
     '## Discovery Scheduling',
     '',
@@ -317,12 +344,13 @@ export function renderNotFoundMarkdown(origin: string): string {
     '',
     '## Useful Links',
     '',
-    `- [Homepage](${origin}/)`,
-    `- [Spanish Homepage](${origin}/es/)`,
+    `- [Homepage (EN)](${origin}/)`,
+    `- [Homepage (ES)](${origin}/es/)`,
     `- [LLM Context (llms.txt)](${origin}/llms.txt)`,
     `- [Full Site Markdown (llms-full.txt)](${origin}/llms-full.txt)`,
     `- [Sitemap Index](${origin}/sitemap-index.xml)`,
-    `- [Insights](${origin}/insights/)`,
+    `- [Insights (EN)](${origin}/insights/)`,
+    `- [Insights (ES)](${origin}/es/insights/)`,
     `- [Privacy Policy](${origin}/privacy/)`,
     '',
   ].join('\n');
@@ -330,13 +358,15 @@ export function renderNotFoundMarkdown(origin: string): string {
 
 export function renderLlmsTxt(
   origin: string,
-  solutions: CollectionEntry<'solutions'>[],
-  posts: CollectionEntry<'insights'>[],
+  enSolutions: CollectionEntry<'solutions'>[],
+  enPosts: CollectionEntry<'insights'>[],
+  esSolutions: CollectionEntry<'solutions'>[] = [],
+  esPosts: CollectionEntry<'insights'>[] = [],
 ): string {
   return [
     '# Sondri',
     '',
-    '> Custom software, workflow automation, and practical AI integration built directly into the systems small and midsize companies already run — scoped in fixed-price phases (`0 -> 1 -> n`), live in weeks, and 100% client-owned.',
+    '> Custom software, workflow automation, and practical AI integration built directly into the systems small and midsize companies already run — scoped in fixed-price phases (`0 -> 1 -> n`), live in weeks, and 100% client-owned. Available in English and Spanish across the US and Latin America.',
     '',
     '## When to use Sondri',
     '',
@@ -350,29 +380,54 @@ export function renderLlmsTxt(
     '',
     `- [Homepage (EN)](${origin}/): Overview, 0 -> 1 -> n framework, capabilities, comparison table, and FAQs ([Markdown](${origin}/index.md))`,
     `- [Homepage (ES)](${origin}/es/): Versión completa en español ([Markdown](${origin}/es/index.md))`,
-    `- [Insights](${origin}/insights/): Engineering write-ups of shipped systems ([Markdown](${origin}/insights/index.md))`,
-    `- [Privacy Policy](${origin}/privacy/): Data handling, scheduling, and client-environment policy ([Markdown](${origin}/privacy.md))`,
+    `- [Insights (EN)](${origin}/insights/): Engineering write-ups of shipped systems ([Markdown](${origin}/insights/index.md))`,
+    `- [Insights (ES)](${origin}/es/insights/): Artículos técnicos en español ([Markdown](${origin}/es/insights/index.md))`,
+    `- [Privacy Policy (EN)](${origin}/privacy/): Data handling, scheduling, and client-environment policy ([Markdown](${origin}/privacy.md))`,
+    `- [Privacy Policy (ES)](${origin}/es/privacy/): Política de privacidad ([Markdown](${origin}/es/privacy.md))`,
     `- [AI Catalog](${origin}/.well-known/ai-catalog.json): Machine-readable index of agent resources`,
     `- [Full Context Bundle](${origin}/llms-full.txt): Complete site, solutions, and articles in one Markdown file`,
     '',
-    '## Solutions',
+    '## Solutions (EN)',
     '',
-    ...solutions.map(
+    ...enSolutions.map(
       (s) =>
-        `- [${s.data.name}](${origin}/solutions/${s.id}/): ${s.data.tagline} ([Markdown](${origin}/solutions/${s.id}.md))`,
+        `- [${s.data.name}](${origin}/solutions/${solSlug(s)}/): ${s.data.tagline} ([Markdown](${origin}/solutions/${solSlug(s)}.md))`,
     ),
     '',
-    '## Insights',
+    ...(esSolutions.length > 0
+      ? [
+          '## Soluciones (ES)',
+          '',
+          ...esSolutions.map(
+            (s) =>
+              `- [${s.data.name}](${origin}/es/solutions/${solSlug(s)}/): ${s.data.tagline} ([Markdown](${origin}/es/solutions/${solSlug(s)}.md))`,
+          ),
+          '',
+        ]
+      : []),
+    '## Insights (EN)',
     '',
-    ...posts.map(
+    ...enPosts.map(
       (p) =>
-        `- [${p.data.title}](${origin}/insights/${p.id}/): ${p.data.excerpt} ([Markdown](${origin}/insights/${p.id}.md))`,
+        `- [${p.data.title}](${origin}/insights/${postSlug(p)}/): ${p.data.excerpt} ([Markdown](${origin}/insights/${postSlug(p)}.md))`,
     ),
     '',
+    ...(esPosts.length > 0
+      ? [
+          '## Insights (ES)',
+          '',
+          ...esPosts.map(
+            (p) =>
+              `- [${p.data.title}](${origin}/es/insights/${postSlug(p)}/): ${p.data.excerpt} ([Markdown](${origin}/es/insights/${postSlug(p)}.md))`,
+          ),
+          '',
+        ]
+      : []),
     '## Contact & Discovery',
     '',
     `- **Book Free Discovery:** ${BOOK_HREF}`,
     `- **Sales Email:** ${CONTACT_EMAIL}`,
+    '- **LinkedIn:** https://www.linkedin.com/company/sondri/',
     `- **Sitemap:** ${origin}/sitemap-index.xml`,
     '',
   ].join('\n');
@@ -380,18 +435,32 @@ export function renderLlmsTxt(
 
 export function renderLlmsFullTxt(
   origin: string,
-  solutions: CollectionEntry<'solutions'>[],
-  posts: CollectionEntry<'insights'>[],
+  enSolutions: CollectionEntry<'solutions'>[],
+  enPosts: CollectionEntry<'insights'>[],
+  esSolutions: CollectionEntry<'solutions'>[] = [],
+  esPosts: CollectionEntry<'insights'>[] = [],
 ): string {
   return [
-    renderLlmsTxt(origin, solutions, posts),
+    renderLlmsTxt(origin, enSolutions, enPosts, esSolutions, esPosts),
     '---',
     '',
-    renderHomeMarkdown(origin, solutions, posts, 'en'),
-    ...solutions.flatMap((s) => ['---', '', renderSolutionMarkdown(origin, s)]),
-    ...posts.flatMap((p) => ['---', '', renderPostMarkdown(origin, p)]),
+    renderHomeMarkdown(origin, enSolutions, enPosts, 'en'),
+    ...enSolutions.flatMap((s) => ['---', '', renderSolutionMarkdown(origin, s, 'en')]),
+    ...enPosts.flatMap((p) => ['---', '', renderPostMarkdown(origin, p, 'en')]),
     '---',
     '',
     renderPrivacyMarkdown(origin, 'en'),
+    ...(esSolutions.length || esPosts.length
+      ? [
+          '---',
+          '',
+          renderHomeMarkdown(origin, esSolutions, esPosts, 'es'),
+          ...esSolutions.flatMap((s) => ['---', '', renderSolutionMarkdown(origin, s, 'es')]),
+          ...esPosts.flatMap((p) => ['---', '', renderPostMarkdown(origin, p, 'es')]),
+          '---',
+          '',
+          renderPrivacyMarkdown(origin, 'es'),
+        ]
+      : []),
   ].join('\n');
 }

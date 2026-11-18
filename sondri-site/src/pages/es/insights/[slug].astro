@@ -1,0 +1,13 @@
+---
+import InsightPostPage from '../../../components/InsightPostPage.astro';
+import { getPosts, slugOf } from '../../../lib/insights';
+
+export async function getStaticPaths() {
+  const posts = await getPosts('es');
+  return posts.map((post) => ({ params: { slug: slugOf(post) }, props: { post } }));
+}
+
+const { post } = Astro.props;
+---
+
+<InsightPostPage post={post} lang="es" />
