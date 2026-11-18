@@ -1,5 +1,7 @@
 ---
 name: DocScale
+seoTitle: "DocScale: Direct Booking for Clinics | Sondri"
+seoDescription: "Clinic websites with built-in appointment booking, patient CRM, and review collection—capture direct bookings without listing-site commissions."
 tagline: A clinic website patients book from directly, and a simple way to collect reviews.
 summary: Patients who already want a clinic often book through a listing site, and the clinic pays a commission on them. DocScale gives each clinic its own website with booking built in, plus a feedback link that sends happy patients to leave a review, all run from one clinic portal.
 audience: Doctors, clinics and hospitals

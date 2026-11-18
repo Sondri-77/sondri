@@ -10,11 +10,11 @@ import { getPosts } from '../../lib/insights';
 const posts = await getPosts();
 const [lead, ...rest] = posts;
 
-const title = 'Insights — Sondri';
-const description = 'What we build and how it works: write-ups of the software and automation Sondri delivers.';
+const title = 'Software & AI Automation Insights | Sondri';
+const description = 'Engineering write-ups on custom software, workflow automation, and AI answer-engine systems Sondri builds directly into clients’ existing tools.';
 ---
 
-<Base title={title} description={description} titleKey="insights.title" descriptionKey="insights.description">
+<Base title={title} description={description} titleKey="insights.title" descriptionKey="insights.description" mdPath="/insights/index.md">
   <section class="section on-dark head">
     <div class="wrap">
       <h1 class="h1">Insights<span class="gdot">.</span></h1>

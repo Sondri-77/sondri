@@ -1,5 +1,7 @@
 ---
 name: AEO & SEO Visibility
+seoTitle: "AEO & SEO Visibility for Tour Operators | Sondri"
+seoDescription: "Direct-booking websites, AEO, and technical SEO for tour operators—rank on Google, get cited in AI answers, and stop paying 15–30% OTA commissions."
 tagline: Get found when travelers search, and when they ask an AI where to go.
 summary: Travelers who already want a tour often find it through a booking platform, and the operator pays a commission on every one of them. AEO & SEO Visibility makes the operator's own site the one that shows up, on Google and in the answers ChatGPT, Gemini and Google's AI Overviews give, and makes it easy to book there directly.
 audience: Tour operators and travel companies

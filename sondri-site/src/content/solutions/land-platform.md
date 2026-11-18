@@ -1,5 +1,7 @@
 ---
 name: Land Platform
+seoTitle: "Land Platform for Acquisition Teams | Sondri"
+seoDescription: "Parcel mapping, weighted comparable pricing, and side-by-side cash and seller-finance offers in one workspace built for land acquisition teams."
 tagline: Find the parcel, price it, and write the offer, in one screen.
 summary: Land buyers lose days on one question, what should we offer? The Land Platform puts the map, the pricing and both offers in one place, so a team can go from a parcel to a printed offer without leaving the screen.
 audience: Land acquisition teams

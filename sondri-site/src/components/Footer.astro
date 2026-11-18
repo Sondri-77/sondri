@@ -37,7 +37,11 @@ const at = (h: string) => sectionHref(h, Astro.url.pathname);
 
     <div class="f-bottom">
       <p class="label">&copy; {year} Sondri</p>
-      <a class="label pay-link" href="/pay" data-i18n="ui.pay">{en.ui.pay} →</a>
+      <div class="f-links">
+        <a class="label pay-link" href="/privacy/">Privacy</a>
+        <a class="label pay-link" href="/llms.txt">llms.txt</a>
+        <a class="label pay-link" href="/pay" data-i18n="ui.pay">{en.ui.pay} →</a>
+      </div>
       <p class="label" data-i18n="footerLine">{en.footerLine}</p>
     </div>
   </div>
@@ -70,6 +74,7 @@ const at = (h: string) => sectionHref(h, Astro.url.pathname);
     display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--s-16);
     margin-top: var(--s-96); padding-block: var(--s-24);
   }
+  .f-links { display: flex; flex-wrap: wrap; gap: var(--s-24); }
   .pay-link { text-decoration: none; color: var(--steel); transition: color 0.15s linear; }
   .pay-link:hover { color: var(--gold); }
 

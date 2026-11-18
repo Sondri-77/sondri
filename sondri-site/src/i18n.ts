@@ -108,8 +108,8 @@ const features = [
 
 export const en: Copy = {
   meta: {
-    title: 'Sondri — Fix expensive workarounds',
-    description: 'Built into the systems you already run. Live in weeks. AI where it helps, regular software where it doesn’t.',
+    title: 'Custom Software & AI Workflow Automation | Sondri',
+    description: 'Sondri builds custom workflow automation and AI software directly into the systems you already run. Fixed-price phases, live in weeks, and 100% client-owned.',
     lang: 'en',
   },
   ui: {
@@ -520,8 +520,8 @@ const featuresEs = [
 
 export const es: Copy = {
   meta: {
-    title: 'Sondri — Eliminamos parches caros',
-    description: 'Integrado en los sistemas que ya usa. En marcha en semanas. IA donde ayuda y software convencional donde no.',
+    title: 'Software a Medida y Automatización con IA | Sondri',
+    description: 'Sondri integra automatización de flujos e IA directamente en los sistemas que ya usa. Fases a precio fijo, en marcha en semanas y código 100% suyo.',
     lang: 'es',
   },
   ui: {

@@ -1,5 +1,7 @@
 ---
 title: "Why tour operators need to be found by AI, not just Google"
+seoTitle: "AEO for Tour Operators: Get Cited by AI | Sondri"
+seoDescription: "Why travelers ask AI assistants for tour recommendations—and how direct booking, structured data, and answer-ready pages cut OTA commissions."
 excerpt: "Travelers have started asking AI assistants where to go, and the answers rarely name the operator who runs the trip. Here's why answer-engine optimization matters for travel companies, and what it takes to show up."
 category: "Insights"
 date: 2026-11-17

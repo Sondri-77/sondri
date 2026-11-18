@@ -12,9 +12,13 @@ const insights = defineCollection({
     title: z.string(),
     /** One or two sentences: the card excerpt, the meta description, the lede. */
     excerpt: z.string(),
+    /** Optional SEO title/description overrides for SERP length tuning. */
+    seoTitle: z.string().optional(),
+    seoDescription: z.string().optional(),
     /** The mono label over the title — "Solutions", "Insights", "Field notes". */
     category: z.string(),
     date: z.coerce.date(),
+    updated: z.coerce.date().optional(),
     author: z.string().default('Sondri'),
     /** The solution this post writes up (a solutions slug), linked both ways. */
     solution: z.string().optional(),
@@ -28,6 +32,9 @@ const solutions = defineCollection({
   schema: z.object({
     /** The product name, as the tab and the page title show it. */
     name: z.string(),
+    /** Optional SEO title/description overrides for SERP length tuning. */
+    seoTitle: z.string().optional(),
+    seoDescription: z.string().optional(),
     /** One line under the name: what it does, in the buyer's words. */
     tagline: z.string(),
     /** Two or three sentences: the story on the industry tab, the meta description, the lede. */

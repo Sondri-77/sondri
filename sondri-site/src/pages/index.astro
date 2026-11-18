@@ -14,10 +14,11 @@ import Features from '../components/Features.astro';
 import Faq from '../components/Faq.astro';
 import Solutions from '../components/Solutions.astro';
 import FinalCta from '../components/FinalCta.astro';
-import { homeFaq, socialProof } from '../home-data';
+import { features, homeFaq, socialProof } from '../home-data';
 import { en } from '../i18n';
 
-// The FAQ section lives on this page, so its structured data does too.
+const siteUrl = Astro.site ? Astro.site.origin : 'https://sondri.ai';
+
 const faqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
@@ -27,10 +28,43 @@ const faqSchema = {
     acceptedAnswer: { '@type': 'Answer', text: f.a },
   })),
 };
+
+const serviceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': `${siteUrl}/#service`,
+  name: 'Custom Software & AI Workflow Automation',
+  serviceType: 'Custom Software & AI Workflow Automation',
+  description: en.meta.description,
+  url: `${siteUrl}/`,
+  provider: { '@id': `${siteUrl}/#organization` },
+  areaServed: ['United States', 'Latin America'],
+  keywords: [
+    'workflow automation',
+    'custom business software',
+    'AI integration',
+    'answer engine optimization',
+    'data reporting automation',
+    'back office automation',
+  ],
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Sondri Capabilities',
+    itemListElement: features.map((f) => ({
+      '@type': 'Offer',
+      itemOffered: {
+        '@type': 'Service',
+        name: f.t,
+        description: f.b,
+      },
+    })),
+  },
+};
 ---
 
-<Base title={en.meta.title} description={en.meta.description}>
+<Base title={en.meta.title} description={en.meta.description} mdPath="/index.md">
   <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+  <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(serviceSchema)} />
   <Hero />
   <Marquee />
   <Problem />
