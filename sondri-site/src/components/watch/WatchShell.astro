@@ -172,36 +172,77 @@ const navItems = [
       <slot />
     </main>
 
-    <!-- Watch Footer -->
+    <!-- Watch Footer (5-Column AEO Link Architecture) -->
     <footer class="on-dark watch-footer">
       <div class="wrap">
-        <div class="rule-cols cols-3 watch-f-grid">
-          <div>
-            <p class="label col-head">/ Sondri Watch</p>
+        <div class="watch-f-grid-5">
+          <div class="f-brand-col">
+            <a class="watch-brand f-logo" href={`${prefix}/`} aria-label="Sondri Watch Home">
+              <img src="/brand/florexa-white-gold.svg" alt="Sondri" width="952" height="367" />
+              <span class="watch-slash" aria-hidden="true">/</span>
+              <span class="watch-badge label">WATCH</span>
+            </a>
             <p class="body-s footer-desc">
               {isEs
-                ? 'Monitoreo continuo y optimización llave en mano para que los motores de IA nombren y citen a su empresa.'
-                : 'Done-for-you AI search monitoring, schema engineering, and monthly visibility fixes built by Sondri.'}
+                ? 'Ayudamos a empresas de confianza a ser encontradas, verificadas y recomendadas por ChatGPT, Gemini y Google AI—con sitios rápidos listos para responder.'
+                : 'We help trust-driven businesses get found, cited, and recommended when buyers ask AI—plus fast answer-ready websites.'}
             </p>
-            <a class="mail-link label" href={mailto('Hello from watch.sondri.ai')}>
-              {CONTACT_EMAIL}
-            </a>
+            <div class="f-actions">
+              <a class="btn btn-gold f-book-btn" href={BOOK_HREF}>
+                {isEs ? 'Agendar llamada' : 'Book a call'}
+              </a>
+              <a class="mail-link label" href={mailto('Hello from watch.sondri.ai')}>
+                {CONTACT_EMAIL}
+              </a>
+            </div>
           </div>
 
           <div>
-            <p class="label col-head">/ {isEs ? 'Plataforma Watch' : 'Watch Platform'}</p>
+            <p class="label col-head">{isEs ? 'SERVICIOS' : 'SERVICES'}</p>
             <ul class="f-list">
-              {navItems.map((item) => (
-                <li><a href={item.href} class="label">{item.label}</a></li>
-              ))}
+              <li><a href={`${prefix}/#act-services`} class="label">{isEs ? 'Todos los servicios' : 'All services'}</a></li>
+              <li><a href={`${prefix}/services/websites/`} class="label">{isEs ? 'Sitios Web (desde $390)' : 'Answer-Ready Websites ($390+)'}</a></li>
+              <li><a href={`${prefix}/services/llms-txt-schema/`} class="label">llms.txt &amp; Schema</a></li>
+              <li><a href={`${prefix}/services/citation-building/`} class="label">{isEs ? 'Reputación y citas IA' : 'Reputation & citations'}</a></li>
+              <li><a href={`${prefix}/playbooks/#sprints`} class="label">Website Quick Fix ($390)</a></li>
+              <li><a href={`${prefix}/playbooks/#sprints`} class="label">Done-For-You Fix Sprint ($499)</a></li>
             </ul>
           </div>
 
           <div>
-            <p class="label col-head">/ {isEs ? 'Sondri Principal' : 'Parent Company'}</p>
+            <p class="label col-head">{isEs ? 'VISIBILIDAD IA' : 'AI VISIBILITY'}</p>
             <ul class="f-list">
-              <li><a href={isEs ? '/es/' : '/'} class="label">{isEs ? 'Software e IA a Medida' : 'Custom Software & AI Ops'}</a></li>
-              <li><a href={isEs ? '/es/solutions/aeo-seo/' : '/solutions/aeo-seo/'} class="label">AEO &amp; SEO Visibility</a></li>
+              <li><a href={`${prefix}/services/aeo/`} class="label">AEO Services</a></li>
+              <li><a href={`${prefix}/services/geo/`} class="label">GEO Services</a></li>
+              <li><a href={`${prefix}/services/chatgpt-seo/`} class="label">ChatGPT SEO</a></li>
+              <li><a href={`${prefix}/services/google-ai-overviews/`} class="label">Google AI Overviews</a></li>
+              <li><a href={`${prefix}/services/perplexity-gemini/`} class="label">Perplexity &amp; Gemini</a></li>
+              <li><a href={`${prefix}/#pricing-ladder`} class="label">{isEs ? 'Auditoría Base ($99)' : 'AI Search Audit ($99)'}</a></li>
+              <li><a href={`${prefix}/sample-report/`} class="label">{isEs ? 'Reporte Mensual' : 'Monthly Watch Reporting'}</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <p class="label col-head">{isEs ? 'INDUSTRIAS' : 'INDUSTRIES'}</p>
+            <ul class="f-list">
+              <li><a href={`${prefix}/playbooks/#industry-packs`} class="label">{isEs ? 'Clínicas y Salud Dental' : 'Dental & Medical Clinics'}</a></li>
+              <li><a href={`${prefix}/playbooks/#industry-packs`} class="label">{isEs ? 'Estudios Jurídicos' : 'Law Firms & Legal'}</a></li>
+              <li><a href={`${prefix}/#act-shift`} class="label">B2B &amp; SaaS Companies</a></li>
+              <li><a href={`${prefix}/playbooks/#industry-packs`} class="label">Shopify &amp; Ecommerce</a></li>
+              <li><a href={`${prefix}/#act-shift`} class="label">{isEs ? 'Inmobiliaria y Hogar' : 'Real Estate & Home'}</a></li>
+              <li><a href={`${prefix}/partners/`} class="label">{isEs ? 'Agencias (Marca Blanca)' : 'Agencies (White-Label)'}</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <p class="label col-head">{isEs ? 'GUÍAS Y SONDRI' : 'GUIDES & COMPANY'}</p>
+            <ul class="f-list">
+              <li><a href={`${prefix}/guides/what-is-ai-visibility/`} class="label">{isEs ? '¿Qué es visibilidad IA?' : 'What is AI visibility?'}</a></li>
+              <li><a href={`${prefix}/guides/geo-vs-aeo-vs-seo/`} class="label">GEO vs AEO vs SEO</a></li>
+              <li><a href={`${prefix}/guides/how-ai-chooses-businesses/`} class="label">{isEs ? 'Cómo elige la IA' : 'How AI chooses firms'}</a></li>
+              <li><a href={`${prefix}/guides/why-chatgpt-doesnt-recommend-you/`} class="label">{isEs ? 'Por qué ChatGPT te omite' : 'Why ChatGPT skips you'}</a></li>
+              <li><a href={`${prefix}/guides/how-much-does-ai-visibility-cost/`} class="label">{isEs ? 'Precios visibilidad IA' : 'AI visibility pricing'}</a></li>
+              <li><a href={isEs ? '/es/' : '/'} class="label">← {isEs ? 'Software y Automatización' : 'sondri.ai (Custom AI)'}</a></li>
               <li><a href="/pay/" class="label">{isEs ? 'Pagos y Facturación' : 'Client Payments'}</a></li>
               <li><a href={isEs ? '/es/privacy/' : '/privacy/'} class="label">{isEs ? 'Privacidad' : 'Privacy'}</a></li>
             </ul>
@@ -497,22 +538,44 @@ const navItems = [
   }
 
   .watch-footer {
+    position: relative;
+    z-index: 2;
     border-top: 1px solid var(--line);
     padding-block: var(--s-64) var(--s-48);
   }
 
-  .watch-f-grid {
-    gap: var(--s-32);
+  .watch-f-grid-5 {
+    display: grid;
+    grid-template-columns: 1.45fr 1fr 1fr 1fr 1fr;
+    gap: var(--s-32) var(--s-24);
+    align-items: start;
+  }
+
+  .f-logo {
+    margin-bottom: var(--s-16);
+    display: inline-flex;
+  }
+
+  .f-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px 16px;
+  }
+
+  .f-book-btn {
+    padding: 9px 16px;
+    font-size: 12px;
   }
 
   .col-head {
-    color: var(--white);
+    color: var(--gold);
     margin-bottom: var(--s-16);
   }
 
   .footer-desc {
     color: var(--pale);
-    font-size: 15px;
+    font-size: 14px;
     line-height: 1.55;
     max-width: 34ch;
     margin-bottom: var(--s-16);
@@ -528,16 +591,33 @@ const navItems = [
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
   }
 
   .f-list a {
     color: var(--pale);
     text-decoration: none;
+    font-size: 12px;
   }
 
   .f-list a:hover {
     color: var(--gold);
+  }
+
+  @media (max-width: 960px) {
+    .watch-f-grid-5 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .f-brand-col {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .watch-f-grid-5 {
+      grid-template-columns: 1fr;
+    }
   }
 
   .watch-f-bottom {

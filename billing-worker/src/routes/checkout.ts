@@ -15,7 +15,10 @@ export type WatchOfferSku =
   | 'watch_local'
   | 'watch_commerce'
   | 'watch_pro'
-  | 'watch_agency_client';
+  | 'watch_agency_client'
+  | 'website_quick_fix'
+  | 'website_5page'
+  | 'website_10page';
 
 export interface CreateCheckoutSessionDTO {
   type: 'fixed' | 'custom' | 'aeo_full_audit' | 'watch_offer';
@@ -166,6 +169,33 @@ export const WATCH_CATALOG: Record<WatchOfferSku, WatchCatalogItem> = {
     descEn: 'Wholesale monthly AI visibility monitoring & white-label report feed for agency client accounts.',
     descEs: 'Monitoreo mensual mayorista y reporte marca blanca para cuentas de clientes de agencia.',
     runBaseline: true,
+  },
+  website_quick_fix: {
+    unitAmountCents: 39000,
+    mode: 'payment',
+    nameEn: 'Sondri Answer-Ready Website Quick Fix',
+    nameEs: 'Quick Fix Web Answer-Ready Sondri',
+    descEn: 'Core Web Vitals speed tuning, robots.txt + llms.txt, validated Organization/LocalBusiness + FAQPage schema, and 1 answer-ready service block on your existing site.',
+    descEs: 'Optimización de velocidad Core Web Vitals, robots.txt + llms.txt, schema Organization/LocalBusiness + FAQPage validado y 1 bloque de servicio citable en tu sitio actual.',
+    runBaseline: false,
+  },
+  website_5page: {
+    unitAmountCents: 69000,
+    mode: 'payment',
+    nameEn: 'Sondri 5-Page Answer-Ready Website',
+    nameEs: 'Sitio Web Answer-Ready de 5 Páginas Sondri',
+    descEn: 'Fast 5-page conversion & AEO-architected website (Home, Core Services, FAQ Hub, About/Credentials, Contact) with full JSON-LD schema and 95+ Lighthouse performance.',
+    descEs: 'Sitio web rápido de 5 páginas orientado a conversión y AEO (Inicio, Servicios, Hub FAQ, Quiénes Somos, Contacto) con JSON-LD completo y 95+ en Lighthouse.',
+    runBaseline: false,
+  },
+  website_10page: {
+    unitAmountCents: 119000,
+    mode: 'payment',
+    nameEn: 'Sondri 10-Page Custom Growth & AEO Website',
+    nameEs: 'Sitio Web de Crecimiento y AEO de 10 Páginas Sondri',
+    descEn: '10-page custom-engineered website with dedicated service/practice-area pages, comparison blocks, bilingual/local schema graph, and OpenAI/Bing/GBP listing sync.',
+    descEs: 'Sitio web de 10 páginas diseñado a medida con páginas dedicadas por servicio, comparativas, grafo JSON-LD local y sincronización OpenAI/Bing/GBP.',
+    runBaseline: false,
   },
 };
 

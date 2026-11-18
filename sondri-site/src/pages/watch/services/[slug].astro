@@ -1,0 +1,14 @@
+---
+import WatchServiceDetailPage from '../../../components/watch/WatchServiceDetailPage.astro';
+import { getWatchServices } from '../../../data/watch-content';
+
+export function getStaticPaths() {
+  return getWatchServices('en').map((srv) => ({
+    params: { slug: srv.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+---
+
+<WatchServiceDetailPage lang="en" slug={slug} />

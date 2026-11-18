@@ -2,6 +2,7 @@
 import type { Lang } from '../../i18n';
 import WatchShell from './WatchShell.astro';
 import MiniAudit from '../MiniAudit.astro';
+import { getWatchServices, getWatchGuides } from '../../data/watch-content';
 
 interface Props {
   lang?: Lang;
@@ -16,6 +17,9 @@ const alternates = {
   es: '/es/watch/',
 };
 
+const servicesList = getWatchServices(lang);
+const guidesList = getWatchGuides(lang);
+
 const chapters = isEs
   ? [
       { id: 'act-shift', num: '01', title: 'Inicio' },
@@ -23,8 +27,9 @@ const chapters = isEs
       { id: 'act-report', num: '03', title: 'Qué Recibes' },
       { id: 'act-loop', num: '04', title: 'Cómo Funciona' },
       { id: 'act-services', num: '05', title: 'Servicios' },
-      { id: 'pricing-ladder', num: '06', title: 'Planes' },
-      { id: 'act-faq', num: '07', title: 'Preguntas' },
+      { id: 'pricing-ladder', num: '06', title: 'Planes y Web' },
+      { id: 'act-guides', num: '07', title: 'Guías' },
+      { id: 'act-faq', num: '08', title: 'Preguntas' },
     ]
   : [
       { id: 'act-shift', num: '01', title: 'Overview' },
@@ -32,9 +37,45 @@ const chapters = isEs
       { id: 'act-report', num: '03', title: 'What You Get' },
       { id: 'act-loop', num: '04', title: 'How It Works' },
       { id: 'act-services', num: '05', title: 'Services' },
-      { id: 'pricing-ladder', num: '06', title: 'Plans' },
-      { id: 'act-faq', num: '07', title: 'FAQ' },
+      { id: 'pricing-ladder', num: '06', title: 'Plans & Web' },
+      { id: 'act-guides', num: '07', title: 'Guides' },
+      { id: 'act-faq', num: '08', title: 'FAQ' },
     ];
+
+const offerStrip = [
+  {
+    kicker: isEs ? 'CHEQUEO GRATIS' : 'FREE CHECK',
+    price: '$0',
+    desc: isEs
+      ? 'Score en vivo de 3 preguntas, crawlers, schema y diagnóstico de brechas al instante.'
+      : 'Instant 3-question live score, crawler check & gap diagnosis online.',
+    href: '#free-check',
+  },
+  {
+    kicker: isEs ? 'AUDITORÍA' : 'AUDIT',
+    price: isEs ? '$99 único' : '$99 one-time',
+    desc: isEs
+      ? '15 preguntas × 3 corridas en 4 motores, mapa de 3 competidores y hoja de fixes.'
+      : '15 buyer questions × 3 runs, 3-competitor view & prioritized fix roadmap.',
+    href: '#pricing-ladder',
+  },
+  {
+    kicker: isEs ? 'VISIBILIDAD IA' : 'AI VISIBILITY',
+    price: isEs ? 'desde $149/mes' : 'from $149/mo',
+    desc: isEs
+      ? 'Starter $149 · Growth $299 · Pro $399 — seguimiento semanal + fixes mensuales.'
+      : 'Starter $149 · Growth $299 · Pro $399 — weekly tracking + monthly fixes.',
+    href: '#pricing-ladder',
+  },
+  {
+    kicker: isEs ? 'SITIOS WEB' : 'WEBSITES',
+    price: isEs ? 'desde $390' : 'from $390',
+    desc: isEs
+      ? 'Quick Fix $390 · 5 páginas $690 · 10 páginas $1,190 — rápidos y citables.'
+      : 'Quick Fix $390 · 5 pages $690 · 10 pages $1,190 — fast & answer-ready.',
+    href: '#websites-section',
+  },
+];
 
 const industries = [
   {
@@ -67,9 +108,9 @@ const industries = [
         outcome: isEs ? '⚠ Toma datos antiguos de directorios' : '⚠ Pulls from an old directory listing',
       },
     ],
-    fixes: isEs
-      ? ['01 Schema Dentist + FAQPage', '02 OpenAI & Bing AI Hub', '03 Página de tratamientos']
-      : ['01 Dentist & FAQPage schema', '02 Claim OpenAI & Bing AI hubs', '03 Answer-ready fee page'],
+    gaps: isEs
+      ? ['✗ Falta schema Dentist + FAQPage', '✗ OpenAI Hub y Bing sin verificar', '✗ Sin página citable de tratamientos']
+      : ['✗ Missing Dentist & FAQPage schema', '✗ Unclaimed OpenAI & Bing AI hubs', '✗ No answer-ready treatment fee page'],
   },
   {
     id: 'legal',
@@ -101,9 +142,9 @@ const industries = [
         outcome: isEs ? '⚠ Socios y cobertura incompletos' : '⚠ Missing partner bio & credentials',
       },
     ],
-    fixes: isEs
-      ? ['01 Schema LegalService + Attorney', '02 Guías por área legal', '03 Citas en directorios']
-      : ['01 LegalService JSON-LD', '02 Dedicated practice-area FAQs', '03 Verified legal directories'],
+    gaps: isEs
+      ? ['✗ Falta schema LegalService + Attorney', '✗ Áreas legales sin bloque FAQ', '✗ Directorios jurídicos desalineados']
+      : ['✗ Missing LegalService JSON-LD', '✗ Practice pages lack FAQ structure', '✗ Unverified bar & legal directories'],
   },
   {
     id: 'b2b',
@@ -135,9 +176,9 @@ const industries = [
         outcome: isEs ? '⚠ Sin datos claros de alcance/precio' : '⚠ Unclear pricing & ICP facts',
       },
     ],
-    fixes: isEs
-      ? ['01 llms.txt + Schema Software/Offer', '02 Bloques comparativos AEO', '03 Casos con métricas citables']
-      : ['01 llms.txt & Offer schema', '02 Clear comparison matrices', '03 Grounded case study stats'],
+    gaps: isEs
+      ? ['✗ Falta /llms.txt y Schema Offer', '✗ Sin comparativas HTML claras', '✗ Casos sin cifras citables']
+      : ['✗ Missing /llms.txt & Offer schema', '✗ Lacks HTML comparison tables', '✗ Uncited case proof & ICP scope'],
   },
   {
     id: 'ecommerce',
@@ -169,9 +210,9 @@ const industries = [
         outcome: isEs ? '⚠ Pocas reseñas externas verificadas' : '⚠ Thin verified third-party reviews',
       },
     ],
-    fixes: isEs
-      ? ['01 Schema Product + Offer completo', '02 Política ACP / Google UCP', '03 FAQ de materiales y envíos']
-      : ['01 Product & Offer schema', '02 Merchant return & shipping tags', '03 ChatGPT ACP readiness fix'],
+    gaps: isEs
+      ? ['✗ Falta Product + Offer JSON-LD', '✗ Política de envíos no estructurada', '✗ Baja señal ACP / Google UCP']
+      : ['✗ Incomplete Product & Offer schema', '✗ Missing ReturnPolicy markup', '✗ Not eligible for ChatGPT ACP'],
   },
   {
     id: 'realestate',
@@ -203,9 +244,9 @@ const industries = [
         outcome: isEs ? '⚠ Zonas y horarios desactualizados' : '⚠ Service areas out of sync',
       },
     ],
-    fixes: isEs
-      ? ['01 LocalBusiness + AreaServed', '02 GBP + Apple Business Connect', '03 Guías de plazos y garantía']
-      : ['01 LocalBusiness + areaServed', '02 Sync GBP & Apple Connect', '03 Transparent scope guides'],
+    gaps: isEs
+      ? ['✗ Falta LocalBusiness + areaServed', '✗ GBP y Apple Connect sin alinear', '✗ Sin guía clara de plazos']
+      : ['✗ Missing LocalBusiness areaServed', '✗ GBP & Apple Connect out of sync', '✗ No structured project scope FAQ'],
   },
   {
     id: 'local',
@@ -237,9 +278,9 @@ const industries = [
         outcome: isEs ? '⚠ Cita información incompleta' : '⚠ Relies on outdated directory data',
       },
     ],
-    fixes: isEs
-      ? ['01 Habilitar bots en robots.txt', '02 Schema Service + FAQPage', '03 Alineación de directorios IA']
-      : ['01 Unblock AI crawlers + llms.txt', '02 Service & FAQPage schema', '03 Official AI directory sync'],
+    gaps: isEs
+      ? ['✗ Bots bloqueados en robots.txt', '✗ Sin Service ni FAQPage JSON-LD', '✗ Directorios oficiales IA vacíos']
+      : ['✗ AI bots restricted in robots.txt', '✗ Missing Service & FAQPage schema', '✗ Unclaimed official AI directories'],
   },
 ];
 
@@ -267,10 +308,10 @@ const reportCards = [
   },
   {
     icon: 'bolt',
-    title: isEs ? 'Tus primeras 3 correcciones' : 'Your first 3 fixes',
+    title: isEs ? 'Brechas gratis · Roadmap en Auditoría ($99)' : 'Gap scan free · Fix roadmap in $99 Audit',
     desc: isEs
-      ? 'Priorizadas en orden de impacto: aplicables por tu equipo o ejecutadas directo por Sondri.'
-      : 'Clear, prioritized, doable by your team—or shipped directly by us.',
+      ? 'El chequeo gratuito diagnostica bloqueos; la auditoría de $99 desbloquea el plan paso a paso y lista de correcciones.'
+      : 'The free check flags technical blockers; the $99 Audit unlocks your complete competitor map and prioritized fix list.',
   },
 ];
 
@@ -285,7 +326,7 @@ const phases = [
     summary: isEs
       ? 'Fijamos entre 25 y 75 preguntas reales sin marca, las corremos sin sesión iniciada y auditamos bots, schema y reseñas.'
       : 'We lock 25–75 unbranded buyer questions, run them logged out across ChatGPT, Gemini, AI Overviews & AI Mode, and audit crawlers + schema.',
-    deliverable: isEs ? 'Entrega: Score 0–100 + Mapa de Brechas en 48 h' : 'Deliverable: Live baseline score + prioritized fix roadmap in 48h',
+    deliverable: isEs ? 'Entrega: Score 0–100 + Hoja de ruta en 48 h' : 'Deliverable: Live baseline score + prioritized fix roadmap in 48h',
     chatgpt: 12,
     gemini: 18,
     aio: 11,
@@ -328,7 +369,7 @@ const phases = [
     share: 58,
     metricLabel: isEs ? 'Visibilidad acumulada mensual' : 'Compounded named-share curve',
     summary: isEs
-      ? 'Cada semana detectamos cambios silenciosos de modelo. Cada mes recibes reporte vivo + PDF y una nueva mejora ya implementada.'
+      ? 'Cada semana detectamos cambios silenciosos de modelo. Cada mes recibes reporte vivo + PDF y nuevas mejoras ya implementadas.'
       : 'Weekly runs catch model updates and competitor moves early. Every month you get a live Page + PDF diff report and fresh fixes shipped.',
     deliverable: isEs ? 'Ciclo continuo: Reporte mensual + mejoras constantes' : 'Recurring loop: Weekly engine telemetry + fixes shipped monthly',
     chatgpt: 56,
@@ -345,9 +386,13 @@ const servicePillars = [
     subtitle: isEs
       ? 'Optimización estructural para que los motores de respuesta entiendan qué vendes y a quién recomiendan.'
       : 'Make your site machine-readable so answer engines extract accurate facts cleanly.',
-    items: isEs
-      ? ['Servicios de AEO', 'AI SEO Técnico', 'ChatGPT SEO', 'Google AI Overviews', 'Implementación llms.txt & Schema JSON-LD']
-      : ['AEO Services', 'AI SEO', 'ChatGPT SEO', 'Google AI Overviews', 'llms.txt & Schema Setup'],
+    items: [
+      { label: isEs ? 'Servicios de AEO' : 'AEO Services', href: `${prefix}/services/aeo/` },
+      { label: 'ChatGPT SEO', href: `${prefix}/services/chatgpt-seo/` },
+      { label: 'Google AI Overviews', href: `${prefix}/services/google-ai-overviews/` },
+      { label: isEs ? 'llms.txt y Schema JSON-LD' : 'llms.txt & Schema Setup', href: `${prefix}/services/llms-txt-schema/` },
+      { label: isEs ? 'Auditoría Base ($99)' : 'Full 15-Question Audit ($99)', href: `${prefix}/#pricing-ladder` },
+    ],
   },
   {
     num: '02',
@@ -356,9 +401,13 @@ const servicePillars = [
     subtitle: isEs
       ? 'Medición semanal y construcción de citas externas para ganar presencia en respuestas generativas.'
       : 'Measure and grow how often ChatGPT, Gemini, and Google AI name your brand.',
-    items: isEs
-      ? ['Servicios de GEO', 'Visibilidad en Gemini y Perplexity', 'Auditoría de Búsqueda IA (15–75 preguntas)', 'Construcción de Citas IA', 'Reportes Semanales de Visibilidad']
-      : ['GEO Services', 'Gemini & Perplexity Visibility', 'AI Search Audit (15–75 Questions)', 'AI Citation Building', 'Weekly AI Visibility Reporting'],
+    items: [
+      { label: isEs ? 'Servicios de GEO' : 'GEO Services', href: `${prefix}/services/geo/` },
+      { label: isEs ? 'Visibilidad en Gemini y Perplexity' : 'Perplexity & Gemini Visibility', href: `${prefix}/services/perplexity-gemini/` },
+      { label: isEs ? 'Construcción de Citas IA' : 'AI Citation Building', href: `${prefix}/services/citation-building/` },
+      { label: isEs ? 'Reporte Mensual de Ejemplo' : 'Sample Monthly AI Reporting', href: `${prefix}/sample-report/` },
+      { label: isEs ? 'Packs por Industria' : 'Vertical Playbooks & Sprints', href: `${prefix}/playbooks/` },
+    ],
   },
   {
     num: '03',
@@ -367,20 +416,26 @@ const servicePillars = [
     subtitle: isEs
       ? 'Alineación de señales de confianza entre fichas oficiales, reseñas y directorios que la IA verifica.'
       : 'Ensure external directories, reviews, and official business hubs reinforce trust.',
-    items: isEs
-      ? ['Gestión de Reputación en IA', 'OpenAI Business Hub & Bing AI', 'Google Business Profile & Apple Business', 'Señales de Reseñas y Consistencia NAP']
-      : ['AI Reputation Management', 'OpenAI Business Hub & Bing AI Setup', 'Google Business Profile & Apple Business', 'Review & Entity Trust Signals'],
+    items: [
+      { label: isEs ? 'Reputación IA y Directorios' : 'AI Reputation & Citations', href: `${prefix}/services/citation-building/` },
+      { label: 'OpenAI Business Hub & ChatGPT', href: `${prefix}/services/chatgpt-seo/` },
+      { label: 'Google Business & AI Overviews', href: `${prefix}/services/google-ai-overviews/` },
+      { label: isEs ? 'AI Listings Sprint ($249)' : 'AI Listings Sprint ($249)', href: `${prefix}/playbooks/#sprints` },
+    ],
   },
   {
     num: '04',
     id: 'websites',
     title: isEs ? 'Sitios Web' : 'Websites',
     subtitle: isEs
-      ? 'Páginas rápidas, claras y estructuradas tanto para compradores humanos como para agentes.'
-      : 'Fast, answer-ready service pages engineered for human conversion and AI citations.',
-    items: isEs
-      ? ['Páginas de Servicio y FAQ Citables', 'SEO Técnico y SEO Local', 'Core Web Vitals y Velocidad Móvil', 'Preparación Agentic Checkout (ACP / UCP)']
-      : ['Answer-Ready Service & FAQ Pages', 'Technical SEO & Local SEO', 'Core Web Vitals & Speed Optimization', 'Agentic Checkout Readiness (ACP / UCP)'],
+      ? 'Sitios rápidos (95+ Lighthouse) y páginas de servicio construidas para humanos e IA desde $390.'
+      : 'Fast, answer-ready websites built from $390 (Quick Fix, 5-Page, 10-Page).',
+    items: [
+      { label: isEs ? 'Sitios Web y Precios (desde $390)' : 'Answer-Ready Websites (from $390)', href: `${prefix}/services/websites/` },
+      { label: isEs ? 'Website Quick Fix ($390)' : 'Website Quick Fix ($390)', href: `${prefix}/#websites-section` },
+      { label: isEs ? 'Sitio 5 Páginas ($690) y 10 Págs ($1,190)' : '5-Page ($690) & 10-Page ($1,190) Builds', href: `${prefix}/#websites-section` },
+      { label: isEs ? 'llms.txt, Schema y Velocidad Móvil' : 'Technical Speed, Schema & llms.txt', href: `${prefix}/services/llms-txt-schema/` },
+    ],
   },
 ];
 
@@ -394,44 +449,44 @@ const faqs = [
   {
     q: isEs ? '¿Cuál es la diferencia entre AEO, GEO y AI SEO?' : 'AEO vs. GEO vs. AI SEO—what is the difference?',
     a: isEs
-      ? 'AEO (Answer Engine Optimization) estructura tu sitio, schema y entidades para respuestas directas; GEO (Generative Engine Optimization) fortalece citas y presencia dentro de síntesis generativas multi-fuente; AI SEO une ambas disciplinas con SEO técnico clásico y velocidad web.'
-      : 'AEO focuses on structuring your pages, schema, and entity data for direct answers. GEO builds the external citations and category authority generative models synthesize. Sondri Watch combines both alongside fast technical SEO.',
+      ? 'AEO (Answer Engine Optimization) estructura tu sitio, schema y entidades para respuestas directas; GEO (Generative Engine Optimization) fortalece citas y presencia en respuestas multi-fuente; Sondri Watch une ambos con diseño web rápido.'
+      : 'AEO focuses on structuring your pages, schema, and entity data for direct answers. GEO builds external citations and category authority. Sondri Watch combines both alongside fast, answer-ready websites.',
   },
   {
     q: isEs ? '¿Cuántas preguntas prueban en el test gratis vs. planes pagos?' : 'How many buyer questions do you test in Free vs. Paid plans?',
     a: isEs
-      ? 'El test gratuito en esta página prueba 3 preguntas clave en vivo (2 sin marca y 1 de marca). La Auditoría Única ($99) evalúa 15 preguntas × 3 corridas en 4 motores (180 chequeos). Los planes mensuales rastrean 25 (Starter), 40 (Growth) o 75 preguntas (Pro) cada semana.'
-      : 'Our free on-page check tests 3 live buyer questions (2 unbranded + 1 brand verification). The $99 Baseline Audit tests 15 buyer questions × 3 runs across 4 engines (180 checks). Monthly Watch plans track 25 (Starter), 40 (Growth), or 75 buyer questions (Pro) every week.',
+      ? 'El test gratis prueba 3 preguntas clave en vivo y diagnostica brechas técnicas sin entregar el plan paso a paso. La Auditoría de $99 evalúa 15 preguntas × 3 corridas en 4 motores (180 chequeos) con roadmap completo. Watch rastrea 25, 40 o 75 preguntas cada semana.'
+      : 'The free on-page check tests 3 live buyer questions and flags technical gaps. The $99 Audit runs 15 questions × 3 runs across 4 engines (180 checks) and unlocks the prioritized fix roadmap. Monthly Watch tracks 25, 40, or 75 questions weekly.',
+  },
+  {
+    q: isEs ? '¿Cómo funciona la garantía del Mes 4 gratis y el abono de los $99?' : 'How do the $99 audit credit and Month 4 free guarantee work?',
+    a: isEs
+      ? 'Si pasas de la Auditoría de $99 a cualquier plan Sondri Watch dentro de 30 días, esos $99 se abonan íntegros al Mes 1. Y si tras 3 meses continuos tu visibilidad IA no ha mejorado, el Mes 4 es completamente gratis.'
+      : 'If you move from the $99 baseline audit into any Watch plan within 30 days, the $99 is credited straight toward month one. Plus, if your frozen prompt visibility hasn’t improved after 3 consecutive months, Month 4 is free.',
+  },
+  {
+    q: isEs ? '¿Ofrecen también desarrollo de sitios web optimizados para IA?' : 'Do you build websites too, or only optimize existing ones?',
+    a: isEs
+      ? 'Ambos. Puedes mejorar tu sitio actual con Website Quick Fix ($390) o encargarnos un sitio nuevo llave en mano optimizado para IA: 5 páginas ($690) o 10 páginas ($1,190) con schema Service y FAQ incluido.'
+      : 'Both. We can upgrade your existing site with Website Quick Fix ($390), or build a brand-new fast, answer-ready website from scratch—5 pages ($690) or 10 pages ($1,190) with full Service and FAQPage schema built in.',
   },
   {
     q: isEs ? '¿Cuánto tiempo tarda en verse el impacto?' : 'How long does it take to see results?',
     a: isEs
-      ? 'Correcciones técnicas (robots.txt, llms.txt, JSON-LD y OpenAI/Bing Hubs) suelen reflejarse en 2 a 4 semanas a medida que los rastreadores en vivo indexan los cambios. Citas en directorios y páginas comparativas consolidan mejoras medibles entre el mes 1 y el mes 3.'
-      : 'Technical schema, crawler access, and OpenAI/Bing Business Hub updates often show movement within 2–4 weeks as live search bots re-index. Answer-ready pages and third-party citations compound visibility steadily across months 1–3.',
-  },
-  {
-    q: isEs ? '¿Necesito rehacer mi sitio web completo?' : 'Do I need a new website?',
-    a: isEs
-      ? 'Casi nunca. Trabajamos sobre tu dominio actual (WordPress, Webflow, Shopify, Next.js, Astro o código propio) añadiendo schema validado, bloques FAQ, archivos llms.txt y mejoras puntuales de velocidad sin rediseñar todo tu sitio.'
-      : 'Rarely. In most cases we ship validated JSON-LD, FAQ sections, llms.txt, and speed fixes directly on your existing stack (Shopify, Webflow, WordPress, Next.js, or Astro) without rebuilding your site.',
+      ? 'Correcciones técnicas (robots.txt, llms.txt, JSON-LD y OpenAI/Bing Hubs) suelen reflejarse en 2 a 4 semanas. Citas en directorios y páginas nuevas consolidan mejoras medibles entre el mes 1 y el mes 3.'
+      : 'Technical schema, crawler access, and OpenAI/Bing Business Hub updates often show movement within 2–4 weeks. Answer-ready pages and third-party citations compound steadily across months 1–3.',
   },
   {
     q: isEs ? '¿Garantizan que ChatGPT nos recomendará siempre en #1?' : 'Do you guarantee AI will recommend us?',
     a: isEs
-      ? 'Ningún proveedor serio puede garantizar un prompt no determinista en #1, porque la IA responde probabilísticamente. Lo que sí garantizamos es cobertura semanal reproducible (sin sesión iniciada), transparencia exacta de menciones y mejoras técnicas reales publicadas cada mes.'
-      : 'No honest team can guarantee deterministic #1 placement inside probabilistic models. What we guarantee is repeatable logged-out tracking, accurate factual representation of your business, and real engineering fixes shipped on your site every month.',
-  },
-  {
-    q: isEs ? '¿Cómo puedo verificar si ChatGPT recomienda mi negocio ahora?' : 'How do I check if ChatGPT recommends my business right now?',
-    a: isEs
-      ? 'Usa nuestro inspector gratuito arriba en menos de 60 segundos: evalúa tu sitio técnico y corre 3 prompts de compra reales sin historial previo, o solicita la auditoría de 15 preguntas ($99) para ver cada competidor y fuente citada.'
-      : 'Run our free 60-second checker above to inspect your technical gates and 3 live buyer questions without login bias—or order the $99 15-question baseline audit for a complete 4-engine competitor and source breakdown.',
+      ? 'Ningún proveedor serio garantiza un prompt probabilístico en #1. Lo que sí garantizamos es medición limpia sin sesión, ingeniería real mensual y el Mes 4 sin costo si tu visibilidad no mejora tras 3 meses.'
+      : 'No honest team guarantees deterministic #1 placement inside probabilistic models. What we guarantee is repeatable logged-out tracking, real engineering fixes shipped monthly, and Month 4 free if visibility doesn’t improve after 3 months.',
   },
   {
     q: isEs ? '¿Se puede pagar a ChatGPT o Google para que recomiende mi empresa?' : 'Can I pay ChatGPT or Google to recommend my business?',
     a: isEs
-      ? 'No puedes comprar un lugar en las respuestas orgánicas recomendadas por ChatGPT o Gemini. Las recomendaciones dependen de claridad de entidad, datos estructurados, velocidad, reputación en terceros y respuesta directa a las preguntas del comprador.'
-      : 'You cannot buy organic placement inside ChatGPT, Gemini, or Google AI answers. Recommendations come from verified entity signals, clean structured data, fast pages, reputable citations, and clear answers to buyer questions.',
+      ? 'No puedes comprar un lugar orgánico en respuestas de recomendación IA. Las recomendaciones dependen de claridad de entidad, datos estructurados, velocidad, reputación en terceros y respuesta directa a preguntas de compradores.'
+      : 'You cannot buy organic placement inside ChatGPT, Gemini, or Google AI answers. Recommendations depend on entity clarity, structured schema, fast websites, third-party reviews, and direct answers.',
   },
 ];
 
@@ -450,10 +505,10 @@ const faqSchema = {
 ---
 
 <WatchShell
-  title={isEs ? 'Sondri Watch — Visibilidad en ChatGPT, Gemini y Google AI | watch.sondri.ai' : 'Sondri Watch — Get Found When Buyers Ask AI | watch.sondri.ai'}
+  title={isEs ? 'Sondri Watch — Visibilidad IA y Sitios Web Answer-Ready | watch.sondri.ai' : 'Sondri Watch — AI Visibility & Answer-Ready Websites | watch.sondri.ai'}
   description={isEs
-    ? 'Revisa gratis cómo ChatGPT, Gemini y Google AI describen tu negocio. Auditoría base de 15 preguntas ($99) y planes Watch llave en mano desde $149/mes.'
-    : 'See how ChatGPT, Gemini, and Google AI describe your business—and get done-for-you fixes shipped every month. Free 3-question check, $99 full audit, plans from $149/mo.'}
+    ? 'Revisa gratis cómo ChatGPT, Gemini y Google AI describen tu negocio. Auditoría 15 preguntas ($99), sitios web desde $390 y planes Watch desde $149/mes.'
+    : 'See how ChatGPT, Gemini, and Google AI describe your business—plus answer-ready websites from $390 and done-for-you monthly Watch plans from $149/mo.'}
   lang={lang}
   activeTab="overview"
   alternates={alternates}
@@ -475,12 +530,12 @@ const faqSchema = {
     ))}
   </nav>
 
-  <!-- CHAPTER 01 · PUNCHY HERO + KINETIC SIGNAL FLOW + 6-VERTICAL 3-QUESTION PREVIEW -->
+  <!-- CHAPTER 01 · HERO (AUDIT DIAGNOSIS ONLY — FIXES KEPT FOR PAID) -->
   <section class="section section-pad on-dark hero-watch" id="act-shift">
     <div class="wrap">
       <div class="hero-top-tag">
         <span class="label gold-pill">
-          {isEs ? 'SONDRI WATCH · VISIBILIDAD EN IA' : 'SONDRI WATCH · AI SEARCH VISIBILITY'}
+          {isEs ? 'SONDRI WATCH · VISIBILIDAD IA Y SITIOS WEB' : 'SONDRI WATCH · AI VISIBILITY & WEBSITES'}
         </span>
         <span class="label muted-mono">
           ChatGPT · Gemini · Google AI Overviews · Google AI Mode
@@ -498,8 +553,8 @@ const faqSchema = {
           </h1>
           <p class="lede hero-lede">
             {isEs
-              ? 'Comprobamos cómo ChatGPT, Gemini y Google AI describen tu negocio—y desplegamos las mejoras para que te recomienden.'
-              : 'We check how ChatGPT, Gemini, and Google AI describe your business—and ship the fixes that get you recommended.'}
+              ? 'Auditamos gratis cómo ChatGPT, Gemini y Google AI describen tu negocio—y luego construimos e implementamos las mejoras para recomendarte.'
+              : 'Run a free check to see how ChatGPT, Gemini, and Google AI describe your business—then upgrade when you want fixes built and shipped.'}
           </p>
 
           <div class="hero-ctas">
@@ -507,7 +562,7 @@ const faqSchema = {
               {isEs ? 'Probar mi Sitio Gratis (3 Preguntas)' : 'Check My Website Free'} <span class="arr">→</span>
             </a>
             <a class="btn btn-outline-light" href="#pricing-ladder">
-              {isEs ? 'Ver Planes ($99–$399)' : 'See Plans ($99–$399)'}
+              {isEs ? 'Planes ($99–$399) y Webs' : 'Plans ($99–$399) & Websites'}
             </a>
             <a class="label text-link" href={`${prefix}/sample-report/`}>
               {isEs ? 'Ver reporte de ejemplo →' : 'Inspect sample report →'}
@@ -530,20 +585,20 @@ const faqSchema = {
               <text x="230" y="43" text-anchor="middle" fill="#ffffff" font-family="IBM Plex Sans, sans-serif" font-size="10">ChatGPT · Gemini · AIO</text>
 
               <rect x="342" y="13" width="116" height="40" fill="#081f1f" stroke="#5fc4bc" stroke-width="1.3" />
-              <text x="400" y="30" text-anchor="middle" fill="#5fc4bc" font-family="JetBrains Mono, monospace" font-size="9" font-weight="700">03 OUTCOME</text>
-              <text x="400" y="43" text-anchor="middle" fill="#ffffff" font-family="IBM Plex Sans, sans-serif" font-size="10">3-Brand Shortlist ✓</text>
+              <text x="400" y="30" text-anchor="middle" fill="#5fc4bc" font-family="JetBrains Mono, monospace" font-size="9" font-weight="700">03 AUDIT OUTPUT</text>
+              <text x="400" y="43" text-anchor="middle" fill="#ffffff" font-family="IBM Plex Sans, sans-serif" font-size="10">Named Share &amp; Gaps</text>
             </svg>
           </div>
         </div>
 
-        <!-- Right-Side Interactive 3-Question Live Preview Card (6 Industries) -->
+        <!-- Right-Side Interactive Free Audit Diagnosis Preview Card (NO Fixes Given Free) -->
         <div class="preview-card" data-watch-reveal>
           <div class="vis-head">
             <div class="vis-head-top">
               <span class="label gold-kicker">
-                {isEs ? 'QUÉ MUESTRA TU CHEQUEO GRATIS' : 'WHAT YOUR FREE CHECK REVEALS'}
+                {isEs ? 'QUÉ MUESTRA TU AUDITORÍA GRATIS' : 'WHAT THE FREE AUDIT SHOWS'}
               </span>
-              <span class="label muted-mono">{isEs ? '3 preguntas · 4 motores' : '3 sample prompts'}</span>
+              <span class="label muted-mono">{isEs ? 'Solo diagnóstico · 3 preguntas' : 'Audit only · 3 buyer prompts'}</span>
             </div>
             <div class="industry-pills" role="tablist" aria-label={isEs ? 'Elegir industria' : 'Choose industry'}>
               {industries.map((ind, idx) => (
@@ -581,15 +636,20 @@ const faqSchema = {
                 ))}
               </div>
 
-              <div class="fixes-preview">
-                <span class="label fix-kicker">
-                  {isEs ? 'PRIMERAS 3 CORRECCIONES QUE DESPLEGAMOS' : 'YOUR FIRST 3 FIXES'}
+              <div class="gaps-preview">
+                <span class="label gap-kicker">
+                  {isEs ? 'BRECHAS TÉCNICAS DETECTADAS (SOLO DIAGNÓSTICO)' : 'TECHNICAL GAPS FLAGGED IN FREE CHECK'}
                 </span>
                 <div class="fix-chips-row">
-                  {ind.fixes.map((fx) => (
-                    <span class="fix-chip">{fx}</span>
+                  {ind.gaps.map((gp) => (
+                    <span class="gap-chip">{gp}</span>
                   ))}
                 </div>
+                <p class="lock-note label">
+                  {isEs
+                    ? '🔒 La hoja de correcciones paso a paso e implementación se desbloquean en la Auditoría ($99) y planes Watch.'
+                    : '🔒 Step-by-step fix roadmap & done-for-you implementation unlock in the $99 Audit & Watch plans.'}
+                </p>
               </div>
             </div>
           ))}
@@ -599,7 +659,7 @@ const faqSchema = {
               {isEs ? 'Aplica a cualquier rubro de confianza.' : 'Works for any trust-driven business.'}
             </span>
             <button type="button" class="label jump-check-btn" id="heroRunOwnBtn">
-              {isEs ? 'Probar con mi sitio web ↓' : 'Test my own website free ↓'}
+              {isEs ? 'Auditar mi sitio gratis ↓' : 'Audit my own website free ↓'}
             </button>
           </div>
         </div>
@@ -607,14 +667,25 @@ const faqSchema = {
     </div>
   </section>
 
-  <!-- CHAPTER 02 · LIVE 3-PROMPT FREE CHECKER -->
+  <!-- CHAPTER 02 · LIVE 3-PROMPT FREE AUDIT -->
   <div id="free-check-wrap">
     <MiniAudit defaultLang={lang} embedded={true} />
   </div>
 
-  <!-- CHAPTER 03 · WHAT YOU GET ("A short report you can act on." — 2x2 Bento with Crisp Icons) -->
+  <!-- CHAPTER 03 · 4-CARD OFFER SUMMARY STRIP + "A SHORT REPORT YOU CAN ACT ON" (on-paper) -->
   <section class="section section-pad on-paper" id="act-report">
     <div class="wrap">
+      <!-- 4-Card Summary Strip (Screenshot 1) -->
+      <div class="offer-strip-4" data-watch-reveal>
+        {offerStrip.map((item) => (
+          <a href={item.href} class="strip-card">
+            <span class="label strip-kicker">{item.kicker}</span>
+            <p class="strip-price">{item.price}</p>
+            <p class="body-s strip-desc">{item.desc}</p>
+          </a>
+        ))}
+      </div>
+
       <div class="bento-head" data-watch-reveal>
         <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? 'QUÉ OBTIENES' : 'WHAT YOU GET'}</span>
         <h2 class="h2 bento-h2">
@@ -626,8 +697,8 @@ const faqSchema = {
         </h2>
         <p class="lede bento-sub">
           {isEs
-            ? 'Score en vivo al instante (3 preguntas). Auditoría completa de 15 preguntas en 48 horas. Solo datos públicos.'
-            : 'Instant 3-question score online. Full 15-question written baseline in 48 hours. Public information only.'}
+            ? 'Chequeo gratis en vivo de 3 preguntas. Auditoría completa de 15 preguntas ($99) en 48 horas con lista de correcciones.'
+            : 'Free 3-question check online in 60 seconds. Full 15-question written audit ($99) in 48 hours with prioritized fixes.'}
         </p>
       </div>
 
@@ -668,7 +739,7 @@ const faqSchema = {
     </div>
   </section>
 
-  <!-- CHAPTER 04 · HOW IT WORKS ("Check. Fix. Strengthen. Measure." + Kinetic Architectural Blueprint SVG) -->
+  <!-- CHAPTER 04 · HOW IT WORKS ("Check. Fix. Strengthen. Measure." + Kinetic Blueprint SVG) -->
   <section class="section section-pad on-off" id="act-loop">
     <div class="wrap">
       <div class="sec-head" data-watch-reveal>
@@ -692,7 +763,6 @@ const faqSchema = {
       </div>
 
       <div class="loop-split" data-watch-reveal>
-        <!-- Left: Interactive Phase Selector & Metrics -->
         <div class="loop-controls">
           <div class="phase-tabs" role="tablist" aria-label={isEs ? 'Fases del servicio' : 'Visibility phases'}>
             {phases.map((ph, i) => (
@@ -743,7 +813,6 @@ const faqSchema = {
           ))}
         </div>
 
-        <!-- Right: Kinetic Architectural Visibility Blueprint SVG (Inspired by TripVan CAD Blueprint) -->
         <div class="blueprint-stage" data-active-phase="0" id="blueprintStage">
           <div class="bp-top-bar">
             <span class="label bp-tag">AI VISIBILITY ARCHITECTURE · SONDRI WATCH</span>
@@ -804,7 +873,6 @@ const faqSchema = {
               <text x="230" y="267" text-anchor="middle" class="bp-text" font-size="10.5">OAI-SearchBot Access · Mobile CWV · Benchmark Prompts</text>
             </g>
 
-            <!-- Side Elevation Markers -->
             <text x="414" y="260" class="bp-dim">01</text>
             <text x="414" y="209" class="bp-dim">02</text>
             <text x="414" y="158" class="bp-dim">03</text>
@@ -815,7 +883,7 @@ const faqSchema = {
     </div>
   </section>
 
-  <!-- CHAPTER 05 · SERVICES 4-PILLAR HORIZONTAL ACCORDION (RATdeck Screenshot 1) -->
+  <!-- CHAPTER 05 · SERVICES 4-PILLAR HORIZONTAL ACCORDION (LINKED TO SERVICE PAGES) -->
   <section class="section section-pad on-dark" id="act-services">
     <div class="wrap">
       <div class="services-head" data-watch-reveal>
@@ -858,7 +926,12 @@ const faqSchema = {
               </div>
               <ul class="pillar-items">
                 {pillar.items.map((srv) => (
-                  <li>{srv}</li>
+                  <li>
+                    <a href={srv.href} class="pillar-item-link">
+                      <span>{srv.label}</span>
+                      <span class="pillar-arr" aria-hidden="true">→</span>
+                    </a>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -868,12 +941,84 @@ const faqSchema = {
     </div>
   </section>
 
-  <!-- CHAPTER 06 · SIMPLIFIED PLANS ("One clear path. Zero confusion.") -->
+  <!-- SPECIALIST SERVICES ONE-BY-ONE GRID (Screenshot 2 -> Links + FAQ Schema pages) -->
+  <section class="section section-pad on-paper" id="specialist-services">
+    <div class="wrap">
+      <div class="bento-head" data-watch-reveal>
+        <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? 'SERVICIOS ESPECIALISTAS' : 'SPECIALIST SERVICES'}</span>
+        <h2 class="h2 bento-h2">
+          {isEs ? (
+            <>Servicios de visibilidad y web, <em class="serif-em">uno por uno.</em></>
+          ) : (
+            <>AI search services, <em class="serif-em">one by one.</em></>
+          )}
+        </h2>
+        <p class="lede bento-sub">
+          {isEs
+            ? 'Cada especialidad tiene su página dedicada con entregas exactas y FAQ técnico.'
+            : 'Each capability links to its own service breakdown, blueprint, and FAQ schema page.'}
+        </p>
+      </div>
+
+      <div class="spec-grid-4" data-watch-reveal>
+        {servicesList.map((srv) => (
+          <a href={`${prefix}/services/${srv.slug}/`} class="spec-card">
+            <div class="spec-icon" aria-hidden="true">
+              {srv.icon === 'question' && (
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                  <path d="M12 17h.01" />
+                </svg>
+              )}
+              {srv.icon === 'star' && (
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+              )}
+              {srv.icon === 'eye' && (
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+              {srv.icon === 'code' && (
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="16 18 22 12 16 6" />
+                  <polyline points="8 6 2 12 8 18" />
+                </svg>
+              )}
+              {srv.icon === 'doc' && (
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="8" y1="13" x2="16" y2="13" />
+                  <line x1="8" y1="17" x2="13" y2="17" />
+                </svg>
+              )}
+              {srv.icon === 'globe' && (
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+              )}
+            </div>
+            <h3 class="h5 spec-title">{srv.shortTitle}</h3>
+            <p class="body-s spec-desc">{srv.cardDesc}</p>
+            <span class="label spec-link">{srv.ctaLabel}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 06 · PRICING: WATCH PLANS + ANSWER-READY WEBSITES + AT A GLANCE CARD -->
   <section class="section section-pad on-dark" id="pricing-ladder">
     <div class="wrap">
       <div class="sec-head" data-watch-reveal>
         <div>
-          <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? 'PLANES CLAROS' : 'PRICING'}</span>
+          <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? 'PLANES Y SITIOS WEB' : 'PRICING'}</span>
           <h2 class="h2">
             {isEs ? (
               <>Un camino claro. <em class="serif-em">Cero enredos.</em></>
@@ -885,8 +1030,8 @@ const faqSchema = {
         <div class="intro">
           <p class="lede">
             {isEs
-              ? 'Empieza con una auditoría base de $99 o deja que nuestros ingenieros monitoreen tus preguntas e implementen mejoras cada mes.'
-              : 'Start with a $99 baseline audit, or let our engineers track your buyer questions and ship fixes every month. Cancel anytime.'}
+              ? 'Empieza con una auditoría base de $99 (abonable al Mes 1), contrata un sitio web rápido o activa monitoreo Watch mensual.'
+              : 'Start with the $99 baseline audit (credited toward month one), launch an answer-ready website, or add monthly Watch.'}
           </p>
         </div>
       </div>
@@ -895,17 +1040,17 @@ const faqSchema = {
       <div class="audit-entry-banner" data-watch-reveal>
         <div class="aeb-left">
           <span class="label gold-tag">
-            {isEs ? 'PASO OPCIONAL · PAGO ÚNICO SIN SUSCRIPCIÓN' : 'ONE-TIME BASELINE · NO SUBSCRIPTION REQUIRED'}
+            {isEs ? 'PASO OPCIONAL · ABONABLE AL MES 1 DE WATCH' : 'ONE-TIME AUDIT · CREDITED TO MONTH 1 OF WATCH'}
           </span>
           <h3 class="h4 aeb-title">
             {isEs
-              ? '¿Aún no buscas plan mensual? Empieza con la Auditoría Base de 15 Preguntas — $99 USD'
-              : 'Not ready for a monthly plan? Start with the Full 15-Question Baseline Audit — $99'}
+              ? 'Auditoría Base de 15 Preguntas con Hoja de Correcciones — $99 USD'
+              : 'Full 15-Question Baseline Audit + Prioritized Fix Roadmap — $99'}
           </h3>
           <p class="body-s aeb-copy">
             {isEs
-              ? 'Probamos 15 preguntas reales × 3 corridas en ChatGPT, Gemini, AI Overviews y AI Mode (180 chequeos en vivo) y entregamos tu hoja de ruta prioritaria en 48 h.'
-              : 'We test 15 real buyer questions × 3 runs across ChatGPT, Gemini, AI Overviews & AI Mode (180 live checks) and deliver your prioritized 3-fix roadmap in 48 hours.'}
+              ? 'Probamos 15 preguntas reales × 3 corridas en ChatGPT, Gemini, AI Overviews y AI Mode (180 chequeos), comparamos 3 competidores y desbloqueamos tu plan completo en 48 h.'
+              : 'We test 15 buyer questions × 3 runs across ChatGPT, Gemini, AI Overviews & AI Mode (180 checks), map 3 competitors, and deliver your fix list in 48 hours.'}
           </p>
         </div>
         <div class="aeb-cta">
@@ -972,11 +1117,91 @@ const faqSchema = {
         </article>
       </div>
 
-      <!-- Clean Contextual Routing Strip (NO Competitor Comparison Table) -->
+      <!-- STEP 3: ANSWER-READY WEBSITES + AT A GLANCE SUMMARY CARD (Screenshot 4) -->
+      <div class="web-glance-split" id="websites-section" data-watch-reveal>
+        <div class="websites-panel">
+          <div class="wp-head">
+            <div>
+              <span class="label gold-kicker">{isEs ? 'DISEÑO WEB ANSWER-READY · PAGO ÚNICO' : 'ANSWER-READY WEBSITES · ONE-TIME'}</span>
+              <h3 class="h3 wp-title">
+                {isEs ? (
+                  <>Sitios web que venden, <em class="serif-em">desde $390.</em></>
+                ) : (
+                  <>Websites built to get picked, <em class="serif-em">from $390.</em></>
+                )}
+              </h3>
+            </div>
+            <a href={`${prefix}/services/websites/`} class="label text-link">
+              {isEs ? 'Ver detalles web →' : 'Website specs & FAQ →'}
+            </a>
+          </div>
+
+          <div class="web-tier-rows">
+            <div class="wt-row">
+              <div>
+                <p class="wt-name">Website Quick Fix <span class="wt-money">$390</span></p>
+                <p class="body-s wt-note">
+                  {isEs
+                    ? 'Velocidad Core Web Vitals, llms.txt, schema JSON-LD validado y 1 bloque FAQ en tu web actual.'
+                    : 'Core Web Vitals tuning, llms.txt, full JSON-LD schema & 1 answer block on your current site.'}
+                </p>
+              </div>
+              <button type="button" class="btn btn-outline-light wt-btn" data-watch-checkout="website_quick_fix">
+                <span data-btn-label>{isEs ? 'Ordenar $390' : 'Order $390'}</span> <span class="arr">→</span>
+              </button>
+            </div>
+
+            <div class="wt-row is-popular">
+              <div>
+                <p class="wt-name">{isEs ? 'Sitio Answer-Ready 5 Páginas' : '5-Page Answer-Ready Site'} <span class="wt-money">$690</span></p>
+                <p class="body-s wt-note">
+                  {isEs
+                    ? 'Inicio, Servicios, Hub FAQ, Quiénes Somos y Contacto desde cero con 95+ Lighthouse y schema completo.'
+                    : 'Home, Services, FAQ Hub, About & Contact built fast (95+ Lighthouse) with Service + FAQ schema.'}
+                </p>
+              </div>
+              <button type="button" class="btn btn-gold wt-btn" data-watch-checkout="website_5page">
+                <span data-btn-label>{isEs ? 'Ordenar $690' : 'Order $690'}</span> <span class="arr">→</span>
+              </button>
+            </div>
+
+            <div class="wt-row">
+              <div>
+                <p class="wt-name">{isEs ? 'Sitio Growth 10 Páginas' : '10-Page Custom Growth Site'} <span class="wt-money">$1,190</span></p>
+                <p class="body-s wt-note">
+                  {isEs
+                    ? 'Páginas dedicadas por especialidad/ciudad, comparativas AEO, schema local y OpenAI/Bing/GBP al día.'
+                    : 'Dedicated practice/city pages, comparison blocks, local schema graph & OpenAI/Bing/GBP sync.'}
+                </p>
+              </div>
+              <button type="button" class="btn btn-outline-light wt-btn" data-watch-checkout="website_10page">
+                <span data-btn-label>{isEs ? 'Ordenar $1,190' : 'Order $1,190'}</span> <span class="arr">→</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- AT A GLANCE CARD (Matches Screenshot 4) -->
+        <aside class="at-a-glance">
+          <span class="label glance-kicker">{isEs ? 'EN RESUMEN · AT A GLANCE' : 'AT A GLANCE'}</span>
+          <ul class="glance-list">
+            <li>Starter $149 · Growth $299 · Pro $399 /mo</li>
+            <li>{isEs ? 'Auditoría IA $99, abonable al mes 1' : 'AI visibility audit $99, credited to month one'}</li>
+            <li>{isEs ? 'Webs: Quick Fix $390 · 5 págs $690 · 10 págs $1,190' : 'Websites: Quick Fix $390 · 5 pages $690 · 10 pages $1,190'}</li>
+            <li>{isEs ? '15% descuento trimestral · aviso previo de 30 días' : 'Save 15% paying quarterly · 30 days’ notice to cancel'}</li>
+            <li>{isEs ? 'Mes 4 gratis si tu visibilidad no mejora tras 3 meses' : 'Month 4 free if your AI visibility hasn’t improved after 3 months'}</li>
+          </ul>
+          <button type="button" class="btn btn-gold glance-btn" data-watch-checkout="aeo_full_audit">
+            <span data-btn-label>{isEs ? 'Solicitar Auditoría ($99)' : 'Order the $99 audit'}</span> <span class="arr">→</span>
+          </button>
+        </aside>
+      </div>
+
+      <!-- Contextual Routing Strip -->
       <div class="routing-strip" data-watch-reveal>
         <div class="route-box">
           <p class="body-s">
-            <strong>{isEs ? '¿Prefieres sprints únicos sin mensualidad o guías técnicas?' : 'Looking for one-time fix sprints ($249–$499), vertical packs, or technical deep-dives?'}</strong>
+            <strong>{isEs ? '¿Prefieres packs por industria o el Sprint de Directorios ($249)?' : 'Looking for vertical packs ($349–$499), Sprints, or our 4-Gate tech read?'}</strong>
           </p>
           <a href={`${prefix}/playbooks/`} class="btn btn-outline-light">
             {isEs ? 'Ver Guías Técnicas, Sprints y Packs' : 'Explore Reads & Playbooks'} <span class="arr">→</span>
@@ -995,8 +1220,47 @@ const faqSchema = {
     </div>
   </section>
 
-  <!-- CHAPTER 07 · COMMON QUESTIONS FAQ (RATdeck Screenshot 2 + FAQPage JSON-LD) -->
-  <section class="section section-pad on-paper" id="act-faq">
+  <!-- CHAPTER 07 · PLAIN-ENGLISH GUIDES GRID (Screenshot 3 -> Dedicated Article + FAQ Schema pages) -->
+  <section class="section section-pad on-paper" id="act-guides">
+    <div class="wrap">
+      <div class="bento-head" data-watch-reveal>
+        <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? 'GUÍAS' : 'GUIDES'}</span>
+        <h2 class="h2 bento-h2">
+          {isEs ? (
+            <>Guías claras sobre <em class="serif-em">búsqueda en IA.</em></>
+          ) : (
+            <>Plain-English guides <em class="serif-em">to AI search.</em></>
+          )}
+        </h2>
+        <p class="lede bento-sub">
+          {isEs
+            ? 'Por el equipo de Sondri Watch, actualizadas a medida que evolucionan los motores de IA.'
+            : 'By the Sondri team, updated as AI assistants evolve.'}
+        </p>
+      </div>
+
+      <div class="guides-grid-4" data-watch-reveal>
+        {guidesList.map((g) => (
+          <a href={`${prefix}/guides/${g.slug}/`} class="guide-card">
+            <div class="spec-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="8" y1="13" x2="16" y2="13" />
+                <line x1="8" y1="17" x2="13" y2="17" />
+              </svg>
+            </div>
+            <h3 class="h5 guide-title">{g.title}</h3>
+            <p class="body-s guide-desc">{g.cardDesc}</p>
+            <span class="label spec-link">{isEs ? 'Leer guía →' : 'Read the guide →'}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 08 · COMMON QUESTIONS FAQ (on-off) -->
+  <section class="section section-pad on-off" id="act-faq">
     <div class="wrap">
       <div class="faq-grid">
         <div class="faq-sticky" data-watch-reveal>
@@ -1043,7 +1307,7 @@ const faqSchema = {
 </WatchShell>
 
 <script>
-  // 1. Hero 6-Industry 3-Question Preview Switcher + Direct Jump to Checker
+  // 1. Hero 6-Industry 3-Question Preview Switcher + Direct Jump to Free Checker
   let activeService = '';
   const setActiveIndustry = (id: string) => {
     document.querySelectorAll<HTMLButtonElement>('[data-ind-btn]').forEach((b) => {
@@ -1113,7 +1377,7 @@ const faqSchema = {
     });
   });
 
-  // 3. Services 4-Pillar Horizontal Accordion (01 AEO · 02 GEO · 03 Reputation · 04 Websites)
+  // 3. Services 4-Pillar Horizontal Accordion
   const activatePillar = (id: string) => {
     document.querySelectorAll<HTMLElement>('[data-pillar]').forEach((panel) => {
       const open = panel.getAttribute('data-pillar') === id;
@@ -1152,7 +1416,7 @@ const faqSchema = {
     z-index: 40;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
     padding: 10px 8px;
     background: rgba(3, 25, 25, 0.9);
     border: 1px solid rgba(255, 255, 255, 0.18);
@@ -1165,7 +1429,7 @@ const faqSchema = {
     gap: 8px;
     text-decoration: none;
     color: var(--muted-inv);
-    padding: 5px 8px;
+    padding: 4px 8px;
     border-left: 2px solid transparent;
     font-size: 11px;
     transition: color 0.15s ease, border-color 0.15s ease;
@@ -1296,7 +1560,7 @@ const faqSchema = {
     display: block;
   }
 
-  /* Hero Right-Side 3-Question Live Preview Card */
+  /* Hero Right-Side Free Audit Diagnosis Preview Card */
   .preview-card {
     background: rgba(3, 25, 25, 0.94);
     border: 1px solid var(--line);
@@ -1399,16 +1663,16 @@ const faqSchema = {
     line-height: 1.4;
   }
 
-  .fixes-preview {
-    background: rgba(253, 179, 67, 0.07);
-    border-left: 3px solid var(--gold);
+  .gaps-preview {
+    background: rgba(239, 68, 68, 0.06);
+    border-left: 3px solid #fca5a5;
     padding: 10px 14px;
     margin-bottom: var(--s-16);
   }
 
-  .fix-kicker {
+  .gap-kicker {
     display: block;
-    color: var(--gold);
+    color: #fca5a5;
     font-size: 10px;
     margin-bottom: 8px;
   }
@@ -1419,13 +1683,20 @@ const faqSchema = {
     gap: 6px;
   }
 
-  .fix-chip {
+  .gap-chip {
     font-family: var(--mono);
     font-size: 11px;
-    color: var(--white);
+    color: #fecaca;
     background: rgba(8, 31, 31, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(252, 165, 165, 0.35);
     padding: 4px 8px;
+  }
+
+  .lock-note {
+    margin-top: 10px;
+    color: var(--gold);
+    font-size: 10.5px;
+    line-height: 1.4;
   }
 
   .preview-foot {
@@ -1446,6 +1717,50 @@ const faqSchema = {
     border-bottom: 1px solid var(--gold);
     cursor: pointer;
     font-weight: 700;
+  }
+
+  /* 4-CARD OFFER SUMMARY STRIP (Screenshot 1) */
+  .offer-strip-4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: var(--s-64);
+  }
+
+  .strip-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    padding: 20px;
+    text-decoration: none;
+    color: var(--teal);
+    box-shadow: 4px 4px 0 var(--teal);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .strip-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 0 var(--gold-2);
+  }
+
+  .strip-kicker {
+    color: var(--steel);
+    font-size: 10.5px;
+  }
+
+  .strip-price {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--teal);
+  }
+
+  .strip-desc {
+    color: var(--pale);
+    font-size: 13.5px;
+    line-height: 1.45;
   }
 
   /* CHAPTER 03: WHAT YOU GET (2x2 BENTO) */
@@ -1478,9 +1793,10 @@ const faqSchema = {
     gap: 14px;
   }
 
-  .icon-badge {
-    width: 46px;
-    height: 46px;
+  .icon-badge,
+  .spec-icon {
+    width: 44px;
+    height: 44px;
     border-radius: 10px;
     background: rgba(253, 179, 67, 0.18);
     border: 1px solid rgba(210, 132, 16, 0.35);
@@ -1488,6 +1804,13 @@ const faqSchema = {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .spec-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
   }
 
   .bento-copy {
@@ -1496,7 +1819,7 @@ const faqSchema = {
     line-height: 1.55;
   }
 
-  /* CHAPTER 04: HOW IT WORKS (SPLIT + PROGRESSIVE BLUEPRINT SVG) */
+  /* CHAPTER 04: HOW IT WORKS */
   .loop-split {
     display: grid;
     grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
@@ -1706,7 +2029,7 @@ const faqSchema = {
     stroke-width: 1.5;
   }
 
-  /* CHAPTER 05: SERVICES 4-PILLAR HORIZONTAL ACCORDION */
+  /* CHAPTER 05: SERVICES 4-PILLAR HORIZONTAL ACCORDION (LINKED ROWS) */
   .services-head {
     margin-bottom: var(--s-40);
   }
@@ -1817,14 +2140,85 @@ const faqSchema = {
   }
 
   .pillar-items li {
-    padding: 13px 0;
     border-top: 1px solid rgba(255, 255, 255, 0.14);
-    color: var(--white);
-    font-size: 15.5px;
-    font-weight: 500;
   }
 
-  /* CHAPTER 06: SIMPLIFIED PRICING */
+  .pillar-item-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 0;
+    color: var(--white);
+    text-decoration: none;
+    font-size: 15.5px;
+    font-weight: 500;
+    transition: color 0.15s ease, padding-left 0.15s ease;
+  }
+
+  .pillar-item-link:hover {
+    color: var(--gold);
+    padding-left: 6px;
+  }
+
+  .pillar-arr {
+    font-family: var(--mono);
+    color: var(--gold);
+  }
+
+  /* SPECIALIST SERVICES GRID (Screenshot 2) & PLAIN-ENGLISH GUIDES GRID (Screenshot 3) */
+  .spec-grid-4,
+  .guides-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .spec-card,
+  .guide-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    padding: 22px;
+    text-decoration: none;
+    color: var(--teal);
+    box-shadow: 4px 4px 0 var(--teal);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .spec-card:hover,
+  .guide-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 0 var(--gold-2);
+  }
+
+  .spec-title,
+  .guide-title {
+    color: var(--teal);
+  }
+
+  .guide-title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1.5px;
+  }
+
+  .spec-desc,
+  .guide-desc {
+    color: var(--pale);
+    font-size: 13.5px;
+    line-height: 1.45;
+  }
+
+  .spec-link {
+    margin-top: auto;
+    padding-top: 6px;
+    color: var(--teal);
+    font-weight: 700;
+  }
+
+  /* CHAPTER 06: PRICING + WEBSITES + AT A GLANCE */
   .audit-entry-banner {
     background: rgba(3, 25, 25, 0.94);
     border: 1px solid var(--gold);
@@ -1934,6 +2328,131 @@ const faqSchema = {
     padding-inline: 16px;
   }
 
+  /* Websites + At A Glance Split Row */
+  .web-glance-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.28fr) minmax(0, 0.72fr);
+    gap: var(--s-24);
+    margin-bottom: var(--s-32);
+    align-items: stretch;
+  }
+
+  .websites-panel {
+    background: rgba(3, 25, 25, 0.92);
+    border: 1px solid var(--line);
+    padding: var(--s-24);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-20);
+  }
+
+  .wp-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .wp-title {
+    margin-top: 6px;
+    color: var(--white);
+  }
+
+  .web-tier-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .wt-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .wt-row.is-popular {
+    border-color: var(--gold);
+    background: rgba(253, 179, 67, 0.07);
+  }
+
+  .wt-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .wt-money {
+    color: var(--gold);
+    font-family: var(--mono);
+    margin-left: 8px;
+  }
+
+  .wt-note {
+    color: var(--pale);
+    font-size: 13.5px;
+    line-height: 1.45;
+  }
+
+  .wt-btn {
+    white-space: nowrap;
+    padding-inline: 14px;
+    font-size: 12.5px;
+  }
+
+  .at-a-glance {
+    background: rgba(11, 37, 36, 0.96);
+    border: 1px solid var(--gold);
+    box-shadow: 8px 8px 0 var(--gold);
+    padding: var(--s-24);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .glance-kicker {
+    color: var(--gold);
+    letter-spacing: 0.08em;
+  }
+
+  .glance-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .glance-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    color: var(--white);
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .glance-list li::before {
+    content: '●';
+    color: var(--gold);
+    font-size: 10px;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .glance-btn {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .routing-strip {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1956,7 +2475,7 @@ const faqSchema = {
     max-width: 44ch;
   }
 
-  /* CHAPTER 07: COMMON QUESTIONS FAQ */
+  /* CHAPTER 08: COMMON QUESTIONS FAQ */
   .faq-grid {
     display: grid;
     grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
@@ -2038,9 +2557,14 @@ const faqSchema = {
 
   @media (max-width: 960px) {
     .hero-split,
+    .offer-strip-4,
     .bento-2x2,
     .loop-split,
+    .spec-grid-4,
+    .guides-grid-4,
     .cards-3,
+    .web-glance-split,
+    .wt-row,
     .routing-strip,
     .faq-grid,
     .audit-entry-banner {

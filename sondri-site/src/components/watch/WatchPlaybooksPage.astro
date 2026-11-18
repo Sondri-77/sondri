@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../../i18n';
 import WatchShell from './WatchShell.astro';
+import { getWatchGuides } from '../../data/watch-content';
 
 interface Props {
   lang?: Lang;
@@ -9,6 +10,7 @@ interface Props {
 const { lang = 'en' } = Astro.props;
 const isEs = lang === 'es';
 const prefix = isEs ? '/es/watch' : '/watch';
+const guidesList = getWatchGuides(lang);
 
 const alternates = {
   en: '/watch/playbooks/',
@@ -397,6 +399,42 @@ const gates = [
       </div>
     </div>
   </section>
+
+  <!-- SECTION 4: PLAIN-ENGLISH GUIDES -->
+  <section class="section section-pad on-paper" id="guides">
+    <div class="wrap">
+      <div class="sec-head" data-watch-reveal>
+        <div>
+          <span class="label kicker-paper">/ {isEs ? 'GUÍAS EN LENGUAJE CLARO' : 'PLAIN-ENGLISH GUIDES'}</span>
+          <h2 class="h2">
+            {isEs ? (
+              <>Guías claras sobre <em class="serif-em">búsqueda en IA.</em></>
+            ) : (
+              <>Plain-English guides <em class="serif-em">to AI search.</em></>
+            )}
+          </h2>
+        </div>
+        <div class="intro">
+          <p class="lede">
+            {isEs
+              ? 'Escritas por ingenieros de Sondri sin siglas innecesarias.'
+              : 'Written cleanly without jargon so decision-makers understand every step.'}
+          </p>
+        </div>
+      </div>
+
+      <div class="pb-guides-4" data-watch-reveal>
+        {guidesList.map((g) => (
+          <a href={`${prefix}/guides/${g.slug}/`} class="pb-guide-card">
+            <span class="label pb-gd-rt">{g.readTime}</span>
+            <h3 class="h5 pb-gd-title">{g.title}</h3>
+            <p class="body-s pb-gd-desc">{g.cardDesc}</p>
+            <span class="label pb-gd-link">{isEs ? 'Leer guía →' : 'Read the guide →'}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
 </WatchShell>
 
 <script>
@@ -731,9 +769,58 @@ const gates = [
     gap: var(--s-16);
   }
 
+  .pb-guides-4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .pb-guide-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    box-shadow: 4px 4px 0 var(--teal);
+    padding: 20px;
+    text-decoration: none;
+    color: var(--teal);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .pb-guide-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 0 var(--gold-2);
+  }
+
+  .pb-gd-rt {
+    color: var(--steel);
+    font-size: 10px;
+  }
+
+  .pb-gd-title {
+    color: var(--teal);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .pb-gd-desc {
+    color: var(--pale);
+    font-size: 13.5px;
+    line-height: 1.45;
+  }
+
+  .pb-gd-link {
+    margin-top: auto;
+    padding-top: 6px;
+    color: var(--teal);
+    font-weight: 700;
+  }
+
   @media (max-width: 960px) {
     .gates-grid,
     .sprints-2,
+    .pb-guides-4,
     .pb-tabs,
     .pb-head,
     .pb-grid {

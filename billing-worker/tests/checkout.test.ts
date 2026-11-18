@@ -153,6 +153,33 @@ describe('Billing Worker Checkout API', () => {
       );
       expect(resPortfolio.status).toBe(200);
       expect(createMock.mock.calls[2][0].line_items[0].price_data.unit_amount).toBe(150000);
+
+      // 4. Website Package SKUs ($390 / $690 / $1,190)
+      const websiteCases = [
+        { sku: 'website_quick_fix', expectedCents: 39000 },
+        { sku: 'website_5page', expectedCents: 69000 },
+        { sku: 'website_10page', expectedCents: 119000 },
+      ];
+      for (const wc of websiteCases) {
+        const resSite = await worker.fetch(
+          new Request('http://localhost:8787/create-checkout-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'watch_offer',
+              offer_sku: wc.sku,
+              domain: 'clinic.example.com',
+            }),
+          }),
+          mockEnv,
+          {} as ExecutionContext
+        );
+        expect(resSite.status).toBe(200);
+        const call = createMock.mock.calls[createMock.mock.calls.length - 1][0];
+        expect(call.mode).toBe('payment');
+        expect(call.line_items[0].price_data.unit_amount).toBe(wc.expectedCents);
+        expect(call.metadata.offer_sku).toBe(wc.sku);
+      }
     } finally {
       spy.mockRestore();
     }
