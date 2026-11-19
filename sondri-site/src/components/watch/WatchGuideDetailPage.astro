@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../../i18n';
 import WatchShell from './WatchShell.astro';
+import WatchHeroBg from './WatchHeroBg.astro';
 import { getWatchGuides, type WatchGuideEntry } from '../../data/watch-content';
 
 interface Props {
@@ -72,7 +73,8 @@ const relatedGuides = allGuides.filter((g) => g.slug !== guide.slug).slice(0, 4)
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLdGraph)} />
 
   <!-- GUIDE HERO (on-dark) -->
-  <section class="section section-pad on-dark gd-hero">
+  <section class="section section-pad on-dark gd-hero watch-banner-edge" data-watch-hero>
+    <WatchHeroBg variant="banner" />
     <div class="wrap">
       <nav class="gd-crumb label" aria-label="Breadcrumb">
         <a href={`${prefix}/`}>{isEs ? 'Inicio Watch' : 'Watch Overview'}</a>

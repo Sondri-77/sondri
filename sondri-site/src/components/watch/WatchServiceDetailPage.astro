@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../../i18n';
 import WatchShell from './WatchShell.astro';
+import WatchHeroBg from './WatchHeroBg.astro';
 import { getWatchServices, type WatchServiceEntry } from '../../data/watch-content';
 
 interface Props {
@@ -70,7 +71,8 @@ const siblingServices = allServices.filter((s) => s.slug !== service.slug);
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLdGraph)} />
 
   <!-- HERO (on-dark) -->
-  <section class="section section-pad on-dark srv-hero">
+  <section class="section section-pad on-dark srv-hero watch-banner-edge" data-watch-hero>
+    <WatchHeroBg variant="banner" />
     <div class="wrap">
       <nav class="srv-crumb label" aria-label="Breadcrumb">
         <a href={`${prefix}/`}>{isEs ? 'Inicio Watch' : 'Watch Overview'}</a>

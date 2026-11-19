@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../../i18n';
 import WatchShell from './WatchShell.astro';
+import WatchHeroBg from './WatchHeroBg.astro';
 import { getWatchServices } from '../../data/watch-content';
 import { BOOK_HREF } from '../../data';
 
@@ -29,7 +30,8 @@ const alternates = {
   alternates={alternates}
 >
   <!-- HERO (on-dark) -->
-  <section class="section section-pad on-dark srv-idx-hero">
+  <section class="section section-pad on-dark srv-idx-hero watch-banner-edge" data-watch-hero>
+    <WatchHeroBg variant="banner" />
     <div class="wrap">
       <span class="label gold-pill">{isEs ? 'SERVICIOS ESPECIALISTAS' : 'SPECIALIST SERVICES'}</span>
       <div class="srv-idx-head">

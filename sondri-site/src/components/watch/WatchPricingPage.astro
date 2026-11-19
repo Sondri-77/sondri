@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../../i18n';
 import WatchShell from './WatchShell.astro';
+import WatchHeroBg from './WatchHeroBg.astro';
 import { BOOK_HREF, CONTACT_EMAIL, mailto } from '../../data';
 
 interface Props {
@@ -27,7 +28,8 @@ const alternates = {
   alternates={alternates}
 >
   <!-- HERO + 4-CARD SUMMARY STRIP (on-dark) -->
-  <section class="section section-pad on-dark pr-hero">
+  <section class="section section-pad on-dark pr-hero watch-banner-edge" data-watch-hero>
+    <WatchHeroBg variant="banner" />
     <div class="wrap">
       <span class="label gold-pill">{isEs ? 'PRECIOS TRANSPARENTES' : 'TRANSPARENT PRICING'}</span>
       <div class="pr-hero-head">

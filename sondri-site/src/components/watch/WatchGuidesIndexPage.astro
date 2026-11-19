@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../../i18n';
 import WatchShell from './WatchShell.astro';
+import WatchHeroBg from './WatchHeroBg.astro';
 import { getWatchGuides } from '../../data/watch-content';
 
 interface Props {
@@ -71,7 +72,8 @@ const gates = [
   alternates={alternates}
 >
   <!-- HERO (on-dark) -->
-  <section class="section section-pad on-dark gd-idx-hero">
+  <section class="section section-pad on-dark gd-idx-hero watch-banner-edge" data-watch-hero>
+    <WatchHeroBg variant="banner" />
     <div class="wrap">
       <span class="label gold-pill">{isEs ? 'GUÍAS Y LECTURAS TÉCNICAS' : 'GUIDES & TECHNICAL READS'}</span>
       <div class="gd-idx-head">

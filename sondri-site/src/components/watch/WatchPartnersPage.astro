@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../../i18n';
 import WatchShell from './WatchShell.astro';
+import WatchHeroBg from './WatchHeroBg.astro';
 import { BOOK_HREF } from '../../data';
 
 interface Props {
@@ -26,7 +27,8 @@ const alternates = {
   activeTab="partners"
   alternates={alternates}
 >
-  <section class="section section-pad on-dark">
+  <section class="section section-pad on-dark partners-hero watch-banner-edge" data-watch-hero>
+    <WatchHeroBg variant="banner" />
     <div class="wrap">
       <div class="sec-head" data-watch-reveal>
         <div>
@@ -43,7 +45,11 @@ const alternates = {
           </p>
         </div>
       </div>
+    </div>
+  </section>
 
+  <section class="section section-pad on-dark">
+    <div class="wrap">
       <!-- Wholesale Pricing Ledger -->
       <div class="cards-3" data-watch-reveal>
         <article class="p-card">
@@ -172,6 +178,10 @@ const alternates = {
 </script>
 
 <style>
+  .partners-hero .sec-head {
+    margin-bottom: 0;
+  }
+
   .gold-kicker {
     color: var(--gold);
     display: block;

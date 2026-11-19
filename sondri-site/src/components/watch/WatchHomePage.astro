@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../../i18n';
 import WatchShell from './WatchShell.astro';
+import WatchHeroBg from './WatchHeroBg.astro';
 import MiniAudit from '../MiniAudit.astro';
 import { BOOK_HREF, CONTACT_EMAIL, mailto } from '../../data';
 
@@ -589,7 +590,8 @@ const faqSchema = {
   </nav>
 
   <!-- CHAPTER 01 · SPACIOUS HERO + PLAIN-ENGLISH 3-STEP SVG + DUAL-CORE TELEMETRY CARD -->
-  <section class="section section-pad on-dark hero-watch" id="act-shift">
+  <section class="section section-pad on-dark hero-watch" id="act-shift" data-watch-hero>
+    <WatchHeroBg variant="hero" />
     <div class="wrap">
       <div class="hero-split">
         <div class="hero-copy" data-watch-reveal>

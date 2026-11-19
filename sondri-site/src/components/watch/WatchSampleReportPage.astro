@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../../i18n';
 import WatchShell from './WatchShell.astro';
+import WatchHeroBg from './WatchHeroBg.astro';
 
 interface Props {
   lang?: Lang;
@@ -64,7 +65,8 @@ const promptRows = [
   activeTab="sample"
   alternates={alternates}
 >
-  <section class="section section-pad on-dark">
+  <section class="section section-pad on-dark sample-hero watch-banner-edge" data-watch-hero>
+    <WatchHeroBg variant="banner" />
     <div class="wrap">
       <div class="report-banner" data-watch-reveal>
         <div>
@@ -88,7 +90,11 @@ const promptRows = [
           </button>
         </div>
       </div>
+    </div>
+  </section>
 
+  <section class="section section-pad on-dark">
+    <div class="wrap">
       <!-- 4 Executive KPI Cards -->
       <div class="kpi-4" data-watch-reveal>
         <div class="kpi-box">
@@ -207,9 +213,6 @@ const promptRows = [
     align-items: flex-end;
     gap: var(--s-32);
     flex-wrap: wrap;
-    padding-bottom: var(--s-32);
-    border-bottom: 1px solid var(--line);
-    margin-bottom: var(--s-32);
   }
 
   .gold-tag {
