@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../../i18n';
 import WatchShell from './WatchShell.astro';
+import { BOOK_HREF, CONTACT_EMAIL, mailto } from '../../data';
 
 interface Props {
   lang?: Lang;
@@ -192,6 +193,14 @@ const alternates = {
           </button>
         </article>
       </div>
+
+      <p class="body-s pricing-talk-note is-dark">
+        {isEs ? (
+          <>¿No sabes qué plan te conviene? <a href={BOOK_HREF}>Agenda una llamada gratuita de 15 min →</a> o escribe a <a href={mailto('Consulta de planes Sondri Watch')}>{CONTACT_EMAIL}</a>.</>
+        ) : (
+          <>Not sure which plan fits? <a href={BOOK_HREF}>Book a free 15-min call →</a> or email <a href={mailto('Sondri Watch plan question')}>{CONTACT_EMAIL}</a>.</>
+        )}
+      </p>
     </div>
   </section>
 
@@ -247,6 +256,14 @@ const alternates = {
           </button>
         </article>
       </div>
+
+      <p class="body-s pricing-talk-note is-paper">
+        {isEs ? (
+          <>¿Prefieres validar el alcance antes de contratar un sitio web? <a href={BOOK_HREF}>Agenda una llamada de 15 min →</a> o escribe a <a href={mailto('Consulta de sitio web Sondri Watch')}>{CONTACT_EMAIL}</a>.</>
+        ) : (
+          <>Want to scope a website or custom build first? <a href={BOOK_HREF}>Book a free 15-min call →</a> or email <a href={mailto('Sondri Watch website question')}>{CONTACT_EMAIL}</a>.</>
+        )}
+      </p>
     </div>
   </section>
 
@@ -588,6 +605,33 @@ const alternates = {
     margin-top: auto;
     width: 100%;
     justify-content: space-between;
+  }
+
+  .pricing-talk-note {
+    margin-top: var(--s-24);
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+
+  .pricing-talk-note.is-dark {
+    color: var(--pale);
+  }
+
+  .pricing-talk-note.is-paper {
+    color: var(--pale);
+  }
+
+  .pricing-talk-note a {
+    color: var(--gold);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(253, 179, 67, 0.65);
+    padding-bottom: 1px;
+  }
+
+  .pricing-talk-note.is-paper a {
+    color: var(--teal);
+    border-bottom-color: var(--gold-2);
   }
 
   .sprints-grid-2 {

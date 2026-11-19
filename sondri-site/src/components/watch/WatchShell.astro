@@ -157,6 +157,12 @@ const navItems = [
             {item.label}
           </a>
         ))}
+        <a href={BOOK_HREF} class="watch-m-link watch-m-book">
+          {isEs ? 'Agendar llamada de 15 min →' : 'Book a 15-min Walkthrough →'}
+        </a>
+        <a href={mailto(isEs ? 'Consulta desde watch.sondri.ai' : 'Question from watch.sondri.ai')} class="watch-m-link">
+          {CONTACT_EMAIL}
+        </a>
         <a href={isEs ? '/es/' : '/'} class="watch-m-link">
           ← {isEs ? 'Volver a sondri.ai (Software a Medida)' : 'Back to sondri.ai (Custom AI & Software)'}
         </a>
@@ -173,6 +179,52 @@ const navItems = [
     <main id="main" class="watch-main">
       <slot />
     </main>
+
+    <!-- Shared Direct Contact Band (Calendar Modal + Email Copy) -->
+    <section class="section on-dark watch-contact-band" aria-label={isEs ? 'Contacto directo' : 'Direct contact'}>
+      <div class="wrap wcb-inner">
+        <div class="wcb-copy">
+          <span class="label wcb-kicker">
+            {isEs ? 'HABLA CON UN INGENIERO · SIN PRESIÓN' : 'TALK TO AN ENGINEER · NO SALES DECKS'}
+          </span>
+          <h3 class="h3 wcb-title">
+            {isEs ? (
+              <>¿Prefieres <em class="serif-em">conversar antes de ordenar?</em></>
+            ) : (
+              <>Prefer to <em class="serif-em">talk before ordering?</em></>
+            )}
+          </h3>
+          <p class="body-s wcb-sub">
+            {isEs
+              ? 'Revisamos tu puntaje IA en vivo en una llamada de 15 minutos, o escríbenos con tu dominio para darte un alcance claro.'
+              : 'Walk through your free AI score live on a 15-minute call, or email us your domain for a tailored scope.'}
+          </p>
+        </div>
+
+        <div class="wcb-actions">
+          <a class="btn btn-gold wcb-book-btn" href={BOOK_HREF}>
+            <span>{isEs ? 'Agendar llamada de 15 min' : 'Book a 15-min Walkthrough'}</span> <span class="arr">→</span>
+          </a>
+          <div class="wcb-email-group">
+            <a
+              class="btn wcb-email-btn"
+              href={mailto(isEs ? 'Consulta desde watch.sondri.ai' : 'Question from watch.sondri.ai')}
+            >
+              <span>{isEs ? `Escribir a ${CONTACT_EMAIL}` : `Email ${CONTACT_EMAIL}`}</span>
+            </a>
+            <button
+              type="button"
+              class="btn btn-copy-email label"
+              data-copy-email={CONTACT_EMAIL}
+              data-copied-label={isEs ? 'Copiado ✓' : 'Copied ✓'}
+              aria-label={isEs ? 'Copiar correo electrónico' : 'Copy email address'}
+            >
+              {isEs ? 'Copiar' : 'Copy'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- Watch Footer (5-Column AEO Link Architecture) -->
     <footer class="on-dark watch-footer">
@@ -206,7 +258,7 @@ const navItems = [
               <li><a href={`${prefix}/services/websites/`} class="label">{isEs ? 'Sitios Web (desde $390)' : 'Answer-Ready Websites ($390+)'}</a></li>
               <li><a href={`${prefix}/services/llms-txt-schema/`} class="label">llms.txt &amp; Schema</a></li>
               <li><a href={`${prefix}/services/citation-building/`} class="label">{isEs ? 'Reputación y citas IA' : 'Reputation & citations'}</a></li>
-              <li><a href={`${prefix}/pricing/#sprints`} class="label">Website Quick Fix ($390)</a></li>
+              <li><a href={`${prefix}/pricing/#websites`} class="label">Website Quick Fix ($390)</a></li>
               <li><a href={`${prefix}/pricing/#sprints`} class="label">Done-For-You Fix Sprint ($499)</a></li>
             </ul>
           </div>
@@ -295,6 +347,27 @@ const navItems = [
         const open = menuBtn.getAttribute('aria-expanded') === 'true';
         menuBtn.setAttribute('aria-expanded', String(!open));
         if (mobileMenu) mobileMenu.hidden = open;
+      });
+
+      document.querySelectorAll<HTMLButtonElement>('[data-copy-email]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const email = btn.getAttribute('data-copy-email') || '';
+          const copiedLabel = btn.getAttribute('data-copied-label') || 'Copied ✓';
+          const prevLabel = btn.textContent || '';
+          try {
+            if (email && navigator.clipboard?.writeText) {
+              await navigator.clipboard.writeText(email);
+            }
+          } catch {
+            /* Clipboard API may be blocked in insecure contexts; still show feedback or select */
+          }
+          btn.textContent = copiedLabel;
+          btn.classList.add('is-copied');
+          window.setTimeout(() => {
+            btn.textContent = prevLabel;
+            btn.classList.remove('is-copied');
+          }, 2000);
+        });
       });
     </script>
   </body>
@@ -509,6 +582,108 @@ const navItems = [
 
   .watch-m-link.is-active {
     color: var(--gold);
+  }
+
+  .watch-m-book {
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  .watch-contact-band {
+    position: relative;
+    z-index: 2;
+    border-top: 1px solid var(--line-soft);
+    background: rgba(3, 25, 25, 0.96);
+    padding-block: clamp(44px, 5vw, 68px);
+  }
+
+  .wcb-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-32);
+    flex-wrap: wrap;
+  }
+
+  .wcb-copy {
+    max-width: 58ch;
+  }
+
+  .wcb-kicker {
+    display: inline-block;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .wcb-title {
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  .wcb-sub {
+    color: var(--pale);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .wcb-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px 16px;
+  }
+
+  .wcb-email-group {
+    display: inline-flex;
+    align-items: stretch;
+    border: 1px solid var(--line);
+  }
+
+  .wcb-email-btn {
+    background: transparent;
+    color: var(--white);
+    border: 0;
+  }
+
+  .wcb-email-btn:hover {
+    color: var(--gold);
+  }
+
+  .btn-copy-email {
+    background: rgba(255, 255, 255, 0.06);
+    border: 0;
+    border-left: 1px solid var(--line);
+    color: var(--pale);
+    padding-inline: 14px;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+
+  .btn-copy-email:hover,
+  .btn-copy-email.is-copied {
+    color: var(--gold);
+    background: rgba(253, 179, 67, 0.12);
+  }
+
+  @media (max-width: 640px) {
+    .wcb-actions,
+    .wcb-email-group,
+    .wcb-book-btn {
+      width: 100%;
+    }
+
+    .wcb-book-btn {
+      justify-content: space-between;
+    }
+
+    .wcb-email-btn {
+      flex: 1 1 auto;
+      min-width: 0;
+      padding-inline: 12px;
+      font-size: 12px;
+      white-space: normal;
+      text-align: left;
+    }
   }
 
   .watch-m-lang {

@@ -1,4 +1,6 @@
 ---
+import { BOOK_HREF, CONTACT_EMAIL, mailto } from '../data';
+
 interface Props {
   defaultLang?: 'en' | 'es';
   embedded?: boolean;
@@ -318,6 +320,19 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
             <span class="label" data-audit-i18n="stripeNote">
               Encrypted Stripe Checkout · Instant PDF tax invoice
             </span>
+            <div class="audit-talk-row">
+              <a href={BOOK_HREF} class="label audit-talk-link" data-audit-i18n="talkCallLink">
+                Walk through my score (15-min call) →
+              </a>
+              <a
+                id="auditEmailDomainLink"
+                href={mailto('Review my Sondri Watch AI score')}
+                class="label audit-talk-link"
+                data-audit-i18n="talkEmailLink"
+              >
+                Email us this domain →
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -387,6 +402,8 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
       buyBtn: 'Order Full 15-Question Audit ($99)',
       buyBtnLoading: 'Redirecting to Stripe Checkout…',
       stripeNote: 'Encrypted Stripe Checkout · Instant PDF tax invoice',
+      talkCallLink: 'Walk through my score (15-min call) →',
+      talkEmailLink: 'Email us this domain →',
     },
     es: {
       backHome: 'Volver a Sondri',
@@ -443,6 +460,8 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
       buyBtn: 'Solicitar Auditoría Completa de 15 Preguntas ($99)',
       buyBtnLoading: 'Redirigiendo a Stripe Checkout…',
       stripeNote: 'Pago seguro con Stripe · Factura PDF al instante',
+      talkCallLink: 'Revisar mi puntaje en vivo (15 min) →',
+      talkEmailLink: 'Enviar este dominio por correo →',
     },
   };
 
@@ -812,6 +831,7 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
       }
 
       currentAudit = scanJson.data;
+      syncEmailAuditLink(currentAudit);
       renderTechScan(currentAudit);
       loadLighthouseAsync(currentAudit);
 
@@ -834,6 +854,7 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
       const aiJson = await aiRes.json();
       if (aiJson.success && aiJson.data) {
         currentAudit = aiJson.data;
+        syncEmailAuditLink(currentAudit);
         renderAiVisibility(currentAudit);
       }
     } catch (err: any) {
@@ -1304,6 +1325,21 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
   });
 
   // Handle $99 Full Audit Stripe Checkout
+  function syncEmailAuditLink(audit: any) {
+    const emailLink = document.getElementById('auditEmailDomainLink') as HTMLAnchorElement | null;
+    if (!emailLink || !audit) return;
+    const dom = audit.domain || audit.url || '';
+    const score = typeof audit.readinessScore === 'number' ? `${audit.readinessScore}/100` : '';
+    const isEs = currentLang === 'es';
+    const subj = isEs
+      ? `Revisión Sondri Watch para ${dom || 'mi sitio web'}`
+      : `Sondri Watch review for ${dom || 'my website'}`;
+    const body = isEs
+      ? `Hola equipo Sondri,\n\nAcabo de revisar ${dom} en Sondri Watch${score ? ` (puntaje ${score})` : ''} y me gustaría conversar sobre los siguientes pasos.\n`
+      : `Hi Sondri team,\n\nI just scanned ${dom} on Sondri Watch${score ? ` (score ${score})` : ''} and would like to walk through next steps.\n`;
+    emailLink.href = `mailto:sales@sondri.ai?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+  }
+
   document.getElementById('btnBuyFullAudit')?.addEventListener('click', async () => {
     if (!currentAudit) return;
     const btn = document.getElementById('btnBuyFullAudit') as HTMLButtonElement;
@@ -1687,6 +1723,26 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
     flex-direction: column;
     align-items: flex-start;
     gap: var(--s-16);
+  }
+
+  .audit-talk-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    margin-top: 4px;
+  }
+
+  .audit-talk-link {
+    color: var(--pale);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(253, 179, 67, 0.55);
+    padding-bottom: 2px;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .audit-talk-link:hover {
+    color: var(--gold);
+    border-color: var(--gold);
   }
 
   @media (max-width: 960px) {

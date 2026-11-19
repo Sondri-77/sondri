@@ -2,6 +2,7 @@
 import type { Lang } from '../../i18n';
 import WatchShell from './WatchShell.astro';
 import MiniAudit from '../MiniAudit.astro';
+import { BOOK_HREF, CONTACT_EMAIL, mailto } from '../../data';
 
 interface Props {
   lang?: Lang;
@@ -1058,6 +1059,9 @@ const faqSchema = {
           <button type="button" class="btn btn-gold aeb-btn" data-watch-checkout="aeo_full_audit">
             <span data-btn-label>{isEs ? 'Solicitar Auditoría Base ($99)' : 'Order $99 Baseline Audit'}</span> <span class="arr">→</span>
           </button>
+          <a href={BOOK_HREF} class="label aeb-talk-link">
+            {isEs ? 'o agenda una llamada de 15 min primero →' : 'or book a 15-min call first →'}
+          </a>
         </div>
       </div>
 
@@ -1233,6 +1237,13 @@ const faqSchema = {
           <a href={`${prefix}/guides/`} class="btn btn-outline-dark faq-guides-btn">
             {isEs ? 'Leer nuestras 8 guías claras →' : 'Read Plain-English Guides →'}
           </a>
+          <p class="body-s faq-contact-note">
+            {isEs ? (
+              <>¿Aún tienes dudas? <a href={BOOK_HREF}>Agenda una llamada de 15 min →</a> o escribe a <a href={mailto('Consulta desde watch.sondri.ai')}>{CONTACT_EMAIL}</a>.</>
+            ) : (
+              <>Still have a question? <a href={BOOK_HREF}>Book a 15-min call →</a> or email <a href={mailto('Question from watch.sondri.ai')}>{CONTACT_EMAIL}</a>.</>
+            )}
+          </p>
         </div>
 
         <div class="faq-list" data-watch-reveal>
@@ -2417,6 +2428,26 @@ const faqSchema = {
     white-space: nowrap;
   }
 
+  .aeb-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+  }
+
+  .aeb-talk-link {
+    color: var(--pale);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(253, 179, 67, 0.55);
+    padding-bottom: 2px;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .aeb-talk-link:hover {
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+
   .cards-3 {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2552,7 +2583,27 @@ const faqSchema = {
   .faq-sub {
     color: var(--pale);
     max-width: 34ch;
-    margin-bottom: var(--s-20);
+    margin-bottom: var(--s-24);
+  }
+
+  .faq-contact-note {
+    margin-top: var(--s-24);
+    color: var(--pale);
+    font-size: 14px;
+    line-height: 1.55;
+    max-width: 36ch;
+  }
+
+  .faq-contact-note a {
+    color: var(--teal);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid var(--gold-2);
+    padding-bottom: 1px;
+  }
+
+  .faq-contact-note a:hover {
+    color: var(--teal-mid);
   }
 
   .faq-list {
@@ -2631,6 +2682,10 @@ const faqSchema = {
     .agency-inline-bar,
     .audit-entry-banner {
       padding: var(--s-24);
+    }
+
+    .aeb-cta {
+      align-items: flex-start;
     }
 
     .aib-btn,
