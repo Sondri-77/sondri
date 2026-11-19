@@ -115,7 +115,7 @@ const navItems = [
           <a class="label parent-link" href={isEs ? '/es/' : '/'}>
             ← {isEs ? 'Sondri Software' : 'sondri.ai'}
           </a>
-          <a class="btn btn-gold watch-cta-sm" href={BOOK_HREF}>
+          <a class="btn btn-white watch-cta-sm" href={BOOK_HREF}>
             {isEs ? 'Agendar Llamada Gratis' : 'Book a Free Call'} <span class="arr">→</span>
           </a>
 
@@ -523,6 +523,19 @@ const navItems = [
 
   .parent-link:hover {
     color: var(--gold);
+  }
+
+  .btn-white {
+    background: var(--white);
+    border-color: var(--white);
+    color: var(--teal);
+    font-weight: 500;
+  }
+
+  .btn-white:hover {
+    background: var(--off);
+    border-color: var(--off);
+    color: var(--teal);
   }
 
   .watch-cta-sm {
