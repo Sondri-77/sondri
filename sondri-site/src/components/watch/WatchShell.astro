@@ -84,8 +84,8 @@ const navItems = [
             ? 'SONDRI WATCH · VISIBILIDAD EN CHATGPT, GEMINI, AI OVERVIEWS Y AI MODE'
             : 'SONDRI WATCH · DONE-FOR-YOU AI VISIBILITY ACROSS CHATGPT, GEMINI & GOOGLE AI'}
         </span>
-        <a class="label watch-ann-cta" href={BOOK_HREF}>
-          {isEs ? 'Agendar llamada 15 min →' : 'Book a 15-min walkthrough →'}
+        <a class="label watch-ann-cta" href={`${prefix}/#free-check`}>
+          {isEs ? 'Probar Score IA Gratis →' : 'Run Free AI Check →'}
         </a>
       </div>
     </div>
@@ -115,8 +115,8 @@ const navItems = [
           <a class="label parent-link" href={isEs ? '/es/' : '/'}>
             ← {isEs ? 'Sondri Software' : 'sondri.ai'}
           </a>
-          <a class="btn btn-gold watch-cta-sm" href={`${prefix}/#free-check`}>
-            {isEs ? 'Score Gratis' : 'Free AI Score'} <span class="arr">→</span>
+          <a class="btn btn-gold watch-cta-sm" href={BOOK_HREF}>
+            {isEs ? 'Agendar Llamada Gratis' : 'Book a Free Call'} <span class="arr">→</span>
           </a>
 
           {alternates && (
