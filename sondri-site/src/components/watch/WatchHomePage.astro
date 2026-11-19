@@ -1504,8 +1504,15 @@ const faqSchema = {
 
   /* HERO */
   .hero-watch {
-    padding-top: var(--s-48);
-    padding-bottom: clamp(72px, 8vw, 112px);
+    min-height: calc(100svh - 96px);
+    display: flex;
+    align-items: center;
+    padding-top: var(--s-40);
+    padding-bottom: clamp(56px, 6vw, 88px);
+  }
+
+  .hero-watch > .wrap {
+    width: 100%;
   }
 
   .hero-top-tag {
@@ -2559,6 +2566,13 @@ const faqSchema = {
   }
 
   @media (max-width: 960px) {
+    .hero-watch {
+      min-height: 0;
+      display: block;
+      padding-top: var(--s-32);
+      padding-bottom: var(--s-64);
+    }
+
     .hero-split,
     .eng-verdict-grid,
     .q-cycle-tabs,
