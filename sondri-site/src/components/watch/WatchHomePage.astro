@@ -590,17 +590,17 @@ const faqSchema = {
   <!-- CHAPTER 01 · SPACIOUS HERO + PLAIN-ENGLISH 3-STEP SVG + DUAL-CORE TELEMETRY CARD -->
   <section class="section section-pad on-dark hero-watch" id="act-shift">
     <div class="wrap">
-      <div class="hero-top-tag">
-        <span class="label gold-pill">
-          {isEs ? 'SONDRI WATCH · VISIBILIDAD IA Y SITIOS WEB' : 'SONDRI WATCH · AI VISIBILITY & WEBSITES'}
-        </span>
-        <span class="label muted-mono">
-          ChatGPT · Gemini · Google AI
-        </span>
-      </div>
-
       <div class="hero-split">
         <div class="hero-copy" data-watch-reveal>
+          <div class="hero-eyebrow">
+            <span class="label gold-pill">
+              {isEs ? 'SONDRI WATCH · VISIBILIDAD IA Y SITIOS WEB' : 'SONDRI WATCH · AI VISIBILITY & WEBSITES'}
+            </span>
+            <span class="label muted-mono">
+              ChatGPT · Gemini · Google AI
+            </span>
+          </div>
+
           <h1 class="h1 watch-h1">
             {isEs ? (
               <>Aparece cuando <em class="serif-em">preguntan a la IA.</em></>
@@ -1432,47 +1432,93 @@ const faqSchema = {
     padding-block: clamp(76px, 8.5vw, 120px);
   }
 
-  /* Sticky Floating Chapter Rail */
+  /* Sticky Floating Chapter Rail (Compact numbered rail on laptops, expands on hover or >= 1760px) */
   .chapter-rail {
     position: fixed;
-    right: 18px;
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
     z-index: 40;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
+    padding: 8px 6px;
+    background: rgba(3, 25, 25, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    transition: padding 0.2s ease, border-color 0.2s ease;
+  }
+
+  .chapter-rail:hover,
+  .chapter-rail:focus-within {
+    border-color: rgba(253, 179, 67, 0.45);
     padding: 10px 8px;
-    background: rgba(3, 25, 25, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    backdrop-filter: blur(8px);
   }
 
   .rail-item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 0;
     text-decoration: none;
     color: var(--muted-inv);
-    padding: 4px 8px;
+    padding: 5px 6px;
     border-left: 2px solid transparent;
     font-size: 11px;
-    transition: color 0.15s ease, border-color 0.15s ease;
+    white-space: nowrap;
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .chapter-rail:hover .rail-item,
+  .chapter-rail:focus-within .rail-item {
+    justify-content: flex-start;
   }
 
   .rail-num {
     color: var(--gold);
     font-size: 10px;
+    line-height: 1;
+  }
+
+  .rail-label {
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    margin-left: 0;
+    transition: max-width 0.22s ease, opacity 0.18s ease, margin-left 0.18s ease;
+  }
+
+  .chapter-rail:hover .rail-label,
+  .chapter-rail:focus-within .rail-label {
+    max-width: 110px;
+    opacity: 1;
+    margin-left: 8px;
   }
 
   .rail-item.is-active,
   .rail-item:hover {
     color: var(--white);
     border-left-color: var(--gold);
-    background: rgba(253, 179, 67, 0.09);
+    background: rgba(253, 179, 67, 0.12);
   }
 
-  @media (max-width: 1440px) {
+  @media (min-width: 1760px) {
+    .chapter-rail {
+      right: 18px;
+      padding: 10px 8px;
+    }
+    .rail-item {
+      justify-content: flex-start;
+    }
+    .rail-label {
+      max-width: 110px;
+      opacity: 1;
+      margin-left: 8px;
+    }
+  }
+
+  @media (max-width: 1399px) {
     .chapter-rail {
       display: none;
     }
@@ -1515,15 +1561,12 @@ const faqSchema = {
     width: 100%;
   }
 
-  .hero-top-tag {
-    display: flex;
+  .hero-eyebrow {
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: var(--s-40);
-    padding-bottom: var(--s-16);
-    border-bottom: 1px solid var(--line-soft);
+    gap: 10px 14px;
+    margin-bottom: var(--s-24);
   }
 
   .gold-pill {
