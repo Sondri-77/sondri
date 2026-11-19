@@ -86,8 +86,20 @@ const breadcrumbSchema = {
         <p class="tagline">{tagline}</p>
         <p class="lede">{summary}</p>
         <div class="actions">
-          <a class="btn btn-gold" href={BOOK_HREF}>{c.cta} <span class="arr">→</span></a>
-          {postLive && <a class="btn" href={`${prefix}/insights/${post}/`}>{c.solutionsHead.readBuild} <span class="arr">→</span></a>}
+          {slug === 'aeo-seo' ? (
+            <>
+              <a class="btn btn-gold" href={`${prefix}/watch/`}>
+                <span>{isEs ? 'Explorar Sondri Watch (Check IA Gratis)' : 'Explore Sondri Watch (Free AI Check)'}</span> <span class="arr">→</span>
+              </a>
+              {postLive && <a class="btn" href={`${prefix}/insights/${post}/`}>{c.solutionsHead.readBuild} <span class="arr">→</span></a>}
+              <a class="btn" href={BOOK_HREF}>{c.cta} <span class="arr">→</span></a>
+            </>
+          ) : (
+            <>
+              <a class="btn btn-gold" href={BOOK_HREF}>{c.cta} <span class="arr">→</span></a>
+              {postLive && <a class="btn" href={`${prefix}/insights/${post}/`}>{c.solutionsHead.readBuild} <span class="arr">→</span></a>}
+            </>
+          )}
         </div>
       </div>
     </header>
@@ -141,6 +153,16 @@ const breadcrumbSchema = {
                 <>
                   <dt class="label">{isEs ? 'Artículo técnico' : 'Write-up'}</dt>
                   <dd><a href={`${prefix}/insights/${post}/`}>{c.solutionsHead.readBuild} →</a></dd>
+                </>
+              )}
+              {slug === 'aeo-seo' && (
+                <>
+                  <dt class="label">Sondri Watch</dt>
+                  <dd>
+                    <a href={`${prefix}/watch/`}>
+                      {isEs ? 'Explorar Sondri Watch (Check IA Gratis) →' : 'Explore Sondri Watch (Free AI Check) →'}
+                    </a>
+                  </dd>
                 </>
               )}
             </dl>

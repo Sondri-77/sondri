@@ -76,4 +76,4 @@ Platform bookings cost the same every time. Owned visibility works the other way
 
 Popular destinations make this urgent. When demand rises, the platforms take their cut of all of it. The operators who own their visibility keep it.
 
-If you run tours or travel experiences and want to know where you stand in search and AI answers, we're happy to take a look.
+If you want to see where your business stands across ChatGPT, Gemini, and Google AI today, run a free 60-second check or explore our ongoing monitoring and website plans on **[Sondri Watch (`/watch/`)](/watch/)**.

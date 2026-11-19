@@ -58,9 +58,31 @@ const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
                   <p class="tagline">{s.data.tagline}</p>
                   <p class="summary">{s.data.summary}</p>
                   <div class="actions">
-                    <a class="btn btn-gold" href={`${prefix}/solutions/${solSlug(s)}/`}><span data-i18n="solutionsHead.see">{t.see}</span> {s.data.name} <span class="arr">→</span></a>
-                    {s.data.post && posts.has(s.data.post) && (
-                      <a class="btn" href={`${prefix}/insights/${s.data.post}/`}><span data-i18n="solutionsHead.readBuild">{t.readBuild}</span> <span class="arr">→</span></a>
+                    {solSlug(s) === 'aeo-seo' ? (
+                      <>
+                        <a class="btn btn-gold" href={`${prefix}/watch/`}>
+                          <span>{lang === 'es' ? 'Explorar Sondri Watch' : 'Explore Sondri Watch'}</span> <span class="arr">→</span>
+                        </a>
+                        {s.data.post && posts.has(s.data.post) && (
+                          <a class="btn" href={`${prefix}/insights/${s.data.post}/`}>
+                            <span data-i18n="solutionsHead.readBuild">{t.readBuild}</span> <span class="arr">→</span>
+                          </a>
+                        )}
+                        <a class="label action-inline-link" href={`${prefix}/solutions/${solSlug(s)}/`}>
+                          {lang === 'es' ? 'Ver caso operadores turísticos →' : 'Tour Operator Solution →'}
+                        </a>
+                      </>
+                    ) : (
+                      <>
+                        <a class="btn btn-gold" href={`${prefix}/solutions/${solSlug(s)}/`}>
+                          <span data-i18n="solutionsHead.see">{t.see}</span> {s.data.name} <span class="arr">→</span>
+                        </a>
+                        {s.data.post && posts.has(s.data.post) && (
+                          <a class="btn" href={`${prefix}/insights/${s.data.post}/`}>
+                            <span data-i18n="solutionsHead.readBuild">{t.readBuild}</span> <span class="arr">→</span>
+                          </a>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
@@ -158,7 +180,9 @@ const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
   .story-main .label { color: var(--steel); }
   .tagline { font-size: 22px; line-height: 1.35; color: var(--text-hi); letter-spacing: -0.02em; max-width: 34ch; }
   .summary { color: var(--pale); font-size: 18px; line-height: 28px; max-width: 56ch; }
-  .actions { display: flex; flex-wrap: wrap; gap: var(--s-16); margin-top: var(--s-16); }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-16); margin-top: var(--s-16); }
+  .story-main .action-inline-link { color: var(--text-hi); text-decoration: none; border-bottom: 1px solid var(--gold-2); padding-bottom: 2px; transition: color 0.15s ease, border-color 0.15s ease; }
+  .story-main .action-inline-link:hover { color: var(--teal); border-color: var(--teal); }
   .story-side { padding: var(--s-32); align-self: start; background: var(--white); }
   .thumb { position: relative; display: block; margin-bottom: var(--s-24); border: 1px solid var(--line); background: var(--ink); aspect-ratio: 16 / 9; overflow: hidden; }
   .thumb img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s linear; }
