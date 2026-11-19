@@ -133,32 +133,6 @@ const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
         );
       })}
     </div>
-
-    <!-- Executive Workshop / PE Portfolio AI Answer Share Snapshot (Offer #8) -->
-    <div class="portfolio-callout panel" data-reveal>
-      <div class="pf-copy">
-        <span class="label pf-kicker">/ {lang === 'es' ? 'PARTNERS PE & DIRECCIÓN EJECUTIVA' : 'PRIVATE EQUITY & EXECUTIVE WORKSHOPS'}</span>
-        <h3 class="h5">
-          {lang === 'es'
-            ? 'Diagnóstico Portfolio AI Answer Share (Hasta 10 Empresas)'
-            : 'Portfolio AI Answer Share Snapshot (Up to 10 Portfolio Companies)'}
-        </h3>
-        <p class="body-s pf-body">
-          {lang === 'es'
-            ? '¿Lideras un portafolio PE o un grupo multinegocio? Medimos en 4 motores de IA qué empresas de tu portafolio son recomendadas por ChatGPT y Gemini frente a sus competidores directos—listo para comité directivo.'
-            : 'Designed for PE operating partners and enterprise marketing leads: a consolidated 4-engine AI Answer Share benchmark across up to 10 portfolio companies with board-ready takeaways.'}
-        </p>
-      </div>
-      <div class="pf-actions">
-        <p class="pf-price"><span class="n kpi">$1,500</span> <span class="label">USD / portfolio</span></p>
-        <div class="pf-btns">
-          <button type="button" class="btn btn-gold" id="btnPortfolioSnapshot">
-            <span>{lang === 'es' ? 'Ordenar Snapshot ($1,500)' : 'Order Portfolio Snapshot ($1,500)'}</span> <span class="arr">→</span>
-          </button>
-          <a href={BOOK_HREF} class="label pf-book">{lang === 'es' ? 'o agendar workshop' : 'or book workshop intro'}</a>
-        </div>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -219,26 +193,6 @@ const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
   .proof { margin-top: auto; padding-top: var(--s-16); border-top: 1px solid var(--line-soft); color: var(--steel); }
   .proof a { color: var(--text-hi); }
 
-  .portfolio-callout {
-    margin-top: var(--s-40);
-    padding: var(--s-32);
-    border: 1px solid var(--line);
-    background: var(--off);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--s-32);
-    flex-wrap: wrap;
-  }
-  .pf-copy { max-width: 60ch; display: flex; flex-direction: column; gap: 10px; }
-  .pf-kicker { color: var(--teal-mid); }
-  .pf-body { color: var(--pale); line-height: 1.55; }
-  .pf-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
-  .pf-price { display: flex; align-items: baseline; gap: 8px; }
-  .pf-price .n { font-size: 38px; color: var(--teal); }
-  .pf-btns { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-  .pf-book { color: var(--text-hi); text-decoration: none; border-bottom: 1px solid var(--line); }
-
   @media (max-width: 960px) {
     .story { grid-template-columns: minmax(0, 1fr); padding: var(--s-32); gap: var(--s-32); }
     .area-grid { grid-template-columns: minmax(0, 1fr); }
@@ -275,42 +229,5 @@ const areaIndex = (id: string) => areas.findIndex((a) => a.id === id);
         tabs[n].focus();
       });
     });
-  });
-
-  // Portfolio AI Answer Share Snapshot ($1,500) direct Stripe Checkout
-  document.getElementById('btnPortfolioSnapshot')?.addEventListener('click', async (ev) => {
-    const btn = ev.currentTarget as HTMLButtonElement;
-    const span = btn.querySelector('span');
-    const prev = span?.textContent || '';
-    const workerBase =
-      window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? 'http://localhost:8787'
-        : 'https://billing.sondri.ai';
-    const lang = document.documentElement.lang === 'es' ? 'es' : 'en';
-    btn.disabled = true;
-    if (span) span.textContent = lang === 'es' ? 'Abriendo Stripe…' : 'Opening Stripe…';
-    try {
-      const res = await fetch(`${workerBase}/create-checkout-session`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'watch_offer',
-          offer_sku: 'portfolio_snapshot',
-          lang,
-          success_url: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}&type=portfolio_snapshot`,
-          cancel_url: window.location.href,
-        }),
-      });
-      const json = await res.json();
-      if (json.success && json.data?.checkout_url) {
-        window.location.href = json.data.checkout_url;
-        return;
-      }
-      throw new Error(json.error?.message || 'Unable to start Stripe Checkout');
-    } catch (err: any) {
-      alert(err?.message || 'Connection error reaching Stripe Checkout');
-      btn.disabled = false;
-      if (span) span.textContent = prev;
-    }
   });
 </script>
