@@ -1,0 +1,1085 @@
+---
+import type { Lang } from '../../i18n';
+import { BOOK_HREF } from '../../data';
+import { WATCH_CLIENT_CATALOG, WATCH_INTAKE_PROFILES } from '../../data/watch-catalog';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const isEs = lang === 'es';
+const serializedPayload = JSON.stringify({
+  catalog: WATCH_CLIENT_CATALOG,
+  profiles: WATCH_INTAKE_PROFILES,
+});
+const defaultProfile = WATCH_INTAKE_PROFILES.audit[isEs ? 'es' : 'en'];
+---
+
+<dialog
+  id="watchCheckoutDialog"
+  closedby="any"
+  aria-labelledby="wcmTitle"
+  class="wcm-dialog on-dark"
+  data-lang={lang}
+>
+  <div class="wcm-box">
+    <header class="wcm-head">
+      <h2 class="wcm-title" id="wcmTitle" tabindex="-1">{defaultProfile.modalTitle}</h2>
+      <button
+        type="button"
+        class="wcm-close"
+        id="wcmCloseBtn"
+        aria-label={isEs ? 'Cerrar formulario' : 'Close checkout form'}
+      >
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path
+            d="M3.5 3.5L12.5 12.5M12.5 3.5L3.5 12.5"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="square"
+          />
+        </svg>
+      </button>
+    </header>
+
+    <div class="wcm-summary">
+      <div class="wcm-summary-copy">
+        <div class="wcm-sku-name" id="wcmSkuTitle">Full 4-Engine AI Visibility Audit</div>
+        <div class="wcm-sku-guarantee" id="wcmSkuGuarantee"></div>
+      </div>
+      <div class="wcm-sku-price" id="wcmSkuPrice">$99 one-time</div>
+    </div>
+
+    <form id="wcmForm" class="wcm-form" novalidate>
+      <section class="wcm-group" aria-labelledby="wcmDetailsHeading">
+        <p class="wcm-group-label" id="wcmDetailsHeading">
+          {isEs ? 'Tus datos' : 'Your details'}
+        </p>
+
+        <div class="wcm-grid-2">
+          <div class="wcm-field">
+            <div class="wcm-label-row">
+              <label for="wcmName" class="wcm-label">
+                <span>{isEs ? 'Nombre completo' : 'Full name'}</span>
+                <span class="wcm-req" aria-hidden="true">*</span>
+              </label>
+            </div>
+            <input
+              type="text"
+              id="wcmName"
+              name="client_name"
+              class="wcm-input"
+              required
+              autocomplete="name"
+              placeholder={isEs ? 'Ana García' : 'Alex Rivera'}
+              aria-invalid="false"
+              data-error="wcmNameErr"
+            />
+            <div id="wcmNameErr" class="wcm-err">
+              {isEs ? 'Ingresa tu nombre completo.' : 'Please enter your full name.'}
+            </div>
+          </div>
+
+          <div class="wcm-field">
+            <div class="wcm-label-row">
+              <label for="wcmEmail" class="wcm-label">
+                <span>{isEs ? 'Correo electrónico' : 'Work email'}</span>
+                <span class="wcm-req" aria-hidden="true">*</span>
+              </label>
+            </div>
+            <input
+              type="email"
+              id="wcmEmail"
+              name="client_email"
+              class="wcm-input"
+              required
+              autocomplete="email"
+              placeholder="alex@company.com"
+              aria-describedby="wcmEmailHint"
+              aria-invalid="false"
+              data-error="wcmEmailErr"
+            />
+            <div id="wcmEmailErr" class="wcm-err">
+              {isEs ? 'Ingresa un correo válido (ej. tu@empresa.com).' : 'Enter an email address like you@company.com.'}
+            </div>
+            <p id="wcmEmailHint" class="wcm-hint">
+              {isEs ? 'Recibo y actualizaciones aquí.' : 'Receipt & updates go here.'}
+            </p>
+          </div>
+        </div>
+
+        <div class="wcm-field wcm-field-phone">
+          <div class="wcm-label-row">
+            <label for="wcmPhone" class="wcm-label">
+              <span>{isEs ? 'Teléfono o WhatsApp' : 'Phone or WhatsApp'}</span>
+            </label>
+            <span class="wcm-opt">{isEs ? 'Opcional' : 'Optional'}</span>
+          </div>
+          <input
+            type="tel"
+            id="wcmPhone"
+            name="client_phone"
+            class="wcm-input"
+            autocomplete="tel"
+            placeholder="+1 (555) 234-5678"
+            aria-invalid="false"
+          />
+        </div>
+      </section>
+
+      <section class="wcm-group wcm-group-sep" aria-labelledby="wcmProjectHeading">
+        <p class="wcm-group-label" id="wcmProjectHeading">{defaultProfile.projectHeading}</p>
+
+        <div id="wcmProjectFields" class="wcm-stack">
+          <div class="wcm-field" id="wcmDomainWrap">
+            <div class="wcm-label-row">
+              <label for="wcmDomain" class="wcm-label" id="wcmDomainLabel">
+                <span id="wcmDomainLabelText">{defaultProfile.domainLabel}</span>
+                <span id="wcmDomainReqMark" class="wcm-req" aria-hidden="true">*</span>
+              </label>
+              <span id="wcmDomainOptTag" class="wcm-opt" hidden>
+                {isEs ? 'Opcional' : 'Optional'}
+              </span>
+            </div>
+            <input
+              type="text"
+              id="wcmDomain"
+              name="domain"
+              class="wcm-input"
+              required
+              inputmode="url"
+              autocomplete="url"
+              pattern="^(https?://)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(/.*)?$"
+              placeholder={defaultProfile.domainPlaceholder}
+              aria-describedby="wcmDomainHint"
+              aria-invalid="false"
+              data-error="wcmDomainErr"
+            />
+            <div id="wcmDomainErr" class="wcm-err">{defaultProfile.domainErr}</div>
+            <p id="wcmDomainHint" class="wcm-hint">{defaultProfile.domainHint}</p>
+          </div>
+
+          <div class="wcm-field" id="wcmMarketWrap">
+            <div class="wcm-label-row">
+              <label for="wcmMarket" class="wcm-label" id="wcmMarketLabel">
+                <span id="wcmMarketLabelText">{defaultProfile.marketLabel}</span>
+                <span class="wcm-req" aria-hidden="true">*</span>
+              </label>
+            </div>
+            <input
+              type="text"
+              id="wcmMarket"
+              name="market"
+              class="wcm-input"
+              required
+              placeholder={defaultProfile.marketPlaceholder}
+              aria-describedby="wcmMarketHint"
+              aria-invalid="false"
+              data-error="wcmMarketErr"
+            />
+            <div id="wcmMarketErr" class="wcm-err">{defaultProfile.marketErr}</div>
+            <p id="wcmMarketHint" class="wcm-hint">{defaultProfile.marketHint}</p>
+          </div>
+
+          <div class="wcm-field" id="wcmNotesWrap">
+            <div class="wcm-label-row">
+              <label for="wcmNotes" class="wcm-label" id="wcmNotesLabel">
+                <span id="wcmNotesLabelText">{defaultProfile.notesLabel}</span>
+              </label>
+              <span id="wcmNotesOptTag" class="wcm-opt">{isEs ? 'Opcional' : 'Optional'}</span>
+            </div>
+            <textarea
+              id="wcmNotes"
+              name="notes"
+              rows="2"
+              maxlength="480"
+              class="wcm-input wcm-textarea"
+              placeholder={defaultProfile.notesPlaceholder}
+              aria-describedby="wcmNotesHint"
+              aria-invalid="false"
+            ></textarea>
+            <p id="wcmNotesHint" class="wcm-hint">{defaultProfile.notesHint}</p>
+          </div>
+        </div>
+      </section>
+
+      <div id="wcmServerErr" class="wcm-server-err" hidden></div>
+
+      <div class="wcm-actions">
+        <button type="submit" id="wcmSubmitBtn" class="btn btn-gold wcm-submit-btn">
+          <span id="wcmSubmitLabel">
+            {isEs ? 'Continuar al pago seguro' : 'Continue to Secure Checkout'}
+          </span>
+          <span class="arr" aria-hidden="true">→</span>
+        </button>
+
+        <div class="wcm-foot-meta">
+          <span class="wcm-trust" id="wcmTrustLine">
+            {isEs
+              ? 'Pago único · Recibo y factura oficial Stripe al instante'
+              : 'One-time payment · Instant Stripe receipt & tax invoice'}
+          </span>
+          <button type="button" id="wcmBookInsteadBtn" class="wcm-book-link">
+            {isEs ? '¿Dudas? Agenda 15 min →' : 'Questions first? Book 15 min →'}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<script type="application/json" id="wcmCatalogData" set:html={serializedPayload} />
+
+<script>
+  import { WORKER_BASE } from '../../scripts/watch-scroll';
+  import {
+    INTAKE_STORAGE_KEY,
+    type WatchClientSkuInfo,
+    type WatchIntakePrefill,
+    type WatchIntakeProfile,
+    type WatchIntakeProfileCopy,
+  } from '../../data/watch-catalog';
+
+  interface CatalogPayload {
+    catalog: Record<string, WatchClientSkuInfo>;
+    profiles: Record<
+      WatchIntakeProfile,
+      {
+        order: 'domain_first' | 'market_first';
+        en: WatchIntakeProfileCopy;
+        es: WatchIntakeProfileCopy;
+      }
+    >;
+  }
+
+  const dialog = document.getElementById('watchCheckoutDialog') as HTMLDialogElement | null;
+  if (dialog) {
+    const isEs = dialog.dataset.lang === 'es';
+    const form = document.getElementById('wcmForm') as HTMLFormElement;
+    const closeBtn = document.getElementById('wcmCloseBtn') as HTMLButtonElement;
+    const submitBtn = document.getElementById('wcmSubmitBtn') as HTMLButtonElement;
+    const submitLabel = document.getElementById('wcmSubmitLabel') as HTMLElement;
+    const serverErr = document.getElementById('wcmServerErr') as HTMLElement;
+    const bookInsteadBtn = document.getElementById('wcmBookInsteadBtn') as HTMLButtonElement;
+
+    const modalTitleEl = document.getElementById('wcmTitle') as HTMLElement;
+    const skuTitleEl = document.getElementById('wcmSkuTitle') as HTMLElement;
+    const skuPriceEl = document.getElementById('wcmSkuPrice') as HTMLElement;
+    const skuGuaranteeEl = document.getElementById('wcmSkuGuarantee') as HTMLElement;
+    const trustLineEl = document.getElementById('wcmTrustLine') as HTMLElement;
+
+    const projectHeadingEl = document.getElementById('wcmProjectHeading') as HTMLElement;
+    const projectFieldsEl = document.getElementById('wcmProjectFields') as HTMLElement;
+    const domainWrapEl = document.getElementById('wcmDomainWrap') as HTMLElement;
+    const marketWrapEl = document.getElementById('wcmMarketWrap') as HTMLElement;
+    const notesWrapEl = document.getElementById('wcmNotesWrap') as HTMLElement;
+
+    const nameInput = document.getElementById('wcmName') as HTMLInputElement;
+    const emailInput = document.getElementById('wcmEmail') as HTMLInputElement;
+    const phoneInput = document.getElementById('wcmPhone') as HTMLInputElement;
+
+    const domainInput = document.getElementById('wcmDomain') as HTMLInputElement;
+    const domainLabelTextEl = document.getElementById('wcmDomainLabelText') as HTMLElement;
+    const domainReqMarkEl = document.getElementById('wcmDomainReqMark') as HTMLElement;
+    const domainOptTagEl = document.getElementById('wcmDomainOptTag') as HTMLElement;
+    const domainErrEl = document.getElementById('wcmDomainErr') as HTMLElement;
+    const domainHintEl = document.getElementById('wcmDomainHint') as HTMLElement;
+
+    const marketInput = document.getElementById('wcmMarket') as HTMLInputElement;
+    const marketLabelTextEl = document.getElementById('wcmMarketLabelText') as HTMLElement;
+    const marketErrEl = document.getElementById('wcmMarketErr') as HTMLElement;
+    const marketHintEl = document.getElementById('wcmMarketHint') as HTMLElement;
+
+    const notesInput = document.getElementById('wcmNotes') as HTMLTextAreaElement;
+    const notesLabelTextEl = document.getElementById('wcmNotesLabelText') as HTMLElement;
+    const notesHintEl = document.getElementById('wcmNotesHint') as HTMLElement;
+
+    const payloadEl = document.getElementById('wcmCatalogData');
+    const parsedPayload: CatalogPayload = payloadEl?.textContent
+      ? JSON.parse(payloadEl.textContent)
+      : { catalog: {}, profiles: {} };
+    const { catalog, profiles } = parsedPayload;
+
+    let currentSku = 'aeo_full_audit';
+    let currentAuditId = '';
+
+    // Screen-reader polite announcer (MWG validate-input-after-interaction pattern)
+    const announcer = document.createElement('div');
+    announcer.setAttribute('aria-live', 'polite');
+    announcer.className = 'wcm-visually-hidden';
+    document.body.append(announcer);
+    let announceTimer: number | undefined;
+    let announcedField: Element | null = null;
+    const flagged = new WeakSet<Element>();
+    const announced = new WeakSet<Element>();
+    const dirtyState = new WeakMap<Element, { interacted: boolean; blurred: boolean }>();
+
+    const supportsUserInvalid = typeof CSS !== 'undefined' && CSS.supports('selector(:user-invalid)');
+
+    const linkError = (el: HTMLElement, shown: boolean) => {
+      const errId = el.dataset.error;
+      if (!errId) return;
+      const ids = (el.getAttribute('aria-describedby') || '')
+        .split(/\s+/)
+        .filter((id) => id && id !== errId);
+      if (shown) ids.push(errId);
+      if (ids.length) el.setAttribute('aria-describedby', ids.join(' '));
+      else el.removeAttribute('aria-describedby');
+    };
+
+    const isControlInvalid = (el: HTMLInputElement | HTMLTextAreaElement): boolean => {
+      if (supportsUserInvalid) return el.matches(':user-invalid');
+      return el.classList.contains('user-invalid-fallback');
+    };
+
+    const syncAria = (el: HTMLElement, shouldAnnounce = false) => {
+      if (!(el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement)) return;
+      const invalid = isControlInvalid(el);
+      if (invalid) {
+        if (shouldAnnounce && !announced.has(el)) {
+          const errId = el.dataset.error;
+          const errEl = errId ? document.getElementById(errId) : null;
+          if (errEl) {
+            const label = el.labels?.[0]?.textContent?.trim() || '';
+            window.clearTimeout(announceTimer);
+            announcer.textContent = '';
+            announcedField = el;
+            announceTimer = window.setTimeout(() => {
+              announcer.textContent = label
+                ? `${label}: ${errEl.textContent?.trim()}`
+                : errEl.textContent?.trim() || '';
+            }, 500);
+          }
+          announced.add(el);
+        }
+        el.setAttribute('aria-invalid', 'true');
+        linkError(el, true);
+        flagged.add(el);
+      } else if (flagged.has(el) || el.getAttribute('aria-invalid') !== 'true') {
+        el.setAttribute('aria-invalid', 'false');
+        linkError(el, false);
+        flagged.delete(el);
+        announced.delete(el);
+        if (announcedField === el) {
+          window.clearTimeout(announceTimer);
+          announcer.textContent = '';
+        }
+      }
+    };
+
+    form.addEventListener(
+      'blur',
+      (e) => {
+        const target = e.target as HTMLInputElement | HTMLTextAreaElement;
+        if (!target || !target.checkValidity) return;
+        const st = dirtyState.get(target) || { interacted: false, blurred: false };
+        st.blurred = true;
+        dirtyState.set(target, st);
+        if (!supportsUserInvalid && (st.interacted || target.value.trim() !== '')) {
+          target.classList.toggle('user-invalid-fallback', !target.validity.valid);
+        }
+        syncAria(target, true);
+      },
+      true
+    );
+
+    form.addEventListener('input', (e) => {
+      const target = e.target as HTMLInputElement | HTMLTextAreaElement;
+      if (!target || !target.checkValidity) return;
+      const st = dirtyState.get(target) || { interacted: false, blurred: false };
+      st.interacted = true;
+      dirtyState.set(target, st);
+      if (!supportsUserInvalid && st.blurred) {
+        target.classList.toggle('user-invalid-fallback', !target.validity.valid);
+      }
+      if (target.hasAttribute('aria-invalid')) syncAria(target);
+      if (!serverErr.hidden) serverErr.hidden = true;
+    });
+
+    // Safari fallback for closedby="any" light dismiss (MWG light-dismiss-a-dialog pattern)
+    if (!('closedBy' in HTMLDialogElement.prototype)) {
+      const isOutside = (e: PointerEvent) => {
+        const r = dialog.getBoundingClientRect();
+        return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+      };
+      let pressedOutside = false;
+      dialog.addEventListener('pointerdown', (e) => {
+        pressedOutside = isOutside(e);
+      });
+      dialog.addEventListener('pointerup', (e) => {
+        if (pressedOutside && isOutside(e)) dialog.close();
+      });
+    }
+
+    dialog.addEventListener('close', () => {
+      dialog.returnValue = '';
+      submitBtn.disabled = false;
+      submitLabel.textContent = isEs ? 'Continuar al pago seguro' : 'Continue to Secure Checkout';
+      serverErr.hidden = true;
+    });
+
+    closeBtn.addEventListener('click', () => dialog.close('cancel'));
+
+    function readSavedIntake(): WatchIntakePrefill {
+      let stored: WatchIntakePrefill = {};
+      try {
+        const raw = sessionStorage.getItem(INTAKE_STORAGE_KEY);
+        if (raw) stored = JSON.parse(raw);
+      } catch {
+        /* ignore storage restrictions */
+      }
+
+      const domUrl = (document.getElementById('auditUrl') as HTMLInputElement | null)?.value?.trim();
+      const domName = (document.getElementById('leadName') as HTMLInputElement | null)?.value?.trim();
+      const domEmail = (document.getElementById('leadEmail') as HTMLInputElement | null)?.value?.trim();
+      const domPhone = (document.getElementById('leadPhone') as HTMLInputElement | null)?.value?.trim();
+      const domCity = (document.getElementById('auditCity') as HTMLInputElement | null)?.value?.trim();
+      const domService = (document.getElementById('auditService') as HTMLInputElement | null)?.value?.trim();
+
+      return {
+        audit_id: stored.audit_id || '',
+        name: domName || stored.name || '',
+        email: domEmail || stored.email || '',
+        phone: domPhone || stored.phone || '',
+        domain: domUrl || stored.domain || '',
+        city: domCity || stored.city || '',
+        service: domService || stored.service || '',
+        notes: stored.notes || '',
+      };
+    }
+
+    function persistIntake(data: WatchIntakePrefill) {
+      try {
+        const existing = readSavedIntake();
+        sessionStorage.setItem(INTAKE_STORAGE_KEY, JSON.stringify({ ...existing, ...data }));
+      } catch {
+        /* ignore */
+      }
+    }
+
+    function splitMarketField(raw: string, fallbackCity?: string, fallbackService?: string) {
+      const trimmed = raw.trim();
+      const sepMatch = trimmed.split(/\s*[—–|-]\s*/);
+      if (sepMatch.length >= 2) {
+        return {
+          city: sepMatch[0].trim(),
+          service: sepMatch.slice(1).join(' - ').trim(),
+        };
+      }
+      return {
+        city: fallbackCity || trimmed,
+        service: fallbackService || trimmed,
+      };
+    }
+
+    function applyIntakeProfile(info: WatchClientSkuInfo) {
+      const profileEntry = profiles[info.intakeProfile] || profiles.audit;
+      if (!profileEntry) return;
+      const copy = isEs ? profileEntry.es : profileEntry.en;
+
+      modalTitleEl.textContent = copy.modalTitle;
+      projectHeadingEl.textContent = copy.projectHeading;
+
+      domainLabelTextEl.textContent = copy.domainLabel;
+      domainInput.placeholder = copy.domainPlaceholder;
+      domainHintEl.textContent = copy.domainHint;
+      domainErrEl.textContent = copy.domainErr;
+
+      domainInput.required = info.domainRequired;
+      domainReqMarkEl.hidden = !info.domainRequired;
+      domainOptTagEl.hidden = info.domainRequired;
+
+      marketLabelTextEl.textContent = copy.marketLabel;
+      marketInput.placeholder = copy.marketPlaceholder;
+      marketHintEl.textContent = copy.marketHint;
+      marketErrEl.textContent = copy.marketErr;
+      marketInput.required = info.marketRequired;
+
+      notesLabelTextEl.textContent = copy.notesLabel;
+      notesInput.placeholder = copy.notesPlaceholder;
+      notesHintEl.textContent = copy.notesHint;
+
+      if (profileEntry.order === 'market_first') {
+        projectFieldsEl.append(marketWrapEl, domainWrapEl, notesWrapEl);
+      } else {
+        projectFieldsEl.append(domainWrapEl, marketWrapEl, notesWrapEl);
+      }
+
+      if (info.mode === 'subscription') {
+        trustLineEl.textContent = isEs
+          ? 'Suscripción mensual · Factura Stripe · Cancela cuando quieras'
+          : 'Monthly plan · Instant Stripe invoice · Cancel anytime';
+      } else {
+        trustLineEl.textContent = isEs
+          ? 'Pago único · Recibo y factura oficial Stripe al instante'
+          : 'One-time payment · Instant Stripe receipt & tax invoice';
+      }
+    }
+
+    function openCheckoutModal(sku: string, prefill?: WatchIntakePrefill) {
+      currentSku = sku && catalog[sku] ? sku : 'aeo_full_audit';
+      const info = catalog[currentSku];
+      const merged = { ...readSavedIntake(), ...(prefill || {}) };
+      currentAuditId = merged.audit_id || '';
+
+      skuTitleEl.textContent = isEs ? info.titleEs : info.titleEn;
+      skuPriceEl.textContent = isEs ? info.priceEs : info.priceEn;
+      skuGuaranteeEl.textContent = isEs ? info.guaranteeEs : info.guaranteeEn;
+
+      applyIntakeProfile(info);
+
+      form.reset();
+      nameInput.value = merged.name || '';
+      emailInput.value = merged.email || '';
+      domainInput.value = merged.domain || '';
+      phoneInput.value = merged.phone || '';
+      notesInput.value = merged.notes || '';
+      const uniqueMarketParts = [merged.city, merged.service].filter(
+        (val, idx, arr): val is string => Boolean(val) && arr.indexOf(val) === idx
+      );
+      marketInput.value = uniqueMarketParts.join(' — ');
+
+      form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach((inp) => {
+        inp.classList.remove('user-invalid-fallback', 'user-valid-fallback');
+        flagged.delete(inp);
+        announced.delete(inp);
+        dirtyState.delete(inp);
+        inp.setAttribute('aria-invalid', 'false');
+        linkError(inp, false);
+      });
+      serverErr.hidden = true;
+
+      if (!dialog.open) {
+        dialog.showModal();
+        modalTitleEl.focus({ preventScroll: true });
+      }
+    }
+
+    window.addEventListener('sondri:open-checkout', (e: Event) => {
+      const detail = (e as CustomEvent<{ sku?: string; prefill?: WatchIntakePrefill }>).detail;
+      openCheckoutModal(detail?.sku || 'aeo_full_audit', detail?.prefill);
+    });
+
+    const initialPlan = new URLSearchParams(window.location.search).get('plan');
+    if (initialPlan && catalog[initialPlan]) {
+      openCheckoutModal(initialPlan);
+    }
+
+    bookInsteadBtn.addEventListener('click', () => {
+      dialog.close('book');
+      const calTrigger = document.querySelector<HTMLElement>('a[data-cal-link="sondri/discovery"]');
+      if (calTrigger) {
+        calTrigger.click();
+      } else {
+        window.open(BOOK_HREF, '_blank', 'noopener');
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      serverErr.hidden = true;
+
+      const rawDom = domainInput.value.trim();
+      if (rawDom !== domainInput.value) {
+        domainInput.value = rawDom;
+      }
+
+      let cleanDomain = rawDom;
+      if (rawDom) {
+        try {
+          const parsed = new URL(/^https?:\/\//i.test(rawDom) ? rawDom : `https://${rawDom}`);
+          cleanDomain = parsed.hostname.replace(/^www\./, '');
+        } catch {
+          cleanDomain = rawDom;
+        }
+      }
+
+      if (!form.checkValidity()) {
+        const fields = Array.from(
+          form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea')
+        );
+        let firstInvalid: HTMLInputElement | HTMLTextAreaElement | null = null;
+        fields.forEach((inp) => {
+          if (!inp.validity.valid) {
+            if (!firstInvalid) firstInvalid = inp;
+            inp.classList.add('user-invalid-fallback');
+            syncAria(inp, false);
+          }
+        });
+        firstInvalid?.focus();
+        return;
+      }
+
+      const clientName = nameInput.value.trim();
+      const clientEmail = emailInput.value.trim();
+      const clientPhone = phoneInput.value.trim();
+      const notes = notesInput.value.trim();
+      const saved = readSavedIntake();
+      const { city, service } = splitMarketField(marketInput.value, saved.city, saved.service);
+
+      persistIntake({
+        audit_id: currentAuditId,
+        name: clientName,
+        email: clientEmail,
+        phone: clientPhone,
+        domain: cleanDomain,
+        city,
+        service,
+        notes,
+      });
+
+      submitBtn.disabled = true;
+      submitLabel.textContent = isEs ? 'Creando pago en Stripe…' : 'Creating Stripe Checkout…';
+
+      try {
+        const res = await fetch(`${WORKER_BASE}/create-checkout-session`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'watch_offer',
+            offer_sku: currentSku,
+            client_name: clientName,
+            client_email: clientEmail,
+            client_phone: clientPhone || undefined,
+            domain: cleanDomain || undefined,
+            city: city || undefined,
+            service: service || undefined,
+            notes: notes || undefined,
+            audit_id: currentAuditId || undefined,
+            lang: isEs ? 'es' : 'en',
+            success_url: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}&type=${encodeURIComponent(currentSku)}`,
+            cancel_url: window.location.href,
+          }),
+        });
+
+        const json = await res.json();
+        if (json.success && json.data?.checkout_url) {
+          window.location.href = json.data.checkout_url;
+          return;
+        }
+        throw new Error(
+          json.error?.message || (isEs ? 'No se pudo iniciar Stripe Checkout.' : 'Unable to start Stripe Checkout.')
+        );
+      } catch (err: any) {
+        serverErr.textContent =
+          err?.message || (isEs ? 'Error de conexión con Stripe.' : 'Connection error reaching Stripe Checkout.');
+        serverErr.hidden = false;
+        submitBtn.disabled = false;
+        submitLabel.textContent = isEs ? 'Continuar al pago seguro' : 'Continue to Secure Checkout';
+      }
+    });
+  }
+</script>
+
+<style is:global>
+  .wcm-visually-hidden:where(:not(:focus-within, :active)) {
+    position: absolute !important;
+    clip-path: inset(50%) !important;
+    overflow: hidden !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: -1px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    white-space: nowrap !important;
+  }
+</style>
+
+<style>
+  dialog.wcm-dialog {
+    --wcm-bg: #031919;
+    --wcm-panel: #082424;
+    --wcm-input-bg: #072020;
+    --wcm-text: #ffffff;
+    --wcm-label: #ebf3f2;
+    --wcm-muted: #b4ccca;
+    --wcm-opt: #9dbbb8;
+    --wcm-placeholder: #88aaa7;
+    --wcm-border: rgba(255, 255, 255, 0.28);
+    --wcm-border-soft: rgba(255, 255, 255, 0.14);
+
+    margin: auto;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    background: var(--wcm-bg);
+    color: var(--wcm-text);
+    width: min(620px, calc(100vw - 28px));
+    max-height: calc(100dvh - 32px);
+    box-shadow: 10px 10px 0 var(--gold);
+    scrollbar-color: rgba(253, 179, 67, 0.45) var(--wcm-bg);
+    scrollbar-width: thin;
+  }
+
+  dialog.wcm-dialog:focus,
+  dialog.wcm-dialog:focus-visible {
+    outline: none;
+  }
+
+  dialog.wcm-dialog[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  dialog.wcm-dialog:modal {
+    overscroll-behavior: contain;
+  }
+
+  dialog.wcm-dialog::backdrop {
+    background: rgba(3, 25, 25, 0.82);
+    backdrop-filter: blur(4px);
+    overflow: hidden;
+    overscroll-behavior: contain;
+  }
+
+  .wcm-box {
+    padding: 22px 26px 20px;
+    overflow-y: auto;
+    scrollbar-color: rgba(253, 179, 67, 0.45) var(--wcm-bg);
+    scrollbar-width: thin;
+  }
+
+  .wcm-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--s-16);
+    margin-bottom: 12px;
+  }
+
+  .wcm-box:focus {
+    outline: none;
+  }
+
+  .wcm-box:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: -2px;
+  }
+
+  .wcm-title {
+    margin: 0;
+    color: var(--wcm-text);
+    font-size: 21px;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+
+  .wcm-title:focus {
+    outline: none;
+  }
+
+  .wcm-close {
+    background: transparent;
+    border: 1px solid var(--wcm-border);
+    color: #c9dad7;
+    width: 34px;
+    height: 34px;
+    display: inline-grid;
+    place-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .wcm-close:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(253, 179, 67, 0.08);
+  }
+
+  .wcm-close:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .wcm-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 11px 14px;
+    background: var(--wcm-panel);
+    border: 1px solid rgba(253, 179, 67, 0.42);
+    margin-bottom: 16px;
+  }
+
+  .wcm-summary-copy {
+    min-width: 0;
+  }
+
+  .wcm-sku-name {
+    font-weight: 600;
+    font-size: 14.5px;
+    line-height: 1.3;
+    color: var(--wcm-text);
+  }
+
+  .wcm-sku-guarantee {
+    color: var(--wcm-muted);
+    font-size: 12.5px;
+    line-height: 1.4;
+    margin-top: 3px;
+  }
+
+  .wcm-sku-price {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 13.5px;
+    line-height: 1.35;
+    font-weight: 700;
+    color: var(--gold);
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .wcm-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .wcm-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .wcm-group-sep {
+    border-top: 1px solid var(--wcm-border-soft);
+    padding-top: 14px;
+  }
+
+  .wcm-group-label {
+    margin: 0 0 9px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    line-height: 1.3;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9ec0bd;
+  }
+
+  .wcm-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 12px;
+  }
+
+  .wcm-field-phone {
+    margin-top: 10px;
+  }
+
+  .wcm-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .wcm-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .wcm-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .wcm-label {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    font-family: var(--sans);
+    font-size: 13px;
+    line-height: 1.3;
+    font-weight: 500;
+    color: var(--wcm-label);
+  }
+
+  .wcm-req {
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  .wcm-opt {
+    font-family: var(--sans);
+    font-size: 11.5px;
+    line-height: 1.3;
+    color: var(--wcm-opt);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .wcm-input {
+    width: 100%;
+    min-height: 40px;
+    background: var(--wcm-input-bg);
+    border: 1px solid var(--wcm-border);
+    color: var(--wcm-text);
+    caret-color: var(--gold);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.35;
+    padding: 8px 11px;
+    border-radius: 0;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .wcm-textarea {
+    min-height: 52px;
+    resize: vertical;
+  }
+
+  .wcm-input::placeholder {
+    color: var(--wcm-placeholder);
+    opacity: 1;
+  }
+
+  .wcm-input:hover {
+    border-color: rgba(255, 255, 255, 0.44);
+  }
+
+  .wcm-input:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+    border-color: var(--gold);
+  }
+
+  .wcm-input:is(:user-invalid, .user-invalid-fallback) {
+    border-color: #f87171;
+    background: rgba(127, 29, 29, 0.25);
+  }
+
+  .wcm-hint {
+    margin: 0;
+    font-family: var(--sans);
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--wcm-muted);
+  }
+
+  .wcm-err {
+    display: none;
+    color: #fca5a5;
+    font-family: var(--sans);
+    font-size: 12.5px;
+    line-height: 1.4;
+  }
+
+  .wcm-input:is(:user-invalid, .user-invalid-fallback) + .wcm-err {
+    display: block;
+  }
+
+  .wcm-server-err {
+    padding: 10px 12px;
+    border: 1px solid #f87171;
+    background: rgba(127, 29, 29, 0.28);
+    color: #fecaca;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .wcm-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 2px;
+  }
+
+  .wcm-submit-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 24px;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  .wcm-submit-btn:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+  }
+
+  .wcm-foot-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+
+  .wcm-trust {
+    font-family: var(--sans);
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--wcm-muted);
+  }
+
+  .wcm-book-link {
+    background: none;
+    border: 0;
+    padding: 2px 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border-bottom: 1px solid rgba(253, 179, 67, 0.55);
+    cursor: pointer;
+  }
+
+  .wcm-book-link:hover {
+    border-bottom-color: var(--gold);
+  }
+
+  .wcm-book-link:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 640px) {
+    dialog.wcm-dialog {
+      box-shadow: 5px 5px 0 var(--gold);
+      width: min(620px, calc(100vw - 24px));
+    }
+
+    .wcm-box {
+      padding: 20px 18px;
+    }
+
+    .wcm-title {
+      font-size: 20px;
+    }
+
+    .wcm-grid-2 {
+      grid-template-columns: 1fr;
+    }
+
+    .wcm-summary {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .wcm-sku-price {
+      padding-top: 0;
+    }
+
+    .wcm-foot-meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+    }
+  }
+</style>

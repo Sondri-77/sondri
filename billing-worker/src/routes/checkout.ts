@@ -1,4 +1,10 @@
 import { getStripe } from '../lib/stripe';
+import {
+  attachStripeSessionToOrder,
+  createCheckoutOrder,
+  getOrderBySessionId,
+  upsertCustomer,
+} from '../lib/db';
 import { Env } from '../types';
 import Stripe from 'stripe';
 
@@ -26,7 +32,11 @@ export interface CreateCheckoutSessionDTO {
   plan_id?: 'starter' | 'growth' | 'enterprise';
   custom_amount?: number; // In dollars (e.g. 2500)
   description?: string;
+  client_name?: string;
   client_email?: string;
+  client_phone?: string;
+  company?: string;
+  notes?: string;
   audit_id?: string;
   domain?: string;
   city?: string;
@@ -34,6 +44,34 @@ export interface CreateCheckoutSessionDTO {
   lang?: 'en' | 'es';
   success_url?: string;
   cancel_url?: string;
+}
+
+const DOMAIN_OPTIONAL_SKUS = new Set<WatchOfferSku>([
+  'website_5page',
+  'website_10page',
+  'portfolio_snapshot',
+]);
+
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function normalizeDomainInput(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return '';
+  try {
+    const parsed = new URL(/^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`);
+    if (!parsed.hostname.includes('.')) return '';
+    return parsed.hostname.replace(/^www\./, '').toLowerCase();
+  } catch {
+    return trimmed.includes('.') ? trimmed.toLowerCase() : '';
+  }
+}
+
+function capMeta(val: string | undefined, max = 480): string {
+  if (!val) return '';
+  const clean = val.trim();
+  return clean.length > max ? clean.slice(0, max) : clean;
 }
 
 const PLAN_PRICES: Record<string, { amount: number; name: string; interval: 'month' }> = {
@@ -214,6 +252,16 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
     let resolvedSku: string = body.type;
     let resolvedDescription = body.description || 'Custom Sondri AI Payment / Deposit';
     let runBaseline = false;
+    let resolvedAmountCents = 0;
+
+    const cleanName = (body.client_name || '').trim();
+    const cleanEmail = (body.client_email || '').trim().toLowerCase();
+    const cleanPhone = (body.client_phone || '').trim();
+    const cleanCompany = (body.company || '').trim();
+    const cleanCity = (body.city || '').trim();
+    const cleanService = (body.service || '').trim();
+    const cleanNotes = (body.notes || '').trim();
+    const cleanDomain = normalizeDomainInput(body.domain || '');
 
     if (body.type === 'fixed') {
       const planKey = body.plan_id || 'starter';
@@ -227,7 +275,9 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
       }
 
       mode = 'subscription';
+      resolvedSku = `retainer_${planKey}`;
       resolvedDescription = plan.name;
+      resolvedAmountCents = plan.amount * 100;
       lineItems = [
         {
           price_data: {
@@ -236,7 +286,7 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
               name: plan.name,
               description: 'Monthly AI automation retainer & support.',
             },
-            unit_amount: plan.amount * 100, // convert dollars to cents
+            unit_amount: resolvedAmountCents, // convert dollars to cents
             recurring: {
               interval: plan.interval,
             },
@@ -253,6 +303,7 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
       }
 
       mode = 'payment';
+      resolvedAmountCents = Math.round(body.custom_amount * 100);
       lineItems = [
         {
           price_data: {
@@ -261,7 +312,7 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
               name: body.description || 'Custom Sondri AI Services Deposit / Payment',
               description: 'Custom agreed payment for Sondri services.',
             },
-            unit_amount: Math.round(body.custom_amount * 100), // convert to cents
+            unit_amount: resolvedAmountCents, // convert to cents
           },
           quantity: 1,
         },
@@ -278,13 +329,32 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
         );
       }
 
-      const targetDomain = (body.domain || '').trim();
+      if (!cleanName) {
+        return Response.json(
+          { success: false, error: { code: 'INVALID_INTAKE', message: 'Full name is required before checkout' } },
+          { status: 400 }
+        );
+      }
+      if (!cleanEmail || !isValidEmail(cleanEmail)) {
+        return Response.json(
+          { success: false, error: { code: 'INVALID_INTAKE', message: 'A valid work email is required before checkout' } },
+          { status: 400 }
+        );
+      }
+      if (!DOMAIN_OPTIONAL_SKUS.has(sku) && !cleanDomain) {
+        return Response.json(
+          { success: false, error: { code: 'INVALID_INTAKE', message: 'Website domain is required for this plan' } },
+          { status: 400 }
+        );
+      }
+
       const isEs = body.lang === 'es';
       mode = item.mode;
       resolvedSku = sku;
+      resolvedAmountCents = item.unitAmountCents;
       runBaseline = item.runBaseline;
       const baseTitle = isEs ? item.nameEs : item.nameEn;
-      const titleWithDomain = targetDomain ? `${baseTitle} — ${targetDomain}` : baseTitle;
+      const titleWithDomain = cleanDomain ? `${baseTitle} — ${cleanDomain}` : baseTitle;
       resolvedDescription = `${titleWithDomain} ($${(item.unitAmountCents / 100).toFixed(0)}${mode === 'subscription' ? '/mo' : ''})`;
 
       const priceData: Record<string, any> = {
@@ -307,7 +377,74 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
       );
     }
 
+    const langNorm = body.lang === 'es' ? 'es' : 'en';
     const isWatchOrAudit = body.type === 'aeo_full_audit' || body.type === 'watch_offer';
+
+    // Persist operational customer + pre-checkout order row in D1
+    let dbCustomerId = '';
+    let dbOrderId = '';
+    let stripeCustomerId = '';
+
+    if (cleanEmail) {
+      const dbCustomer = await upsertCustomer(env, {
+        email: cleanEmail,
+        name: cleanName || null,
+        phone: cleanPhone || null,
+        company: cleanCompany || null,
+        primary_domain: cleanDomain || null,
+        city: cleanCity || null,
+        service: cleanService || null,
+        lang: langNorm,
+      });
+      dbCustomerId = dbCustomer.id;
+      stripeCustomerId = dbCustomer.stripe_customer_id || '';
+
+      // Reuse or create a real Stripe Customer (`cus_...`) when supported by the Stripe client
+      if (!stripeCustomerId && (stripe as any).customers) {
+        try {
+          if (typeof (stripe as any).customers.list === 'function') {
+            const listed = await stripe.customers.list({ email: cleanEmail, limit: 1 });
+            stripeCustomerId = listed.data?.[0]?.id || '';
+          }
+          if (!stripeCustomerId && typeof (stripe as any).customers.create === 'function') {
+            const createdCust = await stripe.customers.create({
+              email: cleanEmail,
+              name: cleanName || undefined,
+              phone: cleanPhone || undefined,
+              metadata: {
+                sondri_customer_id: dbCustomerId,
+                primary_domain: cleanDomain || '',
+                city: capMeta(cleanCity, 200),
+                service: capMeta(cleanService, 200),
+              },
+            });
+            stripeCustomerId = createdCust.id;
+          }
+          if (stripeCustomerId) {
+            await upsertCustomer(env, { email: cleanEmail, stripe_customer_id: stripeCustomerId });
+          }
+        } catch (custErr: any) {
+          console.warn('[Stripe Customer Sync Warning]', custErr?.message || custErr);
+        }
+      }
+
+      const dbOrder = await createCheckoutOrder(env, {
+        customer_id: dbCustomerId,
+        offer_sku: resolvedSku,
+        order_type: mode === 'subscription' ? 'subscription' : body.type === 'custom' ? 'custom' : 'one_time',
+        amount_cents: resolvedAmountCents,
+        currency: 'usd',
+        status: 'checkout_started',
+        domain: cleanDomain || null,
+        city: cleanCity || null,
+        service: cleanService || null,
+        notes: cleanNotes || null,
+        audit_id: body.audit_id || null,
+        lang: langNorm,
+      });
+      dbOrderId = dbOrder.id;
+    }
+
     const sessionParams: any = {
       managed_payments: { enabled: false },
       line_items: lineItems,
@@ -318,14 +455,26 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
         source: isWatchOrAudit ? (resolvedSku === 'aeo_full_audit' ? 'aeo_full_audit' : 'watch_offer') : 'website_checkout',
         offer_sku: resolvedSku,
         run_baseline: runBaseline ? 'true' : 'false',
-        description: resolvedDescription,
+        description: capMeta(resolvedDescription, 480),
+        order_id: dbOrderId,
+        customer_id: dbCustomerId,
         audit_id: body.audit_id || '',
-        domain: body.domain || '',
-        city: body.city || '',
-        service: body.service || '',
-        lang: body.lang || 'en',
+        client_name: capMeta(cleanName, 200),
+        client_phone: capMeta(cleanPhone, 80),
+        domain: cleanDomain,
+        city: capMeta(cleanCity, 200),
+        service: capMeta(cleanService, 200),
+        notes: capMeta(cleanNotes, 480),
+        lang: langNorm,
       },
     };
+
+    if (stripeCustomerId) {
+      sessionParams.customer = stripeCustomerId;
+      sessionParams.customer_update = { name: 'auto', address: 'auto' };
+    } else if (cleanEmail) {
+      sessionParams.customer_email = cleanEmail;
+    }
 
     if (mode === 'payment') {
       sessionParams.invoice_creation = {
@@ -333,35 +482,47 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
         invoice_data: {
           metadata: {
             is_checkout_invoice: 'true',
+            order_id: dbOrderId,
+            offer_sku: resolvedSku,
+            domain: cleanDomain,
           },
         },
       };
+      if (cleanEmail) {
+        sessionParams.payment_intent_data = {
+          receipt_email: cleanEmail,
+          metadata: {
+            order_id: dbOrderId,
+            offer_sku: resolvedSku,
+            domain: cleanDomain,
+          },
+        };
+      }
     } else {
       sessionParams.subscription_data = {
         metadata: {
           offer_sku: resolvedSku,
-          domain: body.domain || '',
+          domain: cleanDomain,
           audit_id: body.audit_id || '',
+          order_id: dbOrderId,
+          customer_id: dbCustomerId,
+          city: capMeta(cleanCity, 200),
+          service: capMeta(cleanService, 200),
         },
       };
     }
 
-    if (body.client_email) {
-      sessionParams.customer_email = body.client_email;
-      if (mode === 'payment') {
-        sessionParams.payment_intent_data = {
-          receipt_email: body.client_email,
-        };
-      }
-    }
-
     const session = await stripe.checkout.sessions.create(sessionParams);
+    if (dbOrderId && session.id) {
+      await attachStripeSessionToOrder(env, dbOrderId, session.id);
+    }
 
     return Response.json({
       success: true,
       data: {
         checkout_url: session.url,
         session_id: session.id,
+        order_id: dbOrderId || undefined,
       },
     });
   } catch (err: any) {
@@ -376,23 +537,39 @@ export async function handleGetCheckoutSession(request: Request, env: Env, sessi
   try {
     const stripe = getStripe(env);
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ['invoice', 'payment_intent.latest_charge'],
+      expand: ['invoice', 'payment_intent.latest_charge', 'subscription'],
     });
+    const order = await getOrderBySessionId(env, sessionId);
 
     const invoiceObj = typeof session.invoice === 'object' && session.invoice ? (session.invoice as Stripe.Invoice) : null;
     const paymentIntentObj = typeof session.payment_intent === 'object' && session.payment_intent ? (session.payment_intent as Stripe.PaymentIntent) : null;
     const latestChargeObj = paymentIntentObj && typeof paymentIntentObj.latest_charge === 'object' ? (paymentIntentObj.latest_charge as Stripe.Charge) : null;
+    const subId =
+      typeof session.subscription === 'string'
+        ? session.subscription
+        : session.subscription && typeof session.subscription === 'object'
+          ? (session.subscription as Stripe.Subscription).id
+          : order?.stripe_subscription_id || null;
 
     return Response.json({
       success: true,
       data: {
         id: session.id,
-        customer_email: session.customer_details?.email || session.customer_email,
-        amount_total: session.amount_total,
-        currency: session.currency,
-        invoice_url: invoiceObj?.hosted_invoice_url || null,
+        mode: session.mode,
+        payment_status: session.payment_status,
+        offer_sku: session.metadata?.offer_sku || order?.offer_sku || null,
+        description: session.metadata?.description || null,
+        domain: session.metadata?.domain || order?.domain || null,
+        city: session.metadata?.city || order?.city || null,
+        service: session.metadata?.service || order?.service || null,
+        customer_name: session.customer_details?.name || session.metadata?.client_name || null,
+        customer_email: session.customer_details?.email || session.customer_email || null,
+        amount_total: session.amount_total ?? order?.amount_cents ?? null,
+        currency: session.currency || order?.currency || 'usd',
+        invoice_url: invoiceObj?.hosted_invoice_url || order?.invoice_url || null,
         invoice_pdf: invoiceObj?.invoice_pdf || null,
-        receipt_url: latestChargeObj?.receipt_url || null,
+        receipt_url: latestChargeObj?.receipt_url || order?.receipt_url || null,
+        subscription_id: subId,
       },
     });
   } catch (err: any) {

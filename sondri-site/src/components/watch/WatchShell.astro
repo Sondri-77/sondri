@@ -6,6 +6,7 @@ import '@fontsource/ibm-plex-sans/700.css';
 import '@fontsource-variable/jetbrains-mono';
 import '../../styles/brutal.css';
 import CalModal from '../CalModal.astro';
+import WatchCheckoutModal from './WatchCheckoutModal.astro';
 import { BOOK_HREF, CONTACT_EMAIL, mailto } from '../../data';
 import type { Lang } from '../../i18n';
 
@@ -328,6 +329,7 @@ const navItems = [
     </div>
 
     <CalModal />
+    <WatchCheckoutModal lang={lang} />
 
     <script>
       import { initWatchTopoBackground } from '../../scripts/watch-topo-gl';

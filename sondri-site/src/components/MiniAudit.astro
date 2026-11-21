@@ -831,6 +831,22 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
       }
 
       currentAudit = scanJson.data;
+      try {
+        sessionStorage.setItem(
+          'sondri_watch_intake',
+          JSON.stringify({
+            audit_id: currentAudit.id || '',
+            name,
+            email,
+            phone,
+            domain: currentAudit.domain || url,
+            city: currentAudit.city || city,
+            service: currentAudit.service || service,
+          })
+        );
+      } catch {
+        /* ignore storage restrictions */
+      }
       syncEmailAuditLink(currentAudit);
       renderTechScan(currentAudit);
       loadLighthouseAsync(currentAudit);
@@ -854,6 +870,22 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
       const aiJson = await aiRes.json();
       if (aiJson.success && aiJson.data) {
         currentAudit = aiJson.data;
+        try {
+          sessionStorage.setItem(
+            'sondri_watch_intake',
+            JSON.stringify({
+              audit_id: currentAudit.id || '',
+              name,
+              email,
+              phone,
+              domain: currentAudit.domain || url,
+              city: currentAudit.city || city,
+              service: currentAudit.service || service,
+            })
+          );
+        } catch {
+          /* ignore */
+        }
         syncEmailAuditLink(currentAudit);
         renderAiVisibility(currentAudit);
       }
@@ -1341,10 +1373,36 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
   }
 
   document.getElementById('btnBuyFullAudit')?.addEventListener('click', async () => {
+    const name = (document.getElementById('leadName') as HTMLInputElement)?.value.trim() || '';
+    const email = (document.getElementById('leadEmail') as HTMLInputElement)?.value.trim() || '';
+    const phone = (document.getElementById('leadPhone') as HTMLInputElement)?.value.trim() || '';
+    const cityVal = (document.getElementById('auditCity') as HTMLInputElement)?.value.trim() || '';
+    const serviceVal = (document.getElementById('auditService') as HTMLInputElement)?.value.trim() || '';
+    const domainVal = currentAudit?.domain || (document.getElementById('auditUrl') as HTMLInputElement)?.value.trim() || '';
+
+    if (document.getElementById('watchCheckoutDialog')) {
+      window.dispatchEvent(
+        new CustomEvent('sondri:open-checkout', {
+          detail: {
+            sku: 'aeo_full_audit',
+            prefill: {
+              audit_id: currentAudit?.id || '',
+              name,
+              email,
+              phone,
+              domain: domainVal,
+              city: currentAudit?.city || cityVal,
+              service: currentAudit?.service || serviceVal,
+            },
+          },
+        })
+      );
+      return;
+    }
+
     if (!currentAudit) return;
     const btn = document.getElementById('btnBuyFullAudit') as HTMLButtonElement;
     const spanText = btn.querySelector('[data-audit-i18n="buyBtn"]');
-    const email = (document.getElementById('leadEmail') as HTMLInputElement)?.value.trim();
 
     btn.disabled = true;
     if (spanText) spanText.textContent = I18N[currentLang].buyBtnLoading;
@@ -1355,7 +1413,9 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'aeo_full_audit',
+          client_name: name || undefined,
           client_email: email || undefined,
+          client_phone: phone || undefined,
           audit_id: currentAudit.id,
           domain: currentAudit.domain,
           city: currentAudit.city,

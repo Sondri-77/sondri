@@ -6,6 +6,12 @@ import { handleCreateInvoice, handleListInvoices } from './routes/invoices';
 import { handleStripeWebhook } from './routes/webhooks';
 import { handleCreateCheckoutSession, handleGetCheckoutSession } from './routes/checkout';
 import {
+  handleAdminCustomers,
+  handleAdminOrders,
+  handleAdminSubscriptions,
+  handleCreatePortalSession,
+} from './routes/admin';
+import {
   handleAuditAiVisibility,
   handleAuditLighthouse,
   handleAuditScan,
@@ -99,8 +105,16 @@ export default {
     let response: Response;
 
     // 3. API Router
+    // GET /admin/orders | /admin/subscriptions | /admin/customers
+    if (path === '/admin/orders' && method === 'GET') {
+      response = await handleAdminOrders(request, env);
+    } else if (path === '/admin/subscriptions' && method === 'GET') {
+      response = await handleAdminSubscriptions(request, env);
+    } else if (path === '/admin/customers' && method === 'GET') {
+      response = await handleAdminCustomers(request, env);
+    }
     // POST /customers
-    if (path === '/customers' && method === 'POST') {
+    else if (path === '/customers' && method === 'POST') {
       response = await handleCreateCustomer(request, env);
     } else {
       // Match /customers/:id and its sub-resources
@@ -113,6 +127,10 @@ export default {
         // GET /customers/:id
         if (subPath === '' && method === 'GET') {
           response = await handleGetCustomer(customerId, env);
+        }
+        // POST /customers/:id/portal
+        else if (subPath === '/portal' && method === 'POST') {
+          response = await handleCreatePortalSession(customerId, request, env);
         }
         // POST /customers/:id/subscription
         else if (subPath === '/subscription' && method === 'POST') {

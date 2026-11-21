@@ -170,62 +170,24 @@ export function initWatchScrollAndCheckout() {
     mo.observe(readinessNode, { childList: true, characterData: true, subtree: true });
   }
 
-  // 6. Wire all `[data-watch-checkout]` buttons directly to billing-worker Stripe Checkout
+  // 6. Wire all `[data-watch-checkout]` buttons to the pre-checkout intake modal
   document.querySelectorAll<HTMLButtonElement>('[data-watch-checkout]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
+    btn.addEventListener('click', () => {
       const sku = btn.getAttribute('data-watch-checkout');
       if (!sku) return;
 
-      const labelEl = btn.querySelector<HTMLElement>('[data-btn-label]') || btn;
-      const originalText = labelEl.textContent || '';
-      const langAttr = document.documentElement.lang === 'es' ? 'es' : 'en';
-
-      // Grab domain/email from the MiniAudit intake inputs if the user already filled them
-      const rawUrl = (document.getElementById('auditUrl') as HTMLInputElement | null)?.value?.trim() || '';
-      const email = (document.getElementById('leadEmail') as HTMLInputElement | null)?.value?.trim() || '';
-      const service = (document.getElementById('auditService') as HTMLInputElement | null)?.value?.trim() || '';
-      const city = (document.getElementById('auditCity') as HTMLInputElement | null)?.value?.trim() || '';
-
-      let domain = rawUrl;
-      try {
-        if (rawUrl) {
-          domain = new URL(/^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`).hostname.replace(/^www\./, '');
-        }
-      } catch {
-        domain = rawUrl;
+      const hasModal = Boolean(document.getElementById('watchCheckoutDialog'));
+      if (hasModal) {
+        window.dispatchEvent(
+          new CustomEvent('sondri:open-checkout', {
+            detail: { sku },
+          })
+        );
+        return;
       }
 
-      btn.disabled = true;
-      labelEl.textContent = langAttr === 'es' ? 'Abriendo Stripe…' : 'Opening Stripe…';
-
-      try {
-        const res = await fetch(`${WORKER_BASE}/create-checkout-session`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'watch_offer',
-            offer_sku: sku,
-            domain: domain || undefined,
-            client_email: email || undefined,
-            service: service || undefined,
-            city: city || undefined,
-            lang: langAttr,
-            success_url: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}&type=${encodeURIComponent(sku)}`,
-            cancel_url: window.location.href,
-          }),
-        });
-
-        const json = await res.json();
-        if (json.success && json.data?.checkout_url) {
-          window.location.href = json.data.checkout_url;
-          return;
-        }
-        throw new Error(json.error?.message || 'Unable to start Stripe Checkout');
-      } catch (err: any) {
-        alert(err?.message || 'Connection error reaching Stripe Checkout');
-        btn.disabled = false;
-        labelEl.textContent = originalText;
-      }
+      const langPrefix = document.documentElement.lang === 'es' ? '/es/watch/pricing/' : '/watch/pricing/';
+      window.location.href = `${langPrefix}?plan=${encodeURIComponent(sku)}`;
     });
   });
 }

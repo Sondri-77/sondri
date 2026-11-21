@@ -120,3 +120,96 @@ export interface AiVisibilityResult {
   enginesNotRun: string[];
   circuitBreakerTripped?: boolean;
 }
+
+export type OrderType = 'one_time' | 'subscription' | 'renewal' | 'custom';
+export type OrderStatus = 'checkout_started' | 'paid' | 'expired' | 'refunded' | 'failed';
+
+export interface CustomerRecord {
+  id: string;
+  email: string;
+  name: string | null;
+  phone: string | null;
+  company: string | null;
+  primary_domain: string | null;
+  city: string | null;
+  service: string | null;
+  lang: AuditLang;
+  stripe_customer_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface OrderRecord {
+  id: string;
+  customer_id: string;
+  offer_sku: string;
+  order_type: OrderType;
+  amount_cents: number;
+  currency: string;
+  status: OrderStatus;
+  domain: string | null;
+  city: string | null;
+  service: string | null;
+  notes: string | null;
+  audit_id: string | null;
+  lang: AuditLang;
+  stripe_session_id: string | null;
+  stripe_payment_intent_id: string | null;
+  stripe_invoice_id: string | null;
+  stripe_subscription_id: string | null;
+  receipt_url: string | null;
+  invoice_url: string | null;
+  created_at: string;
+  paid_at: string | null;
+  updated_at: string;
+}
+
+export interface EnrichedOrderRecord extends OrderRecord {
+  customer_email: string;
+  customer_name: string | null;
+  customer_phone: string | null;
+  stripe_customer_id: string | null;
+}
+
+export interface SubscriptionRecord {
+  id: string;
+  customer_id: string;
+  stripe_subscription_id: string;
+  stripe_customer_id: string;
+  offer_sku: string | null;
+  domain: string | null;
+  status: string;
+  amount_cents: number | null;
+  currency: string;
+  interval: string;
+  current_period_start: string | null;
+  current_period_end: string | null;
+  cancel_at_period_end: boolean;
+  canceled_at: string | null;
+  latest_invoice_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface EnrichedSubscriptionRecord extends SubscriptionRecord {
+  customer_email: string;
+  customer_name: string | null;
+  customer_phone: string | null;
+}
+
+export interface CustomerWithStats extends CustomerRecord {
+  orders_count: number;
+  paid_orders_count: number;
+  total_paid_cents: number;
+  active_subscriptions_count: number;
+  last_order_at: string | null;
+}
+
+export interface AdminMetrics {
+  total_paid_cents: number;
+  paid_orders_count: number;
+  abandoned_count: number;
+  active_subscriptions_count: number;
+  active_mrr_cents: number;
+  customers_count: number;
+}
