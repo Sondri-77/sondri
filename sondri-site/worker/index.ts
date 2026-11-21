@@ -1,18 +1,48 @@
-interface AssetsBinding {
-  fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
-}
+import {
+  type Env,
+  authorizeAdminRequest,
+  handleAdminApiProxy,
+  withPrivateSecurityHeaders,
+} from './admin-auth';
 
-export interface Env {
-  ASSETS: AssetsBinding;
-}
+export type { Env };
 
 const APEX_HOST = 'sondri.ai';
 const WWW_HOST = 'www.sondri.ai';
 const WATCH_HOST = 'watch.sondri.ai';
 const ASSET_EXT_RE = /\.(?:css|js|mjs|json|txt|xml|svg|png|jpe?g|webp|gif|ico|woff2?|mp4|webm|webmanifest|map)$/i;
 const ASSET_PREFIX_RE = /^\/(?:_astro|brand|fonts|icons|img|i18n|\.well-known)\//;
-const SHARED_ROOT_PREFIX_RE = /^\/(?:ai-audit|audit|pay|success|privacy|es\/privacy|llms\.txt|llms-full\.txt|robots\.txt|sitemap\.xml|sitemap-index\.xml)(?:\/|$)/;
-const NOINDEX_PREFIX_RE = /^\/(?:pay|success|i18n)(?:\/|$)/;
+const SHARED_ROOT_PREFIX_RE = /^\/(?:ai-audit|audit|pay|success|admin|privacy|es\/privacy|llms\.txt|llms-full\.txt|robots\.txt|sitemap\.xml|sitemap-index\.xml)(?:\/|$)/;
+const NOINDEX_PREFIX_RE = /^\/(?:pay|success|admin|api\/admin|i18n)(?:\/|$)/;
+
+function renderAdminUnauthorizedHtml(status: number, code: string, message: string): string {
+  const safeCode = code.replace(/[<>&"]/g, '');
+  const safeMsg = message.replace(/[<>&"]/g, '');
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>${status} — Sondri Admin</title>
+  <style>
+    body{margin:0;background:#081f1f;color:#ebf3f2;font:15px/1.55 system-ui,-apple-system,sans-serif;display:grid;place-items:center;min-height:100vh;padding:24px}
+    main{max-width:460px;background:#031919;border:1px solid rgba(255,255,255,.32);box-shadow:8px 8px 0 #fdb343;padding:28px}
+    h1{margin:0 0 8px;font-size:20px;color:#fff}
+    p{margin:0 0 12px;color:#b4ccca}
+    code{color:#fdb343;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+    a{color:#fdb343}
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Access Restricted (${status})</h1>
+    <p>${safeMsg}</p>
+    <p><code>${safeCode}</code> · <a href="/">Return to sondri.ai</a></p>
+  </main>
+</body>
+</html>`;
+}
 
 function rewriteWatchHostnamePath(url: URL): URL {
   const path = url.pathname;
@@ -120,6 +150,49 @@ export default {
       const targetHost = rawUrl.hostname === WATCH_HOST ? WATCH_HOST : APEX_HOST;
       const canonical = new URL(rawUrl.pathname + rawUrl.search, `https://${targetHost}`);
       return Response.redirect(canonical.href, 301);
+    }
+
+    const isAdminApiPath = rawUrl.pathname === '/api/admin' || rawUrl.pathname.startsWith('/api/admin/');
+    const isAdminPagePath = rawUrl.pathname === '/admin' || rawUrl.pathname.startsWith('/admin/');
+
+    if (isAdminApiPath || isAdminPagePath) {
+      // Keep Cloudflare Access perimeter strictly on canonical sondri.ai.
+      if (rawUrl.hostname === WATCH_HOST) {
+        if (isAdminApiPath) {
+          return withPrivateSecurityHeaders(
+            Response.json(
+              { success: false, error: { code: 'FORBIDDEN_HOST', message: 'Use sondri.ai for admin endpoints.' } },
+              { status: 403 },
+            ),
+          );
+        }
+        return Response.redirect(`https://${APEX_HOST}${rawUrl.pathname}${rawUrl.search}`, 302);
+      }
+
+      const auth = await authorizeAdminRequest(request, env);
+      if (!auth.ok) {
+        if (isAdminApiPath) {
+          return withPrivateSecurityHeaders(
+            Response.json(
+              { success: false, error: { code: auth.code, message: auth.message } },
+              { status: auth.status },
+            ),
+          );
+        }
+        return withPrivateSecurityHeaders(
+          new Response(renderAdminUnauthorizedHtml(auth.status, auth.code, auth.message), {
+            status: auth.status,
+          }),
+          { contentType: 'text/html; charset=utf-8' },
+        );
+      }
+
+      if (isAdminApiPath) {
+        return handleAdminApiProxy(request, env, auth);
+      }
+
+      const adminAssetRes = await env.ASSETS.fetch(request);
+      return withPrivateSecurityHeaders(adminAssetRes);
     }
 
     const url = rawUrl.hostname === WATCH_HOST ? rewriteWatchHostnamePath(rawUrl) : rawUrl;

@@ -1,6 +1,5 @@
 ---
 import type { Lang } from '../../i18n';
-import { BOOK_HREF } from '../../data';
 import { WATCH_CLIENT_CATALOG, WATCH_INTAKE_PROFILES } from '../../data/watch-catalog';
 
 interface Props {
@@ -232,6 +231,7 @@ const defaultProfile = WATCH_INTAKE_PROFILES.audit[isEs ? 'es' : 'en'];
 <script type="application/json" id="wcmCatalogData" set:html={serializedPayload} />
 
 <script>
+  import { BOOK_HREF } from '../../data';
   import { WORKER_BASE } from '../../scripts/watch-scroll';
   import {
     INTAKE_STORAGE_KEY,
@@ -255,7 +255,8 @@ const defaultProfile = WATCH_INTAKE_PROFILES.audit[isEs ? 'es' : 'en'];
 
   const dialog = document.getElementById('watchCheckoutDialog') as HTMLDialogElement | null;
   if (dialog) {
-    const isEs = dialog.dataset.lang === 'es';
+    const dlg = dialog;
+    const isEs = dlg.dataset.lang === 'es';
     const form = document.getElementById('wcmForm') as HTMLFormElement;
     const closeBtn = document.getElementById('wcmCloseBtn') as HTMLButtonElement;
     const submitBtn = document.getElementById('wcmSubmitBtn') as HTMLButtonElement;
@@ -400,26 +401,26 @@ const defaultProfile = WATCH_INTAKE_PROFILES.audit[isEs ? 'es' : 'en'];
     // Safari fallback for closedby="any" light dismiss (MWG light-dismiss-a-dialog pattern)
     if (!('closedBy' in HTMLDialogElement.prototype)) {
       const isOutside = (e: PointerEvent) => {
-        const r = dialog.getBoundingClientRect();
+        const r = dlg.getBoundingClientRect();
         return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
       };
       let pressedOutside = false;
-      dialog.addEventListener('pointerdown', (e) => {
+      dlg.addEventListener('pointerdown', (e) => {
         pressedOutside = isOutside(e);
       });
-      dialog.addEventListener('pointerup', (e) => {
-        if (pressedOutside && isOutside(e)) dialog.close();
+      dlg.addEventListener('pointerup', (e) => {
+        if (pressedOutside && isOutside(e)) dlg.close();
       });
     }
 
-    dialog.addEventListener('close', () => {
-      dialog.returnValue = '';
+    dlg.addEventListener('close', () => {
+      dlg.returnValue = '';
       submitBtn.disabled = false;
       submitLabel.textContent = isEs ? 'Continuar al pago seguro' : 'Continue to Secure Checkout';
       serverErr.hidden = true;
     });
 
-    closeBtn.addEventListener('click', () => dialog.close('cancel'));
+    closeBtn.addEventListener('click', () => dlg.close('cancel'));
 
     function readSavedIntake(): WatchIntakePrefill {
       let stored: WatchIntakePrefill = {};
@@ -550,8 +551,8 @@ const defaultProfile = WATCH_INTAKE_PROFILES.audit[isEs ? 'es' : 'en'];
       });
       serverErr.hidden = true;
 
-      if (!dialog.open) {
-        dialog.showModal();
+      if (!dlg.open) {
+        dlg.showModal();
         modalTitleEl.focus({ preventScroll: true });
       }
     }
@@ -567,7 +568,7 @@ const defaultProfile = WATCH_INTAKE_PROFILES.audit[isEs ? 'es' : 'en'];
     }
 
     bookInsteadBtn.addEventListener('click', () => {
-      dialog.close('book');
+      dlg.close('book');
       const calTrigger = document.querySelector<HTMLElement>('a[data-cal-link="sondri/discovery"]');
       if (calTrigger) {
         calTrigger.click();
@@ -600,13 +601,13 @@ const defaultProfile = WATCH_INTAKE_PROFILES.audit[isEs ? 'es' : 'en'];
           form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea')
         );
         let firstInvalid: HTMLInputElement | HTMLTextAreaElement | null = null;
-        fields.forEach((inp) => {
+        for (const inp of fields) {
           if (!inp.validity.valid) {
             if (!firstInvalid) firstInvalid = inp;
             inp.classList.add('user-invalid-fallback');
             syncAria(inp, false);
           }
-        });
+        }
         firstInvalid?.focus();
         return;
       }

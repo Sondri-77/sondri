@@ -21,7 +21,7 @@ import {
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-API-Key',
+  'Access-Control-Allow-Headers': 'Content-Type',
 };
 
 function withCors(response: Response): Response {
@@ -34,6 +34,21 @@ function withCors(response: Response): Response {
     statusText: response.statusText,
     headers: newHeaders,
   });
+}
+
+async function timingSafeEqual(a: string, b: string): Promise<boolean> {
+  const encoder = new TextEncoder();
+  const [hashA, hashB] = await Promise.all([
+    crypto.subtle.digest('SHA-256', encoder.encode(a)),
+    crypto.subtle.digest('SHA-256', encoder.encode(b)),
+  ]);
+  const bytesA = new Uint8Array(hashA);
+  const bytesB = new Uint8Array(hashB);
+  let diff = 0;
+  for (let i = 0; i < bytesA.length; i++) {
+    diff |= bytesA[i] ^ bytesB[i];
+  }
+  return diff === 0;
 }
 
 export default {
@@ -90,14 +105,19 @@ export default {
       return withCors(resp);
     }
 
-    // 3. Authentication Check for Admin API Endpoints
+    // 5. Authentication Check for Server-to-Server Admin API Endpoints (no browser CORS)
+    if (!env.API_KEY?.trim()) {
+      return Response.json(
+        { success: false, error: { code: 'API_KEY_NOT_CONFIGURED', message: 'Worker API_KEY secret is not configured.' } },
+        { status: 503 }
+      );
+    }
+
     const apiKeyHeader = request.headers.get('X-API-Key');
-    if (!apiKeyHeader || apiKeyHeader !== env.API_KEY) {
-      return withCors(
-        Response.json(
-          { success: false, error: { code: 'UNAUTHORIZED', message: 'Invalid or missing X-API-Key header' } },
-          { status: 401 }
-        )
+    if (!apiKeyHeader || !(await timingSafeEqual(apiKeyHeader, env.API_KEY))) {
+      return Response.json(
+        { success: false, error: { code: 'UNAUTHORIZED', message: 'Invalid or missing X-API-Key header' } },
+        { status: 401 }
       );
     }
 
@@ -161,7 +181,7 @@ export default {
       }
     }
 
-    return withCors(response);
+    return response;
   },
 };
 

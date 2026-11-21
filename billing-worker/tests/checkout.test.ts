@@ -27,17 +27,30 @@ describe('Billing Worker Checkout & Admin API', () => {
     expect(res.status).toBe(204);
     expect(res.headers.get('Access-Control-Allow-Origin')).toBe('*');
     expect(res.headers.get('Access-Control-Allow-Methods')).toContain('POST');
+    expect(res.headers.get('Access-Control-Allow-Headers')).not.toContain('X-API-Key');
   });
 
-  it('should reject unauthorized requests to admin API routes', async () => {
+  it('should reject unauthorized requests to admin API routes and omit browser CORS on admin endpoints', async () => {
     for (const path of ['/customers', '/admin/orders', '/admin/subscriptions', '/admin/customers']) {
       const req = new Request(`http://localhost:8787${path}`, { method: 'GET' });
       const res = await worker.fetch(req, mockEnv, {} as ExecutionContext);
       expect(res.status).toBe(401);
+      expect(res.headers.get('Access-Control-Allow-Origin')).toBeNull();
       const json: any = await res.json();
       expect(json.success).toBe(false);
       expect(json.error.code).toBe('UNAUTHORIZED');
     }
+
+    const noSecretRes = await worker.fetch(
+      new Request('http://localhost:8787/admin/orders', {
+        method: 'GET',
+        headers: { 'X-API-Key': 'anything' },
+      }),
+      { ...mockEnv, API_KEY: '' },
+      {} as ExecutionContext
+    );
+    expect(noSecretRes.status).toBe(503);
+    expect(noSecretRes.headers.get('Access-Control-Allow-Origin')).toBeNull();
   });
 
   it('should validate custom deposit amount and reject negative or zero values', async () => {
@@ -290,10 +303,13 @@ describe('Billing Worker Checkout & Admin API', () => {
       {} as ExecutionContext
     );
     expect(adminOrdersRes.status).toBe(200);
+    expect(adminOrdersRes.headers.get('Access-Control-Allow-Origin')).toBeNull();
     const adminOrdersJson: any = await adminOrdersRes.json();
     expect(adminOrdersJson.success).toBe(true);
     expect(adminOrdersJson.data.orders.length).toBe(6);
     expect(adminOrdersJson.data.metrics.abandoned_count).toBe(6);
+
+    expect(resSprint.headers.get('Access-Control-Allow-Origin')).toBe('*');
 
     const adminCustRes = await worker.fetch(
       new Request('http://localhost:8787/admin/customers?email=owner@clinica.cl', {

@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 ---
 
 <Base
-  title="Watch Billing & Intake Admin — Sondri"
+  title="Watch Billing & Subscriptions — Sondri"
   description="Internal operational dashboard for Sondri Watch orders, abandoned checkouts, customers, and active subscriptions."
   noindex
 >
@@ -14,55 +14,44 @@ import Base from '../../layouts/Base.astro';
           <span class="label gold-pill">INTERNAL OPS · NOINDEX</span>
           <h1 class="h2 admin-title">Watch Billing &amp; Subscriptions<span class="gdot">.</span></h1>
           <p class="body-s admin-sub">
-            Live operational view over Cloudflare D1 (<code>customers</code>, <code>orders</code>, <code>subscriptions</code>) synced from Stripe webhooks.
+            Secured via Cloudflare Access &amp; same-origin Worker proxy over Cloudflare D1 (<code>customers</code>, <code>orders</code>, <code>subscriptions</code>). No API secrets are stored or sent in the browser.
           </p>
         </div>
 
-        <div id="adminControls" class="admin-ctrl-row" hidden>
+        <div id="adminControls" class="admin-ctrl-row">
+          <span id="adminSessionPill" class="session-pill">CHECKING SESSION…</span>
           <button type="button" id="btnRefreshAdmin" class="btn btn-outline-light btn-sm">Refresh ↻</button>
           <button type="button" id="btnExportCsv" class="btn btn-outline-light btn-sm">Export CSV ↓</button>
-          <button type="button" id="btnSignOutAdmin" class="btn btn-outline-light btn-sm">Sign out</button>
+          <a id="btnSignOutAdmin" href="/cdn-cgi/access/logout" class="btn btn-outline-light btn-sm" hidden>Sign out</a>
         </div>
       </div>
 
-      <!-- API Key Unlock Card -->
-      <div id="adminUnlockCard" class="unlock-card">
-        <h2 class="h4 unlock-h">Enter Worker API Key</h2>
-        <p class="body-s unlock-b">
-          Authenticates directly against <code id="workerTargetDisplay">billing.sondri.ai</code> using your <code>X-API-Key</code> secret (<code>sessionStorage</code> only).
-        </p>
-        <form id="adminAuthForm" class="unlock-form">
-          <input
-            type="password"
-            id="adminApiKeyInput"
-            class="admin-input"
-            placeholder="Paste billing-worker API_KEY…"
-            required
-            autocomplete="off"
-          />
-          <button type="submit" id="btnUnlockAdmin" class="btn btn-gold">Unlock Dashboard →</button>
-        </form>
-        <p id="adminAuthErr" class="admin-err" hidden></p>
+      <div id="adminErrorBanner" class="error-banner" role="alert" hidden>
+        <div class="error-copy">
+          <strong class="error-title" id="adminErrorTitle">Unable to load billing data</strong>
+          <p class="body-s error-msg" id="adminErrorMsg"></p>
+        </div>
+        <button type="button" id="btnRetryAdmin" class="btn btn-gold btn-sm">Retry ↻</button>
       </div>
 
       <!-- Dashboard Workspace -->
-      <div id="adminWorkspace" hidden>
+      <div id="adminWorkspace">
         <div class="kpi-grid">
           <div class="kpi-card">
             <span class="label kpi-l">Paid Revenue</span>
-            <strong class="kpi-v" id="kpiRevenue">$0</strong>
+            <strong class="kpi-v" id="kpiRevenue">—</strong>
           </div>
           <div class="kpi-card">
             <span class="label kpi-l">Paid Orders</span>
-            <strong class="kpi-v" id="kpiPaidOrders">0</strong>
+            <strong class="kpi-v" id="kpiPaidOrders">—</strong>
           </div>
           <div class="kpi-card">
             <span class="label kpi-l">Active Subscriptions / MRR</span>
-            <strong class="kpi-v" id="kpiMrr">0 · $0/mo</strong>
+            <strong class="kpi-v" id="kpiMrr">—</strong>
           </div>
           <div class="kpi-card">
             <span class="label kpi-l">Abandoned / Started</span>
-            <strong class="kpi-v warn" id="kpiAbandoned">0</strong>
+            <strong class="kpi-v warn" id="kpiAbandoned">—</strong>
           </div>
         </div>
 
@@ -107,7 +96,9 @@ import Base from '../../layouts/Base.astro';
                   <th>Docs</th>
                 </tr>
               </thead>
-              <tbody id="ordersTbody"></tbody>
+              <tbody id="ordersTbody">
+                <tr><td colspan="7" class="empty-cell">Loading orders…</td></tr>
+              </tbody>
             </table>
           </div>
         </div>
@@ -128,7 +119,9 @@ import Base from '../../layouts/Base.astro';
                   <th>Billing Portal</th>
                 </tr>
               </thead>
-              <tbody id="subsTbody"></tbody>
+              <tbody id="subsTbody">
+                <tr><td colspan="7" class="empty-cell">Loading subscriptions…</td></tr>
+              </tbody>
             </table>
           </div>
         </div>
@@ -149,34 +142,27 @@ import Base from '../../layouts/Base.astro';
                   <th>Total Spent</th>
                 </tr>
               </thead>
-              <tbody id="customersTbody"></tbody>
+              <tbody id="customersTbody">
+                <tr><td colspan="7" class="empty-cell">Loading customers…</td></tr>
+              </tbody>
             </table>
           </div>
         </div>
 
-        <p id="adminStatusNote" class="body-s status-note"></p>
+        <p id="adminStatusNote" class="body-s status-note">Connecting to same-origin /api/admin proxy…</p>
       </div>
     </div>
   </section>
 </Base>
 
 <script>
-  const WORKER_BASE =
-    window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'http://localhost:8787'
-      : 'https://billing.sondri.ai';
+  const API_PREFIX = '/api/admin';
 
-  const KEY_STORAGE = 'sondri_admin_api_key';
-
-  const workerDisplay = document.getElementById('workerTargetDisplay');
-  if (workerDisplay) workerDisplay.textContent = WORKER_BASE;
-
-  const unlockCard = document.getElementById('adminUnlockCard') as HTMLElement;
-  const workspace = document.getElementById('adminWorkspace') as HTMLElement;
-  const controls = document.getElementById('adminControls') as HTMLElement;
-  const authForm = document.getElementById('adminAuthForm') as HTMLFormElement;
-  const apiKeyInput = document.getElementById('adminApiKeyInput') as HTMLInputElement;
-  const authErr = document.getElementById('adminAuthErr') as HTMLElement;
+  const sessionPill = document.getElementById('adminSessionPill') as HTMLElement;
+  const signOutLink = document.getElementById('btnSignOutAdmin') as HTMLAnchorElement;
+  const errorBanner = document.getElementById('adminErrorBanner') as HTMLElement;
+  const errorTitle = document.getElementById('adminErrorTitle') as HTMLElement;
+  const errorMsg = document.getElementById('adminErrorMsg') as HTMLElement;
   const statusFilter = document.getElementById('adminStatusFilter') as HTMLSelectElement;
   const searchInput = document.getElementById('adminSearchInput') as HTMLInputElement;
   const statusNote = document.getElementById('adminStatusNote') as HTMLElement;
@@ -217,36 +203,26 @@ import Base from '../../layouts/Base.astro';
     return `<span class="st-pill ${cls}">${esc(st)}</span>`;
   }
 
-  function getStoredKey(): string {
-    try {
-      return sessionStorage.getItem(KEY_STORAGE) || '';
-    } catch {
-      return '';
-    }
-  }
-
-  function setStoredKey(k: string) {
-    try {
-      if (k) sessionStorage.setItem(KEY_STORAGE, k);
-      else sessionStorage.removeItem(KEY_STORAGE);
-    } catch {
-      /* ignore */
-    }
-  }
-
   async function apiFetch(path: string, init?: RequestInit) {
-    const key = getStoredKey();
-    const res = await fetch(`${WORKER_BASE}${path}`, {
+    const res = await fetch(`${API_PREFIX}${path}`, {
       ...init,
+      credentials: 'same-origin',
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Key': key,
         ...(init?.headers || {}),
       },
     });
-    const json = await res.json();
-    if (!res.ok || !json.success) {
-      throw new Error(json?.error?.message || `HTTP ${res.status}`);
+    const text = await res.text();
+    let json: any = null;
+    try {
+      json = JSON.parse(text);
+    } catch {
+      /* non-json response */
+    }
+    if (!res.ok || !json?.success) {
+      const err = new Error(json?.error?.message || `HTTP ${res.status}`);
+      (err as any).code = json?.error?.code || `HTTP_${res.status}`;
+      throw err;
     }
     return json.data;
   }
@@ -262,12 +238,17 @@ import Base from '../../layouts/Base.astro';
         : latestOrders
             .map((o) => {
               const market = [o.city, o.service].filter(Boolean).join(' · ');
-              const docs = [
-                o.receipt_url ? `<a href="${esc(o.receipt_url)}" target="_blank" rel="noopener" class="doc-link">Receipt</a>` : '',
-                o.invoice_url ? `<a href="${esc(o.invoice_url)}" target="_blank" rel="noopener" class="doc-link">Invoice</a>` : '',
-              ]
-                .filter(Boolean)
-                .join(' · ') || '—';
+              const docs =
+                [
+                  o.receipt_url
+                    ? `<a href="${esc(o.receipt_url)}" target="_blank" rel="noopener" class="doc-link">Receipt</a>`
+                    : '',
+                  o.invoice_url
+                    ? `<a href="${esc(o.invoice_url)}" target="_blank" rel="noopener" class="doc-link">Invoice</a>`
+                    : '',
+                ]
+                  .filter(Boolean)
+                  .join(' · ') || '—';
               return `<tr>
                 <th scope="row">${esc(fmtDate(o.created_at))}</th>
                 <td><strong>${esc(o.customer_name || 'Client')}</strong><br><span class="sub-cell">${esc(o.customer_email)}${o.customer_phone ? ` · ${esc(o.customer_phone)}` : ''}</span></td>
@@ -346,8 +327,24 @@ import Base from '../../layouts/Base.astro';
     });
   }
 
+  async function loadSessionInfo() {
+    try {
+      const me = await apiFetch('/me');
+      if (me?.mode === 'cloudflare_access') {
+        sessionPill.textContent = `CLOUDFLARE ACCESS · ${me.email}`;
+        signOutLink.hidden = false;
+      } else {
+        sessionPill.textContent = 'LOCAL DEV PROXY';
+        signOutLink.hidden = true;
+      }
+    } catch {
+      sessionPill.textContent = 'SESSION PENDING';
+      signOutLink.hidden = true;
+    }
+  }
+
   async function loadDashboard() {
-    authErr.hidden = true;
+    errorBanner.hidden = true;
     const status = statusFilter.value;
     const q = searchInput.value.trim();
     const qs = (extra: Record<string, string>) => {
@@ -361,9 +358,9 @@ import Base from '../../layouts/Base.astro';
 
     try {
       const [ordData, subData, custData] = await Promise.all([
-        apiFetch(`/admin/orders${qs({ status: activeTab === 'orders' ? status : '', q, limit: '200' })}`),
-        apiFetch(`/admin/subscriptions${qs({ status: activeTab === 'subscriptions' ? status : '', q, limit: '200' })}`),
-        apiFetch(`/admin/customers${qs({ q, limit: '200' })}`),
+        apiFetch(`/orders${qs({ status: activeTab === 'orders' ? status : '', q, limit: '200' })}`),
+        apiFetch(`/subscriptions${qs({ status: activeTab === 'subscriptions' ? status : '', q, limit: '200' })}`),
+        apiFetch(`/customers${qs({ q, limit: '200' })}`),
       ]);
 
       latestOrders = ordData.orders || [];
@@ -377,37 +374,30 @@ import Base from '../../layouts/Base.astro';
       document.getElementById('kpiAbandoned')!.textContent = String(m.abandoned_count || 0);
 
       renderTables();
-      unlockCard.hidden = true;
-      workspace.hidden = false;
-      controls.hidden = false;
-      statusNote.textContent = `Loaded ${latestOrders.length} orders, ${latestSubs.length} subscriptions, and ${latestCustomers.length} customers from ${WORKER_BASE}.`;
+      statusNote.textContent = `Loaded ${latestOrders.length} orders, ${latestSubs.length} subscriptions, and ${latestCustomers.length} customers via /api/admin proxy.`;
     } catch (err: any) {
-      if (err?.message?.includes('UNAUTHORIZED') || err?.message?.includes('401')) {
-        setStoredKey('');
-        workspace.hidden = true;
-        controls.hidden = true;
-        unlockCard.hidden = false;
-      }
-      authErr.textContent = err?.message || 'Unable to connect to billing-worker.';
-      authErr.hidden = false;
+      const code = err?.code || '';
+      errorTitle.textContent =
+        code === 'LOCAL_WORKER_OFFLINE'
+          ? 'Local billing-worker is not running'
+          : 'Unable to load billing data';
+      errorMsg.textContent = err?.message || 'Unable to reach billing backend through /api/admin.';
+      errorBanner.hidden = false;
+
+      document.getElementById('ordersTbody')!.innerHTML =
+        '<tr><td colspan="7" class="empty-cell">No data loaded yet.</td></tr>';
+      document.getElementById('subsTbody')!.innerHTML =
+        '<tr><td colspan="7" class="empty-cell">No data loaded yet.</td></tr>';
+      document.getElementById('customersTbody')!.innerHTML =
+        '<tr><td colspan="7" class="empty-cell">No data loaded yet.</td></tr>';
+      statusNote.textContent = 'Waiting for billing proxy connection.';
     }
   }
 
-  authForm?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const key = apiKeyInput.value.trim();
-    if (!key) return;
-    setStoredKey(key);
-    await loadDashboard();
-  });
-
   document.getElementById('btnRefreshAdmin')?.addEventListener('click', loadDashboard);
-  document.getElementById('btnSignOutAdmin')?.addEventListener('click', () => {
-    setStoredKey('');
-    apiKeyInput.value = '';
-    workspace.hidden = true;
-    controls.hidden = true;
-    unlockCard.hidden = false;
+  document.getElementById('btnRetryAdmin')?.addEventListener('click', async () => {
+    await loadSessionInfo();
+    await loadDashboard();
   });
 
   document.querySelectorAll<HTMLButtonElement>('[data-admin-tab]').forEach((tabBtn) => {
@@ -441,7 +431,8 @@ import Base from '../../layouts/Base.astro';
   });
 
   document.getElementById('btnExportCsv')?.addEventListener('click', () => {
-    const rows = activeTab === 'orders' ? latestOrders : activeTab === 'subscriptions' ? latestSubs : latestCustomers;
+    const rows =
+      activeTab === 'orders' ? latestOrders : activeTab === 'subscriptions' ? latestSubs : latestCustomers;
     if (!rows.length) return;
     const keys = Object.keys(rows[0]);
     const csv = [
@@ -456,9 +447,7 @@ import Base from '../../layouts/Base.astro';
     URL.revokeObjectURL(a.href);
   });
 
-  if (getStoredKey()) {
-    loadDashboard();
-  }
+  Promise.all([loadSessionInfo(), loadDashboard()]);
 </script>
 
 <style is:global>
@@ -477,6 +466,10 @@ import Base from '../../layouts/Base.astro';
 </style>
 
 <style>
+  [hidden] {
+    display: none !important;
+  }
+
   .admin-section {
     min-height: calc(100vh - var(--nav-h));
   }
@@ -505,12 +498,27 @@ import Base from '../../layouts/Base.astro';
 
   .admin-sub {
     color: var(--pale);
+    max-width: 64ch;
   }
 
-  .admin-ctrl-row:not([hidden]) {
+  .admin-ctrl-row {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 10px;
+  }
+
+  .session-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid rgba(94, 234, 212, 0.35);
+    background: rgba(94, 234, 212, 0.08);
+    color: #99f6e4;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 
   .btn-outline-light {
@@ -529,27 +537,32 @@ import Base from '../../layouts/Base.astro';
     font-size: 12px;
   }
 
-  .unlock-card {
-    max-width: 560px;
-    background: var(--teal-deep);
-    border: 1px solid var(--line);
-    box-shadow: 10px 10px 0 var(--gold);
-    padding: var(--s-32);
-  }
-
-  .unlock-h {
-    margin-bottom: 8px;
-  }
-
-  .unlock-b {
-    color: var(--pale);
-    margin-bottom: var(--s-24);
-  }
-
-  .unlock-form {
+  .error-banner:not([hidden]) {
     display: flex;
-    gap: 12px;
+    justify-content: space-between;
+    align-items: center;
     flex-wrap: wrap;
+    gap: var(--s-16);
+    padding: 16px 20px;
+    margin-bottom: var(--s-24);
+    background: var(--teal-deep);
+    border: 1px solid rgba(253, 179, 67, 0.55);
+  }
+
+  .error-copy {
+    min-width: 0;
+  }
+
+  .error-title {
+    display: block;
+    color: var(--gold);
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  .error-msg {
+    color: #e4efed;
+    margin: 0;
   }
 
   .admin-input,
@@ -562,12 +575,6 @@ import Base from '../../layouts/Base.astro';
     padding: 11px 14px;
     min-width: 220px;
     flex: 1 1 220px;
-  }
-
-  .admin-err {
-    margin-top: 12px;
-    color: #fca5a5;
-    font-size: 13px;
   }
 
   .kpi-grid {
@@ -821,10 +828,6 @@ import Base from '../../layouts/Base.astro';
   @media (max-width: 560px) {
     .kpi-grid {
       grid-template-columns: 1fr;
-    }
-
-    .unlock-card {
-      padding: var(--s-24);
     }
   }
 </style>
