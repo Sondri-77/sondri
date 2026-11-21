@@ -2,6 +2,7 @@ import { getStripe } from '../lib/stripe';
 import { sendDiscordNotification } from '../lib/discord';
 import { appendToGoogleSheet } from '../lib/sheets';
 import {
+  deleteWebhookEvent,
   getCustomerById,
   getCustomerByStripeId,
   getOrderBySessionId,
@@ -330,7 +331,7 @@ export async function handleStripeWebhook(
         const linkedCustomer = expiredOrder?.customer_id ? await getCustomerById(env, expiredOrder.customer_id) : null;
         const name = sessionPayload.metadata?.client_name || linkedCustomer?.name || 'Prospect';
         const email = sessionPayload.customer_details?.email || sessionPayload.customer_email || linkedCustomer?.email || 'N/A';
-        const phone = sessionPayload.metadata?.client_phone || linkedCustomer?.phone || '';
+        const phone = sessionPayload.metadata?.client_phone || '';
 
         let msg = `**Prospect:** ${name}\n**Email:** ${email}\n**Selected Plan:** \`${offerSku}\` ($${amount} ${currency})`;
         if (phone) msg += `\n**Phone / WhatsApp:** ${phone}`;
@@ -527,6 +528,11 @@ export async function handleStripeWebhook(
     });
   } catch (err: any) {
     console.error(`[Webhook Processing Error] ${err.message}`, err);
+    try {
+      await deleteWebhookEvent(env, event.id);
+    } catch (rollbackErr: any) {
+      console.error(`[Webhook Idempotency Rollback Error] ${rollbackErr?.message || rollbackErr}`);
+    }
     // CRITICAL: Return 500 for transient processing errors so Stripe retries automatically
     return new Response(`Internal Webhook Handler Error: ${err.message}`, { status: 500 });
   }

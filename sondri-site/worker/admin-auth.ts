@@ -50,6 +50,9 @@ export function withPrivateSecurityHeaders(
   headers.set('Cache-Control', 'private, no-store');
   headers.set('X-Content-Type-Options', 'nosniff');
   headers.set('X-Robots-Tag', 'noindex, nofollow');
+  headers.set('X-Frame-Options', 'DENY');
+  headers.set('Content-Security-Policy', "frame-ancestors 'none'");
+  headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   return new Response(res.body, {
     status: res.status,
     statusText: res.statusText,
@@ -159,7 +162,7 @@ export async function verifyCloudflareAccessJwt(
 
   const [headerB64, payloadB64, sigB64] = parts;
   const header = decodeBase64UrlJson<{ alg?: string; kid?: string }>(headerB64);
-  if (header?.alg !== 'RS256' || !header?.kid) {
+  if (header?.alg !== 'RS256' || typeof header?.kid !== 'string' || !header.kid.trim()) {
     throw new Error('INVALID_JWT_HEADER');
   }
 
@@ -178,7 +181,7 @@ export async function verifyCloudflareAccessJwt(
     throw new Error('INVALID_ISSUER');
   }
 
-  const expectedAud = env.CF_ACCESS_AUD || '';
+  const expectedAud = env.CF_ACCESS_AUD?.trim() || '';
   const audValid =
     typeof payload?.aud === 'string'
       ? payload.aud === expectedAud
@@ -234,7 +237,14 @@ export async function authorizeAdminRequest(
     return { ok: true, email: 'local-dev@localhost', mode: 'local_dev' };
   }
 
-  if (!env.CF_ACCESS_TEAM_DOMAIN?.trim() || !env.CF_ACCESS_AUD?.trim()) {
+  const allowedSet = new Set(
+    (env.CF_ACCESS_ALLOWED_EMAILS || '')
+      .split(',')
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean),
+  );
+
+  if (!env.CF_ACCESS_TEAM_DOMAIN?.trim() || !env.CF_ACCESS_AUD?.trim() || allowedSet.size === 0) {
     return {
       ok: false,
       status: 503,
@@ -265,28 +275,19 @@ export async function authorizeAdminRequest(
     };
   }
 
-  const allowedRaw = env.CF_ACCESS_ALLOWED_EMAILS?.trim();
-  if (allowedRaw) {
-    const allowedSet = new Set(
-      allowedRaw
-        .split(',')
-        .map((e) => e.trim().toLowerCase())
-        .filter(Boolean),
-    );
-    const emailLower = verified.email.trim().toLowerCase();
-    if (!emailLower || !allowedSet.has(emailLower)) {
-      return {
-        ok: false,
-        status: 403,
-        code: 'ACCESS_FORBIDDEN',
-        message: 'Your account is not permitted to access Sondri billing admin.',
-      };
-    }
+  const emailLower = verified.email.trim().toLowerCase();
+  if (!emailLower || !allowedSet.has(emailLower)) {
+    return {
+      ok: false,
+      status: 403,
+      code: 'ACCESS_FORBIDDEN',
+      message: 'Your account is not permitted to access Sondri billing admin.',
+    };
   }
 
   return {
     ok: true,
-    email: verified.email || verified.sub || 'authenticated-user',
+    email: verified.email.trim(),
     mode: 'cloudflare_access',
   };
 }

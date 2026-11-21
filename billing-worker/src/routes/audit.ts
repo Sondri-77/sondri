@@ -67,6 +67,13 @@ async function verifyTurnstile(token: string | undefined, secret: string, ip: st
   }
 }
 
+function toPublicAuditResponse(audit: StoredAudit): StoredAudit {
+  return {
+    ...audit,
+    full_audit: null,
+  };
+}
+
 export async function handleAuditScan(request: Request, env: Env): Promise<Response> {
   try {
     const body: any = await request.json();
@@ -90,9 +97,27 @@ export async function handleAuditScan(request: Request, env: Env): Promise<Respo
     if (!forceRefresh && !userCity && !userService) {
       const cached = await getCachedAuditByDomain(env, normalized.domain, lang);
       if (cached && cached.tech_scan) {
+        const now = new Date();
+        const expires = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+        const callerRecord: StoredAudit = {
+          id: `aud_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`,
+          domain: cached.domain,
+          url: cached.url,
+          lang: cached.lang,
+          city: cached.city,
+          service: cached.service,
+          tech_scan: { ...cached.tech_scan },
+          lighthouse: cached.lighthouse,
+          questions: [...(cached.questions || [])],
+          ai_visibility: null,
+          full_audit: null,
+          created_at: now.toISOString(),
+          expires_at: expires.toISOString(),
+        };
+        await saveAuditStep1(env, callerRecord);
         return Response.json({
           success: true,
-          data: { ...cached, cached: true },
+          data: { ...toPublicAuditResponse(callerRecord), cached: true },
         });
       }
     }
@@ -109,6 +134,9 @@ export async function handleAuditScan(request: Request, env: Env): Promise<Respo
 
     techScan.inferredCity = inferred.city;
     techScan.inferredService = inferred.service;
+    if (userCity || userService) {
+      techScan.customInput = true;
+    }
 
     const now = new Date();
     const expires = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -260,6 +288,12 @@ export async function handleAuditAiVisibility(
     const finalService = customService || audit.service;
     const finalQuestions =
       customQuestions.length > 0 ? customQuestions : audit.questions.slice(0, 3);
+    const isCustomized =
+      Boolean(audit.tech_scan.customInput) ||
+      (Boolean(customCity) && customCity !== audit.city) ||
+      (Boolean(customService) && customService !== audit.service) ||
+      (customQuestions.length > 0 &&
+        JSON.stringify(customQuestions) !== JSON.stringify(audit.questions));
 
     // 1. Always capture the lead in D1
     const leadId = `lead_${crypto.randomUUID().replace(/-/g, '').slice(0, 14)}`;
@@ -336,15 +370,19 @@ export async function handleAuditAiVisibility(
       fireLeadNotifications(audit.ai_visibility);
       return Response.json({
         success: true,
-        data: { ...audit, cached: true },
+        data: { ...toPublicAuditResponse(audit), cached: true },
       });
     }
 
-    // 3. Check domain-level cache in D1 for identical questions ($0)
-    const domainCached = await getCachedAuditByDomain(env, audit.domain, audit.lang);
+    // 3. Check domain-level cache in D1 for identical default-market prompt sets ($0)
+    const domainCached = !isCustomized
+      ? await getCachedAuditByDomain(env, audit.domain, audit.lang)
+      : null;
     if (
       domainCached &&
       domainCached.ai_visibility &&
+      domainCached.service === finalService &&
+      domainCached.city === finalCity &&
       JSON.stringify(domainCached.questions) === JSON.stringify(finalQuestions)
     ) {
       await updateAuditAiVisibility(
@@ -364,7 +402,7 @@ export async function handleAuditAiVisibility(
       fireLeadNotifications(audit.ai_visibility);
       return Response.json({
         success: true,
-        data: { ...audit, cached: true },
+        data: { ...toPublicAuditResponse(audit), cached: true },
       });
     }
 
@@ -406,7 +444,7 @@ export async function handleAuditAiVisibility(
       return Response.json({
         success: true,
         data: {
-          ...audit,
+          ...toPublicAuditResponse(audit),
           city: finalCity,
           service: finalService,
           questions: finalQuestions,
@@ -423,6 +461,9 @@ export async function handleAuditAiVisibility(
       audit.lang,
       env.GEMINI_API_KEY
     );
+    if (isCustomized) {
+      aiVisibility.customInput = true;
+    }
 
     audit.tech_scan.readinessScore = computeCombinedAiScore(
       audit.tech_scan.readinessScore,
@@ -437,13 +478,6 @@ export async function handleAuditAiVisibility(
       finalCity,
       finalService
     );
-    await saveAuditStep1(env, {
-      ...audit,
-      city: finalCity,
-      service: finalService,
-      questions: finalQuestions,
-      ai_visibility: aiVisibility,
-    });
 
     audit.questions = finalQuestions;
     audit.city = finalCity;
@@ -454,7 +488,7 @@ export async function handleAuditAiVisibility(
 
     return Response.json({
       success: true,
-      data: { ...audit, cached: false },
+      data: { ...toPublicAuditResponse(audit), cached: false },
     });
   } catch (err: any) {
     return Response.json(
@@ -476,13 +510,13 @@ export async function handleGetAudit(
   auditId: string
 ): Promise<Response> {
   const audit = await getAuditById(env, auditId);
-  if (!audit) {
+  if (!audit || audit.expires_at <= new Date().toISOString()) {
     return Response.json(
       { success: false, error: { code: 'NOT_FOUND', message: 'Audit not found' } },
       { status: 404 }
     );
   }
-  return Response.json({ success: true, data: audit });
+  return Response.json({ success: true, data: toPublicAuditResponse(audit) });
 }
 
 export async function runBackgroundFullAuditBaseline(

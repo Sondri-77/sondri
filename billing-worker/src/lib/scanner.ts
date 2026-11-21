@@ -62,11 +62,12 @@ async function fetchWithTimeout(url: string, timeoutMs: number = 6500): Promise<
   }
 }
 
-function stripTags(html: string): string {
+export function stripTags(html: string): string {
   return html
-    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ')
+    .replace(/<script[\s\S]*?(?:<\/script>|$)/gi, ' ')
+    .replace(/<style[\s\S]*?(?:<\/style>|$)/gi, ' ')
+    .replace(/<[^>]*>?/g, ' ')
+    .replace(/[<>]/g, ' ')
     .replace(/&nbsp;/gi, ' ')
     .replace(/&amp;/gi, '&')
     .replace(/&quot;/gi, '"')

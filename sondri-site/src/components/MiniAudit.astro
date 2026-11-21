@@ -513,7 +513,13 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
 
     const brandTitle = document.getElementById('detectedBrandTitle');
     if (brandTitle) {
-      brandTitle.innerHTML = `${scan.detectedBrand || audit.domain} <span class="gdot">.</span>`;
+      const dot = document.createElement('span');
+      dot.className = 'gdot';
+      dot.textContent = '.';
+      brandTitle.replaceChildren(
+        document.createTextNode(`${String(scan.detectedBrand || audit.domain || '')} `),
+        dot
+      );
     }
 
     const metaLine = document.getElementById('detectedMetaLine');
@@ -554,7 +560,7 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
         .map(
           (item) => `
           <div class="signal-row">
-            <span class="sig-label">${item.label}</span>
+            <span class="sig-label">${escapeHtml(item.label)}</span>
             <span class="label sig-status ${item.ok ? 'ok' : item.optional ? 'opt' : 'miss'}">
               ${item.ok ? (currentLang === 'es' ? 'DETECTADO' : 'FOUND') : item.optional ? (currentLang === 'es' ? 'OPCIONAL' : 'OPTIONAL') : (currentLang === 'es' ? 'FALTA' : 'MISSING')}
             </span>
@@ -569,7 +575,7 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
         .map(
           (b: any) => `
           <div class="signal-row">
-            <span class="sig-label">${b.bot}</span>
+            <span class="sig-label">${escapeHtml(b.bot)}</span>
             <span class="label sig-status ${b.allowed ? 'ok' : 'miss'}">
               ${b.allowed ? (currentLang === 'es' ? 'PERMITIDO' : 'ALLOWED') : (currentLang === 'es' ? 'BLOQUEADO' : 'BLOCKED')}
             </span>
@@ -583,7 +589,7 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
     if (gapsBlock && gapsList) {
       if (Array.isArray(scan.gaps) && scan.gaps.length > 0) {
         gapsBlock.style.display = 'block';
-        gapsList.innerHTML = scan.gaps.map((g: string) => `<li>${g}</li>`).join('');
+        gapsList.innerHTML = scan.gaps.map((g: string) => `<li>${escapeHtml(g)}</li>`).join('');
       } else {
         gapsBlock.style.display = 'none';
       }
@@ -673,8 +679,8 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
             .map(
               (m) => `
               <div class="signal-row">
-                <span class="sig-label">${m.label}</span>
-                <span class="label sig-status ok">${m.val}</span>
+                <span class="sig-label">${escapeHtml(m.label)}</span>
+                <span class="label sig-status ok">${escapeHtml(m.val)}</span>
               </div>`
             )
             .join('');
@@ -685,8 +691,8 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
               .map(
                 (d: any) => `
                 <div class="signal-row">
-                  <span class="sig-label">${d.title}${d.displayValue ? ` — <small>${d.displayValue}</small>` : ''}</span>
-                  <span class="label sig-status ${d.score >= 50 ? 'opt' : 'miss'}">${d.score}/100</span>
+                  <span class="sig-label">${escapeHtml(d.title)}${d.displayValue ? ` — <small>${escapeHtml(d.displayValue)}</small>` : ''}</span>
+                  <span class="label sig-status ${d.score >= 50 ? 'opt' : 'miss'}">${escapeHtml(d.score)}/100</span>
                 </div>`
               )
               .join('');
@@ -765,23 +771,23 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
 
           const comps =
             Array.isArray(run.competitorsNamed) && run.competitorsNamed.length > 0
-              ? `<p class="body-s run-meta"><strong>${currentLang === 'es' ? 'Nombrados en su lugar:' : 'Named instead:'}</strong> ${run.competitorsNamed.join(', ')}</p>`
+              ? `<p class="body-s run-meta"><strong>${currentLang === 'es' ? 'Nombrados en su lugar:' : 'Named instead:'}</strong> ${run.competitorsNamed.map((c: any) => escapeHtml(c)).join(', ')}</p>`
               : '';
 
           const cites =
             Array.isArray(run.sourcesCited) && run.sourcesCited.length > 0
               ? `<p class="body-s run-meta"><strong>${currentLang === 'es' ? 'Fuentes citadas:' : 'Sources cited:'}</strong> ${run.sourcesCited
-                  .map((s: any) => s.title || s.domain)
+                  .map((s: any) => escapeHtml(s.title || s.domain))
                   .join(' · ')}</p>`
               : '';
 
           return `
             <div class="run-row">
               <div class="run-top">
-                <p class="h6 run-q"><span class="label">0${idx + 1}</span> ${run.question}</p>
+                <p class="h6 run-q"><span class="label">0${idx + 1}</span> ${escapeHtml(run.question)}</p>
                 <span class="label sig-status ${statusClass}">${statusLabel}</span>
               </div>
-              <p class="run-excerpt">${run.answerExcerpt}</p>
+              <p class="run-excerpt">${escapeHtml(run.answerExcerpt)}</p>
               ${comps}
               ${cites}
             </div>
@@ -903,7 +909,8 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
   function openAuditPdfReport(audit: any, lang: 'en' | 'es') {
@@ -976,7 +983,7 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
     const runs = Array.isArray(ai.runs) ? ai.runs : [];
 
     const html = `<!DOCTYPE html>
-<html lang="${lang}">
+<html lang="${escapeHtml(lang)}">
 <head>
   <meta charset="utf-8" />
   <title>Sondri AEO & GEO Audit — ${escapeHtml(audit.domain)}</title>
@@ -1196,23 +1203,23 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
     <div class="kpi-grid">
       <div class="kpi-card">
         <div class="kpi-label">${isEs ? 'Preparación IA' : 'AI Readiness Score'}</div>
-        <div class="kpi-val">${scan.readinessScore}/100</div>
+        <div class="kpi-val">${escapeHtml(scan.readinessScore)}/100</div>
         <div class="kpi-note">${isEs ? 'Schema, bots y entidad' : 'Crawlers, schema & entity'}</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">Lighthouse SEO</div>
-        <div class="kpi-val">${lh.seoScore != null ? `${lh.seoScore}/100` : 'N/A'}</div>
+        <div class="kpi-val">${lh.seoScore != null ? `${escapeHtml(lh.seoScore)}/100` : 'N/A'}</div>
         <div class="kpi-note">${lh.isCrawlable === false ? 'Blocked from indexing' : 'Indexable & crawlable'}</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">${isEs ? 'Velocidad Móvil' : 'Mobile Speed'}</div>
-        <div class="kpi-val">${lh.performanceScore != null ? `${lh.performanceScore}/100` : 'N/A'}</div>
+        <div class="kpi-val">${lh.performanceScore != null ? `${escapeHtml(lh.performanceScore)}/100` : 'N/A'}</div>
         <div class="kpi-note">${escapeHtml(lh.lcpDisplay ? `LCP: ${lh.lcpDisplay}` : 'Google PageSpeed v5')}</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">${isEs ? 'Menciones en IA' : 'AI Brand Mentions'}</div>
-        <div class="kpi-val">${ai.namedCount ?? 0}/${ai.totalQuestions ?? 3}</div>
-        <div class="kpi-note">${isEs ? `Citas web: ${ai.citedCount ?? 0}/${ai.totalQuestions ?? 3}` : `Domain cited: ${ai.citedCount ?? 0}/${ai.totalQuestions ?? 3}`}</div>
+        <div class="kpi-val">${escapeHtml(ai.namedCount ?? 0)}/${escapeHtml(ai.totalQuestions ?? 3)}</div>
+        <div class="kpi-note">${isEs ? `Citas web: ${escapeHtml(ai.citedCount ?? 0)}/${escapeHtml(ai.totalQuestions ?? 3)}` : `Domain cited: ${escapeHtml(ai.citedCount ?? 0)}/${escapeHtml(ai.totalQuestions ?? 3)}`}</div>
       </div>
     </div>
 
@@ -1285,7 +1292,7 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
                   .map(
                     (d: any) => `<tr>
                       <td>${escapeHtml(d.title)}${d.displayValue ? ` <span style="color:#526c71">(${escapeHtml(d.displayValue)})</span>` : ''}</td>
-                      <td class="val ${d.score >= 50 ? 'warn' : 'miss'}">${d.score}/100</td>
+                      <td class="val ${d.score >= 50 ? 'warn' : 'miss'}">${escapeHtml(d.score)}/100</td>
                     </tr>`
                   )
                   .join('')
@@ -1344,6 +1351,7 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
 
     const win = window.open('', '_blank');
     if (win) {
+      win.opener = null;
       win.document.open();
       win.document.write(html);
       win.document.close();
@@ -1464,11 +1472,6 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
     if (qPhone && phoneInp) phoneInp.value = qPhone;
     if (qCity && cityInp) cityInp.value = qCity;
     if (qService && serviceInp) serviceInp.value = qService;
-
-    if (qUrl && qName && qEmail && qPhone) {
-      const form = document.getElementById('formAuditIntake') as HTMLFormElement | null;
-      form?.requestSubmit();
-    }
   })();
 </script>
 

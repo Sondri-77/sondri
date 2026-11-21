@@ -70,6 +70,7 @@ export interface TechScanResult {
   sitemapFound: boolean;
   readinessScore: number; // 0-100 technical readiness score
   gaps: string[];
+  customInput?: boolean;
 }
 
 export interface LighthouseDiagnostic {
@@ -119,6 +120,7 @@ export interface AiVisibilityResult {
   runs: GroundedPromptRun[];
   enginesNotRun: string[];
   circuitBreakerTripped?: boolean;
+  customInput?: boolean;
 }
 
 export type OrderType = 'one_time' | 'subscription' | 'renewal' | 'custom';

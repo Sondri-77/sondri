@@ -47,6 +47,11 @@ export function resetMemoryBillingStore(): void {
   memoryWebhookEvents.clear();
 }
 
+export function resetMemoryAuditStore(): void {
+  memoryAudits.clear();
+  memoryUsage.clear();
+}
+
 async function ensureSchema(env: Env): Promise<void> {
   if (!env.DB || schemaInitialized) return;
   try {
@@ -200,7 +205,9 @@ function rowToStoredAudit(row: Record<string, any>): StoredAudit {
 
 function isUsableCachedAudit(a: StoredAudit | null, expectedDefaultCity: string): a is StoredAudit {
   if (!a || !a.tech_scan || !a.ai_visibility) return false;
-  if (a.city && a.city !== expectedDefaultCity) return false;
+  if (a.tech_scan.customInput || a.ai_visibility.customInput) return false;
+  if (a.city !== expectedDefaultCity) return false;
+  if (a.tech_scan.inferredService && a.service !== a.tech_scan.inferredService) return false;
   if (a.ai_visibility.circuitBreakerTripped) return false;
   const runs = a.ai_visibility.runs || [];
   if (runs.length === 0 || runs.some((r) => r.status !== 'ok')) return false;
@@ -217,27 +224,30 @@ export async function getCachedAuditByDomain(
   const expectedDefaultCity = lang === 'es' ? 'Chile' : 'United States';
 
   if (!env.DB) {
-    for (const audit of memoryAudits.values()) {
-      if (
-        audit.domain === domain &&
-        audit.lang === lang &&
-        audit.expires_at > nowIso &&
-        isUsableCachedAudit(audit, expectedDefaultCity)
-      ) {
+    const candidates = Array.from(memoryAudits.values())
+      .filter((a) => a.domain === domain && a.lang === lang && a.expires_at > nowIso)
+      .sort((a, b) => b.created_at.localeCompare(a.created_at));
+    for (const audit of candidates) {
+      if (isUsableCachedAudit(audit, expectedDefaultCity)) {
         return audit;
       }
     }
     return null;
   }
 
-  const row = await env.DB.prepare(
-    `SELECT * FROM audits WHERE domain = ? AND lang = ? AND city = ? AND expires_at > ? ORDER BY created_at DESC LIMIT 1`
+  const res = await env.DB.prepare(
+    `SELECT * FROM audits WHERE domain = ? AND lang = ? AND city = ? AND expires_at > ? ORDER BY created_at DESC LIMIT 10`
   )
     .bind(domain, lang, expectedDefaultCity, nowIso)
-    .first<Record<string, any>>();
+    .all<Record<string, any>>();
 
-  const parsed = row ? rowToStoredAudit(row) : null;
-  return isUsableCachedAudit(parsed, expectedDefaultCity) ? parsed : null;
+  for (const row of res.results || []) {
+    const parsed = rowToStoredAudit(row);
+    if (isUsableCachedAudit(parsed, expectedDefaultCity)) {
+      return parsed;
+    }
+  }
+  return null;
 }
 
 export async function getAuditById(env: Env, id: string): Promise<StoredAudit | null> {
@@ -407,17 +417,24 @@ export async function markLeadPaid99(
   if (!env.DB) return;
 
   const nowIso = new Date().toISOString();
-  if (auditId) {
+  const cleanEmail = email?.toLowerCase().trim() || '';
+  if (auditId && cleanEmail) {
+    await env.DB.prepare(
+      `UPDATE leads SET paid_99 = 1, stripe_session_id = ?, paid_at = ? WHERE audit_id = ? AND lower(email) = ?`
+    )
+      .bind(stripeSessionId, nowIso, auditId, cleanEmail)
+      .run();
+  } else if (auditId) {
     await env.DB.prepare(
       `UPDATE leads SET paid_99 = 1, stripe_session_id = ?, paid_at = ? WHERE audit_id = ?`
     )
       .bind(stripeSessionId, nowIso, auditId)
       .run();
-  } else if (email) {
+  } else if (cleanEmail) {
     await env.DB.prepare(
-      `UPDATE leads SET paid_99 = 1, stripe_session_id = ?, paid_at = ? WHERE email = ?`
+      `UPDATE leads SET paid_99 = 1, stripe_session_id = ?, paid_at = ? WHERE lower(email) = ?`
     )
-      .bind(stripeSessionId, nowIso, email.toLowerCase().trim())
+      .bind(stripeSessionId, nowIso, cleanEmail)
       .run();
   }
 }
@@ -710,6 +727,33 @@ export async function upsertCustomer(
     .run();
 
   return created;
+}
+
+export async function findOrCreateCustomerForCheckout(
+  env: Env,
+  input: {
+    email?: string | null;
+    name?: string | null;
+    phone?: string | null;
+    company?: string | null;
+    primary_domain?: string | null;
+    city?: string | null;
+    service?: string | null;
+    lang?: AuditLang;
+  }
+): Promise<CustomerRecord> {
+  await ensureSchema(env);
+  const normEmail = input.email ? input.email.toLowerCase().trim() : '';
+  if (normEmail) {
+    const existing = await getCustomerByEmail(env, normEmail);
+    if (existing) {
+      return existing;
+    }
+  }
+  return upsertCustomer(env, {
+    ...input,
+    stripe_customer_id: null,
+  });
 }
 
 export async function createCheckoutOrder(
@@ -1182,6 +1226,20 @@ export async function recordWebhookEventOnce(
     .bind(eventId, eventType, new Date().toISOString())
     .run();
   return Number(res.meta?.changes ?? 0) > 0;
+}
+
+export async function deleteWebhookEvent(env: Env, eventId: string): Promise<void> {
+  await ensureSchema(env);
+  if (!eventId) return;
+
+  if (!env.DB) {
+    memoryWebhookEvents.delete(eventId);
+    return;
+  }
+
+  await env.DB.prepare(`DELETE FROM webhook_events WHERE event_id = ?`)
+    .bind(eventId)
+    .run();
 }
 
 export async function listOrders(

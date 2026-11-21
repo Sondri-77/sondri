@@ -2,8 +2,8 @@ import { getStripe } from '../lib/stripe';
 import {
   attachStripeSessionToOrder,
   createCheckoutOrder,
+  findOrCreateCustomerForCheckout,
   getOrderBySessionId,
-  upsertCustomer,
 } from '../lib/db';
 import { Env } from '../types';
 import Stripe from 'stripe';
@@ -237,13 +237,89 @@ export const WATCH_CATALOG: Record<WatchOfferSku, WatchCatalogItem> = {
   },
 };
 
+const ALLOWED_CHECKOUT_ORIGINS = new Set([
+  'https://sondri.ai',
+  'https://www.sondri.ai',
+  'https://watch.sondri.ai',
+]);
+
+function isLocalLoopbackOrigin(origin: string): boolean {
+  try {
+    const parsed = new URL(origin);
+    return (
+      parsed.protocol === 'http:' &&
+      (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1')
+    );
+  } catch {
+    return false;
+  }
+}
+
+function isAllowedCheckoutOrigin(origin: string, allowLocal: boolean): boolean {
+  try {
+    const parsed = new URL(origin);
+    if (parsed.username || parsed.password) return false;
+    if (ALLOWED_CHECKOUT_ORIGINS.has(parsed.origin)) return true;
+    if (allowLocal && isLocalLoopbackOrigin(parsed.origin)) return true;
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+function resolveCheckoutOrigin(request: Request, allowLocal: boolean): string {
+  const rawOrigin = request.headers.get('origin')?.trim() || '';
+  if (rawOrigin && isAllowedCheckoutOrigin(rawOrigin, allowLocal)) {
+    return new URL(rawOrigin).origin;
+  }
+  return 'https://sondri.ai';
+}
+
+function validateCheckoutRedirectUrl(rawUrl: string, allowLocal: boolean): string | null {
+  const trimmed = rawUrl.trim();
+  if (!trimmed) return null;
+  let parsed: URL;
+  try {
+    parsed = new URL(trimmed);
+  } catch {
+    return null;
+  }
+  if (parsed.username || parsed.password) return null;
+  if (!isAllowedCheckoutOrigin(parsed.origin, allowLocal)) return null;
+  const search = parsed.search.replace(/%7BCHECKOUT_SESSION_ID%7D/gi, '{CHECKOUT_SESSION_ID}');
+  return `${parsed.origin}${parsed.pathname}${search}${parsed.hash}`;
+}
+
 export async function handleCreateCheckoutSession(request: Request, env: Env): Promise<Response> {
   try {
     const body: CreateCheckoutSessionDTO = await request.json();
-    const origin = request.headers.get('origin') || 'https://sondri.ai';
+    const reqHostname = new URL(request.url).hostname.toLowerCase();
+    const allowLocalOrigins = reqHostname === 'localhost' || reqHostname === '127.0.0.1';
+    const origin = resolveCheckoutOrigin(request, allowLocalOrigins);
 
-    const successUrl = body.success_url || `${origin}/success?session_id={CHECKOUT_SESSION_ID}`;
-    const cancelUrl = body.cancel_url || `${origin}/#pricing`;
+    let successUrl = `${origin}/success?session_id={CHECKOUT_SESSION_ID}`;
+    if (body.success_url) {
+      const validated = validateCheckoutRedirectUrl(String(body.success_url), allowLocalOrigins);
+      if (!validated) {
+        return Response.json(
+          { success: false, error: { code: 'INVALID_REDIRECT_URL', message: 'Invalid success_url origin' } },
+          { status: 400 }
+        );
+      }
+      successUrl = validated;
+    }
+
+    let cancelUrl = `${origin}/#pricing`;
+    if (body.cancel_url) {
+      const validated = validateCheckoutRedirectUrl(String(body.cancel_url), allowLocalOrigins);
+      if (!validated) {
+        return Response.json(
+          { success: false, error: { code: 'INVALID_REDIRECT_URL', message: 'Invalid cancel_url origin' } },
+          { status: 400 }
+        );
+      }
+      cancelUrl = validated;
+    }
 
     const stripe = getStripe(env);
 
@@ -380,13 +456,12 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
     const langNorm = body.lang === 'es' ? 'es' : 'en';
     const isWatchOrAudit = body.type === 'aeo_full_audit' || body.type === 'watch_offer';
 
-    // Persist operational customer + pre-checkout order row in D1
+    // Persist operational customer + pre-checkout order row in D1 without overwriting existing PII
     let dbCustomerId = '';
     let dbOrderId = '';
-    let stripeCustomerId = '';
 
     if (cleanEmail) {
-      const dbCustomer = await upsertCustomer(env, {
+      const dbCustomer = await findOrCreateCustomerForCheckout(env, {
         email: cleanEmail,
         name: cleanName || null,
         phone: cleanPhone || null,
@@ -397,36 +472,6 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
         lang: langNorm,
       });
       dbCustomerId = dbCustomer.id;
-      stripeCustomerId = dbCustomer.stripe_customer_id || '';
-
-      // Reuse or create a real Stripe Customer (`cus_...`) when supported by the Stripe client
-      if (!stripeCustomerId && (stripe as any).customers) {
-        try {
-          if (typeof (stripe as any).customers.list === 'function') {
-            const listed = await stripe.customers.list({ email: cleanEmail, limit: 1 });
-            stripeCustomerId = listed.data?.[0]?.id || '';
-          }
-          if (!stripeCustomerId && typeof (stripe as any).customers.create === 'function') {
-            const createdCust = await stripe.customers.create({
-              email: cleanEmail,
-              name: cleanName || undefined,
-              phone: cleanPhone || undefined,
-              metadata: {
-                sondri_customer_id: dbCustomerId,
-                primary_domain: cleanDomain || '',
-                city: capMeta(cleanCity, 200),
-                service: capMeta(cleanService, 200),
-              },
-            });
-            stripeCustomerId = createdCust.id;
-          }
-          if (stripeCustomerId) {
-            await upsertCustomer(env, { email: cleanEmail, stripe_customer_id: stripeCustomerId });
-          }
-        } catch (custErr: any) {
-          console.warn('[Stripe Customer Sync Warning]', custErr?.message || custErr);
-        }
-      }
 
       const dbOrder = await createCheckoutOrder(env, {
         customer_id: dbCustomerId,
@@ -469,11 +514,11 @@ export async function handleCreateCheckoutSession(request: Request, env: Env): P
       },
     };
 
-    if (stripeCustomerId) {
-      sessionParams.customer = stripeCustomerId;
-      sessionParams.customer_update = { name: 'auto', address: 'auto' };
-    } else if (cleanEmail) {
+    if (cleanEmail) {
       sessionParams.customer_email = cleanEmail;
+    }
+    if (mode === 'payment') {
+      sessionParams.customer_creation = 'always';
     }
 
     if (mode === 'payment') {

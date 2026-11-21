@@ -107,8 +107,13 @@ const DIRECTORY_INDEX_MD_PATHS = new Set([
   '/es/watch/guides',
 ]);
 
+function normalizeLeadingPath(pathname: string): string {
+  const safe = pathname.replace(/\\/g, '/').replace(/^\/+/, '/');
+  return safe.startsWith('/') ? safe : `/${safe}`;
+}
+
 export function toMarkdownPath(pathname: string): string {
-  const clean = pathname.replace(/\/index\.html$/, '').replace(/\/+$/, '');
+  const clean = normalizeLeadingPath(pathname).replace(/\/index\.html$/, '').replace(/\/+$/, '');
   if (!clean) return '/index.md';
   if (DIRECTORY_INDEX_MD_PATHS.has(clean)) return `${clean}/index.md`;
   return clean.endsWith('.md') ? clean : `${clean}.md`;
@@ -148,6 +153,7 @@ function applyHeaders(
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const rawUrl = new URL(request.url);
+    const normalizedPathname = normalizeLeadingPath(rawUrl.pathname);
 
     // Enforce canonical https://sondri.ai and https://watch.sondri.ai in production.
     if (
@@ -155,12 +161,16 @@ export default {
       ((rawUrl.hostname === APEX_HOST || rawUrl.hostname === WATCH_HOST) && rawUrl.protocol !== 'https:')
     ) {
       const targetHost = rawUrl.hostname === WATCH_HOST ? WATCH_HOST : APEX_HOST;
-      const canonical = new URL(rawUrl.pathname + rawUrl.search, `https://${targetHost}`);
+      const canonical = new URL(`https://${targetHost}`);
+      canonical.pathname = normalizedPathname;
+      canonical.search = rawUrl.search;
       return Response.redirect(canonical.href, 301);
     }
 
-    const isAdminApiPath = rawUrl.pathname === '/api/admin' || rawUrl.pathname.startsWith('/api/admin/');
-    const isAdminPagePath = rawUrl.pathname === '/admin' || rawUrl.pathname.startsWith('/admin/');
+    const isAdminApiPath =
+      normalizedPathname === '/api/admin' || normalizedPathname.startsWith('/api/admin/');
+    const isAdminPagePath =
+      normalizedPathname === '/admin' || normalizedPathname.startsWith('/admin/');
 
     if (isAdminApiPath || isAdminPagePath) {
       // Keep Cloudflare Access perimeter strictly on canonical sondri.ai.
@@ -173,10 +183,21 @@ export default {
             ),
           );
         }
-        return Response.redirect(`https://${APEX_HOST}${rawUrl.pathname}${rawUrl.search}`, 302);
+        const adminUrl = new URL(`https://${APEX_HOST}`);
+        adminUrl.pathname = normalizedPathname;
+        adminUrl.search = rawUrl.search;
+        return Response.redirect(adminUrl.href, 302);
       }
 
-      const auth = await authorizeAdminRequest(request, env);
+      const normalizedAdminUrl = new URL(rawUrl.origin);
+      normalizedAdminUrl.pathname = normalizedPathname;
+      normalizedAdminUrl.search = rawUrl.search;
+      const normalizedAdminReq =
+        normalizedPathname !== rawUrl.pathname
+          ? new Request(normalizedAdminUrl.href, request)
+          : request;
+
+      const auth = await authorizeAdminRequest(normalizedAdminReq, env);
       if (!auth.ok) {
         if (isAdminApiPath) {
           return withPrivateSecurityHeaders(
@@ -195,10 +216,10 @@ export default {
       }
 
       if (isAdminApiPath) {
-        return handleAdminApiProxy(request, env, auth);
+        return handleAdminApiProxy(normalizedAdminReq, env, auth);
       }
 
-      const adminAssetRes = await env.ASSETS.fetch(request);
+      const adminAssetRes = await env.ASSETS.fetch(normalizedAdminReq);
       return withPrivateSecurityHeaders(adminAssetRes);
     }
 

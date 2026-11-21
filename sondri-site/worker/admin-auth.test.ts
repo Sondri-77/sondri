@@ -300,4 +300,77 @@ describe('Cloudflare Access JWT Guard & Admin BFF Proxy', () => {
     );
     expect(badMethod.status).toBe(405);
   });
+
+  it('fails closed with 503 when CF_ACCESS_ALLOWED_EMAILS is unset or blank and rejects email-less JWTs', async () => {
+    const now = Math.floor(Date.now() / 1000);
+    const validJwt = await signJwt({
+      iss: `https://${TEAM_DOMAIN}`,
+      aud: [AUD_TAG],
+      exp: now + 300,
+      email: 'stranger@example.com',
+    });
+
+    for (const emptyVal of [undefined, '', '   ', ', ,']) {
+      const env = makeBaseEnv({ CF_ACCESS_ALLOWED_EMAILS: emptyVal });
+      const res = await worker.fetch(
+        new Request('https://sondri.ai/api/admin/orders', {
+          headers: { 'Cf-Access-Jwt-Assertion': validJwt },
+        }),
+        env,
+      );
+      expect(res.status).toBe(503);
+      expect(res.headers.get('X-Frame-Options')).toBe('DENY');
+      expect(res.headers.get('Content-Security-Policy')).toBe("frame-ancestors 'none'");
+    }
+
+    const emailLessJwt = await signJwt({
+      iss: `https://${TEAM_DOMAIN}`,
+      aud: [AUD_TAG],
+      exp: now + 300,
+      sub: 'service-token-123',
+    });
+    const env = makeBaseEnv();
+    const res = await worker.fetch(
+      new Request('https://sondri.ai/api/admin/me', {
+        headers: { 'Cf-Access-Jwt-Assertion': emailLessJwt },
+      }),
+      env,
+    );
+    expect(res.status).toBe(403);
+  });
+
+  it('collapses leading slashes and blocks protocol-relative open redirects and //admin bypasses', async () => {
+    const env = makeBaseEnv();
+
+    const redirectCases = [
+      {
+        input: 'https://www.sondri.ai//evil.example/phish?x=1',
+        expected: 'https://sondri.ai/evil.example/phish?x=1',
+      },
+      {
+        input: 'https://www.sondri.ai///evil.example/',
+        expected: 'https://sondri.ai/evil.example/',
+      },
+      {
+        input: 'https://www.sondri.ai/\\evil.example/',
+        expected: 'https://sondri.ai/evil.example/',
+      },
+      {
+        input: 'http://sondri.ai//evil.example/',
+        expected: 'https://sondri.ai/evil.example/',
+      },
+    ];
+
+    for (const tc of redirectCases) {
+      const res = await worker.fetch(new Request(tc.input), env);
+      expect(res.status).toBe(301);
+      expect(res.headers.get('Location')).toBe(tc.expected);
+    }
+
+    const doubleSlashAdminPage = await worker.fetch(new Request('https://sondri.ai//admin/watch/'), env);
+    expect(doubleSlashAdminPage.status).toBe(401);
+
+    const doubleSlashAdminApi = await worker.fetch(new Request('https://sondri.ai//api/admin/orders'), env);
+    expect(doubleSlashAdminApi.status).toBe(401);
+  });
 });

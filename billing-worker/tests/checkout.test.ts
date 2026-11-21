@@ -1,6 +1,6 @@
 import { beforeEach, describe, it, expect, vi } from 'vitest';
 import worker from '../src/index';
-import { getOrderBySessionId, resetMemoryBillingStore } from '../src/lib/db';
+import { getCustomerByEmail, getOrderBySessionId, resetMemoryBillingStore, upsertCustomer } from '../src/lib/db';
 import { Env } from '../src/types';
 
 const mockEnv: Env = {
@@ -174,7 +174,7 @@ describe('Billing Worker Checkout & Admin API', () => {
     }
   });
 
-  it('should create Stripe Checkout payloads, reuse/create Stripe Customers, persist checkout_started orders, and serve Admin API + Billing Portal', async () => {
+  it('should create Stripe Checkout payloads safely, persist checkout_started orders, and serve Admin API + Billing Portal', async () => {
     let seq = 0;
     const createSessionMock = vi.fn().mockImplementation(async () => {
       seq++;
@@ -183,8 +183,8 @@ describe('Billing Worker Checkout & Admin API', () => {
         url: `https://checkout.stripe.com/pay/cs_test_watch_${seq}`,
       };
     });
-    const listCustMock = vi.fn().mockResolvedValue({ data: [] });
-    const createCustMock = vi.fn().mockResolvedValue({ id: 'cus_test_unified_1' });
+    const listCustMock = vi.fn().mockResolvedValue({ data: [{ id: 'cus_victim_should_not_bind' }] });
+    const createCustMock = vi.fn().mockResolvedValue({ id: 'cus_should_not_create' });
     const createPortalMock = vi.fn().mockResolvedValue({ url: 'https://billing.stripe.com/p/session/test_123' });
 
     const stripeMod = await import('../src/lib/stripe');
@@ -194,7 +194,7 @@ describe('Billing Worker Checkout & Admin API', () => {
       billingPortal: { sessions: { create: createPortalMock } },
     } as any);
 
-    // 1. One-time AI Listings Sprint ($249) — creates Stripe Customer cus_test_unified_1
+    // 1. One-time AI Listings Sprint ($249) — does NOT look up or create Stripe Customer before payment
     const resSprint = await worker.fetch(
       new Request('http://localhost:8787/create-checkout-session', {
         method: 'POST',
@@ -216,11 +216,14 @@ describe('Billing Worker Checkout & Admin API', () => {
       {} as ExecutionContext
     );
     expect(resSprint.status).toBe(200);
-    expect(createCustMock).toHaveBeenCalledTimes(1);
+    expect(listCustMock).not.toHaveBeenCalled();
+    expect(createCustMock).not.toHaveBeenCalled();
     const sprintCall = createSessionMock.mock.calls[0][0];
     expect(sprintCall.mode).toBe('payment');
-    expect(sprintCall.customer).toBe('cus_test_unified_1');
-    expect(sprintCall.customer_email).toBeUndefined();
+    expect(sprintCall.customer).toBeUndefined();
+    expect(sprintCall.customer_update).toBeUndefined();
+    expect(sprintCall.customer_email).toBe('owner@clinica.cl');
+    expect(sprintCall.customer_creation).toBe('always');
     expect(sprintCall.payment_method_types).toBeUndefined();
     expect(sprintCall.line_items[0].price_data.unit_amount).toBe(24900);
     expect(sprintCall.invoice_creation.enabled).toBe(true);
@@ -233,7 +236,7 @@ describe('Billing Worker Checkout & Admin API', () => {
     expect(savedOrder?.status).toBe('checkout_started');
     expect(savedOrder?.domain).toBe('clinica.cl');
 
-    // 2. Second purchase by same email reuses cus_test_unified_1 (no duplicate Stripe customer created!)
+    // 2. Unauthenticated second checkout attempt for same email must NOT overwrite existing PII or bind cus_
     const resWatch = await worker.fetch(
       new Request('http://localhost:8787/create-checkout-session', {
         method: 'POST',
@@ -241,11 +244,12 @@ describe('Billing Worker Checkout & Admin API', () => {
         body: JSON.stringify({
           type: 'watch_offer',
           offer_sku: 'watch_local',
-          domain: 'clinica.cl',
-          client_name: 'Dra. Maria Perez',
+          domain: 'attacker.example',
+          client_name: 'Attacker Overwrite',
           client_email: 'owner@clinica.cl',
-          city: 'Santiago',
-          service: 'Implantes dentales',
+          client_phone: '+1 000 000 0000',
+          city: 'Nowhere',
+          service: 'Spam Service',
           lang: 'en',
         }),
       }),
@@ -253,15 +257,26 @@ describe('Billing Worker Checkout & Admin API', () => {
       {} as ExecutionContext
     );
     expect(resWatch.status).toBe(200);
-    expect(createCustMock).toHaveBeenCalledTimes(1); // Reused from DB!
+    expect(listCustMock).not.toHaveBeenCalled();
+    expect(createCustMock).not.toHaveBeenCalled();
     const watchCall = createSessionMock.mock.calls[1][0];
     expect(watchCall.mode).toBe('subscription');
-    expect(watchCall.customer).toBe('cus_test_unified_1');
+    expect(watchCall.customer).toBeUndefined();
+    expect(watchCall.customer_email).toBe('owner@clinica.cl');
+    expect(watchCall.customer_creation).toBeUndefined();
     expect(watchCall.line_items[0].price_data.unit_amount).toBe(14900);
     expect(watchCall.line_items[0].price_data.recurring).toEqual({ interval: 'month' });
     expect(watchCall.invoice_creation).toBeUndefined();
     expect(watchCall.payment_intent_data).toBeUndefined();
     expect(watchCall.subscription_data.metadata.offer_sku).toBe('watch_local');
+
+    const storedCust = await getCustomerByEmail(mockEnv, 'owner@clinica.cl');
+    expect(storedCust?.name).toBe('Dra. Maria Perez');
+    expect(storedCust?.phone).toBe('+56 9 1234 5678');
+    expect(storedCust?.primary_domain).toBe('clinica.cl');
+
+    // Simulate verified post-payment webhook linking Stripe Customer ID
+    await upsertCustomer(mockEnv, { email: 'owner@clinica.cl', stripe_customer_id: 'cus_test_unified_1' });
 
     // 3. Portfolio Snapshot ($1,500) + Website tiers ($390 / $690 / $1,190)
     const skuCases = [
@@ -340,5 +355,90 @@ describe('Billing Worker Checkout & Admin API', () => {
       customer: 'cus_test_unified_1',
       return_url: 'https://sondri.ai/watch/',
     });
+  });
+
+  it('rejects untrusted checkout redirect URLs and ignores untrusted Origin headers', async () => {
+    const createSessionMock = vi.fn().mockResolvedValue({
+      id: 'cs_test_origin_1',
+      url: 'https://checkout.stripe.com/pay/cs_test_origin_1',
+    });
+    const stripeMod = await import('../src/lib/stripe');
+    vi.spyOn(stripeMod, 'getStripe').mockReturnValue({
+      checkout: { sessions: { create: createSessionMock } },
+    } as any);
+
+    // Untrusted Origin falls back to https://sondri.ai
+    const untrustedOriginRes = await worker.fetch(
+      new Request('https://billing.sondri.ai/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: 'https://evil.example',
+        },
+        body: JSON.stringify({
+          type: 'custom',
+          custom_amount: 100,
+          client_email: 'payer@example.com',
+        }),
+      }),
+      mockEnv,
+      {} as ExecutionContext
+    );
+    expect(untrustedOriginRes.status).toBe(200);
+    expect(createSessionMock.mock.calls[0][0].success_url).toBe(
+      'https://sondri.ai/success?session_id={CHECKOUT_SESSION_ID}'
+    );
+    expect(createSessionMock.mock.calls[0][0].cancel_url).toBe('https://sondri.ai/#pricing');
+
+    // Allowed Origin + valid success_url/cancel_url preserves literal {CHECKOUT_SESSION_ID}
+    const trustedWatchRes = await worker.fetch(
+      new Request('https://billing.sondri.ai/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: 'https://watch.sondri.ai',
+        },
+        body: JSON.stringify({
+          type: 'watch_offer',
+          offer_sku: 'watch_local',
+          client_name: 'Alice',
+          client_email: 'alice@clinic.com',
+          domain: 'clinic.com',
+          success_url: 'https://watch.sondri.ai/success?session_id={CHECKOUT_SESSION_ID}&type=watch_local',
+          cancel_url: 'https://watch.sondri.ai/pricing/',
+        }),
+      }),
+      mockEnv,
+      {} as ExecutionContext
+    );
+    expect(trustedWatchRes.status).toBe(200);
+    expect(createSessionMock.mock.calls[1][0].success_url).toBe(
+      'https://watch.sondri.ai/success?session_id={CHECKOUT_SESSION_ID}&type=watch_local'
+    );
+
+    // Malicious success_url / cancel_url inputs rejected with 400 INVALID_REDIRECT_URL
+    for (const badUrl of [
+      'https://evil.example/steal?session_id={CHECKOUT_SESSION_ID}',
+      'javascript:alert(1)',
+      'https://sondri.ai@evil.example/phish',
+      'http://localhost:4321/pay',
+    ]) {
+      const badRes = await worker.fetch(
+        new Request('https://billing.sondri.ai/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'custom',
+            custom_amount: 100,
+            client_email: 'payer@example.com',
+            success_url: badUrl,
+          }),
+        }),
+        mockEnv,
+        {} as ExecutionContext
+      );
+      expect(badRes.status).toBe(400);
+      expect(((await badRes.json()) as any).error.code).toBe('INVALID_REDIRECT_URL');
+    }
   });
 });

@@ -291,4 +291,87 @@ describe('Billing Worker Webhook & Lifecycle Router', () => {
     expect(rRefund.status).toBe(200);
     expect((await getOrderBySessionId(mockEnv, 'cs_apex_1'))?.status).toBe('refunded');
   });
+
+  it('rolls back webhook_events idempotency on transient failure so retries succeed instead of dropping', async () => {
+    const cust = await upsertCustomer(mockEnv, {
+      email: 'retry@clinic.com',
+      name: 'Retry Client',
+      stripe_customer_id: 'cus_retry_1',
+    });
+
+    await createCheckoutOrder(mockEnv, {
+      customer_id: cust.id,
+      offer_sku: 'aeo_full_audit',
+      order_type: 'one_time',
+      amount_cents: 9900,
+      currency: 'usd',
+      status: 'checkout_started',
+      domain: 'retryclinic.com',
+      stripe_session_id: 'cs_retry_1',
+    });
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('ok', { status: 200 })));
+
+    const evt = {
+      id: 'evt_transient_fail',
+      type: 'checkout.session.completed',
+      data: {
+        object: {
+          id: 'cs_retry_1',
+          mode: 'payment',
+          amount_total: 9900,
+          currency: 'usd',
+          customer: 'cus_retry_1',
+          customer_details: { email: 'retry@clinic.com', name: 'Retry Client' },
+          metadata: {
+            source: 'aeo_full_audit',
+            offer_sku: 'aeo_full_audit',
+            domain: 'retryclinic.com',
+            customer_id: cust.id,
+          },
+        },
+      },
+    };
+
+    const stripeMod = await import('../src/lib/stripe');
+    vi.spyOn(stripeMod, 'getStripe')
+      .mockReturnValueOnce({
+        webhooks: { constructEventAsync: vi.fn().mockResolvedValue(evt) },
+      } as any)
+      .mockImplementationOnce(() => {
+        throw new Error('simulated transient Stripe client failure');
+      })
+      .mockReturnValue({
+        webhooks: { constructEventAsync: vi.fn().mockResolvedValue(evt) },
+        checkout: { sessions: { retrieve: vi.fn().mockResolvedValue({ id: 'cs_retry_1' }) } },
+      } as any);
+
+    const sendEvent = () =>
+      worker.fetch(
+        new Request('http://localhost:8787/webhooks/stripe', {
+          method: 'POST',
+          headers: { 'stripe-signature': 't=123,v1=valid' },
+          body: JSON.stringify(evt),
+        }),
+        mockEnv,
+        {} as ExecutionContext
+      );
+
+    // 1st attempt fails inside handler after recordWebhookEventOnce -> returns 500 & rolls back dedup key
+    const first = await sendEvent();
+    expect(first.status).toBe(500);
+    expect((await getOrderBySessionId(mockEnv, 'cs_retry_1'))?.status).toBe('checkout_started');
+
+    // 2nd attempt (retry) processes instead of skipping as duplicate
+    const second = await sendEvent();
+    expect(second.status).toBe(200);
+    const secondJson: any = await second.json();
+    expect(secondJson.duplicate).toBeUndefined();
+    expect((await getOrderBySessionId(mockEnv, 'cs_retry_1'))?.status).toBe('paid');
+
+    // 3rd attempt (true duplicate) is skipped
+    const third = await sendEvent();
+    expect(third.status).toBe(200);
+    expect(((await third.json()) as any).duplicate).toBe(true);
+  });
 });
