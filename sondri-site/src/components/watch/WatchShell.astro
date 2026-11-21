@@ -299,16 +299,15 @@ const navItems = [
               <li><a href={`${prefix}/pricing/`} class="label">{isEs ? 'Precios y planes' : 'AI visibility pricing'}</a></li>
               <li><a href={isEs ? '/es/' : '/'} class="label">← {isEs ? 'Software y Automatización' : 'sondri.ai (Custom AI)'}</a></li>
               <li><a href="/pay/" class="label">{isEs ? 'Pagos y Facturación' : 'Client Payments'}</a></li>
-              <li><a href={isEs ? '/es/privacy/' : '/privacy/'} class="label">{isEs ? 'Privacidad' : 'Privacy'}</a></li>
             </ul>
           </div>
         </div>
 
         <div class="watch-f-bottom">
-          <span class="label">&copy; {new Date().getFullYear()} Sondri · watch.sondri.ai</span>
+          <span class="label">&copy; {new Date().getFullYear()} Sondri</span>
           <div class="watch-f-bottom-meta">
-            <span class="label">{isEs ? 'Monitoreo EN/ES · 4 Motores de IA' : 'Bilingual EN/ES · ChatGPT, Gemini, AI Overviews & AI Mode'}</span>
-            <a class="label watch-team-link" href="/admin/watch/" rel="nofollow">{isEs ? 'Equipo' : 'Team'}</a>
+            <a class="label watch-bottom-link" href={isEs ? '/es/privacy/' : '/privacy/'}>{isEs ? 'Privacidad' : 'Privacy'}</a>
+            <a class="label watch-bottom-link" href="/admin/watch/" rel="nofollow">{isEs ? 'Equipo' : 'Team'}</a>
           </div>
         </div>
       </div>
@@ -833,14 +832,14 @@ const navItems = [
     gap: 12px 20px;
   }
 
-  .watch-team-link {
+  .watch-bottom-link {
     color: var(--steel);
     text-decoration: none;
     transition: color 0.15s linear;
   }
 
-  .watch-team-link:hover,
-  .watch-team-link:focus-visible {
+  .watch-bottom-link:hover,
+  .watch-bottom-link:focus-visible {
     color: var(--gold);
   }
 
