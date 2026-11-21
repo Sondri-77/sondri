@@ -6,24 +6,42 @@ import Base from '../../layouts/Base.astro';
   title="Watch Billing & Subscriptions — Sondri"
   description="Internal operational dashboard for Sondri Watch orders, abandoned checkouts, customers, and active subscriptions."
   noindex
+  hideChrome
 >
-  <section class="section section-pad on-dark admin-section">
-    <div class="wrap">
-      <div class="admin-top">
-        <div>
-          <span class="label gold-pill">INTERNAL OPS · NOINDEX</span>
-          <h1 class="h2 admin-title">Watch Billing &amp; Subscriptions<span class="gdot">.</span></h1>
-          <p class="body-s admin-sub">
-            Secured via Cloudflare Access &amp; same-origin Worker proxy over Cloudflare D1 (<code>customers</code>, <code>orders</code>, <code>subscriptions</code>). No API secrets are stored or sent in the browser.
-          </p>
-        </div>
+  <header class="admin-topbar on-dark">
+    <div class="admin-topbar-in">
+      <div class="topbar-brand">
+        <a href="/watch/" class="topbar-home" aria-label="Return to Sondri Watch">
+          <img src="/brand/florexa-white-gold.svg" alt="Sondri" width="952" height="367" class="topbar-logo" />
+        </a>
+        <span class="topbar-sep" aria-hidden="true">/</span>
+        <span class="topbar-scope">WATCH ADMIN</span>
+      </div>
 
-        <div id="adminControls" class="admin-ctrl-row">
-          <span id="adminSessionPill" class="session-pill">CHECKING SESSION…</span>
-          <button type="button" id="btnRefreshAdmin" class="btn btn-outline-light btn-sm">Refresh ↻</button>
-          <button type="button" id="btnExportCsv" class="btn btn-outline-light btn-sm">Export CSV ↓</button>
-          <a id="btnSignOutAdmin" href="/cdn-cgi/access/logout" class="btn btn-outline-light btn-sm" hidden>Sign out</a>
-        </div>
+      <div class="topbar-session">
+        <span id="adminSessionPill" class="session-pill">
+          <span class="session-dot" aria-hidden="true"></span>
+          <span id="adminSessionText">Checking session…</span>
+        </span>
+        <a
+          id="btnSignOutAdmin"
+          href="/cdn-cgi/access/logout"
+          class="btn btn-outline-light signout-btn"
+          hidden
+        >
+          Sign out <span class="arr" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <section class="section on-dark admin-section">
+    <div class="wrap">
+      <div class="admin-head">
+        <h1 class="h2 admin-title">Watch Billing &amp; Subscriptions<span class="gdot">.</span></h1>
+        <p class="body-s admin-sub">
+          Protected by Cloudflare Access &amp; same-origin Worker proxy over Cloudflare D1 (<code>customers</code>, <code>orders</code>, <code>subscriptions</code>).
+        </p>
       </div>
 
       <div id="adminErrorBanner" class="error-banner" role="alert" hidden>
@@ -77,6 +95,8 @@ import Base from '../../layouts/Base.astro';
               placeholder="Search email, name, domain, SKU…"
               aria-label="Search records"
             />
+            <button type="button" id="btnRefreshAdmin" class="btn btn-outline-light btn-sm">Refresh ↻</button>
+            <button type="button" id="btnExportCsv" class="btn btn-outline-light btn-sm">Export CSV ↓</button>
           </div>
         </div>
 
@@ -158,7 +178,7 @@ import Base from '../../layouts/Base.astro';
 <script>
   const API_PREFIX = '/api/admin';
 
-  const sessionPill = document.getElementById('adminSessionPill') as HTMLElement;
+  const sessionText = document.getElementById('adminSessionText') as HTMLElement;
   const signOutLink = document.getElementById('btnSignOutAdmin') as HTMLAnchorElement;
   const errorBanner = document.getElementById('adminErrorBanner') as HTMLElement;
   const errorTitle = document.getElementById('adminErrorTitle') as HTMLElement;
@@ -331,14 +351,14 @@ import Base from '../../layouts/Base.astro';
     try {
       const me = await apiFetch('/me');
       if (me?.mode === 'cloudflare_access') {
-        sessionPill.textContent = `CLOUDFLARE ACCESS · ${me.email}`;
+        sessionText.textContent = me.email || 'Cloudflare Access';
         signOutLink.hidden = false;
       } else {
-        sessionPill.textContent = 'LOCAL DEV PROXY';
+        sessionText.textContent = 'Local dev proxy';
         signOutLink.hidden = true;
       }
     } catch {
-      sessionPill.textContent = 'SESSION PENDING';
+      sessionText.textContent = 'Session pending';
       signOutLink.hidden = true;
     }
   }
@@ -451,7 +471,6 @@ import Base from '../../layouts/Base.astro';
 </script>
 
 <style is:global>
-  #siteheader { background: var(--ink); }
   .visually-hidden:where(:not(:focus-within, :active)) {
     position: absolute !important;
     clip-path: inset(50%) !important;
@@ -470,55 +489,115 @@ import Base from '../../layouts/Base.astro';
     display: none !important;
   }
 
-  .admin-section {
-    min-height: calc(100vh - var(--nav-h));
+  .admin-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: var(--teal-deep);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
   }
 
-  .admin-top {
+  .admin-topbar-in {
+    max-width: var(--wrap);
+    margin-inline: auto;
+    padding: 14px var(--pad-x);
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
-    flex-wrap: wrap;
-    gap: var(--s-24);
-    margin-bottom: var(--s-32);
-  }
-
-  .gold-pill {
-    display: inline-block;
-    background: var(--gold);
-    color: var(--teal);
-    padding: 4px 8px;
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-
-  .admin-title {
-    margin-bottom: 6px;
-  }
-
-  .admin-sub {
-    color: var(--pale);
-    max-width: 64ch;
-  }
-
-  .admin-ctrl-row {
-    display: flex;
-    flex-wrap: wrap;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+  }
+
+  .topbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .topbar-home {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .topbar-home:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 4px;
+  }
+
+  .topbar-logo {
+    height: 24px;
+    width: auto;
+    display: block;
+  }
+
+  .topbar-sep {
+    color: rgba(255, 255, 255, 0.36);
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+
+  .topbar-scope {
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .topbar-session {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
     gap: 10px;
   }
 
   .session-pill {
     display: inline-flex;
     align-items: center;
-    padding: 8px 12px;
+    gap: 8px;
+    padding: 7px 12px;
     border: 1px solid rgba(94, 234, 212, 0.35);
     background: rgba(94, 234, 212, 0.08);
     color: #99f6e4;
     font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    font-size: 11.5px;
+    line-height: 1;
+    letter-spacing: 0.03em;
+  }
+
+  .session-dot {
+    width: 6px;
+    height: 6px;
+    background: #5eead4;
+    flex-shrink: 0;
+  }
+
+  .signout-btn {
+    padding: 8px 14px;
+    font-size: 11.5px;
+    line-height: 14px;
+  }
+
+  .admin-section {
+    min-height: calc(100vh - 58px);
+    padding-block: var(--s-48) var(--s-64);
+  }
+
+  .admin-head {
+    margin-bottom: var(--s-32);
+  }
+
+  .admin-title {
+    margin-bottom: 8px;
+  }
+
+  .admin-sub {
+    color: #b4ccca;
+    max-width: 66ch;
+    margin: 0;
   }
 
   .btn-outline-light {
@@ -532,9 +611,20 @@ import Base from '../../layouts/Base.astro';
     color: var(--gold);
   }
 
+  .btn-outline-light:focus-visible,
+  .tab-btn:focus-visible,
+  .admin-input:focus-visible,
+  .admin-select:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+
   .btn-sm {
+    min-height: 42px;
     padding: 10px 14px;
-    font-size: 12px;
+    font-size: 11.5px;
+    line-height: 16px;
+    white-space: nowrap;
   }
 
   .error-banner:not([hidden]) {
@@ -567,14 +657,29 @@ import Base from '../../layouts/Base.astro';
 
   .admin-input,
   .admin-select {
-    background: var(--teal);
+    height: 42px;
+    background: var(--teal-deep);
     border: 1px solid var(--line);
     color: var(--white);
     font-family: var(--sans);
-    font-size: 14px;
-    padding: 11px 14px;
-    min-width: 220px;
+    font-size: 13.5px;
+    padding: 9px 12px;
+  }
+
+  .admin-select {
+    flex: 0 1 190px;
+    min-width: 165px;
+  }
+
+  .admin-search {
     flex: 1 1 220px;
+    min-width: 200px;
+    max-width: 280px;
+  }
+
+  .admin-input::placeholder {
+    color: #88aaa7;
+    opacity: 1;
   }
 
   .kpi-grid {
@@ -601,6 +706,7 @@ import Base from '../../layouts/Base.astro';
     font-size: clamp(22px, 2.5vw, 30px);
     color: var(--white);
     font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
   }
 
   .kpi-v.warn {
@@ -612,7 +718,7 @@ import Base from '../../layouts/Base.astro';
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: var(--s-16);
+    gap: 12px var(--s-16);
     margin-bottom: var(--s-24);
   }
 
@@ -623,11 +729,12 @@ import Base from '../../layouts/Base.astro';
   }
 
   .tab-btn {
+    min-height: 42px;
     background: var(--teal-deep);
     border: 1px solid var(--line);
-    color: var(--pale);
+    color: #c9dad7;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 11.5px;
     text-transform: uppercase;
     padding: 10px 16px;
     cursor: pointer;
@@ -646,10 +753,7 @@ import Base from '../../layouts/Base.astro';
     flex-wrap: wrap;
     flex: 1 1 auto;
     justify-content: flex-end;
-  }
-
-  .admin-search {
-    max-width: 300px;
+    align-items: center;
   }
 
   /* Responsive Table (modern-web-guidance pattern) */
@@ -660,6 +764,8 @@ import Base from '../../layouts/Base.astro';
     container-type: inline-size;
     border: 1px solid var(--line);
     background: var(--teal-deep);
+    scrollbar-color: rgba(253, 179, 67, 0.45) var(--teal-deep);
+    scrollbar-width: thin;
   }
 
   .data-table {
@@ -823,11 +929,21 @@ import Base from '../../layouts/Base.astro';
     .kpi-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+    .filter-bar {
+      justify-content: flex-start;
+    }
   }
 
   @media (max-width: 560px) {
     .kpi-grid {
       grid-template-columns: 1fr;
+    }
+
+    .admin-select,
+    .admin-search {
+      flex: 1 1 100%;
+      max-width: none;
     }
   }
 </style>

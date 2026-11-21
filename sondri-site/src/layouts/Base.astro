@@ -25,6 +25,8 @@ interface Props {
   descriptionKey?: string;
   /** Set true on transactional / error pages (/pay, /success, 404). */
   noindex?: boolean;
+  /** Omit public marketing header, footer, booking modal & analytics on internal ops pages. */
+  hideChrome?: boolean;
   /** Omit canonical URL (used on 404). */
   omitCanonical?: boolean;
   ogType?: 'website' | 'article';
@@ -42,6 +44,7 @@ const {
   titleKey = 'meta.title',
   descriptionKey = 'meta.description',
   noindex = false,
+  hideChrome = false,
   omitCanonical = false,
   ogType = 'website',
   publishedTime,
@@ -119,7 +122,7 @@ const siteGraph = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {!omitCanonical && (
+    {!omitCanonical && !hideChrome && (
       <>
         <script is:inline async src="https://www.googletagmanager.com/gtm.js?id=GTM-KWBL7TXV"></script>
         <script is:inline>
@@ -189,10 +192,10 @@ const siteGraph = {
   </head>
   <body>
     <a class="skip" href="#main" data-i18n="ui.skip">{t.ui.skip}</a>
-    <Nav lang={lang} alternates={alternates} />
+    {!hideChrome && <Nav lang={lang} alternates={alternates} />}
     <main id="main"><slot /></main>
-    <Footer lang={lang} />
-    <CalModal />
+    {!hideChrome && <Footer lang={lang} />}
+    {!hideChrome && <CalModal />}
 
     <script>
       import '../scripts/i18n';
