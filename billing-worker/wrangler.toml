@@ -14,7 +14,7 @@ routes = [
 [[d1_databases]]
 binding = "DB"
 database_name = "sondri-audits"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "d107a765-0a59-4fae-a098-9aedf9b06849"
 migrations_dir = "migrations"
 
 [observability]
