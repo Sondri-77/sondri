@@ -3,10 +3,79 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
-import sitemap from '@astrojs/sitemap';
+import sitemap, { ChangeFreqEnum } from '@astrojs/sitemap';
 
 // Canonical site URL. Set SITE_URL to build against another host.
 const SITE = process.env.SITE_URL ?? 'https://sondri.ai';
+const BUILD_LASTMOD = new Date().toISOString();
+
+/**
+ * Assigns search/AI sitemap priority, changefreq, and bilingual alternates.
+ * @param {string} url
+ */
+function getSitemapMetadata(url) {
+  const pathname = new URL(url).pathname;
+
+  let changefreq = ChangeFreqEnum.MONTHLY;
+  let priority = 0.8;
+
+  if (
+    pathname === '/' ||
+    pathname === '/es/' ||
+    pathname === '/watch/' ||
+    pathname === '/es/watch/'
+  ) {
+    changefreq = ChangeFreqEnum.WEEKLY;
+    priority = 1.0;
+  } else if (pathname === '/watch/pricing/' || pathname === '/es/watch/pricing/') {
+    changefreq = ChangeFreqEnum.WEEKLY;
+    priority = 0.95;
+  } else if (
+    pathname === '/ai-audit/' ||
+    pathname === '/watch/services/' ||
+    pathname === '/es/watch/services/'
+  ) {
+    changefreq = ChangeFreqEnum.WEEKLY;
+    priority = 0.9;
+  } else if (
+    pathname.startsWith('/watch/services/') ||
+    pathname.startsWith('/es/watch/services/') ||
+    pathname === '/watch/guides/' ||
+    pathname === '/es/watch/guides/' ||
+    pathname === '/watch/playbooks/' ||
+    pathname === '/es/watch/playbooks/' ||
+    pathname === '/watch/partners/' ||
+    pathname === '/es/watch/partners/'
+  ) {
+    changefreq = ChangeFreqEnum.WEEKLY;
+    priority = 0.85;
+  } else if (pathname === '/watch/sample-report/' || pathname === '/es/watch/sample-report/') {
+    changefreq = ChangeFreqEnum.MONTHLY;
+    priority = 0.7;
+  } else if (pathname === '/privacy/' || pathname === '/es/privacy/') {
+    changefreq = ChangeFreqEnum.YEARLY;
+    priority = 0.3;
+  }
+
+  if (pathname === '/ai-audit/') {
+    return { changefreq, priority, lastmod: BUILD_LASTMOD };
+  }
+
+  const enPath =
+    pathname === '/es/' ? '/' : pathname.startsWith('/es/') ? pathname.slice(3) : pathname;
+  const esPath = enPath === '/' ? '/es/' : `/es${enPath}`;
+
+  return {
+    changefreq,
+    priority,
+    lastmod: BUILD_LASTMOD,
+    links: [
+      { lang: 'en', url: `${SITE}${enPath}` },
+      { lang: 'es', url: `${SITE}${esPath}` },
+      { lang: 'x-default', url: `${SITE}${enPath}` },
+    ],
+  };
+}
 
 /**
  * Reads BILLING_API_KEY from env or sibling billing-worker/.dev.vars for local `astro dev` only.
@@ -189,7 +258,18 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: (page) =>
-        !page.endsWith('/pay/') && !page.endsWith('/success/') && !page.includes('/admin/'),
+        !page.endsWith('/pay/') &&
+        !page.endsWith('/success/') &&
+        !page.endsWith('/audit/') &&
+        !page.endsWith('/404/') &&
+        !page.includes('/admin/'),
+      namespaces: { news: false, image: false, video: false, xhtml: true },
+      serialize(item) {
+        return {
+          ...item,
+          ...getSitemapMetadata(item.url),
+        };
+      },
     }),
   ],
   vite: {
