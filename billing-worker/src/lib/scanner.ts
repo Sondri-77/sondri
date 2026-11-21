@@ -1,5 +1,12 @@
 import { AuditLang, BotAccessStatus, LighthouseResult, TechScanResult } from '../types';
 
+const MAX_HTML_BYTES = 512 * 1024;
+const MAX_ROBOTS_BYTES = 64 * 1024;
+const MAX_ROBOTS_LINES = 2000;
+const MAX_JSONLD_BLOCKS = 25;
+const MAX_JSONLD_BLOCK_CHARS = 64 * 1024;
+const MAX_JSONLD_DEPTH = 16;
+
 const AI_BOTS: { bot: string; role: 'search' | 'training' }[] = [
   { bot: 'OAI-SearchBot', role: 'search' },
   { bot: 'Googlebot', role: 'search' },
@@ -62,10 +69,118 @@ async function fetchWithTimeout(url: string, timeoutMs: number = 6500): Promise<
   }
 }
 
+async function readResponseTextWithLimit(res: Response | null, maxBytes: number): Promise<string> {
+  if (!res) return '';
+  if (!res.body || typeof res.body.getReader !== 'function') {
+    const text = await res.text();
+    return text.length > maxBytes ? text.slice(0, maxBytes) : text;
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder('utf-8', { fatal: false, ignoreBOM: false });
+  const parts: string[] = [];
+  let totalBytes = 0;
+
+  try {
+    while (totalBytes < maxBytes) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (!value || value.byteLength === 0) continue;
+
+      const remaining = maxBytes - totalBytes;
+      const chunk = value.byteLength > remaining ? value.subarray(0, remaining) : value;
+      totalBytes += chunk.byteLength;
+      parts.push(decoder.decode(chunk, { stream: true }));
+    }
+  } finally {
+    await reader.cancel().catch(() => {});
+  }
+
+  parts.push(decoder.decode());
+  return parts.join('');
+}
+
+function isTagBoundary(ch: string | undefined): boolean {
+  return !ch || /[\s>/]/.test(ch);
+}
+
+function stripElementBlocks(html: string, tagName: string): string {
+  const lower = html.toLowerCase();
+  const openToken = `<${tagName}`;
+  const closeToken = `</${tagName}>`;
+  let cursor = 0;
+  let out = '';
+
+  while (cursor < html.length) {
+    const startIdx = lower.indexOf(openToken, cursor);
+    if (startIdx === -1) {
+      out += html.slice(cursor);
+      break;
+    }
+
+    if (!isTagBoundary(html[startIdx + openToken.length])) {
+      out += html.slice(cursor, startIdx + openToken.length);
+      cursor = startIdx + openToken.length;
+      continue;
+    }
+
+    out += html.slice(cursor, startIdx);
+    const openEndIdx = html.indexOf('>', startIdx + openToken.length);
+    if (openEndIdx === -1) {
+      break;
+    }
+
+    const closeIdx = lower.indexOf(closeToken, openEndIdx + 1);
+    if (closeIdx === -1) {
+      out += ' ';
+      break;
+    }
+
+    out += ' ';
+    cursor = closeIdx + closeToken.length;
+  }
+
+  return out;
+}
+
+function extractTagContents(html: string, tagName: string, limit: number): string[] {
+  const results: string[] = [];
+  const lower = html.toLowerCase();
+  const openToken = `<${tagName}`;
+  const closeToken = `</${tagName}>`;
+  let cursor = 0;
+
+  while (cursor < html.length && results.length < limit) {
+    const startIdx = lower.indexOf(openToken, cursor);
+    if (startIdx === -1) break;
+
+    if (!isTagBoundary(html[startIdx + openToken.length])) {
+      cursor = startIdx + openToken.length;
+      continue;
+    }
+
+    const openEndIdx = html.indexOf('>', startIdx + openToken.length);
+    if (openEndIdx === -1) break;
+
+    const closeIdx = lower.indexOf(closeToken, openEndIdx + 1);
+    if (closeIdx === -1) {
+      // Stop on first unclosed tag to guarantee strictly linear O(N) runtime
+      break;
+    }
+
+    const cleaned = stripTags(html.slice(openEndIdx + 1, closeIdx));
+    if (cleaned && !results.includes(cleaned)) {
+      results.push(cleaned);
+    }
+    cursor = closeIdx + closeToken.length;
+  }
+
+  return results;
+}
+
 export function stripTags(html: string): string {
-  return html
-    .replace(/<script[\s\S]*?(?:<\/script>|$)/gi, ' ')
-    .replace(/<style[\s\S]*?(?:<\/style>|$)/gi, ' ')
+  const withoutBlocks = stripElementBlocks(stripElementBlocks(html, 'script'), 'style');
+  return withoutBlocks
     .replace(/<[^>]*>?/g, ' ')
     .replace(/[<>]/g, ' ')
     .replace(/&nbsp;/gi, ' ')
@@ -81,27 +196,20 @@ function extractMatch(html: string, regex: RegExp): string {
   return m && m[1] ? stripTags(m[1]) : '';
 }
 
-function extractAllMatches(html: string, regex: RegExp, limit: number = 6): string[] {
-  const results: string[] = [];
-  let m: RegExpExecArray | null;
-  while ((m = regex.exec(html)) !== null && results.length < limit) {
-    const cleaned = stripTags(m[1] || '');
-    if (cleaned && !results.includes(cleaned)) {
-      results.push(cleaned);
-    }
-  }
-  return results;
-}
-
 function parseJsonLdSchemas(html: string): string[] {
   const types = new Set<string>();
-  const scriptRegex = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
-  let m: RegExpExecArray | null;
+  const lower = html.toLowerCase();
+  const openToken = '<script';
+  const closeToken = '</script>';
+  let cursor = 0;
+  let blocksScanned = 0;
 
-  const collectTypes = (node: any) => {
-    if (!node || typeof node !== 'object') return;
+  const collectTypes = (node: any, depth: number = 0) => {
+    if (!node || typeof node !== 'object' || depth > MAX_JSONLD_DEPTH) return;
     if (Array.isArray(node)) {
-      node.forEach(collectTypes);
+      for (const item of node) {
+        collectTypes(item, depth + 1);
+      }
       return;
     }
     if (node['@type']) {
@@ -112,17 +220,40 @@ function parseJsonLdSchemas(html: string): string[] {
       }
     }
     if (Array.isArray(node['@graph'])) {
-      node['@graph'].forEach(collectTypes);
+      collectTypes(node['@graph'], depth + 1);
     }
   };
 
-  while ((m = scriptRegex.exec(html)) !== null) {
-    try {
-      const parsed = JSON.parse(m[1].trim());
-      collectTypes(parsed);
-    } catch {
-      // Ignore malformed JSON-LD blocks
+  while (cursor < html.length && blocksScanned < MAX_JSONLD_BLOCKS) {
+    const startIdx = lower.indexOf(openToken, cursor);
+    if (startIdx === -1) break;
+
+    if (!isTagBoundary(html[startIdx + openToken.length])) {
+      cursor = startIdx + openToken.length;
+      continue;
     }
+
+    const openEndIdx = html.indexOf('>', startIdx + openToken.length);
+    if (openEndIdx === -1) break;
+
+    const closeIdx = lower.indexOf(closeToken, openEndIdx + 1);
+    if (closeIdx === -1) break;
+
+    const openingTag = html.slice(startIdx, openEndIdx + 1);
+    if (/type\s*=\s*["']application\/ld\+json["']/i.test(openingTag)) {
+      blocksScanned++;
+      const jsonBody = html.slice(openEndIdx + 1, closeIdx).trim();
+      if (jsonBody && jsonBody.length <= MAX_JSONLD_BLOCK_CHARS) {
+        try {
+          const parsed = JSON.parse(jsonBody);
+          collectTypes(parsed, 0);
+        } catch {
+          // Ignore malformed JSON-LD blocks
+        }
+      }
+    }
+
+    cursor = closeIdx + closeToken.length;
   }
   return Array.from(types);
 }
@@ -132,7 +263,7 @@ function evaluateRobotsTxt(robotsText: string): BotAccessStatus[] {
     return AI_BOTS.map((b) => ({ ...b, allowed: true }));
   }
 
-  const lines = robotsText.split(/\r?\n/).map((l) => l.replace(/#.*$/, '').trim());
+  const lines = robotsText.split(/\r?\n/, MAX_ROBOTS_LINES).map((l) => l.replace(/#.*$/, '').trim());
   const rulesByAgent = new Map<string, { allow: string[]; disallow: string[] }>();
   let currentAgents: string[] = [];
 
@@ -194,22 +325,24 @@ export async function runTechnicalScan(
 
   const reachable = Boolean(pageRes && pageRes.status < 500);
   const statusCode = pageRes ? pageRes.status : 0;
-  const html = pageRes && pageRes.ok ? await pageRes.text() : '';
+  let html = '';
+  if (pageRes && pageRes.ok) {
+    html = await readResponseTextWithLimit(pageRes, MAX_HTML_BYTES);
+  } else {
+    pageRes?.body?.cancel().catch(() => {});
+  }
 
-  const title = extractMatch(html, /<title[^>]*>([\s\S]*?)<\/title>/i);
+  const title = extractTagContents(html, 'title', 1)[0] || '';
   const metaDescription =
     extractMatch(html, /<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["']/i) ||
     extractMatch(html, /<meta[^>]+content=["']([^"']*)["'][^>]+name=["']description["']/i);
   const canonical =
     extractMatch(html, /<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']*)["']/i) || null;
 
-  const h1s = extractAllMatches(html, /<h1[^>]*>([\s\S]*?)<\/h1>/gi, 4);
-  const h2s = extractAllMatches(html, /<h2[^>]*>([\s\S]*?)<\/h2>/gi, 8);
+  const h1s = extractTagContents(html, 'h1', 4);
+  const h2s = extractTagContents(html, 'h2', 8);
   const bodyExcerpt = stripTags(
-    html
-      .replace(/<header[\s\S]*?<\/header>/gi, ' ')
-      .replace(/<nav[\s\S]*?<\/nav>/gi, ' ')
-      .replace(/<footer[\s\S]*?<\/footer>/gi, ' ')
+    stripElementBlocks(stripElementBlocks(stripElementBlocks(html, 'header'), 'nav'), 'footer')
   ).slice(0, 2500);
   const schemasFound = parseJsonLdSchemas(html);
 
@@ -231,14 +364,19 @@ export async function runTechnicalScan(
   const hasFaqSchema = schemasFound.some((t) => t.toLowerCase().includes('faqpage'));
 
   const hasPhoneInHtml =
-    /href=["']tel:/i.test(html) || /\+?\d[\d\s().-]{7,}\d/.test(stripTags(html).slice(0, 12000));
+    /href=["']tel:/i.test(html) || /\+?\d[\d\s().-]{7,}\d/.test(stripTags(html.slice(0, 65536)).slice(0, 12000));
   const hasAddressSignals =
     /<address/i.test(html) ||
     /"streetAddress"/i.test(html) ||
     /"addressLocality"/i.test(html);
 
   const robotsTxtFound = Boolean(robotsRes && robotsRes.ok);
-  const robotsText = robotsTxtFound && robotsRes ? await robotsRes.text() : '';
+  let robotsText = '';
+  if (robotsTxtFound && robotsRes) {
+    robotsText = await readResponseTextWithLimit(robotsRes, MAX_ROBOTS_BYTES);
+  } else {
+    robotsRes?.body?.cancel().catch(() => {});
+  }
   const bots = evaluateRobotsTxt(robotsText);
 
   const llmsTxtFound = Boolean(
@@ -246,7 +384,9 @@ export async function runTechnicalScan(
       llmsRes.ok &&
       (llmsRes.headers.get('content-type') || '').toLowerCase().includes('text/plain')
   );
+  llmsRes?.body?.cancel().catch(() => {});
   const sitemapFound = Boolean(sitemapRes && sitemapRes.ok);
+  sitemapRes?.body?.cancel().catch(() => {});
 
   const detectedBrand =
     (title.split(/[|–—•:-]/)[0] || '').trim() ||

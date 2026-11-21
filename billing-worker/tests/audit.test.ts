@@ -9,7 +9,8 @@ import {
   updateAuditFullBaseline,
 } from '../src/lib/db';
 import { Env } from '../src/types';
-import { normalizeInputUrl, stripTags } from '../src/lib/scanner';
+import { normalizeInputUrl, runTechnicalScan, stripTags } from '../src/lib/scanner';
+import { escapeDiscordText, sendDiscordNotification } from '../src/lib/discord';
 
 const mockEnv: Env = {
   STRIPE_SECRET_KEY: 'sk_test_mock_123',
@@ -549,5 +550,106 @@ describe('AEO Mini Audit API & Security Guards', () => {
     expect(
       capturedSql.some((s) => s.includes('FROM audits') && s.includes('ai_visibility_json IS NOT NULL'))
     ).toBe(true);
+  });
+
+  it('bounds streamed HTML/robots reads and handles 20k repeated unclosed tags linearly', async () => {
+    let chunksPulled = 0;
+    let cancelled = false;
+    const headChunk = new TextEncoder().encode(
+      '<html><head><title>StreamCo | SaaS</title><script type="application/ld+json">{"@type":"Organization"}</script></head><body><h1>Primary Offering</h1>'
+    );
+    const padChunk = new Uint8Array(64 * 1024).fill(65); // 'A'
+
+    const bigStream = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        if (chunksPulled === 0) {
+          chunksPulled++;
+          controller.enqueue(headChunk);
+          return;
+        }
+        if (chunksPulled < 20) {
+          chunksPulled++;
+          controller.enqueue(padChunk);
+          return;
+        }
+        controller.close();
+      },
+      cancel() {
+        cancelled = true;
+      },
+    });
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL) => {
+        const u = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+        if (u === 'https://streamco.example/') {
+          return new Response(bigStream, {
+            status: 200,
+            headers: { 'Content-Type': 'text/html' },
+          });
+        }
+        return new Response('', { status: 404 });
+      })
+    );
+
+    const scan = await runTechnicalScan('https://streamco.example', 'en');
+    expect(scan.title).toBe('StreamCo | SaaS');
+    expect(scan.detectedBrand).toBe('StreamCo');
+    expect(scan.h1s).toEqual(['Primary Offering']);
+    expect(scan.hasOrganizationOrLocalBusiness).toBe(true);
+    expect(cancelled).toBe(true);
+    // 512 KB cap stops after ~9 chunks (never buffers all 20 x 64 KB = 1.28 MB)
+    expect(chunksPulled).toBeLessThanOrEqual(11);
+
+    // Adversarial repeated unclosed tags should parse in well under 1000ms
+    const adversarialHtml = '<script><header><h1>'.repeat(20000) + '<footer>tail';
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL) => {
+        const u = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+        if (u === 'https://repro.example/') {
+          return new Response(adversarialHtml, {
+            status: 200,
+            headers: { 'Content-Type': 'text/html' },
+          });
+        }
+        return new Response('', { status: 404 });
+      })
+    );
+
+    const t0 = Date.now();
+    const advScan = await runTechnicalScan('https://repro.example', 'en');
+    const elapsedMs = Date.now() - t0;
+    expect(elapsedMs).toBeLessThan(1000);
+    expect(advScan.reachable).toBe(true);
+    expect(advScan.h1s).toEqual([]);
+  });
+
+  it('escapes Discord markdown/links/mentions and clamps embed payload sizes', async () => {
+    const escaped = escapeDiscordText('[Click](https://evil.test)\n**Fake:** @everyone');
+    expect(escaped).not.toContain('\n');
+    expect(escaped).toBe('\\[Click\\]\\(https://evil.test\\) \\*\\*Fake:\\*\\* \\@everyone');
+
+    let postedBody: any = null;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (_url: RequestInfo | URL, init?: RequestInit) => {
+        postedBody = JSON.parse(String(init?.body || '{}'));
+        return new Response(null, { status: 204 });
+      })
+    );
+
+    await sendDiscordNotification(
+      { ...mockEnv, DISCORD_WEBHOOK_URL: 'https://discord.com/api/webhooks/mock' },
+      'T'.repeat(320),
+      'D'.repeat(4500),
+      0x10b981
+    );
+
+    expect(postedBody).not.toBeNull();
+    expect(postedBody.allowed_mentions).toEqual({ parse: [] });
+    expect(postedBody.embeds[0].title.length).toBeLessThanOrEqual(256);
+    expect(postedBody.embeds[0].description.length).toBeLessThanOrEqual(4000);
   });
 });

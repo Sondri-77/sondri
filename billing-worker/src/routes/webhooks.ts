@@ -1,5 +1,5 @@
 import { getStripe } from '../lib/stripe';
-import { sendDiscordNotification } from '../lib/discord';
+import { escapeDiscordText, sanitizeDiscordCode, sendDiscordNotification } from '../lib/discord';
 import { appendToGoogleSheet } from '../lib/sheets';
 import {
   deleteWebhookEvent,
@@ -232,14 +232,16 @@ async function fulfillPaidCheckoutSession(
     }
   }
 
-  let discordMsg = `**Customer:** ${customerName}\n**Email:** ${clientEmail || 'N/A'}\n**Amount:** $${amount} ${currency}\n**Reference:** ${description}`;
-  if (phone) discordMsg += `\n**Phone / WhatsApp:** ${phone}`;
-  if (offerSku) discordMsg += `\n**Offer SKU:** \`${offerSku}\``;
-  if (auditedDomain) discordMsg += `\n**Domain:** \`${auditedDomain}\``;
-  if (city || service) discordMsg += `\n**Market / Service:** ${[city, service].filter(Boolean).join(' · ')}`;
-  if (notes) discordMsg += `\n**Notes:** ${notes}`;
-  if (auditId) discordMsg += `\n**Mini Audit ID:** \`${auditId}\``;
-  discordMsg += `\n**Session ID:** \`${sessionPayload.id}\``;
+  let discordMsg = `**Customer:** ${escapeDiscordText(customerName, 120)}\n**Email:** ${escapeDiscordText(clientEmail || 'N/A', 200)}\n**Amount:** $${amount} ${currency}\n**Reference:** ${escapeDiscordText(description, 200)}`;
+  if (phone) discordMsg += `\n**Phone / WhatsApp:** ${escapeDiscordText(phone, 60)}`;
+  if (offerSku) discordMsg += `\n**Offer SKU:** \`${sanitizeDiscordCode(offerSku, 80)}\``;
+  if (auditedDomain) discordMsg += `\n**Domain:** \`${sanitizeDiscordCode(auditedDomain, 120)}\``;
+  if (city || service) {
+    discordMsg += `\n**Market / Service:** ${escapeDiscordText([city, service].filter(Boolean).join(' · '), 240)}`;
+  }
+  if (notes) discordMsg += `\n**Notes:** ${escapeDiscordText(notes, 600)}`;
+  if (auditId) discordMsg += `\n**Mini Audit ID:** \`${sanitizeDiscordCode(auditId, 64)}\``;
+  discordMsg += `\n**Session ID:** \`${sanitizeDiscordCode(sessionPayload.id, 120)}\``;
   if (receiptUrl) discordMsg += `\n**Receipt:** [View Receipt](${receiptUrl})`;
   if (invoiceUrl) discordMsg += `\n**Invoice:** [View Invoice](${invoiceUrl})`;
 
@@ -259,7 +261,7 @@ async function fulfillPaidCheckoutSession(
     isAeoFullAudit
       ? '🎯 $99 AEO Full Audit Purchased!'
       : isWatchOffer
-        ? `🚀 Sondri Watch Order (${offerSku})!`
+        ? `🚀 Sondri Watch Order (${escapeDiscordText(offerSku, 80)})!`
         : '💰 Website Payment Received!',
     discordMsg,
     0x10b981 // Green
@@ -381,7 +383,7 @@ export async function handleStripeWebhook(
         await sendDiscordNotification(
           env,
           '⚠️ Async Checkout Payment Failed',
-          `**Email:** ${clientEmail}\n**Offer SKU:** \`${offerSku}\`\n**Amount:** $${amount} ${currency}${domain ? `\n**Domain:** \`${domain}\`` : ''}\n**Session ID:** \`${sessionPayload.id}\``,
+          `**Email:** ${escapeDiscordText(clientEmail, 200)}\n**Offer SKU:** \`${sanitizeDiscordCode(offerSku, 80)}\`\n**Amount:** $${amount} ${currency}${domain ? `\n**Domain:** \`${sanitizeDiscordCode(domain, 120)}\`` : ''}\n**Session ID:** \`${sanitizeDiscordCode(sessionPayload.id, 120)}\``,
           0xef4444
         );
         break;
@@ -404,17 +406,19 @@ export async function handleStripeWebhook(
         const email = sessionPayload.customer_details?.email || sessionPayload.customer_email || linkedCustomer?.email || 'N/A';
         const phone = sessionPayload.metadata?.client_phone || '';
 
-        let msg = `**Prospect:** ${name}\n**Email:** ${email}\n**Selected Plan:** \`${offerSku}\` ($${amount} ${currency})`;
-        if (phone) msg += `\n**Phone / WhatsApp:** ${phone}`;
-        if (domain) msg += `\n**Domain:** \`${domain}\``;
-        if (city || service) msg += `\n**Market / Service:** ${[city, service].filter(Boolean).join(' · ')}`;
-        if (notes) msg += `\n**Notes:** ${notes}`;
-        msg += `\n**Session ID:** \`${sessionPayload.id}\``;
+        let msg = `**Prospect:** ${escapeDiscordText(name, 120)}\n**Email:** ${escapeDiscordText(email, 200)}\n**Selected Plan:** \`${sanitizeDiscordCode(offerSku, 80)}\` ($${amount} ${currency})`;
+        if (phone) msg += `\n**Phone / WhatsApp:** ${escapeDiscordText(phone, 60)}`;
+        if (domain) msg += `\n**Domain:** \`${sanitizeDiscordCode(domain, 120)}\``;
+        if (city || service) {
+          msg += `\n**Market / Service:** ${escapeDiscordText([city, service].filter(Boolean).join(' · '), 240)}`;
+        }
+        if (notes) msg += `\n**Notes:** ${escapeDiscordText(notes, 600)}`;
+        msg += `\n**Session ID:** \`${sanitizeDiscordCode(sessionPayload.id, 120)}\``;
 
         console.log(`[Checkout Expired] Session ${sessionPayload.id} expired for ${email} (${offerSku})`);
         await sendDiscordNotification(
           env,
-          `🕒 Abandoned Checkout (${offerSku})`,
+          `🕒 Abandoned Checkout (${escapeDiscordText(offerSku, 80)})`,
           msg,
           0xf59e0b // Soft Amber Lead Alert
         );
@@ -446,11 +450,11 @@ export async function handleStripeWebhook(
         const domain = subscription.metadata?.domain || existingSub?.domain || cust?.primary_domain || '';
 
         console.warn(`[Subscription Cancelled] ${subscription.id} cancelled for customer ${stripeCustomerId}`);
-        let msg = `**Subscription ID:** \`${subscription.id}\`\n**Plan:** \`${sku}\`\n**Status:** Cancelled`;
+        let msg = `**Subscription ID:** \`${sanitizeDiscordCode(subscription.id, 120)}\`\n**Plan:** \`${sanitizeDiscordCode(sku, 80)}\`\n**Status:** Cancelled`;
         if (cust?.name || cust?.email) {
-          msg = `**Customer:** ${cust.name || cust.email}\n**Email:** ${cust.email}\n` + msg;
+          msg = `**Customer:** ${escapeDiscordText(cust.name || cust.email, 120)}\n**Email:** ${escapeDiscordText(cust.email, 200)}\n` + msg;
         }
-        if (domain) msg += `\n**Domain:** \`${domain}\``;
+        if (domain) msg += `\n**Domain:** \`${sanitizeDiscordCode(domain, 120)}\``;
 
         await sendDiscordNotification(
           env,
@@ -522,8 +526,10 @@ export async function handleStripeWebhook(
 
         await sendDiscordNotification(
           env,
-          isRenewal ? `🔄 Subscription Renewed (${offerSku})!` : '💰 Email Invoice Paid!',
-          `**Customer:** ${customerName}\n**Email:** ${clientEmail}${domain ? `\n**Domain:** \`${domain}\`` : ''}\n**Amount:** $${amount} ${currency}\n**Invoice:** ${invoice.number || invoice.id}\n**Receipt:** [View Receipt](${invoice.hosted_invoice_url})`,
+          isRenewal
+            ? `🔄 Subscription Renewed (${escapeDiscordText(offerSku, 80)})!`
+            : '💰 Email Invoice Paid!',
+          `**Customer:** ${escapeDiscordText(customerName, 120)}\n**Email:** ${escapeDiscordText(clientEmail, 200)}${domain ? `\n**Domain:** \`${sanitizeDiscordCode(domain, 120)}\`` : ''}\n**Amount:** $${amount} ${currency}\n**Invoice:** ${escapeDiscordText(invoice.number || invoice.id, 120)}${invoice.hosted_invoice_url ? `\n**Receipt:** [View Receipt](${invoice.hosted_invoice_url})` : ''}`,
           0x10b981
         );
 
@@ -583,7 +589,7 @@ export async function handleStripeWebhook(
         await sendDiscordNotification(
           env,
           '⚠️ Invoice Payment Failed!',
-          `**Customer:** ${customerName}\n**Email:** ${clientEmail}${existingSub?.domain ? `\n**Domain:** \`${existingSub.domain}\`` : ''}\n**Amount Due:** $${amount} ${currency}\n**Invoice:** ${invoice.number || invoice.id}${invoice.hosted_invoice_url ? `\n**Hosted Invoice:** [Pay Invoice](${invoice.hosted_invoice_url})` : ''}`,
+          `**Customer:** ${escapeDiscordText(customerName, 120)}\n**Email:** ${escapeDiscordText(clientEmail, 200)}${existingSub?.domain ? `\n**Domain:** \`${sanitizeDiscordCode(existingSub.domain, 120)}\`` : ''}\n**Amount Due:** $${amount} ${currency}\n**Invoice:** ${escapeDiscordText(invoice.number || invoice.id, 120)}${invoice.hosted_invoice_url ? `\n**Hosted Invoice:** [Pay Invoice](${invoice.hosted_invoice_url})` : ''}`,
           0xef4444 // Red
         );
         break;
@@ -611,10 +617,12 @@ export async function handleStripeWebhook(
         const currency = (charge.currency || 'usd').toUpperCase();
         const cust = refundedOrder?.customer_id ? await getCustomerById(env, refundedOrder.customer_id) : null;
 
-        let msg = `**Refunded:** $${amount} ${currency}\n**Payment Intent:** \`${paymentIntentId || 'N/A'}\``;
-        if (cust) msg = `**Customer:** ${cust.name || cust.email}\n**Email:** ${cust.email}\n` + msg;
-        if (refundedOrder?.offer_sku) msg += `\n**SKU:** \`${refundedOrder.offer_sku}\``;
-        if (refundedOrder?.domain) msg += `\n**Domain:** \`${refundedOrder.domain}\``;
+        let msg = `**Refunded:** $${amount} ${currency}\n**Payment Intent:** \`${sanitizeDiscordCode(paymentIntentId || 'N/A', 120)}\``;
+        if (cust) {
+          msg = `**Customer:** ${escapeDiscordText(cust.name || cust.email, 120)}\n**Email:** ${escapeDiscordText(cust.email, 200)}\n` + msg;
+        }
+        if (refundedOrder?.offer_sku) msg += `\n**SKU:** \`${sanitizeDiscordCode(refundedOrder.offer_sku, 80)}\``;
+        if (refundedOrder?.domain) msg += `\n**Domain:** \`${sanitizeDiscordCode(refundedOrder.domain, 120)}\``;
 
         console.warn(`[Charge Refunded] ${charge.id} ($${amount} ${currency})`);
         await sendDiscordNotification(env, '↩️ Payment Refunded', msg, 0xf59e0b);

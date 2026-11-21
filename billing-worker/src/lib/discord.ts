@@ -1,5 +1,31 @@
 import { Env } from '../types';
 
+const DISCORD_MAX_TITLE = 256;
+const DISCORD_MAX_DESCRIPTION = 4000;
+const DISCORD_MAX_USERNAME = 80;
+
+function clampText(value: string, maxLen: number): string {
+  if (value.length <= maxLen) return value;
+  return `${value.slice(0, Math.max(0, maxLen - 1)).trimEnd()}…`;
+}
+
+export function escapeDiscordText(value: unknown, maxLen: number = 300): string {
+  const cleaned = String(value ?? '')
+    .replace(/[\r\n\t\x00-\x1f\x7f]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const escaped = cleaned.replace(/[\\*_~`|[\]()<>@]/g, '\\$&');
+  return clampText(escaped, maxLen);
+}
+
+export function sanitizeDiscordCode(value: unknown, maxLen: number = 200): string {
+  const cleaned = String(value ?? '')
+    .replace(/[\r\n\t\x00-\x1f\x7f`]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return clampText(cleaned, maxLen);
+}
+
 export async function sendDiscordNotification(
   env: Env,
   title: string,
@@ -16,11 +42,12 @@ export async function sendDiscordNotification(
 
   try {
     const payload = {
-      username: botUsername,
+      username: clampText(String(botUsername || 'Sondri Billing Bot').trim(), DISCORD_MAX_USERNAME),
+      allowed_mentions: { parse: [] as string[] },
       embeds: [
         {
-          title,
-          description,
+          title: clampText(String(title || 'Sondri Notification'), DISCORD_MAX_TITLE),
+          description: clampText(String(description || ''), DISCORD_MAX_DESCRIPTION),
           color,
           timestamp: new Date().toISOString(),
           footer: {

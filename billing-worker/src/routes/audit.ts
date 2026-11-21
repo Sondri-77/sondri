@@ -18,7 +18,7 @@ import {
   inferContextAndBuyerQuestions,
   runGeminiGroundedVisibility,
 } from '../lib/gemini';
-import { sendDiscordNotification } from '../lib/discord';
+import { escapeDiscordText, sanitizeDiscordCode, sendDiscordNotification } from '../lib/discord';
 import { appendToGoogleSheet } from '../lib/sheets';
 
 const DISPOSABLE_DOMAINS = new Set([
@@ -386,7 +386,7 @@ export async function handleAuditAiVisibility(
       const mentionsStr = vis ? `${vis.namedCount}/${vis.totalQuestions}` : 'Pending';
       const compsStr =
         vis && Array.isArray(vis.competitorsSummary) && vis.competitorsSummary.length > 0
-          ? vis.competitorsSummary.slice(0, 5).join(', ')
+          ? escapeDiscordText(vis.competitorsSummary.slice(0, 5).join(', '), 300)
           : 'None';
 
       ctx.waitUntil(
@@ -394,7 +394,7 @@ export async function handleAuditAiVisibility(
           sendDiscordNotification(
             env,
             '🔍 New AEO Mini Audit Lead!',
-            `**Name:** ${name || 'N/A'}\n**Email:** ${email}\n**Phone:** ${phone || 'N/A'}\n**Domain:** \`${audit.domain}\`\n**Service / Market:** ${finalService} (${finalCity})\n**Combined AI Score:** ${combinedScore}/100 (AI Mentions: ${mentionsStr})\n**Competitors Named:** ${compsStr}\n**Language:** ${audit.lang.toUpperCase()}`,
+            `**Name:** ${escapeDiscordText(name || 'N/A', 120)}\n**Email:** ${escapeDiscordText(email, 200)}\n**Phone:** ${escapeDiscordText(phone || 'N/A', 60)}\n**Domain:** \`${sanitizeDiscordCode(audit.domain, 120)}\`\n**Service / Market:** ${escapeDiscordText(finalService, 140)} (${escapeDiscordText(finalCity, 120)})\n**Combined AI Score:** ${combinedScore}/100 (AI Mentions: ${escapeDiscordText(mentionsStr, 30)})\n**Competitors Named:** ${compsStr}\n**Language:** ${audit.lang.toUpperCase()}`,
             0x3b82f6,
             env.DISCORD_AEO_WEBHOOK_URL || env.DISCORD_WEBHOOK_URL,
             'Sondri AEO Audit Bot'
@@ -685,7 +685,7 @@ export async function runBackgroundFullAuditBaseline(
     await sendDiscordNotification(
       env,
       '📊 $99 Full Audit — 12-Question Gemini Baseline Ready',
-      `**Domain:** \`${audit.domain}\`\n**Client:** ${customerEmail}\n**Audit ID:** \`${audit.id}\`\n**Gemini Grounded Mentions:** ${fullBaseline.namedCount}/${fullBaseline.totalQuestions}\n**Domain Citations:** ${fullBaseline.citedCount}/${fullBaseline.totalQuestions}\n**Competitors Found:** ${fullBaseline.competitorsSummary.join(', ') || 'None'}\n**Top Cited Sources:** ${fullBaseline.topSourceDomains.join(', ') || 'None'}`,
+      `**Domain:** \`${sanitizeDiscordCode(audit.domain, 120)}\`\n**Client:** ${escapeDiscordText(customerEmail, 200)}\n**Audit ID:** \`${sanitizeDiscordCode(audit.id, 64)}\`\n**Gemini Grounded Mentions:** ${fullBaseline.namedCount}/${fullBaseline.totalQuestions}\n**Domain Citations:** ${fullBaseline.citedCount}/${fullBaseline.totalQuestions}\n**Competitors Found:** ${escapeDiscordText(fullBaseline.competitorsSummary.join(', ') || 'None', 300)}\n**Top Cited Sources:** ${escapeDiscordText(fullBaseline.topSourceDomains.join(', ') || 'None', 300)}`,
       0x10b981
     );
   } catch (err) {
