@@ -1,4 +1,5 @@
 import { Env } from './types';
+import { hasValidApiKey } from './lib/auth';
 import { handleCreateCustomer, handleGetCustomer } from './routes/customers';
 import { handleCreateSubscription } from './routes/subscriptions';
 import { handleCreateCharge } from './routes/charges';
@@ -36,26 +37,18 @@ function withCors(response: Response): Response {
   });
 }
 
-async function timingSafeEqual(a: string, b: string): Promise<boolean> {
-  const encoder = new TextEncoder();
-  const [hashA, hashB] = await Promise.all([
-    crypto.subtle.digest('SHA-256', encoder.encode(a)),
-    crypto.subtle.digest('SHA-256', encoder.encode(b)),
-  ]);
-  const bytesA = new Uint8Array(hashA);
-  const bytesB = new Uint8Array(hashB);
-  let diff = 0;
-  for (let i = 0; i < bytesA.length; i++) {
-    diff |= bytesA[i] ^ bytesB[i];
-  }
-  return diff === 0;
-}
-
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
     const path = url.pathname;
     const method = request.method.toUpperCase();
+
+    if (url.hostname.toLowerCase().endsWith('.workers.dev')) {
+      return Response.json(
+        { success: false, error: { code: 'FORBIDDEN_HOST', message: 'Use billing.sondri.ai' } },
+        { status: 403 }
+      );
+    }
 
     // 0. Handle CORS Preflight
     if (method === 'OPTIONS') {
@@ -113,8 +106,7 @@ export default {
       );
     }
 
-    const apiKeyHeader = request.headers.get('X-API-Key');
-    if (!apiKeyHeader || !(await timingSafeEqual(apiKeyHeader, env.API_KEY))) {
+    if (!(await hasValidApiKey(request, env))) {
       return Response.json(
         { success: false, error: { code: 'UNAUTHORIZED', message: 'Invalid or missing X-API-Key header' } },
         { status: 401 }

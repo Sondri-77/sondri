@@ -236,7 +236,7 @@ export async function getCachedAuditByDomain(
   }
 
   const res = await env.DB.prepare(
-    `SELECT * FROM audits WHERE domain = ? AND lang = ? AND city = ? AND expires_at > ? ORDER BY created_at DESC LIMIT 10`
+    `SELECT * FROM audits WHERE domain = ? AND lang = ? AND city = ? AND ai_visibility_json IS NOT NULL AND expires_at > ? ORDER BY created_at DESC LIMIT 10`
   )
     .bind(domain, lang, expectedDefaultCity, nowIso)
     .all<Record<string, any>>();
@@ -439,60 +439,94 @@ export async function markLeadPaid99(
   }
 }
 
-export async function checkAndIncrementAiUsage(
+export function parseDailyCap(raw: string | undefined, fallback: number): number {
+  if (raw === undefined || raw.trim() === '') return fallback;
+  const parsed = Number.parseInt(raw.trim(), 10);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+}
+
+export async function consumeDailyQuota(
   env: Env,
-  ipHash: string,
-  maxPerIpPerDay: number = 3
+  opts: {
+    globalScope: string;
+    ipScope: string;
+    maxPerIpPerDay: number;
+    globalDailyCap: number;
+    units?: number;
+  }
 ): Promise<{ allowed: boolean; reason?: 'ip_rate_limit' | 'daily_cap' }> {
   await ensureSchema(env);
+  const units = Math.max(1, Math.floor(opts.units ?? 1));
+  if (opts.maxPerIpPerDay <= 0) return { allowed: false, reason: 'ip_rate_limit' };
+  if (opts.globalDailyCap <= 0) return { allowed: false, reason: 'daily_cap' };
+
   const day = new Date().toISOString().slice(0, 10);
-  const dailyCap = parseInt(env.DAILY_AUDIT_CAP || '50', 10) || 50;
-  const globalScope = 'global_ai_runs';
-  const ipScope = `ip:${ipHash}`;
 
   if (!env.DB) {
-    const gKey = `${day}:${globalScope}`;
-    const iKey = `${day}:${ipScope}`;
+    const gKey = `${day}:${opts.globalScope}`;
+    const iKey = `${day}:${opts.ipScope}`;
     const gCount = memoryUsage.get(gKey) || 0;
     const iCount = memoryUsage.get(iKey) || 0;
-    if (iCount >= maxPerIpPerDay) return { allowed: false, reason: 'ip_rate_limit' };
-    if (gCount >= dailyCap) return { allowed: false, reason: 'daily_cap' };
-    memoryUsage.set(gKey, gCount + 1);
-    memoryUsage.set(iKey, iCount + 1);
+    if (iCount + units > opts.maxPerIpPerDay) return { allowed: false, reason: 'ip_rate_limit' };
+    if (gCount + units > opts.globalDailyCap) return { allowed: false, reason: 'daily_cap' };
+    memoryUsage.set(gKey, gCount + units);
+    memoryUsage.set(iKey, iCount + units);
     return { allowed: true };
   }
 
-  const globalRow = await env.DB.prepare(
-    `SELECT count FROM daily_usage WHERE day = ? AND scope = ?`
-  )
-    .bind(day, globalScope)
-    .first<{ count: number }>();
+  // Atomic SQLite conditional UPDATE prevents concurrent TOCTOU cap bypass.
+  await env.DB.batch([
+    env.DB.prepare(`INSERT OR IGNORE INTO daily_usage (day, scope, count) VALUES (?, ?, 0)`).bind(
+      day,
+      opts.ipScope
+    ),
+    env.DB.prepare(`INSERT OR IGNORE INTO daily_usage (day, scope, count) VALUES (?, ?, 0)`).bind(
+      day,
+      opts.globalScope
+    ),
+  ]);
 
-  const ipRow = await env.DB.prepare(
-    `SELECT count FROM daily_usage WHERE day = ? AND scope = ?`
+  const ipRes = await env.DB.prepare(
+    `UPDATE daily_usage SET count = count + ? WHERE day = ? AND scope = ? AND count + ? <= ?`
   )
-    .bind(day, ipScope)
-    .first<{ count: number }>();
+    .bind(units, day, opts.ipScope, units, opts.maxPerIpPerDay)
+    .run();
 
-  if ((ipRow?.count || 0) >= maxPerIpPerDay) {
+  if (Number(ipRes.meta?.changes ?? 0) === 0) {
     return { allowed: false, reason: 'ip_rate_limit' };
   }
-  if ((globalRow?.count || 0) >= dailyCap) {
+
+  const globalRes = await env.DB.prepare(
+    `UPDATE daily_usage SET count = count + ? WHERE day = ? AND scope = ? AND count + ? <= ?`
+  )
+    .bind(units, day, opts.globalScope, units, opts.globalDailyCap)
+    .run();
+
+  if (Number(globalRes.meta?.changes ?? 0) === 0) {
+    await env.DB.prepare(
+      `UPDATE daily_usage SET count = MAX(0, count - ?) WHERE day = ? AND scope = ?`
+    )
+      .bind(units, day, opts.ipScope)
+      .run();
     return { allowed: false, reason: 'daily_cap' };
   }
 
-  await env.DB.batch([
-    env.DB.prepare(
-      `INSERT INTO daily_usage (day, scope, count) VALUES (?, ?, 1)
-       ON CONFLICT(day, scope) DO UPDATE SET count = count + 1`
-    ).bind(day, globalScope),
-    env.DB.prepare(
-      `INSERT INTO daily_usage (day, scope, count) VALUES (?, ?, 1)
-       ON CONFLICT(day, scope) DO UPDATE SET count = count + 1`
-    ).bind(day, ipScope),
-  ]);
-
   return { allowed: true };
+}
+
+export async function checkAndIncrementAiUsage(
+  env: Env,
+  ipHash: string,
+  maxPerIpPerDay: number = 3,
+  units: number = 1
+): Promise<{ allowed: boolean; reason?: 'ip_rate_limit' | 'daily_cap' }> {
+  return consumeDailyQuota(env, {
+    globalScope: 'global_ai_runs',
+    ipScope: `ip:${ipHash}`,
+    maxPerIpPerDay,
+    globalDailyCap: parseDailyCap(env.DAILY_AUDIT_CAP, 50),
+    units,
+  });
 }
 
 function genId(prefix: string): string {
@@ -639,12 +673,152 @@ export async function upsertCustomer(
   await ensureSchema(env);
   const nowIso = new Date().toISOString();
   const normEmail = input.email ? input.email.toLowerCase().trim() : '';
+  const cleanStripeId = cleanStr(input.stripe_customer_id);
 
-  let existing: CustomerRecord | null = null;
-  if (normEmail) existing = await getCustomerByEmail(env, normEmail);
-  if (!existing && input.stripe_customer_id) {
-    existing = await getCustomerByStripeId(env, input.stripe_customer_id);
+  const byEmail = normEmail ? await getCustomerByEmail(env, normEmail) : null;
+  const byStripe = cleanStripeId ? await getCustomerByStripeId(env, cleanStripeId) : null;
+
+  // Reconcile cross-row collision when email row and stripe_customer_id row both exist separately.
+  if (byEmail && byStripe && byEmail.id !== byStripe.id) {
+    const merged: CustomerRecord = {
+      ...byEmail,
+      email: normEmail || byEmail.email,
+      name: cleanStr(input.name) ?? byEmail.name ?? byStripe.name,
+      phone: cleanStr(input.phone) ?? byEmail.phone ?? byStripe.phone,
+      company: cleanStr(input.company) ?? byEmail.company ?? byStripe.company,
+      primary_domain: cleanStr(input.primary_domain) ?? byEmail.primary_domain ?? byStripe.primary_domain,
+      city: cleanStr(input.city) ?? byEmail.city ?? byStripe.city,
+      service: cleanStr(input.service) ?? byEmail.service ?? byStripe.service,
+      lang: input.lang || byEmail.lang || byStripe.lang,
+      stripe_customer_id: cleanStripeId,
+      updated_at: nowIso,
+    };
+
+    const isPlaceholderDonor = byStripe.email.endsWith('@placeholder.local');
+
+    if (!env.DB) {
+      if (isPlaceholderDonor) {
+        for (const o of memoryOrders.values()) {
+          if (o.customer_id === byStripe.id) o.customer_id = merged.id;
+        }
+        for (const s of memorySubscriptions.values()) {
+          if (s.customer_id === byStripe.id) s.customer_id = merged.id;
+        }
+        memoryCustomers.delete(byStripe.id);
+      } else {
+        memoryCustomers.set(byStripe.id, {
+          ...byStripe,
+          stripe_customer_id: null,
+          updated_at: nowIso,
+        });
+      }
+      memoryCustomers.set(merged.id, merged);
+      return merged;
+    }
+
+    const statements: D1PreparedStatement[] = isPlaceholderDonor
+      ? [
+          env.DB.prepare(`UPDATE orders SET customer_id = ? WHERE customer_id = ?`).bind(
+            merged.id,
+            byStripe.id
+          ),
+          env.DB.prepare(`UPDATE subscriptions SET customer_id = ? WHERE customer_id = ?`).bind(
+            merged.id,
+            byStripe.id
+          ),
+          env.DB.prepare(`DELETE FROM customers WHERE id = ?`).bind(byStripe.id),
+        ]
+      : [
+          env.DB.prepare(`UPDATE customers SET stripe_customer_id = NULL, updated_at = ? WHERE id = ?`).bind(
+            nowIso,
+            byStripe.id
+          ),
+        ];
+
+    statements.push(
+      env.DB.prepare(
+        `UPDATE customers SET email = ?, name = ?, phone = ?, company = ?, primary_domain = ?, city = ?, service = ?, lang = ?, stripe_customer_id = ?, updated_at = ? WHERE id = ?`
+      ).bind(
+        merged.email,
+        merged.name,
+        merged.phone,
+        merged.company,
+        merged.primary_domain,
+        merged.city,
+        merged.service,
+        merged.lang,
+        merged.stripe_customer_id,
+        merged.updated_at,
+        merged.id
+      )
+    );
+
+    await env.DB.batch(statements);
+    return merged;
   }
+
+  // When Stripe transfers an existing stripe_customer_id to a distinct real email,
+  // detach stripe_customer_id from the prior non-placeholder row so its historical email
+  // record remains intact without violating UNIQUE(stripe_customer_id).
+  if (
+    !byEmail &&
+    byStripe &&
+    normEmail &&
+    normEmail !== byStripe.email.toLowerCase() &&
+    !byStripe.email.endsWith('@placeholder.local')
+  ) {
+    const created: CustomerRecord = {
+      id: genId('cust'),
+      email: normEmail,
+      name: cleanStr(input.name),
+      phone: cleanStr(input.phone),
+      company: cleanStr(input.company),
+      primary_domain: cleanStr(input.primary_domain),
+      city: cleanStr(input.city),
+      service: cleanStr(input.service),
+      lang: input.lang || 'en',
+      stripe_customer_id: cleanStripeId,
+      created_at: nowIso,
+      updated_at: nowIso,
+    };
+
+    if (!env.DB) {
+      memoryCustomers.set(byStripe.id, {
+        ...byStripe,
+        stripe_customer_id: null,
+        updated_at: nowIso,
+      });
+      memoryCustomers.set(created.id, created);
+      return created;
+    }
+
+    await env.DB.batch([
+      env.DB.prepare(`UPDATE customers SET stripe_customer_id = NULL, updated_at = ? WHERE id = ?`).bind(
+        nowIso,
+        byStripe.id
+      ),
+      env.DB.prepare(
+        `INSERT INTO customers (id, email, name, phone, company, primary_domain, city, service, lang, stripe_customer_id, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).bind(
+        created.id,
+        created.email,
+        created.name,
+        created.phone,
+        created.company,
+        created.primary_domain,
+        created.city,
+        created.service,
+        created.lang,
+        created.stripe_customer_id,
+        created.created_at,
+        created.updated_at
+      ),
+    ]);
+    return created;
+  }
+
+  const existing: CustomerRecord | null = byEmail || byStripe;
 
   if (existing) {
     const merged: CustomerRecord = {
@@ -657,7 +831,7 @@ export async function upsertCustomer(
       city: cleanStr(input.city) ?? existing.city,
       service: cleanStr(input.service) ?? existing.service,
       lang: input.lang || existing.lang,
-      stripe_customer_id: cleanStr(input.stripe_customer_id) ?? existing.stripe_customer_id,
+      stripe_customer_id: cleanStripeId ?? existing.stripe_customer_id,
       updated_at: nowIso,
     };
 
@@ -696,7 +870,7 @@ export async function upsertCustomer(
     city: cleanStr(input.city),
     service: cleanStr(input.service),
     lang: input.lang || 'en',
-    stripe_customer_id: cleanStr(input.stripe_customer_id),
+    stripe_customer_id: cleanStripeId,
     created_at: nowIso,
     updated_at: nowIso,
   };
@@ -888,6 +1062,23 @@ export async function getOrderBySessionId(env: Env, sessionId: string): Promise<
   return row ? rowToOrder(row) : null;
 }
 
+export async function getOrderByInvoiceId(env: Env, stripeInvoiceId: string): Promise<OrderRecord | null> {
+  await ensureSchema(env);
+  if (!stripeInvoiceId) return null;
+
+  if (!env.DB) {
+    for (const o of memoryOrders.values()) {
+      if (o.stripe_invoice_id === stripeInvoiceId) return o;
+    }
+    return null;
+  }
+
+  const row = await env.DB.prepare(`SELECT * FROM orders WHERE stripe_invoice_id = ? LIMIT 1`)
+    .bind(stripeInvoiceId)
+    .first<Record<string, any>>();
+  return row ? rowToOrder(row) : null;
+}
+
 export async function markOrderPaid(
   env: Env,
   sessionId: string,
@@ -933,9 +1124,10 @@ export async function markOrderPaid(
     });
   }
 
+  const nextStatus: OrderStatus = existing.status === 'refunded' ? 'refunded' : 'paid';
   const updated: OrderRecord = {
     ...existing,
-    status: 'paid',
+    status: nextStatus,
     stripe_payment_intent_id: cleanStr(patch.stripe_payment_intent_id) ?? existing.stripe_payment_intent_id,
     stripe_invoice_id: cleanStr(patch.stripe_invoice_id) ?? existing.stripe_invoice_id,
     stripe_subscription_id: cleanStr(patch.stripe_subscription_id) ?? existing.stripe_subscription_id,
@@ -951,7 +1143,7 @@ export async function markOrderPaid(
   }
 
   await env.DB.prepare(
-    `UPDATE orders SET status = 'paid', stripe_payment_intent_id = ?, stripe_invoice_id = ?, stripe_subscription_id = ?, receipt_url = ?, invoice_url = ?, paid_at = ?, updated_at = ? WHERE id = ?`
+    `UPDATE orders SET status = CASE WHEN status = 'refunded' THEN 'refunded' ELSE 'paid' END, stripe_payment_intent_id = ?, stripe_invoice_id = ?, stripe_subscription_id = ?, receipt_url = ?, invoice_url = ?, paid_at = ?, updated_at = ? WHERE id = ?`
   )
     .bind(
       updated.stripe_payment_intent_id,
@@ -991,6 +1183,29 @@ export async function markOrderExpired(env: Env, sessionId: string): Promise<Ord
   return { ...existing, status: 'expired', updated_at: nowIso };
 }
 
+export async function markOrderFailed(env: Env, sessionId: string): Promise<OrderRecord | null> {
+  await ensureSchema(env);
+  const existing = await getOrderBySessionId(env, sessionId);
+  if (!existing || existing.status === 'paid' || existing.status === 'refunded') {
+    return existing;
+  }
+  const nowIso = new Date().toISOString();
+
+  if (!env.DB) {
+    existing.status = 'failed';
+    existing.updated_at = nowIso;
+    memoryOrders.set(existing.id, existing);
+    return existing;
+  }
+
+  await env.DB.prepare(
+    `UPDATE orders SET status = 'failed', updated_at = ? WHERE stripe_session_id = ? AND status IN ('checkout_started', 'expired')`
+  )
+    .bind(nowIso, sessionId)
+    .run();
+  return { ...existing, status: 'failed', updated_at: nowIso };
+}
+
 export async function markOrderRefundedByPaymentIntent(
   env: Env,
   paymentIntentId: string
@@ -1018,6 +1233,40 @@ export async function markOrderRefundedByPaymentIntent(
 
   const row = await env.DB.prepare(`SELECT * FROM orders WHERE stripe_payment_intent_id = ? LIMIT 1`)
     .bind(paymentIntentId)
+    .first<Record<string, any>>();
+  return row ? rowToOrder(row) : null;
+}
+
+export async function markOrderRefundedByOrderId(
+  env: Env,
+  orderId: string,
+  paymentIntentId?: string | null
+): Promise<OrderRecord | null> {
+  await ensureSchema(env);
+  if (!orderId) return null;
+  const nowIso = new Date().toISOString();
+  const cleanPi = cleanStr(paymentIntentId);
+
+  if (!env.DB) {
+    const o = memoryOrders.get(orderId);
+    if (!o) return null;
+    o.status = 'refunded';
+    if (cleanPi && !o.stripe_payment_intent_id) {
+      o.stripe_payment_intent_id = cleanPi;
+    }
+    o.updated_at = nowIso;
+    memoryOrders.set(o.id, o);
+    return o;
+  }
+
+  await env.DB.prepare(
+    `UPDATE orders SET status = 'refunded', stripe_payment_intent_id = COALESCE(stripe_payment_intent_id, ?), updated_at = ? WHERE id = ?`
+  )
+    .bind(cleanPi, nowIso, orderId)
+    .run();
+
+  const row = await env.DB.prepare(`SELECT * FROM orders WHERE id = ? LIMIT 1`)
+    .bind(orderId)
     .first<Record<string, any>>();
   return row ? rowToOrder(row) : null;
 }
@@ -1108,6 +1357,15 @@ export async function upsertSubscription(
   await ensureSchema(env);
   const nowIso = new Date().toISOString();
   const existing = await getSubscriptionByStripeId(env, input.stripe_subscription_id);
+  const isTerminalCanceled = existing?.status === 'canceled';
+  const incomingPeriodEnd = cleanStr(input.current_period_end);
+  const isStalePeriod = Boolean(
+    !isTerminalCanceled &&
+      input.status !== 'canceled' &&
+      existing?.current_period_end &&
+      incomingPeriodEnd &&
+      incomingPeriodEnd < existing.current_period_end
+  );
 
   const sub: SubscriptionRecord = {
     id: existing?.id || genId('sub'),
@@ -1116,18 +1374,27 @@ export async function upsertSubscription(
     stripe_customer_id: input.stripe_customer_id || existing?.stripe_customer_id || '',
     offer_sku: cleanStr(input.offer_sku) ?? existing?.offer_sku ?? null,
     domain: cleanStr(input.domain) ?? existing?.domain ?? null,
-    status: input.status,
-    amount_cents: input.amount_cents ?? existing?.amount_cents ?? null,
+    status: isTerminalCanceled ? 'canceled' : isStalePeriod ? existing!.status : input.status,
+    amount_cents: isStalePeriod
+      ? existing!.amount_cents
+      : (input.amount_cents ?? existing?.amount_cents ?? null),
     currency: (input.currency || existing?.currency || 'usd').toLowerCase(),
     interval: input.interval || existing?.interval || 'month',
-    current_period_start: cleanStr(input.current_period_start) ?? existing?.current_period_start ?? null,
-    current_period_end: cleanStr(input.current_period_end) ?? existing?.current_period_end ?? null,
-    cancel_at_period_end:
-      input.cancel_at_period_end !== undefined
+    current_period_start: isStalePeriod
+      ? existing!.current_period_start
+      : (cleanStr(input.current_period_start) ?? existing?.current_period_start ?? null),
+    current_period_end: isStalePeriod
+      ? existing!.current_period_end
+      : (incomingPeriodEnd ?? existing?.current_period_end ?? null),
+    cancel_at_period_end: isStalePeriod
+      ? existing!.cancel_at_period_end
+      : input.cancel_at_period_end !== undefined
         ? Boolean(input.cancel_at_period_end)
         : existing?.cancel_at_period_end ?? false,
-    canceled_at: cleanStr(input.canceled_at) ?? existing?.canceled_at ?? null,
-    latest_invoice_id: cleanStr(input.latest_invoice_id) ?? existing?.latest_invoice_id ?? null,
+    canceled_at: existing?.canceled_at ?? cleanStr(input.canceled_at) ?? null,
+    latest_invoice_id: isStalePeriod
+      ? existing!.latest_invoice_id
+      : (cleanStr(input.latest_invoice_id) ?? existing?.latest_invoice_id ?? null),
     created_at: existing?.created_at || nowIso,
     updated_at: nowIso,
   };
@@ -1149,14 +1416,14 @@ export async function upsertSubscription(
       stripe_customer_id = excluded.stripe_customer_id,
       offer_sku = COALESCE(excluded.offer_sku, subscriptions.offer_sku),
       domain = COALESCE(excluded.domain, subscriptions.domain),
-      status = excluded.status,
+      status = CASE WHEN subscriptions.status = 'canceled' THEN 'canceled' ELSE excluded.status END,
       amount_cents = COALESCE(excluded.amount_cents, subscriptions.amount_cents),
       currency = excluded.currency,
       interval = excluded.interval,
       current_period_start = COALESCE(excluded.current_period_start, subscriptions.current_period_start),
       current_period_end = COALESCE(excluded.current_period_end, subscriptions.current_period_end),
       cancel_at_period_end = excluded.cancel_at_period_end,
-      canceled_at = COALESCE(excluded.canceled_at, subscriptions.canceled_at),
+      canceled_at = COALESCE(subscriptions.canceled_at, excluded.canceled_at),
       latest_invoice_id = COALESCE(excluded.latest_invoice_id, subscriptions.latest_invoice_id),
       updated_at = excluded.updated_at`
   )

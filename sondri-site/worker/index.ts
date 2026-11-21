@@ -173,8 +173,10 @@ export default {
       normalizedPathname === '/admin' || normalizedPathname.startsWith('/admin/');
 
     if (isAdminApiPath || isAdminPagePath) {
-      // Keep Cloudflare Access perimeter strictly on canonical sondri.ai.
-      if (rawUrl.hostname === WATCH_HOST) {
+      // Keep Cloudflare Access perimeter strictly on canonical sondri.ai (and localhost dev).
+      const host = rawUrl.hostname.toLowerCase();
+      const isAllowedAdminHost = host === APEX_HOST || host === 'localhost' || host === '127.0.0.1';
+      if (!isAllowedAdminHost) {
         if (isAdminApiPath) {
           return withPrivateSecurityHeaders(
             Response.json(

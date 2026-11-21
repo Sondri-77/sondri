@@ -373,4 +373,21 @@ describe('Cloudflare Access JWT Guard & Admin BFF Proxy', () => {
     const doubleSlashAdminApi = await worker.fetch(new Request('https://sondri.ai//api/admin/orders'), env);
     expect(doubleSlashAdminApi.status).toBe(401);
   });
+
+  it('blocks workers.dev admin API requests with 403 and redirects workers.dev admin pages to sondri.ai', async () => {
+    const env = makeBaseEnv();
+    const apiRes = await worker.fetch(
+      new Request('https://sondri.sondri.workers.dev/api/admin/orders'),
+      env,
+    );
+    expect(apiRes.status).toBe(403);
+    expect(((await apiRes.json()) as any).error.code).toBe('FORBIDDEN_HOST');
+
+    const pageRes = await worker.fetch(
+      new Request('https://sondri.sondri.workers.dev/admin/watch/'),
+      env,
+    );
+    expect(pageRes.status).toBe(302);
+    expect(pageRes.headers.get('Location')).toBe('https://sondri.ai/admin/watch/');
+  });
 });

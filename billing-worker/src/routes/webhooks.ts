@@ -5,11 +5,14 @@ import {
   deleteWebhookEvent,
   getCustomerById,
   getCustomerByStripeId,
+  getOrderByInvoiceId,
   getOrderBySessionId,
   getSubscriptionByStripeId,
   markLeadPaid99,
   markOrderExpired,
+  markOrderFailed,
   markOrderPaid,
+  markOrderRefundedByOrderId,
   markOrderRefundedByPaymentIntent,
   markSubscriptionStatus,
   recordRenewalOrder,
@@ -87,6 +90,207 @@ async function syncStripeSubscriptionToD1(
   });
 }
 
+async function fulfillPaidCheckoutSession(
+  env: Env,
+  stripe: Stripe,
+  sessionPayload: Stripe.Checkout.Session,
+  ctx?: ExecutionContext,
+  preExpandedSession?: Stripe.Checkout.Session | null
+): Promise<void> {
+  let invoiceUrl = '';
+  let receiptUrl = '';
+  let expandedInvoiceId: string | null = getId(sessionPayload.invoice);
+  let expandedPaymentIntentId: string | null = getId(sessionPayload.payment_intent);
+  let expandedSubObj: Stripe.Subscription | null = null;
+  let expandedSubId: string | null = getId(sessionPayload.subscription);
+
+  let expandedSession = preExpandedSession;
+  if (expandedSession === undefined) {
+    try {
+      expandedSession = await stripe.checkout.sessions.retrieve(sessionPayload.id, {
+        expand: ['invoice', 'payment_intent.latest_charge', 'subscription'],
+      });
+    } catch (e: any) {
+      console.warn(`[Webhook Session Expand Warning] ${e.message}`);
+      expandedSession = null;
+    }
+  }
+
+  if (expandedSession) {
+    const invoiceObj =
+      typeof expandedSession.invoice === 'object' && expandedSession.invoice
+        ? (expandedSession.invoice as Stripe.Invoice)
+        : null;
+    const paymentIntentObj =
+      typeof expandedSession.payment_intent === 'object' && expandedSession.payment_intent
+        ? (expandedSession.payment_intent as Stripe.PaymentIntent)
+        : null;
+    const latestChargeObj =
+      paymentIntentObj && typeof paymentIntentObj.latest_charge === 'object'
+        ? (paymentIntentObj.latest_charge as Stripe.Charge)
+        : null;
+    if (typeof expandedSession.subscription === 'object' && expandedSession.subscription) {
+      expandedSubObj = expandedSession.subscription as Stripe.Subscription;
+      expandedSubId = expandedSubObj.id;
+    }
+    if (invoiceObj?.id) expandedInvoiceId = invoiceObj.id;
+    if (paymentIntentObj?.id) expandedPaymentIntentId = paymentIntentObj.id;
+    if (invoiceObj?.hosted_invoice_url) invoiceUrl = invoiceObj.hosted_invoice_url;
+    if (latestChargeObj?.receipt_url) receiptUrl = latestChargeObj.receipt_url;
+  }
+
+  const existingOrder = await getOrderBySessionId(env, sessionPayload.id);
+  const amountCents = sessionPayload.amount_total ?? existingOrder?.amount_cents ?? 0;
+  const amount = (amountCents / 100).toFixed(2);
+  const currency = (sessionPayload.currency || existingOrder?.currency || 'usd').toUpperCase();
+  const customerName =
+    sessionPayload.customer_details?.name ||
+    sessionPayload.metadata?.client_name ||
+    sessionPayload.customer_email ||
+    'Website Client';
+  const clientEmail =
+    sessionPayload.customer_details?.email ||
+    sessionPayload.customer_email ||
+    '';
+  const phone = sessionPayload.customer_details?.phone || sessionPayload.metadata?.client_phone || '';
+  const stripeCustomerId = getId(sessionPayload.customer);
+
+  const description = sessionPayload.metadata?.description || 'Website Deposit / Custom Payment';
+  const isAeoFullAudit = sessionPayload.metadata?.source === 'aeo_full_audit';
+  const isWatchOffer = sessionPayload.metadata?.source === 'watch_offer' || isAeoFullAudit;
+  const offerSku = sessionPayload.metadata?.offer_sku || existingOrder?.offer_sku || '';
+  const shouldRunBaseline = isAeoFullAudit || sessionPayload.metadata?.run_baseline === 'true';
+  const auditId = sessionPayload.metadata?.audit_id || existingOrder?.audit_id || undefined;
+  const auditedDomain = sessionPayload.metadata?.domain || existingOrder?.domain || '';
+  const city = sessionPayload.metadata?.city || existingOrder?.city || '';
+  const service = sessionPayload.metadata?.service || existingOrder?.service || '';
+  const notes = sessionPayload.metadata?.notes || existingOrder?.notes || '';
+  const lang = sessionPayload.metadata?.lang === 'es' ? 'es' : 'en';
+
+  // Sync Customer & Order in D1
+  let customerId = existingOrder?.customer_id || sessionPayload.metadata?.customer_id || '';
+  if (clientEmail || stripeCustomerId || customerId) {
+    const syncedCustomer = await upsertCustomer(env, {
+      email: clientEmail || undefined,
+      name: customerName,
+      phone: phone || undefined,
+      primary_domain: auditedDomain || undefined,
+      city: city || undefined,
+      service: service || undefined,
+      lang,
+      stripe_customer_id: stripeCustomerId || undefined,
+    });
+    customerId = syncedCustomer.id;
+  }
+
+  await markOrderPaid(env, sessionPayload.id, {
+    stripe_payment_intent_id: expandedPaymentIntentId,
+    stripe_invoice_id: expandedInvoiceId,
+    stripe_subscription_id: expandedSubId,
+    receipt_url: receiptUrl || null,
+    invoice_url: invoiceUrl || null,
+    fallback: customerId
+      ? {
+          customer_id: customerId,
+          offer_sku: offerSku || (sessionPayload.mode === 'subscription' ? 'subscription' : 'checkout'),
+          order_type: sessionPayload.mode === 'subscription' ? 'subscription' : 'one_time',
+          amount_cents: amountCents,
+          currency: currency.toLowerCase(),
+          domain: auditedDomain || null,
+          city: city || null,
+          service: service || null,
+          notes: notes || null,
+          audit_id: auditId || null,
+          lang,
+        }
+      : undefined,
+  });
+
+  // Sync initial Subscription row if applicable
+  if (sessionPayload.mode === 'subscription' && expandedSubId) {
+    if (expandedSubObj) {
+      await syncStripeSubscriptionToD1(env, expandedSubObj, {
+        customer_id: customerId,
+        offer_sku: offerSku,
+        domain: auditedDomain,
+        email: clientEmail,
+        name: customerName,
+      });
+    } else {
+      await upsertSubscription(env, {
+        customer_id: customerId,
+        stripe_subscription_id: expandedSubId,
+        stripe_customer_id: stripeCustomerId || '',
+        offer_sku: offerSku || null,
+        domain: auditedDomain || null,
+        status: 'active',
+        amount_cents: amountCents || null,
+        currency: currency.toLowerCase(),
+        interval: 'month',
+        latest_invoice_id: expandedInvoiceId,
+      });
+    }
+  }
+
+  let discordMsg = `**Customer:** ${customerName}\n**Email:** ${clientEmail || 'N/A'}\n**Amount:** $${amount} ${currency}\n**Reference:** ${description}`;
+  if (phone) discordMsg += `\n**Phone / WhatsApp:** ${phone}`;
+  if (offerSku) discordMsg += `\n**Offer SKU:** \`${offerSku}\``;
+  if (auditedDomain) discordMsg += `\n**Domain:** \`${auditedDomain}\``;
+  if (city || service) discordMsg += `\n**Market / Service:** ${[city, service].filter(Boolean).join(' · ')}`;
+  if (notes) discordMsg += `\n**Notes:** ${notes}`;
+  if (auditId) discordMsg += `\n**Mini Audit ID:** \`${auditId}\``;
+  discordMsg += `\n**Session ID:** \`${sessionPayload.id}\``;
+  if (receiptUrl) discordMsg += `\n**Receipt:** [View Receipt](${receiptUrl})`;
+  if (invoiceUrl) discordMsg += `\n**Invoice:** [View Invoice](${invoiceUrl})`;
+
+  console.log(`[Checkout Completed] Session ${sessionPayload.id} paid by ${customerName} ($${amount} ${currency})`);
+
+  // Mark D1 lead as paid & optionally queue background baseline
+  if (isWatchOffer) {
+    await markLeadPaid99(env, auditId, clientEmail || undefined, sessionPayload.id);
+    if (shouldRunBaseline && auditId && ctx) {
+      ctx.waitUntil(runBackgroundFullAuditBaseline(env, auditId, clientEmail || 'N/A'));
+    }
+  }
+
+  // 1. Send Discord Notification
+  await sendDiscordNotification(
+    env,
+    isAeoFullAudit
+      ? '🎯 $99 AEO Full Audit Purchased!'
+      : isWatchOffer
+        ? `🚀 Sondri Watch Order (${offerSku})!`
+        : '💰 Website Payment Received!',
+    discordMsg,
+    0x10b981 // Green
+  );
+
+  // 2. Append Payment Record to Google Workspace Sheet
+  await appendToGoogleSheet(env, {
+    date: new Date().toISOString().split('T')[0],
+    clientEmail: clientEmail || 'N/A',
+    customerName: customerName,
+    amount: amount,
+    currency: currency,
+    invoiceNumber: expandedInvoiceId || sessionPayload.id.substring(0, 14),
+    description: description,
+    status: isAeoFullAudit
+      ? 'PAID (AEO Full Audit $99)'
+      : isWatchOffer
+        ? `PAID (Watch: ${offerSku})`
+        : 'PAID (Checkout)',
+    receiptUrl: receiptUrl || undefined,
+    invoiceUrl: invoiceUrl || undefined,
+    phone: phone || undefined,
+    domain: auditedDomain || undefined,
+    city: city || undefined,
+    service: service || undefined,
+    offerSku: offerSku || undefined,
+    orderType: sessionPayload.mode === 'subscription' ? 'subscription' : 'one_time',
+    subscriptionId: expandedSubId || undefined,
+  });
+}
+
 export async function handleStripeWebhook(
   request: Request,
   env: Env,
@@ -136,183 +340,50 @@ export async function handleStripeWebhook(
     switch (event.type) {
       case 'checkout.session.completed': {
         const sessionPayload = event.data.object as Stripe.Checkout.Session;
-
-        let invoiceUrl = '';
-        let receiptUrl = '';
-        let expandedInvoiceId: string | null = getId(sessionPayload.invoice);
-        let expandedPaymentIntentId: string | null = getId(sessionPayload.payment_intent);
-        let expandedSubObj: Stripe.Subscription | null = null;
-        let expandedSubId: string | null = getId(sessionPayload.subscription);
-
+        let expandedSession: Stripe.Checkout.Session | null = null;
         try {
-          const expandedSession = await stripe.checkout.sessions.retrieve(sessionPayload.id, {
+          expandedSession = await stripe.checkout.sessions.retrieve(sessionPayload.id, {
             expand: ['invoice', 'payment_intent.latest_charge', 'subscription'],
           });
-          const invoiceObj = typeof expandedSession.invoice === 'object' && expandedSession.invoice ? (expandedSession.invoice as Stripe.Invoice) : null;
-          const paymentIntentObj = typeof expandedSession.payment_intent === 'object' && expandedSession.payment_intent ? (expandedSession.payment_intent as Stripe.PaymentIntent) : null;
-          const latestChargeObj = paymentIntentObj && typeof paymentIntentObj.latest_charge === 'object' ? (paymentIntentObj.latest_charge as Stripe.Charge) : null;
-          if (typeof expandedSession.subscription === 'object' && expandedSession.subscription) {
-            expandedSubObj = expandedSession.subscription as Stripe.Subscription;
-            expandedSubId = expandedSubObj.id;
-          }
-          if (invoiceObj?.id) expandedInvoiceId = invoiceObj.id;
-          if (paymentIntentObj?.id) expandedPaymentIntentId = paymentIntentObj.id;
-          if (invoiceObj?.hosted_invoice_url) invoiceUrl = invoiceObj.hosted_invoice_url;
-          if (latestChargeObj?.receipt_url) receiptUrl = latestChargeObj.receipt_url;
         } catch (e: any) {
           console.warn(`[Webhook Session Expand Warning] ${e.message}`);
         }
 
-        const existingOrder = await getOrderBySessionId(env, sessionPayload.id);
-        const amountCents = sessionPayload.amount_total ?? existingOrder?.amount_cents ?? 0;
+        const effectivePaymentStatus = expandedSession?.payment_status ?? sessionPayload.payment_status;
+        if (effectivePaymentStatus !== 'paid' && effectivePaymentStatus !== 'no_payment_required') {
+          console.log(
+            `[Checkout Pending Async Settlement] Session ${sessionPayload.id} status=${effectivePaymentStatus ?? 'unknown'}`
+          );
+          break;
+        }
+
+        await fulfillPaidCheckoutSession(env, stripe, sessionPayload, ctx, expandedSession);
+        break;
+      }
+
+      case 'checkout.session.async_payment_succeeded': {
+        const sessionPayload = event.data.object as Stripe.Checkout.Session;
+        await fulfillPaidCheckoutSession(env, stripe, sessionPayload, ctx);
+        break;
+      }
+
+      case 'checkout.session.async_payment_failed': {
+        const sessionPayload = event.data.object as Stripe.Checkout.Session;
+        const failedOrder = await markOrderFailed(env, sessionPayload.id);
+        const amountCents = sessionPayload.amount_total ?? failedOrder?.amount_cents ?? 0;
         const amount = (amountCents / 100).toFixed(2);
-        const currency = (sessionPayload.currency || existingOrder?.currency || 'usd').toUpperCase();
-        const customerName =
-          sessionPayload.customer_details?.name ||
-          sessionPayload.metadata?.client_name ||
-          sessionPayload.customer_email ||
-          'Website Client';
-        const clientEmail =
-          sessionPayload.customer_details?.email ||
-          sessionPayload.customer_email ||
-          '';
-        const phone = sessionPayload.customer_details?.phone || sessionPayload.metadata?.client_phone || '';
-        const stripeCustomerId = getId(sessionPayload.customer);
+        const currency = (sessionPayload.currency || failedOrder?.currency || 'usd').toUpperCase();
+        const offerSku = sessionPayload.metadata?.offer_sku || failedOrder?.offer_sku || 'Checkout';
+        const domain = sessionPayload.metadata?.domain || failedOrder?.domain || '';
+        const clientEmail = sessionPayload.customer_details?.email || sessionPayload.customer_email || 'N/A';
 
-        const description = sessionPayload.metadata?.description || 'Website Deposit / Custom Payment';
-        const isAeoFullAudit = sessionPayload.metadata?.source === 'aeo_full_audit';
-        const isWatchOffer = sessionPayload.metadata?.source === 'watch_offer' || isAeoFullAudit;
-        const offerSku = sessionPayload.metadata?.offer_sku || existingOrder?.offer_sku || '';
-        const shouldRunBaseline = isAeoFullAudit || sessionPayload.metadata?.run_baseline === 'true';
-        const auditId = sessionPayload.metadata?.audit_id || existingOrder?.audit_id || undefined;
-        const auditedDomain = sessionPayload.metadata?.domain || existingOrder?.domain || '';
-        const city = sessionPayload.metadata?.city || existingOrder?.city || '';
-        const service = sessionPayload.metadata?.service || existingOrder?.service || '';
-        const notes = sessionPayload.metadata?.notes || existingOrder?.notes || '';
-        const lang = sessionPayload.metadata?.lang === 'es' ? 'es' : 'en';
-
-        // Sync Customer & Order in D1
-        let customerId = existingOrder?.customer_id || sessionPayload.metadata?.customer_id || '';
-        if (clientEmail || stripeCustomerId || customerId) {
-          const syncedCustomer = await upsertCustomer(env, {
-            email: clientEmail || undefined,
-            name: customerName,
-            phone: phone || undefined,
-            primary_domain: auditedDomain || undefined,
-            city: city || undefined,
-            service: service || undefined,
-            lang,
-            stripe_customer_id: stripeCustomerId || undefined,
-          });
-          customerId = syncedCustomer.id;
-        }
-
-        await markOrderPaid(env, sessionPayload.id, {
-          stripe_payment_intent_id: expandedPaymentIntentId,
-          stripe_invoice_id: expandedInvoiceId,
-          stripe_subscription_id: expandedSubId,
-          receipt_url: receiptUrl || null,
-          invoice_url: invoiceUrl || null,
-          fallback: customerId
-            ? {
-                customer_id: customerId,
-                offer_sku: offerSku || (sessionPayload.mode === 'subscription' ? 'subscription' : 'checkout'),
-                order_type: sessionPayload.mode === 'subscription' ? 'subscription' : 'one_time',
-                amount_cents: amountCents,
-                currency: currency.toLowerCase(),
-                domain: auditedDomain || null,
-                city: city || null,
-                service: service || null,
-                notes: notes || null,
-                audit_id: auditId || null,
-                lang,
-              }
-            : undefined,
-        });
-
-        // Sync initial Subscription row if applicable
-        if (sessionPayload.mode === 'subscription' && expandedSubId) {
-          if (expandedSubObj) {
-            await syncStripeSubscriptionToD1(env, expandedSubObj, {
-              customer_id: customerId,
-              offer_sku: offerSku,
-              domain: auditedDomain,
-              email: clientEmail,
-              name: customerName,
-            });
-          } else {
-            await upsertSubscription(env, {
-              customer_id: customerId,
-              stripe_subscription_id: expandedSubId,
-              stripe_customer_id: stripeCustomerId || '',
-              offer_sku: offerSku || null,
-              domain: auditedDomain || null,
-              status: 'active',
-              amount_cents: amountCents || null,
-              currency: currency.toLowerCase(),
-              interval: 'month',
-              latest_invoice_id: expandedInvoiceId,
-            });
-          }
-        }
-
-        let discordMsg = `**Customer:** ${customerName}\n**Email:** ${clientEmail || 'N/A'}\n**Amount:** $${amount} ${currency}\n**Reference:** ${description}`;
-        if (phone) discordMsg += `\n**Phone / WhatsApp:** ${phone}`;
-        if (offerSku) discordMsg += `\n**Offer SKU:** \`${offerSku}\``;
-        if (auditedDomain) discordMsg += `\n**Domain:** \`${auditedDomain}\``;
-        if (city || service) discordMsg += `\n**Market / Service:** ${[city, service].filter(Boolean).join(' · ')}`;
-        if (notes) discordMsg += `\n**Notes:** ${notes}`;
-        if (auditId) discordMsg += `\n**Mini Audit ID:** \`${auditId}\``;
-        discordMsg += `\n**Session ID:** \`${sessionPayload.id}\``;
-        if (receiptUrl) discordMsg += `\n**Receipt:** [View Receipt](${receiptUrl})`;
-        if (invoiceUrl) discordMsg += `\n**Invoice:** [View Invoice](${invoiceUrl})`;
-
-        console.log(`[Checkout Completed] Session ${sessionPayload.id} paid by ${customerName} ($${amount} ${currency})`);
-
-        // Mark D1 lead as paid & optionally queue background baseline
-        if (isWatchOffer) {
-          await markLeadPaid99(env, auditId, clientEmail || undefined, sessionPayload.id);
-          if (shouldRunBaseline && auditId && ctx) {
-            ctx.waitUntil(runBackgroundFullAuditBaseline(env, auditId, clientEmail || 'N/A'));
-          }
-        }
-
-        // 1. Send Discord Notification
+        console.error(`[Checkout Async Payment Failed] Session ${sessionPayload.id} failed for ${clientEmail}`);
         await sendDiscordNotification(
           env,
-          isAeoFullAudit
-            ? '🎯 $99 AEO Full Audit Purchased!'
-            : isWatchOffer
-              ? `🚀 Sondri Watch Order (${offerSku})!`
-              : '💰 Website Payment Received!',
-          discordMsg,
-          0x10b981 // Green
+          '⚠️ Async Checkout Payment Failed',
+          `**Email:** ${clientEmail}\n**Offer SKU:** \`${offerSku}\`\n**Amount:** $${amount} ${currency}${domain ? `\n**Domain:** \`${domain}\`` : ''}\n**Session ID:** \`${sessionPayload.id}\``,
+          0xef4444
         );
-
-        // 2. Append Payment Record to Google Workspace Sheet
-        await appendToGoogleSheet(env, {
-          date: new Date().toISOString().split('T')[0],
-          clientEmail: clientEmail || 'N/A',
-          customerName: customerName,
-          amount: amount,
-          currency: currency,
-          invoiceNumber: expandedInvoiceId || sessionPayload.id.substring(0, 14),
-          description: description,
-          status: isAeoFullAudit
-            ? 'PAID (AEO Full Audit $99)'
-            : isWatchOffer
-              ? `PAID (Watch: ${offerSku})`
-              : 'PAID (Checkout)',
-          receiptUrl: receiptUrl || undefined,
-          invoiceUrl: invoiceUrl || undefined,
-          phone: phone || undefined,
-          domain: auditedDomain || undefined,
-          city: city || undefined,
-          service: service || undefined,
-          offerSku: offerSku || undefined,
-          orderType: sessionPayload.mode === 'subscription' ? 'subscription' : 'one_time',
-          subscriptionId: expandedSubId || undefined,
-        });
         break;
       }
 
@@ -485,7 +556,26 @@ export async function handleStripeWebhook(
         const clientEmail = invoice.customer_email || 'N/A';
 
         if (subId) {
-          await markSubscriptionStatus(env, subId, 'past_due', { latest_invoice_id: invoice.id });
+          if (existingSub?.status === 'canceled') {
+            console.log(`[Webhook Skipped Stale Failure] Subscription ${subId} is already canceled`);
+          } else {
+            const invoiceOrder = await getOrderByInvoiceId(env, invoice.id);
+            const invoiceCreatedMs =
+              typeof (invoice as any).created === 'number' ? (invoice as any).created * 1000 : null;
+            const periodStartMs = existingSub?.current_period_start
+              ? Date.parse(existingSub.current_period_start)
+              : NaN;
+            const isOlderThanActivePeriod =
+              invoiceCreatedMs !== null && !Number.isNaN(periodStartMs) && invoiceCreatedMs < periodStartMs;
+
+            if (invoiceOrder?.status === 'paid' || isOlderThanActivePeriod) {
+              console.log(
+                `[Webhook Skipped Stale Failure] Ignoring stale/already-paid invoice ${invoice.id} for ${subId}`
+              );
+            } else {
+              await markSubscriptionStatus(env, subId, 'past_due', { latest_invoice_id: invoice.id });
+            }
+          }
         }
 
         console.error(`[Invoice Payment Failed] ${invoice.number || invoice.id} failed for ${customerName}`);
@@ -502,7 +592,21 @@ export async function handleStripeWebhook(
       case 'charge.refunded': {
         const charge = event.data.object as Stripe.Charge;
         const paymentIntentId = getId(charge.payment_intent) || '';
-        const refundedOrder = await markOrderRefundedByPaymentIntent(env, paymentIntentId);
+        let refundedOrder = await markOrderRefundedByPaymentIntent(env, paymentIntentId);
+        if (!refundedOrder) {
+          let orderId = charge.metadata?.order_id || '';
+          if (!orderId && paymentIntentId && typeof (stripe as any).paymentIntents?.retrieve === 'function') {
+            try {
+              const pi = await stripe.paymentIntents.retrieve(paymentIntentId);
+              orderId = pi?.metadata?.order_id || '';
+            } catch (e: any) {
+              console.warn(`[Webhook Charge Refund Lookup Warning] ${e.message}`);
+            }
+          }
+          if (orderId) {
+            refundedOrder = await markOrderRefundedByOrderId(env, orderId, paymentIntentId);
+          }
+        }
         const amount = ((charge.amount_refunded || charge.amount || 0) / 100).toFixed(2);
         const currency = (charge.currency || 'usd').toUpperCase();
         const cust = refundedOrder?.customer_id ? await getCustomerById(env, refundedOrder.customer_id) : null;

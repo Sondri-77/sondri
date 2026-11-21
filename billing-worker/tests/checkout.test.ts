@@ -441,4 +441,18 @@ describe('Billing Worker Checkout & Admin API', () => {
       expect(((await badRes.json()) as any).error.code).toBe('INVALID_REDIRECT_URL');
     }
   });
+
+  it('blocks requests arriving on workers.dev with 403 FORBIDDEN_HOST', async () => {
+    const res = await worker.fetch(
+      new Request('https://sondri-billing-worker.sondri.workers.dev/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'custom', custom_amount: 100 }),
+      }),
+      mockEnv,
+      {} as ExecutionContext
+    );
+    expect(res.status).toBe(403);
+    expect(((await res.json()) as any).error.code).toBe('FORBIDDEN_HOST');
+  });
 });

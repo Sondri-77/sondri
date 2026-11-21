@@ -4,7 +4,7 @@
   "main": "./worker/index.ts",
   "compatibility_date": "2026-06-01",
   "account_id": "ce4bcc9130b13b4acc8c5e597ba93f3a",
-  "workers_dev": true,
+  "workers_dev": false,
   "preview_urls": false,
   "routes": [
     { "pattern": "sondri.ai", "custom_domain": true },

@@ -2,6 +2,7 @@ import { beforeEach, describe, it, expect, vi } from 'vitest';
 import worker from '../src/index';
 import {
   getAuditById,
+  getCachedAuditByDomain,
   resetMemoryAuditStore,
   saveAuditStep1,
   StoredAudit,
@@ -199,5 +200,354 @@ describe('AEO Mini Audit API & Security Guards', () => {
     );
     expect(expRes.status).toBe(404);
     expect(await getAuditById(mockEnv, scanJson.data.id)).not.toBeNull();
+  });
+
+  it('fails closed when DAILY_AUDIT_CAP=0, ignores unauthenticated force:true, and enforces per-IP limits without X-Forwarded-For spoofing', async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const u = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+      if (u.startsWith('https://generativelanguage.googleapis.com/')) {
+        return new Response(
+          JSON.stringify({
+            candidates: [
+              {
+                content: {
+                  parts: [
+                    {
+                      text: JSON.stringify({
+                        city: 'United States',
+                        service: 'Plumbing',
+                        questions: ['q1', 'q2', 'q3'],
+                      }),
+                    },
+                  ],
+                },
+              },
+            ],
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+      if (u.startsWith('https://pagespeedonline.googleapis.com/')) {
+        return new Response(
+          JSON.stringify({ lighthouseResult: { categories: { seo: { score: 0.9 }, performance: { score: 0.85 } }, audits: {} } }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+      return new Response('<html><title>Test Co</title><h1>Plumbing</h1></html>', { status: 200 });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const ctx = { waitUntil: () => {} } as unknown as ExecutionContext;
+    const capZeroEnv: Env = { ...mockEnv, DAILY_AUDIT_CAP: '0', GEMINI_API_KEY: 'gm_test' };
+
+    const blockedScan = await worker.fetch(
+      new Request('https://billing.sondri.ai/audit/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'CF-Connecting-IP': '198.51.100.10' },
+        body: JSON.stringify({ url: 'https://testco.example', lang: 'en' }),
+      }),
+      capZeroEnv,
+      ctx
+    );
+    expect(blockedScan.status).toBe(429);
+
+    const blockedLh = await worker.fetch(
+      new Request('https://billing.sondri.ai/audit/lighthouse?url=https://testco.example', {
+        headers: { 'CF-Connecting-IP': '198.51.100.10' },
+      }),
+      capZeroEnv,
+      ctx
+    );
+    expect(blockedLh.status).toBe(429);
+
+    // Seed a cached audit to verify unauthenticated force:true does not bypass cache
+    const now = new Date();
+    const cachedRow: StoredAudit = {
+      id: 'aud_cached_force_check',
+      domain: 'cachedco.example',
+      url: 'https://cachedco.example/',
+      lang: 'en',
+      city: 'United States',
+      service: 'SaaS',
+      tech_scan: {
+        url: 'https://cachedco.example/',
+        domain: 'cachedco.example',
+        reachable: true,
+        statusCode: 200,
+        title: 'CachedCo',
+        metaDescription: 'SaaS',
+        canonical: 'https://cachedco.example/',
+        h1s: ['CachedCo'],
+        h2s: [],
+        detectedBrand: 'CachedCo',
+        inferredService: 'SaaS',
+        inferredCity: 'United States',
+        schemasFound: [],
+        hasOrganizationOrLocalBusiness: false,
+        hasFaqSchema: false,
+        hasPhoneInHtml: false,
+        hasAddressSignals: false,
+        robotsTxtFound: true,
+        bots: [],
+        llmsTxtFound: false,
+        sitemapFound: false,
+        readinessScore: 20,
+        gaps: [],
+      },
+      lighthouse: null,
+      questions: ['Best SaaS?'],
+      ai_visibility: {
+        ranAt: now.toISOString(),
+        engine: 'gemini',
+        totalQuestions: 1,
+        namedCount: 1,
+        citedCount: 1,
+        competitorsSummary: [],
+        topSourceDomains: [],
+        runs: [
+          {
+            question: 'Best SaaS?',
+            engine: 'gemini',
+            status: 'ok',
+            brandNamed: true,
+            domainCited: true,
+            competitorsNamed: [],
+            sourcesCited: [],
+            answerExcerpt: 'ok',
+          },
+        ],
+        enginesNotRun: [],
+      },
+      full_audit: null,
+      created_at: now.toISOString(),
+      expires_at: new Date(now.getTime() + 86400000).toISOString(),
+    };
+    await saveAuditStep1(mockEnv, cachedRow);
+
+    const unauthForceRes = await worker.fetch(
+      new Request('https://billing.sondri.ai/audit/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'CF-Connecting-IP': '198.51.100.11' },
+        body: JSON.stringify({ url: 'https://cachedco.example', force: true }),
+      }),
+      capZeroEnv,
+      ctx
+    );
+    expect(unauthForceRes.status).toBe(200);
+    expect(((await unauthForceRes.json()) as any).data.cached).toBe(true);
+
+    // X-Forwarded-For: 127.0.0.1 on billing.sondri.ai must NOT grant 1000/day localhost allowance
+    const leadSpamEnv: Env = {
+      ...mockEnv,
+      DISCORD_WEBHOOK_URL: 'https://discord.com/api/webhooks/mock',
+      DAILY_AUDIT_CAP: '0',
+    };
+    for (let i = 0; i < 3; i++) {
+      const okQueued = await worker.fetch(
+        new Request('https://billing.sondri.ai/audit/ai-visibility', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Forwarded-For': '127.0.0.1',
+          },
+          body: JSON.stringify({
+            audit_id: cachedRow.id,
+            name: 'User',
+            email: `user${i}@company.com`,
+            questions: ['Q1', 'Q2', 'Q3', 'Q4', 'Q5'],
+          }),
+        }),
+        leadSpamEnv,
+        ctx
+      );
+      expect(okQueued.status).toBe(200);
+      const bodyJson: any = await okQueued.json();
+      expect(bodyJson.data.questions.length).toBe(3);
+    }
+
+    const callsBeforeLimit = fetchMock.mock.calls.length;
+    const fourthBlocked = await worker.fetch(
+      new Request('https://billing.sondri.ai/audit/ai-visibility', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Forwarded-For': '127.0.0.1',
+        },
+        body: JSON.stringify({
+          audit_id: cachedRow.id,
+          name: 'User',
+          email: 'user4@company.com',
+          questions: ['Q1'],
+        }),
+      }),
+      leadSpamEnv,
+      ctx
+    );
+    expect(fourthBlocked.status).toBe(429);
+    expect(fetchMock.mock.calls.length).toBe(callsBeforeLimit);
+  });
+
+  it('keeps valid 7-day cached audits retrievable even after >10 Step-1-only scans (memory and D1)', async () => {
+    const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    const validAudit: StoredAudit = {
+      id: 'aud_valid_cached_row',
+      domain: 'repeatcache.example',
+      url: 'https://repeatcache.example/',
+      lang: 'en',
+      city: 'United States',
+      service: 'SaaS',
+      tech_scan: {
+        url: 'https://repeatcache.example/',
+        domain: 'repeatcache.example',
+        reachable: true,
+        statusCode: 200,
+        title: 'RepeatCache',
+        metaDescription: 'SaaS',
+        canonical: 'https://repeatcache.example/',
+        h1s: ['RepeatCache'],
+        h2s: [],
+        wordCount: 400,
+        schemaTypes: ['Organization'],
+        hasOrgSchema: true,
+        hasFaqSchema: true,
+        hasServiceSchema: false,
+        hasLocalBusinessSchema: false,
+        hasArticleSchema: false,
+        hasLlmsTxt: true,
+        hasLlmsFullTxt: false,
+        sitemapFound: true,
+        robotsFound: true,
+        aiBots: [],
+        detectedBrand: 'RepeatCache',
+        inferredService: 'SaaS',
+        inferredCity: 'United States',
+        readinessScore: 78,
+        gaps: [],
+      },
+      lighthouse: null,
+      questions: ['Best SaaS?'],
+      ai_visibility: {
+        ranAt: '2026-11-21T00:00:00.000Z',
+        engine: 'gemini',
+        namedCount: 1,
+        citedCount: 1,
+        totalQuestions: 1,
+        competitorsSummary: [],
+        topSourceDomains: ['repeatcache.example'],
+        runs: [
+          {
+            question: 'Best SaaS?',
+            brandNamed: true,
+            domainCited: true,
+            answerExcerpt: 'RepeatCache is recommended.',
+            competitorsNamed: [],
+            sourcesCited: [],
+            status: 'ok',
+          },
+        ],
+        enginesNotRun: [],
+      },
+      full_audit: null,
+      created_at: '2026-11-21T00:00:00.000Z',
+      expires_at: expires,
+    };
+
+    // 1. Memory store: valid audit followed by 12 newer Step-1-only (ai_visibility: null) scans
+    await saveAuditStep1(mockEnv, validAudit);
+    for (let i = 1; i <= 12; i++) {
+      await saveAuditStep1(mockEnv, {
+        ...validAudit,
+        id: `aud_step1_only_${i}`,
+        ai_visibility: null,
+        created_at: `2026-11-21T00:${String(i).padStart(2, '0')}:00.000Z`,
+      });
+    }
+
+    const memHit = await getCachedAuditByDomain(mockEnv, 'repeatcache.example', 'en');
+    expect(memHit?.id).toBe('aud_valid_cached_row');
+
+    // 2. D1 SQLite path: enforce ai_visibility_json IS NOT NULL so Step-1 rows cannot crowd out LIMIT 10
+    const d1Rows: Record<string, any>[] = [
+      {
+        id: validAudit.id,
+        domain: validAudit.domain,
+        url: validAudit.url,
+        lang: validAudit.lang,
+        city: validAudit.city,
+        service: validAudit.service,
+        tech_scan_json: JSON.stringify(validAudit.tech_scan),
+        lighthouse_json: null,
+        questions_json: JSON.stringify(validAudit.questions),
+        ai_visibility_json: JSON.stringify(validAudit.ai_visibility),
+        full_audit_json: null,
+        created_at: validAudit.created_at,
+        expires_at: validAudit.expires_at,
+      },
+      ...Array.from({ length: 12 }, (_, idx) => ({
+        id: `aud_d1_step1_${idx + 1}`,
+        domain: validAudit.domain,
+        url: validAudit.url,
+        lang: validAudit.lang,
+        city: validAudit.city,
+        service: validAudit.service,
+        tech_scan_json: JSON.stringify(validAudit.tech_scan),
+        lighthouse_json: null,
+        questions_json: JSON.stringify(validAudit.questions),
+        ai_visibility_json: null,
+        full_audit_json: null,
+        created_at: `2026-11-21T01:${String(idx + 1).padStart(2, '0')}:00.000Z`,
+        expires_at: validAudit.expires_at,
+      })),
+    ];
+
+    const capturedSql: string[] = [];
+    const mockDb = {
+      prepare(sql: string) {
+        capturedSql.push(sql);
+        const makeExec = (boundArgs: any[]) => ({
+          async run() {
+            return { success: true, meta: { changes: 0 } };
+          },
+          async first() {
+            return null;
+          },
+          async all() {
+            if (sql.includes('FROM audits') && sql.includes('LIMIT 10')) {
+              const [qDomain, qLang, qCity, qNow] = boundArgs;
+              const requiresAi = sql.toLowerCase().includes('ai_visibility_json is not null');
+              const results = d1Rows
+                .filter(
+                  (r) =>
+                    r.domain === qDomain &&
+                    r.lang === qLang &&
+                    r.city === qCity &&
+                    r.expires_at > qNow &&
+                    (!requiresAi || r.ai_visibility_json !== null)
+                )
+                .sort((a, b) => b.created_at.localeCompare(a.created_at))
+                .slice(0, 10);
+              return { success: true, results };
+            }
+            return { success: true, results: [] };
+          },
+        });
+        return {
+          ...makeExec([]),
+          bind(...args: any[]) {
+            return makeExec(args);
+          },
+        };
+      },
+      async batch() {
+        return [];
+      },
+    } as unknown as D1Database;
+
+    const d1Env: Env = { ...mockEnv, DB: mockDb };
+    const d1Hit = await getCachedAuditByDomain(d1Env, 'repeatcache.example', 'en');
+    expect(d1Hit?.id).toBe('aud_valid_cached_row');
+    expect(
+      capturedSql.some((s) => s.includes('FROM audits') && s.includes('ai_visibility_json IS NOT NULL'))
+    ).toBe(true);
   });
 });

@@ -894,6 +894,18 @@ const { defaultLang = 'en', embedded = false } = Astro.props;
         }
         syncEmailAuditLink(currentAudit);
         renderAiVisibility(currentAudit);
+      } else {
+        const aiErrMsg =
+          aiJson.error?.message ||
+          (currentLang === 'es'
+            ? 'No se pudo completar la prueba de visibilidad en IA.'
+            : 'Unable to complete the live AI visibility check right now.');
+        errEl.textContent = aiErrMsg;
+        errEl.style.display = 'block';
+        const runsList = document.getElementById('runsList');
+        if (runsList) {
+          runsList.innerHTML = `<div class="run-row"><p class="body-s run-excerpt">${escapeHtml(aiErrMsg)}</p></div>`;
+        }
       }
     } catch (err: any) {
       errEl.textContent = err.message || 'Scan failed. Please check the URL and try again.';
