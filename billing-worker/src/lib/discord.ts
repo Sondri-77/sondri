@@ -4,16 +4,19 @@ export async function sendDiscordNotification(
   env: Env,
   title: string,
   description: string,
-  color: number = 0x3b82f6 // Default blue
+  color: number = 0x3b82f6, // Default blue
+  webhookOverride?: string,
+  botUsername: string = 'Sondri Billing Bot'
 ): Promise<void> {
-  if (!env.DISCORD_WEBHOOK_URL) {
-    console.log('[Discord Notification Skipped] DISCORD_WEBHOOK_URL is not set.');
+  const targetWebhook = webhookOverride || env.DISCORD_WEBHOOK_URL;
+  if (!targetWebhook) {
+    console.log('[Discord Notification Skipped] Webhook URL is not set.');
     return;
   }
 
   try {
     const payload = {
-      username: 'Sondri Billing Bot',
+      username: botUsername,
       embeds: [
         {
           title,
@@ -21,13 +24,13 @@ export async function sendDiscordNotification(
           color,
           timestamp: new Date().toISOString(),
           footer: {
-            text: 'Sondri Billing System',
+            text: 'Sondri System',
           },
         },
       ],
     };
 
-    const response = await fetch(env.DISCORD_WEBHOOK_URL, {
+    const response = await fetch(targetWebhook, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

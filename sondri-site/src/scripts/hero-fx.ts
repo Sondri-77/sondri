@@ -110,7 +110,9 @@ export function initHeroFx(root: HTMLElement) {
       sx = (src.naturalWidth - sw) / 2;
     } else {
       sh = src.naturalWidth / da;
-      sy = (src.naturalHeight - sh) / 2;
+      const rawPosY = Number(src.dataset.ditherPosY ?? '0.5');
+      const posY = Number.isFinite(rawPosY) ? Math.min(1, Math.max(0, rawPosY)) : 0.5;
+      sy = (src.naturalHeight - sh) * posY;
     }
     octx.drawImage(src, sx, sy, sw, sh, 0, 0, w, h);
 
@@ -194,7 +196,7 @@ export function initHeroFx(root: HTMLElement) {
     const aspect = r.height > 0 ? r.width / r.height : 1.6;
     // CSS-sized working buffer, independent of devicePixelRatio (DPR <= 1).
     w = 420;
-    h = Math.max(120, Math.round(w / aspect));
+    h = Math.max(64, Math.round(w / aspect));
     canvas!.width = w;
     canvas!.height = h;
     out = ctx!.createImageData(w, h);

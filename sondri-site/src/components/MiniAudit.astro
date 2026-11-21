@@ -1,0 +1,1813 @@
+---
+import { BOOK_HREF, CONTACT_EMAIL, mailto } from '../data';
+
+interface Props {
+  defaultLang?: 'en' | 'es';
+  embedded?: boolean;
+}
+
+const { defaultLang = 'en', embedded = false } = Astro.props;
+---
+
+<div id="mini-audit" data-default-lang={defaultLang} data-embedded={embedded ? 'true' : 'false'}>
+  <!-- SECTION 1: HERO & UNIFIED INTAKE FORM (on-dark) -->
+  <section class="section section-pad on-dark" id={embedded ? 'free-check' : undefined}>
+    <div class="wrap">
+      {!embedded && (
+        <div class="top-bar">
+          <a href="/" class="label back-link">← <span data-audit-i18n="backHome">Back to Sondri</span></a>
+          <div class="lang-switch" role="group" aria-label="Audit language">
+            <button type="button" class="lang-btn active" data-set-lang="en">EN (US)</button>
+            <button type="button" class="lang-btn" data-set-lang="es">ES (Chile)</button>
+          </div>
+        </div>
+      )}
+
+      <div class="sec-head">
+        <div>
+          {embedded ? (
+            <h2 class="h2">
+              <span data-audit-i18n="title">Does AI name your business when a buyer asks</span><span class="gdot">?</span>
+            </h2>
+          ) : (
+            <h1 class="h2">
+              <span data-audit-i18n="title">Does AI name your business when a buyer asks</span><span class="gdot">?</span>
+            </h1>
+          )}
+        </div>
+        <div class="intro">
+          <p class="lede" data-audit-i18n="subtitle">
+            Enter your website and contact details to run a free technical AI readiness scan, check your Google Lighthouse base health, and test 3 unbranded buyer questions.
+          </p>
+        </div>
+      </div>
+
+      <form id="formAuditIntake" class="intake-form">
+        <div class="intake-grid">
+          <div class="field">
+            <label for="auditUrl" class="label" data-audit-i18n="urlLabel">Website URL *</label>
+            <input
+              type="text"
+              id="auditUrl"
+              class="form-input"
+              placeholder="yourcompany.com"
+              required
+              autocomplete="url"
+            />
+          </div>
+
+          <div class="field">
+            <label for="auditService" class="label" data-audit-i18n="serviceLabel">Primary service (optional)</label>
+            <input
+              type="text"
+              id="auditService"
+              name="target_service_custom"
+              class="form-input"
+              placeholder="e.g. Workflow automation, B2B SaaS, Dental clinic"
+              autocomplete="off"
+              data-lpignore="true"
+              data-1p-ignore="true"
+            />
+          </div>
+
+          <div class="field">
+            <label for="auditCity" class="label" data-audit-i18n="cityLabel">Target market (optional)</label>
+            <input
+              type="text"
+              id="auditCity"
+              name="target_market_custom"
+              class="form-input"
+              placeholder="Defaults to United States / Global"
+              autocomplete="off"
+              data-lpignore="true"
+              data-1p-ignore="true"
+            />
+          </div>
+
+          <div class="field">
+            <label for="leadName" class="label" data-audit-i18n="nameLabel">Your full name *</label>
+            <input
+              type="text"
+              id="leadName"
+              class="form-input"
+              placeholder="Alex Rivera"
+              required
+              autocomplete="name"
+            />
+          </div>
+
+          <div class="field">
+            <label for="leadEmail" class="label" data-audit-i18n="emailLabel">Work email *</label>
+            <input
+              type="email"
+              id="leadEmail"
+              class="form-input"
+              placeholder="you@company.com"
+              required
+              autocomplete="email"
+            />
+          </div>
+
+          <div class="field">
+            <label for="leadPhone" class="label" data-audit-i18n="phoneLabel">Phone / WhatsApp *</label>
+            <input
+              type="tel"
+              id="leadPhone"
+              class="form-input"
+              placeholder="+1 555 234 5678"
+              required
+              autocomplete="tel"
+            />
+          </div>
+        </div>
+
+        <div class="intake-actions">
+          <button type="submit" id="btnScan" class="btn btn-gold">
+            <span data-audit-i18n="scanBtn">Run My Free AI Visibility Audit</span> <span class="arr">→</span>
+          </button>
+          <span class="label" data-audit-i18n="scanHint">
+            Unbranded buyer prompts · Crawler & schema check · Google Lighthouse included
+          </span>
+        </div>
+
+        <p id="scanError" class="error-banner" style="display: none;"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- RESULTS WRAPPER (Hidden until scan runs) -->
+  <div id="auditReportContainer" style="display: none;">
+    <!-- SECTION 2: TECHNICAL AI READINESS & LIGHTHOUSE (on-off) -->
+    <section class="section section-pad on-off" id="techSection">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <h2 class="h2" id="detectedBrandTitle">Website Readiness<span class="gdot">.</span></h2>
+          </div>
+          <div class="intro report-head-actions">
+            <p class="lede" id="detectedMetaLine"></p>
+            <button type="button" id="btnDownloadPdf" class="btn btn-ghost-dark">
+              <span data-audit-i18n="downloadPdfBtn">Download Audit PDF</span> <span class="arr">↓</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3 KPI Columns: AI Readiness, Lighthouse SEO, Mobile Speed -->
+        <div class="rule-cols cols-3 kpi-row">
+          <div>
+            <p class="label k-idx" data-audit-i18n="kpiReadiness">Technical AI Readiness</p>
+            <p class="n kpi" id="readinessBadge">--</p>
+            <p class="body-s" data-audit-i18n="kpiReadinessDesc">
+              Based on AI crawler access, structured data (Organization/LocalBusiness & FAQPage), and clear entity signals.
+            </p>
+          </div>
+
+          <div>
+            <p class="label k-idx" data-audit-i18n="lhSeoLabel">Google Lighthouse SEO</p>
+            <p class="n kpi" id="lhSeoScore">…</p>
+            <p class="body-s" id="lhCrawlableLine" data-audit-i18n="lhSeoDesc">
+              Checking mobile crawlability and baseline search indexability via Google PageSpeed Insights.
+            </p>
+          </div>
+
+          <div>
+            <p class="label k-idx" data-audit-i18n="lhPerfLabel">Mobile Speed (Lighthouse)</p>
+            <p class="n kpi" id="lhPerfScore">…</p>
+            <p class="body-s" id="lhExtraMetrics" data-audit-i18n="lhPerfDesc">
+              Running live Google Lighthouse mobile performance check…
+            </p>
+          </div>
+        </div>
+
+        <!-- Extended Google PageSpeed Insights & Core Web Vitals Panel -->
+        <div class="rule-cols cols-2 detail-cols" id="lhDetailsPanel" style="display: none;">
+          <div>
+            <h3 class="h5 detail-heading" data-audit-i18n="cwvTitle">Google PageSpeed & Core Web Vitals</h3>
+            <div class="signal-list" id="lhMetricsGrid"></div>
+          </div>
+
+          <div>
+            <h3 class="h5 detail-heading" data-audit-i18n="lhDiagTitle">Lighthouse opportunities & diagnostics</h3>
+            <div class="signal-list" id="lhDiagGrid"></div>
+          </div>
+        </div>
+
+        <!-- 2 Columns: Schema/Signals & AI Bots -->
+        <div class="rule-cols cols-2 detail-cols">
+          <div>
+            <h3 class="h5 detail-heading" data-audit-i18n="signalsTitle">Structured data & site signals</h3>
+            <div class="signal-list" id="techCheckGrid"></div>
+          </div>
+
+          <div>
+            <h3 class="h5 detail-heading" data-audit-i18n="botsTitle">AI search crawlers (robots.txt)</h3>
+            <div class="bot-list" id="botChips"></div>
+
+            <div class="gaps-wrap" id="gapsBlock" style="display: none;">
+              <h4 class="label gaps-heading" data-audit-i18n="gapsTitle">Priority technical gaps</h4>
+              <ul class="gaps-list" id="gapsList"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: UNBRANDED BUYER QUESTIONS & LIVE AI VISIBILITY (on-paper) -->
+    <section class="section section-pad on-paper" id="aiSection">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <h2 class="h2">
+              <span data-audit-i18n="aiReportTitle">Unbranded buyer questions</span><span class="gdot">.</span>
+            </h2>
+          </div>
+          <div class="intro">
+            <p class="lede" data-audit-i18n="aiReportLede">
+              We test targeted buyer-intent questions generated from your website copy without naming your brand—measuring whether AI recommends you or your competitors.
+            </p>
+          </div>
+        </div>
+
+        <div class="rule-cols cols-3 kpi-row">
+          <div>
+            <p class="label k-idx" data-audit-i18n="statNamed">Answers naming you</p>
+            <p class="n kpi" id="statNamedVal">0/3</p>
+            <p class="body-s" data-audit-i18n="statNamedSub">
+              Out of 3 unbranded buyer questions run once on Gemini.
+            </p>
+          </div>
+
+          <div>
+            <p class="label k-idx" data-audit-i18n="statCited">Answers citing your site</p>
+            <p class="n kpi" id="statCitedVal">0/3</p>
+            <p class="body-s" data-audit-i18n="statCitedSub">
+              Times your domain appeared in the grounded web sources.
+            </p>
+          </div>
+
+          <div>
+            <p class="label k-idx" data-audit-i18n="statCompetitors">Named instead & sources cited</p>
+            <div class="summary-lists">
+              <div>
+                <span class="label" data-audit-i18n="compSubLabel">Competitors named:</span>
+                <p class="body-s strong-text" id="competitorsCloud">—</p>
+              </div>
+              <div>
+                <span class="label" data-audit-i18n="srcSubLabel">Sources cited:</span>
+                <p class="body-s strong-text" id="sourcesCloud">—</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question Breakdown List -->
+        <div class="runs-ledger" id="runsList"></div>
+
+        <p class="body-s method-note" id="notRunNote"></p>
+      </div>
+    </section>
+
+    <!-- SECTION 4: $99 FULL AUDIT UPGRADE (on-dark) -->
+    <section class="section section-pad on-dark" id="upgradeSection">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <h2 class="h2">
+              <span data-audit-i18n="upgradeTitle">Get the full 15-question audit across ChatGPT, Gemini & Google AI</span><span class="gdot">.</span>
+            </h2>
+          </div>
+          <div class="intro">
+            <p class="lede" data-audit-i18n="upgradeDesc">
+              A single API check is only a snapshot—AI answers change from run to run and differ when logged out. In our Full Audit, we run 12 to 15 unbranded buyer questions 3 times per engine across ChatGPT, Gemini, Google AI Overviews, and Google AI Mode, verify whether the AI describes your business accurately, and hand you a prioritized fix list.
+            </p>
+          </div>
+        </div>
+
+        <div class="rule-cols cols-2 upgrade-ledger">
+          <div>
+            <p class="label k-idx" data-audit-i18n="cmpFreeHead">Free Snapshot (Above)</p>
+            <ul class="ledger-list">
+              <li data-audit-i18n="cmpFree1">3 unbranded buyer questions</li>
+              <li data-audit-i18n="cmpFree2">1 API check per question on Gemini Search Grounding</li>
+              <li data-audit-i18n="cmpFree3">Automated homepage, crawler, schema & Lighthouse check</li>
+            </ul>
+          </div>
+
+          <div>
+            <p class="label k-idx" data-audit-i18n="cmpPaidHead">Full AEO / GEO Audit ($99 USD)</p>
+            <ul class="ledger-list highlight-list">
+              <li data-audit-i18n="cmpPaid1">12 to 15 unbranded buyer questions × 3 runs per engine (36–45 checks per engine)</li>
+              <li data-audit-i18n="cmpPaid2">Measured on ChatGPT, Gemini, Google AI Overviews & Google AI Mode (logged out)</li>
+              <li data-audit-i18n="cmpPaid3">Complete competitor & source citation map + factual accuracy review</li>
+              <li data-audit-i18n="cmpPaid4">Prioritized fix list (service pages, FAQs, schema, Google Business Profile, citations)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="checkout-bar">
+          <div class="price-block">
+            <span class="label" data-audit-i18n="priceLabel">Fixed one-time audit</span>
+            <p class="price-kpi kpi">$99 <span class="cur">USD</span></p>
+            <p class="body-s" data-audit-i18n="priceDisclaimer">
+              We do not promise rankings or percentages. We measure and report change with the same method every time.
+            </p>
+          </div>
+
+          <div class="checkout-action">
+            <button type="button" id="btnBuyFullAudit" class="btn btn-gold">
+              <span data-audit-i18n="buyBtn">Order Full 15-Question Audit ($99)</span> <span class="arr">→</span>
+            </button>
+            <span class="label" data-audit-i18n="stripeNote">
+              Encrypted Stripe Checkout · Instant PDF tax invoice
+            </span>
+            <div class="audit-talk-row">
+              <a href={BOOK_HREF} class="label audit-talk-link" data-audit-i18n="talkCallLink">
+                Walk through my score (15-min call) →
+              </a>
+              <a
+                id="auditEmailDomainLink"
+                href={mailto('Review my Sondri Watch AI score')}
+                class="label audit-talk-link"
+                data-audit-i18n="talkEmailLink"
+              >
+                Email us this domain →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  const WORKER_BASE =
+    window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:8787'
+      : 'https://billing.sondri.ai';
+
+  const I18N: Record<'en' | 'es', Record<string, string>> = {
+    en: {
+      backHome: 'Back to Sondri',
+      title: 'Does AI name your business when a buyer asks',
+      subtitle:
+        'Enter your website and contact details to run a free technical AI readiness scan, check your Google Lighthouse base health, and test 3 unbranded buyer questions.',
+      urlLabel: 'Website URL *',
+      serviceLabel: 'Primary service (optional)',
+      cityLabel: 'Target market (optional)',
+      nameLabel: 'Your full name *',
+      emailLabel: 'Work email *',
+      phoneLabel: 'Phone / WhatsApp *',
+      scanBtn: 'Run My Free AI Visibility Audit',
+      scanBtnLoading: 'Scanning website & running AI check…',
+      scanHint: 'Unbranded buyer prompts · Crawler & schema check · Google Lighthouse included',
+      kpiReadiness: 'AI Visibility & Readiness Score',
+      kpiReadinessDesc:
+        'Combines technical AI readiness (crawlers, Organization & FAQPage schema) with live AI visibility across the 3 questions below.',
+      lhSeoLabel: 'Google Lighthouse SEO',
+      lhSeoDesc: 'Checking mobile crawlability and baseline search indexability via Google PageSpeed Insights.',
+      lhPerfLabel: 'Mobile Speed (Lighthouse)',
+      lhPerfDesc: 'Running live Google Lighthouse mobile performance check…',
+      cwvTitle: 'Google PageSpeed & Core Web Vitals',
+      lhDiagTitle: 'Lighthouse opportunities & diagnostics',
+      downloadPdfBtn: 'Download Audit PDF',
+      signalsTitle: 'Structured data & site signals',
+      botsTitle: 'AI search crawlers (robots.txt)',
+      gapsTitle: 'Priority technical gaps',
+      aiReportTitle: 'Buyer discovery & brand verification',
+      aiReportLede:
+        'We test 2 unbranded buyer-intent questions (to see if AI recommends you organically) plus 1 direct brand question (to verify whether AI accurately understands what your business does).',
+      statNamed: 'Answers naming you',
+      statNamedSub: 'Out of 3 unbranded buyer questions run once on Gemini.',
+      statCited: 'Answers citing your site',
+      statCitedSub: 'Times your domain appeared in the grounded web sources.',
+      statCompetitors: 'Named instead & sources cited',
+      compSubLabel: 'Competitors named:',
+      srcSubLabel: 'Sources cited:',
+      upgradeTitle: 'Get the full 15-question audit across ChatGPT, Gemini & Google AI',
+      upgradeDesc:
+        'A single API check is only a snapshot—AI answers change from run to run and differ when logged out. In our Full Audit, we run 12 to 15 unbranded buyer questions 3 times per engine across ChatGPT, Gemini, Google AI Overviews, and Google AI Mode, verify whether the AI describes your business accurately, and hand you a prioritized fix list.',
+      cmpFreeHead: 'Free Snapshot (Above)',
+      cmpFree1: '3 unbranded buyer questions',
+      cmpFree2: '1 API check per question on Gemini Search Grounding',
+      cmpFree3: 'Automated homepage, crawler, schema & Lighthouse check',
+      cmpPaidHead: 'Full AEO / GEO Audit ($99 USD)',
+      cmpPaid1: '12 to 15 unbranded buyer questions × 3 runs per engine (36–45 checks per engine)',
+      cmpPaid2: 'Measured on ChatGPT, Gemini, Google AI Overviews & Google AI Mode (logged out)',
+      cmpPaid3: 'Complete competitor & source citation map + factual accuracy review',
+      cmpPaid4: 'Prioritized fix list (service pages, FAQs, schema, Google Business Profile, citations)',
+      priceLabel: 'Fixed one-time audit',
+      priceDisclaimer:
+        'We do not promise rankings or percentages. We measure and report change with the same method every time.',
+      buyBtn: 'Order Full 15-Question Audit ($99)',
+      buyBtnLoading: 'Redirecting to Stripe Checkout…',
+      stripeNote: 'Encrypted Stripe Checkout · Instant PDF tax invoice',
+      talkCallLink: 'Walk through my score (15-min call) →',
+      talkEmailLink: 'Email us this domain →',
+    },
+    es: {
+      backHome: 'Volver a Sondri',
+      title: '¿La IA nombra a su empresa cuando un cliente pregunta',
+      subtitle:
+        'Ingrese su sitio web y sus datos para ejecutar una revisión técnica gratuita para IA, medir Google Lighthouse y probar 3 preguntas reales de compra sin su marca.',
+      urlLabel: 'Sitio web *',
+      serviceLabel: 'Servicio principal (opcional)',
+      cityLabel: 'Mercado objetivo (opcional)',
+      nameLabel: 'Nombre completo *',
+      emailLabel: 'Correo de trabajo *',
+      phoneLabel: 'Teléfono / WhatsApp *',
+      scanBtn: 'Ejecutar Diagnóstico Gratuito de IA',
+      scanBtnLoading: 'Analizando sitio y consultando IA…',
+      scanHint: 'Preguntas sin marca · Rastreadores y schema · Incluye Google Lighthouse',
+      kpiReadiness: 'Puntaje de Visibilidad y Preparación IA',
+      kpiReadinessDesc:
+        'Combina preparación técnica (rastreadores, schema Organization y FAQPage) con visibilidad real en las 3 preguntas abajo.',
+      lhSeoLabel: 'SEO Google Lighthouse',
+      lhSeoDesc: 'Verificando rastreabilidad móvil e indexación mediante Google PageSpeed Insights.',
+      lhPerfLabel: 'Velocidad Móvil (Lighthouse)',
+      lhPerfDesc: 'Ejecutando prueba de rendimiento móvil en Google Lighthouse…',
+      cwvTitle: 'Google PageSpeed y Core Web Vitals',
+      lhDiagTitle: 'Oportunidades y diagnósticos de Lighthouse',
+      downloadPdfBtn: 'Descargar Informe PDF',
+      signalsTitle: 'Datos estructurados y señales del sitio',
+      botsTitle: 'Rastreadores de búsqueda IA (robots.txt)',
+      gapsTitle: 'Brechas técnicas prioritarias',
+      aiReportTitle: 'Descubrimiento de compra y verificación de marca',
+      aiReportLede:
+        'Probamos 2 preguntas de intención de compra sin marca (para ver si la IA lo recomienda orgánicamente) más 1 pregunta directa sobre su empresa (para verificar si la IA entiende con exactitud qué hace su negocio).',
+      statNamed: 'Respuestas que lo nombran',
+      statNamedSub: 'De 3 preguntas sin marca probadas en Gemini.',
+      statCited: 'Respuestas que citan su sitio',
+      statCitedSub: 'Veces que su dominio apareció en las fuentes citadas.',
+      statCompetitors: 'Nombrados en su lugar y fuentes',
+      compSubLabel: 'Competidores nombrados:',
+      srcSubLabel: 'Fuentes citadas:',
+      upgradeTitle: 'Obtenga la auditoría completa de 15 preguntas en ChatGPT, Gemini y la IA de Google',
+      upgradeDesc:
+        'Una consulta por API es solo una muestra: las respuestas cambian entre una vez y otra y varían sin sesión iniciada. En la Auditoría Completa hacemos entre 12 y 15 preguntas sin su marca, tres veces por motor en ChatGPT, Gemini, Google AI Overviews y Google AI Mode, verificamos la exactitud de sus datos y le entregamos una lista de correcciones priorizadas.',
+      cmpFreeHead: 'Muestra Gratis (Arriba)',
+      cmpFree1: '3 preguntas de compra sin marca',
+      cmpFree2: '1 revisión vía API en Gemini con Google Search',
+      cmpFree3: 'Revisión automática de portada, rastreadores, schema y Lighthouse',
+      cmpPaidHead: 'Auditoría Completa AEO / GEO ($99 USD)',
+      cmpPaid1: '12 a 15 preguntas sin marca × 3 repeticiones por motor (36 a 45 revisiones por motor)',
+      cmpPaid2: 'Medido en ChatGPT, Gemini, Google AI Overviews y Google AI Mode (sin sesión)',
+      cmpPaid3: 'Mapa completo de competidores y fuentes citadas + revisión de exactitud',
+      cmpPaid4: 'Lista de correcciones priorizadas (páginas, FAQs, schema, Perfil de Google, menciones)',
+      priceLabel: 'Auditoría única a precio fijo',
+      priceDisclaimer:
+        'No prometemos un puesto ni un porcentaje. Medimos y reportamos el cambio con el mismo método cada vez.',
+      buyBtn: 'Solicitar Auditoría Completa de 15 Preguntas ($99)',
+      buyBtnLoading: 'Redirigiendo a Stripe Checkout…',
+      stripeNote: 'Pago seguro con Stripe · Factura PDF al instante',
+      talkCallLink: 'Revisar mi puntaje en vivo (15 min) →',
+      talkEmailLink: 'Enviar este dominio por correo →',
+    },
+  };
+
+  const sectionEl = document.getElementById('mini-audit');
+  let currentLang: 'en' | 'es' =
+    (sectionEl?.getAttribute('data-default-lang') as 'en' | 'es') || 'en';
+  let currentAudit: any = null;
+
+  function applyAuditLang(lang: 'en' | 'es') {
+    currentLang = lang;
+    const dict = I18N[lang];
+    document.querySelectorAll<HTMLElement>('[data-audit-i18n]').forEach((el) => {
+      const key = el.getAttribute('data-audit-i18n');
+      if (key && dict[key]) {
+        el.textContent = dict[key];
+      }
+    });
+    document.querySelectorAll<HTMLButtonElement>('[data-set-lang]').forEach((btn) => {
+      btn.classList.toggle('active', btn.getAttribute('data-set-lang') === lang);
+    });
+  }
+
+  const isEmbedded = sectionEl?.getAttribute('data-embedded') === 'true';
+  const urlLang = new URLSearchParams(window.location.search).get('lang');
+  const savedLang = localStorage.getItem('sondri.lang');
+  if (!isEmbedded && (urlLang === 'es' || savedLang === 'es')) {
+    applyAuditLang('es');
+  } else {
+    applyAuditLang(currentLang);
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('[data-set-lang]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const l = btn.getAttribute('data-set-lang') === 'es' ? 'es' : 'en';
+      applyAuditLang(l);
+    });
+  });
+
+  function renderTechScan(audit: any) {
+    const scan = audit.tech_scan;
+    const reportEl = document.getElementById('auditReportContainer');
+    if (!reportEl || !scan) return;
+    reportEl.style.display = 'block';
+
+    const badge = document.getElementById('readinessBadge');
+    if (badge) {
+      badge.textContent = `${scan.readinessScore}/100`;
+    }
+
+    const brandTitle = document.getElementById('detectedBrandTitle');
+    if (brandTitle) {
+      brandTitle.innerHTML = `${scan.detectedBrand || audit.domain} <span class="gdot">.</span>`;
+    }
+
+    const metaLine = document.getElementById('detectedMetaLine');
+    if (metaLine) {
+      metaLine.textContent =
+        currentLang === 'es'
+          ? `Dominio: ${audit.domain} · Rubro: ${audit.service} · Mercado: ${audit.city}`
+          : `Domain: ${audit.domain} · Service: ${audit.service} · Market: ${audit.city}`;
+    }
+
+    const grid = document.getElementById('techCheckGrid');
+    if (grid) {
+      const items = [
+        {
+          label: currentLang === 'es' ? 'Schema Organization / LocalBusiness' : 'Organization / LocalBusiness Schema',
+          ok: scan.hasOrganizationOrLocalBusiness,
+        },
+        {
+          label: currentLang === 'es' ? 'Schema FAQPage' : 'FAQPage Schema',
+          ok: scan.hasFaqSchema,
+        },
+        {
+          label: currentLang === 'es' ? 'Señales de teléfono y dirección' : 'Phone & Address Signals',
+          ok: scan.hasPhoneInHtml || scan.hasAddressSignals,
+        },
+        {
+          label: 'sitemap.xml',
+          ok: scan.sitemapFound,
+        },
+        {
+          label: currentLang === 'es' ? 'llms.txt (opcional)' : 'llms.txt (optional)',
+          ok: scan.llmsTxtFound,
+          optional: true,
+        },
+      ];
+
+      grid.innerHTML = items
+        .map(
+          (item) => `
+          <div class="signal-row">
+            <span class="sig-label">${item.label}</span>
+            <span class="label sig-status ${item.ok ? 'ok' : item.optional ? 'opt' : 'miss'}">
+              ${item.ok ? (currentLang === 'es' ? 'DETECTADO' : 'FOUND') : item.optional ? (currentLang === 'es' ? 'OPCIONAL' : 'OPTIONAL') : (currentLang === 'es' ? 'FALTA' : 'MISSING')}
+            </span>
+          </div>`
+        )
+        .join('');
+    }
+
+    const botChips = document.getElementById('botChips');
+    if (botChips && Array.isArray(scan.bots)) {
+      botChips.innerHTML = scan.bots
+        .map(
+          (b: any) => `
+          <div class="signal-row">
+            <span class="sig-label">${b.bot}</span>
+            <span class="label sig-status ${b.allowed ? 'ok' : 'miss'}">
+              ${b.allowed ? (currentLang === 'es' ? 'PERMITIDO' : 'ALLOWED') : (currentLang === 'es' ? 'BLOQUEADO' : 'BLOCKED')}
+            </span>
+          </div>`
+        )
+        .join('');
+    }
+
+    const gapsBlock = document.getElementById('gapsBlock');
+    const gapsList = document.getElementById('gapsList');
+    if (gapsBlock && gapsList) {
+      if (Array.isArray(scan.gaps) && scan.gaps.length > 0) {
+        gapsBlock.style.display = 'block';
+        gapsList.innerHTML = scan.gaps.map((g: string) => `<li>${g}</li>`).join('');
+      } else {
+        gapsBlock.style.display = 'none';
+      }
+    }
+  }
+
+  async function loadLighthouseAsync(audit: any) {
+    const seoEl = document.getElementById('lhSeoScore');
+    const perfEl = document.getElementById('lhPerfScore');
+    const crawlEl = document.getElementById('lhCrawlableLine');
+    const extraEl = document.getElementById('lhExtraMetrics');
+    const detailsPanel = document.getElementById('lhDetailsPanel');
+    const metricsGrid = document.getElementById('lhMetricsGrid');
+    const diagGrid = document.getElementById('lhDiagGrid');
+
+    if (seoEl) seoEl.textContent = '…';
+    if (perfEl) perfEl.textContent = '…';
+
+    try {
+      const res = await fetch(
+        `${WORKER_BASE}/audit/lighthouse?audit_id=${encodeURIComponent(audit.id)}&url=${encodeURIComponent(audit.url)}`
+      );
+      const json = await res.json();
+      if (json.success && json.data) {
+        const lh = json.data;
+        if (currentAudit) {
+          currentAudit.lighthouse = lh;
+        }
+        if (seoEl) seoEl.textContent = lh.seoScore !== null ? `${lh.seoScore}/100` : 'N/A';
+        if (perfEl)
+          perfEl.textContent = lh.performanceScore !== null ? `${lh.performanceScore}/100` : 'N/A';
+        if (crawlEl && lh.isCrawlable !== null) {
+          crawlEl.textContent = lh.isCrawlable
+            ? currentLang === 'es'
+              ? 'Página indexable y rastreable por buscadores.'
+              : 'Page is indexable and crawlable by search engines.'
+            : currentLang === 'es'
+              ? 'Alerta: la página bloquea la indexación.'
+              : 'Warning: page is blocked from indexing.';
+        }
+        if (extraEl) {
+          const parts: string[] = [];
+          if (lh.lcpDisplay) parts.push(`LCP: ${lh.lcpDisplay}`);
+          if (lh.fcpDisplay) parts.push(`FCP: ${lh.fcpDisplay}`);
+          if (lh.clsDisplay) parts.push(`CLS: ${lh.clsDisplay}`);
+          if (parts.length > 0) extraEl.textContent = parts.join(' · ');
+        }
+
+        if (detailsPanel && metricsGrid && diagGrid) {
+          detailsPanel.style.display = 'grid';
+          const metricRows = [
+            {
+              label: currentLang === 'es' ? 'Accesibilidad (Lighthouse)' : 'Accessibility Score',
+              val: lh.accessibilityScore != null ? `${lh.accessibilityScore}/100` : '—',
+            },
+            {
+              label: currentLang === 'es' ? 'Buenas Prácticas (Lighthouse)' : 'Best Practices Score',
+              val: lh.bestPracticesScore != null ? `${lh.bestPracticesScore}/100` : '—',
+            },
+            {
+              label: 'First Contentful Paint (FCP)',
+              val: lh.fcpDisplay || '—',
+            },
+            {
+              label: 'Largest Contentful Paint (LCP)',
+              val: lh.lcpDisplay || '—',
+            },
+            {
+              label: 'Total Blocking Time (TBT)',
+              val: lh.tbtDisplay || '—',
+            },
+            {
+              label: 'Cumulative Layout Shift (CLS)',
+              val: lh.clsDisplay || '—',
+            },
+            {
+              label: 'Speed Index',
+              val: lh.siDisplay || '—',
+            },
+            {
+              label: currentLang === 'es' ? 'Respuesta del servidor (TTFB)' : 'Server Response Time (TTFB)',
+              val: lh.ttfbDisplay || '—',
+            },
+          ];
+
+          metricsGrid.innerHTML = metricRows
+            .map(
+              (m) => `
+              <div class="signal-row">
+                <span class="sig-label">${m.label}</span>
+                <span class="label sig-status ok">${m.val}</span>
+              </div>`
+            )
+            .join('');
+
+          const diags = Array.isArray(lh.diagnostics) ? lh.diagnostics : [];
+          if (diags.length > 0) {
+            diagGrid.innerHTML = diags
+              .map(
+                (d: any) => `
+                <div class="signal-row">
+                  <span class="sig-label">${d.title}${d.displayValue ? ` — <small>${d.displayValue}</small>` : ''}</span>
+                  <span class="label sig-status ${d.score >= 50 ? 'opt' : 'miss'}">${d.score}/100</span>
+                </div>`
+              )
+              .join('');
+          } else {
+            diagGrid.innerHTML = `
+              <div class="signal-row">
+                <span class="sig-label">${
+                  currentLang === 'es'
+                    ? 'Sin alertas críticas detectadas en las auditorías principales de Lighthouse.'
+                    : 'No critical bottlenecks flagged across primary Lighthouse checks.'
+                }</span>
+                <span class="label sig-status ok">PASS</span>
+              </div>`;
+          }
+        }
+      }
+    } catch {
+      if (seoEl) seoEl.textContent = 'N/A';
+      if (perfEl) perfEl.textContent = 'N/A';
+    }
+  }
+
+  function renderAiVisibility(audit: any) {
+    const ai = audit.ai_visibility;
+    if (!ai) return;
+
+    const badge = document.getElementById('readinessBadge');
+    if (badge && audit.tech_scan?.readinessScore != null) {
+      badge.textContent = `${audit.tech_scan.readinessScore}/100`;
+    }
+
+    const namedVal = document.getElementById('statNamedVal');
+    const citedVal = document.getElementById('statCitedVal');
+    if (namedVal) namedVal.textContent = `${ai.namedCount}/${ai.totalQuestions}`;
+    if (citedVal) citedVal.textContent = `${ai.citedCount}/${ai.totalQuestions}`;
+
+    const compCloud = document.getElementById('competitorsCloud');
+    if (compCloud) {
+      compCloud.textContent =
+        Array.isArray(ai.competitorsSummary) && ai.competitorsSummary.length > 0
+          ? ai.competitorsSummary.join(', ')
+          : currentLang === 'es'
+            ? 'Ninguno detectado en esta corrida'
+            : 'None detected in this run';
+    }
+
+    const srcCloud = document.getElementById('sourcesCloud');
+    if (srcCloud) {
+      srcCloud.textContent =
+        Array.isArray(ai.topSourceDomains) && ai.topSourceDomains.length > 0
+          ? ai.topSourceDomains.join(' · ')
+          : currentLang === 'es'
+            ? 'Sin citas externas'
+            : 'No external citations';
+    }
+
+    const runsList = document.getElementById('runsList');
+    if (runsList && Array.isArray(ai.runs)) {
+      runsList.innerHTML = ai.runs
+        .map((run: any, idx: number) => {
+          const statusLabel =
+            run.status !== 'ok'
+              ? currentLang === 'es'
+                ? 'NO EJECUTADO'
+                : 'NOT RUN'
+              : run.brandNamed
+                ? currentLang === 'es'
+                  ? 'TE NOMBRA'
+                  : 'NAMED'
+                : currentLang === 'es'
+                  ? 'NO TE NOMBRA'
+                  : 'NOT NAMED';
+
+          const statusClass =
+            run.status !== 'ok' ? 'opt' : run.brandNamed ? 'ok' : 'miss';
+
+          const comps =
+            Array.isArray(run.competitorsNamed) && run.competitorsNamed.length > 0
+              ? `<p class="body-s run-meta"><strong>${currentLang === 'es' ? 'Nombrados en su lugar:' : 'Named instead:'}</strong> ${run.competitorsNamed.join(', ')}</p>`
+              : '';
+
+          const cites =
+            Array.isArray(run.sourcesCited) && run.sourcesCited.length > 0
+              ? `<p class="body-s run-meta"><strong>${currentLang === 'es' ? 'Fuentes citadas:' : 'Sources cited:'}</strong> ${run.sourcesCited
+                  .map((s: any) => s.title || s.domain)
+                  .join(' · ')}</p>`
+              : '';
+
+          return `
+            <div class="run-row">
+              <div class="run-top">
+                <p class="h6 run-q"><span class="label">0${idx + 1}</span> ${run.question}</p>
+                <span class="label sig-status ${statusClass}">${statusLabel}</span>
+              </div>
+              <p class="run-excerpt">${run.answerExcerpt}</p>
+              ${comps}
+              ${cites}
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    const notRunNote = document.getElementById('notRunNote');
+    if (notRunNote) {
+      notRunNote.textContent =
+        currentLang === 'es'
+          ? 'Nota metodológica: Esta muestra gratuita ejecuta 1 revisión por pregunta vía API en Gemini con búsqueda de Google. Los motores no ejecutados en esta muestra (ChatGPT, Google AI Overviews, Google AI Mode sin sesión iniciada) se marcan como no ejecutados, nunca como cero, y se miden con 3 repeticiones en la Auditoría Completa de $99.'
+          : 'Method note: This free snapshot runs 1 API check per question on Gemini with Google Search grounding. Engines not checked in this free preview (ChatGPT, Google AI Overviews, Google AI Mode logged out) are marked not run—never zero—and are tested 3 times per question in the $99 Full Audit.';
+    }
+  }
+
+  // Unified Intake Form Submit: runs Step 1 Scan + Lighthouse + Step 2 AI Visibility in one flow
+  document.getElementById('formAuditIntake')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btnScan') as HTMLButtonElement;
+    const errEl = document.getElementById('scanError') as HTMLElement;
+    errEl.style.display = 'none';
+
+    const url = (document.getElementById('auditUrl') as HTMLInputElement).value.trim();
+    const service = (document.getElementById('auditService') as HTMLInputElement).value.trim();
+    const city = (document.getElementById('auditCity') as HTMLInputElement).value.trim();
+    const name = (document.getElementById('leadName') as HTMLInputElement).value.trim();
+    const email = (document.getElementById('leadEmail') as HTMLInputElement).value.trim();
+    const phone = (document.getElementById('leadPhone') as HTMLInputElement).value.trim();
+
+    btn.disabled = true;
+    const spanText = btn.querySelector('[data-audit-i18n="scanBtn"]');
+    if (spanText) spanText.textContent = I18N[currentLang].scanBtnLoading;
+
+    try {
+      // 1. Run Technical Scan & infer 3 buyer questions
+      const scanRes = await fetch(`${WORKER_BASE}/audit/scan`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, service, city, lang: currentLang }),
+      });
+      const scanJson = await scanRes.json();
+
+      if (!scanJson.success || !scanJson.data) {
+        throw new Error(scanJson.error?.message || 'Unable to scan website');
+      }
+
+      currentAudit = scanJson.data;
+      try {
+        sessionStorage.setItem(
+          'sondri_watch_intake',
+          JSON.stringify({
+            audit_id: currentAudit.id || '',
+            name,
+            email,
+            phone,
+            domain: currentAudit.domain || url,
+            city: currentAudit.city || city,
+            service: currentAudit.service || service,
+          })
+        );
+      } catch {
+        /* ignore storage restrictions */
+      }
+      syncEmailAuditLink(currentAudit);
+      renderTechScan(currentAudit);
+      loadLighthouseAsync(currentAudit);
+
+      document.getElementById('techSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // 2. Capture lead (Name + Email + Phone) & run 3-question AI visibility check
+      const aiRes = await fetch(`${WORKER_BASE}/audit/ai-visibility`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          audit_id: currentAudit.id,
+          name,
+          email,
+          phone,
+          questions: currentAudit.questions,
+          city: currentAudit.city,
+          service: currentAudit.service,
+        }),
+      });
+      const aiJson = await aiRes.json();
+      if (aiJson.success && aiJson.data) {
+        currentAudit = aiJson.data;
+        try {
+          sessionStorage.setItem(
+            'sondri_watch_intake',
+            JSON.stringify({
+              audit_id: currentAudit.id || '',
+              name,
+              email,
+              phone,
+              domain: currentAudit.domain || url,
+              city: currentAudit.city || city,
+              service: currentAudit.service || service,
+            })
+          );
+        } catch {
+          /* ignore */
+        }
+        syncEmailAuditLink(currentAudit);
+        renderAiVisibility(currentAudit);
+      }
+    } catch (err: any) {
+      errEl.textContent = err.message || 'Scan failed. Please check the URL and try again.';
+      errEl.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      if (spanText) spanText.textContent = I18N[currentLang].scanBtn;
+    }
+  });
+
+  function escapeHtml(raw: any): string {
+    return String(raw ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function openAuditPdfReport(audit: any, lang: 'en' | 'es') {
+    if (!audit || !audit.tech_scan) return;
+    const scan = audit.tech_scan;
+    const lh = audit.lighthouse || {};
+    const ai = audit.ai_visibility || {};
+    const isEs = lang === 'es';
+    const dateStr = new Date().toLocaleDateString(isEs ? 'es-CL' : 'en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+
+    const signalRows = [
+      {
+        name: isEs ? 'Schema Organization / LocalBusiness' : 'Organization / LocalBusiness Schema',
+        status: scan.hasOrganizationOrLocalBusiness ? (isEs ? 'DETECTADO' : 'FOUND') : isEs ? 'FALTA' : 'MISSING',
+        ok: scan.hasOrganizationOrLocalBusiness,
+      },
+      {
+        name: 'FAQPage JSON-LD Schema',
+        status: scan.hasFaqSchema ? (isEs ? 'DETECTADO' : 'FOUND') : isEs ? 'FALTA' : 'MISSING',
+        ok: scan.hasFaqSchema,
+      },
+      {
+        name: isEs ? 'Señales de teléfono y dirección' : 'Phone & Address Entity Signals',
+        status:
+          scan.hasPhoneInHtml || scan.hasAddressSignals ? (isEs ? 'DETECTADO' : 'FOUND') : isEs ? 'FALTA' : 'MISSING',
+        ok: scan.hasPhoneInHtml || scan.hasAddressSignals,
+      },
+      {
+        name: 'sitemap.xml',
+        status: scan.sitemapFound ? (isEs ? 'DETECTADO' : 'FOUND') : isEs ? 'FALTA' : 'MISSING',
+        ok: scan.sitemapFound,
+      },
+      {
+        name: 'llms.txt',
+        status: scan.llmsTxtFound ? (isEs ? 'DETECTADO' : 'FOUND') : isEs ? 'OPCIONAL' : 'OPTIONAL',
+        ok: true,
+      },
+      {
+        name: isEs ? 'Esquemas JSON-LD detectados' : 'All JSON-LD Schemas Found',
+        status: Array.isArray(scan.schemasFound) && scan.schemasFound.length > 0 ? scan.schemasFound.join(', ') : 'None',
+        ok: Array.isArray(scan.schemasFound) && scan.schemasFound.length > 0,
+      },
+    ];
+
+    const botRows = (scan.bots || []).map((b: any) => ({
+      name: `${b.bot} (${b.role})`,
+      status: b.allowed ? (isEs ? 'PERMITIDO' : 'ALLOWED') : isEs ? 'BLOQUEADO' : 'BLOCKED',
+      ok: b.allowed,
+    }));
+
+    const cwvRows = [
+      { name: 'Lighthouse SEO Score', val: lh.seoScore != null ? `${lh.seoScore}/100` : 'N/A' },
+      { name: 'Lighthouse Mobile Performance', val: lh.performanceScore != null ? `${lh.performanceScore}/100` : 'N/A' },
+      { name: 'Lighthouse Accessibility', val: lh.accessibilityScore != null ? `${lh.accessibilityScore}/100` : 'N/A' },
+      { name: 'Lighthouse Best Practices', val: lh.bestPracticesScore != null ? `${lh.bestPracticesScore}/100` : 'N/A' },
+      { name: 'First Contentful Paint (FCP)', val: lh.fcpDisplay || '—' },
+      { name: 'Largest Contentful Paint (LCP)', val: lh.lcpDisplay || '—' },
+      { name: 'Total Blocking Time (TBT)', val: lh.tbtDisplay || '—' },
+      { name: 'Cumulative Layout Shift (CLS)', val: lh.clsDisplay || '—' },
+      { name: 'Speed Index', val: lh.siDisplay || '—' },
+      { name: 'Server Response Time (TTFB)', val: lh.ttfbDisplay || '—' },
+    ];
+
+    const diagList = Array.isArray(lh.diagnostics) ? lh.diagnostics : [];
+    const gapsList = Array.isArray(scan.gaps) ? scan.gaps : [];
+    const runs = Array.isArray(ai.runs) ? ai.runs : [];
+
+    const html = `<!DOCTYPE html>
+<html lang="${lang}">
+<head>
+  <meta charset="utf-8" />
+  <title>Sondri AEO & GEO Audit — ${escapeHtml(audit.domain)}</title>
+  <style>
+    @page { size: A4; margin: 12mm 14mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #072227;
+      background: #ffffff;
+      line-height: 1.45;
+      font-size: 12px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .page-wrap { max-width: 820px; margin: 0 auto; padding: 8px 0 24px; }
+    .header {
+      background: #072227;
+      color: #ffffff;
+      padding: 22px 26px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      border-bottom: 4px solid #c8a24a;
+      margin-bottom: 20px;
+    }
+    .brand-tag {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #c8a24a;
+      margin-bottom: 6px;
+    }
+    .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+    .header .sub { font-size: 12px; color: #b7c8cb; }
+    .meta-right {
+      text-align: right;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 10px;
+      color: #d5e2e4;
+      line-height: 1.6;
+      white-space: nowrap;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .kpi-card {
+      border: 1px solid #d2dcde;
+      background: #f8fafa;
+      padding: 14px 16px;
+      break-inside: avoid;
+    }
+    .kpi-label {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #4a666b;
+      margin-bottom: 6px;
+    }
+    .kpi-val {
+      font-size: 26px;
+      font-weight: 700;
+      color: #072227;
+      letter-spacing: -0.03em;
+    }
+    .kpi-note { font-size: 10.5px; color: #526c71; margin-top: 4px; }
+    .sec-title {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #072227;
+      border-bottom: 2px solid #072227;
+      padding-bottom: 6px;
+      margin: 20px 0 12px;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .box {
+      border: 1px solid #d2dcde;
+      padding: 12px 14px;
+      break-inside: avoid;
+    }
+    .box h3 {
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #072227;
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+    }
+    table.data-table tr { border-bottom: 1px solid #e6ecee; }
+    table.data-table tr:last-child { border-bottom: 0; }
+    table.data-table td { padding: 6px 4px; vertical-align: top; }
+    table.data-table td.val {
+      text-align: right;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 10.5px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .ok { color: #0d9488; }
+    .miss { color: #dc2626; }
+    .warn { color: #b45309; }
+    .meta-summary {
+      border: 1px solid #d2dcde;
+      background: #fcfdfd;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      font-size: 11.5px;
+      break-inside: avoid;
+    }
+    .meta-summary p { margin-bottom: 4px; }
+    .meta-summary p:last-child { margin-bottom: 0; }
+    .gaps-box {
+      border-left: 3px solid #dc2626;
+      background: #fef2f2;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      break-inside: avoid;
+    }
+    .gaps-box h4 { font-size: 11px; text-transform: uppercase; color: #991b1b; margin-bottom: 6px; }
+    .gaps-box ul { padding-left: 16px; color: #7f1d1d; font-size: 11.5px; }
+    .gaps-box li { margin-bottom: 3px; }
+    .run-card {
+      border: 1px solid #d2dcde;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      break-inside: avoid;
+    }
+    .run-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .run-q { font-weight: 700; font-size: 12.5px; color: #072227; }
+    .badge {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+    .badge.ok { background: #ccfbf1; color: #115e59; }
+    .badge.miss { background: #fee2e2; color: #991b1b; }
+    .run-ans { color: #2c4448; font-size: 11.5px; margin-bottom: 6px; }
+    .run-foot { font-size: 11px; color: #4a666b; }
+    .footer-cta {
+      margin-top: 18px;
+      background: #072227;
+      color: #ffffff;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      break-inside: avoid;
+    }
+    .footer-cta h4 { font-size: 13px; color: #c8a24a; margin-bottom: 3px; }
+    .footer-cta p { font-size: 11px; color: #d5e2e4; }
+    .no-print-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .print-btn {
+      background: #c8a24a;
+      color: #072227;
+      border: 0;
+      padding: 8px 16px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    @media print {
+      .no-print-bar { display: none !important; }
+      .page-wrap { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <div class="no-print-bar">
+      <button class="print-btn" onclick="window.print()">${isEs ? 'Guardar como PDF / Imprimir' : 'Save as PDF / Print'}</button>
+    </div>
+
+    <div class="header">
+      <div>
+        <div class="brand-tag">SONDRI.AI · AEO &amp; GEO VISIBILITY AUDIT REPORT</div>
+        <h1>${escapeHtml(scan.detectedBrand || audit.domain)}</h1>
+        <div class="sub">${escapeHtml(audit.url)} · ${escapeHtml(audit.service || '')}</div>
+      </div>
+      <div class="meta-right">
+        <div>DATE: ${escapeHtml(dateStr)}</div>
+        <div>MARKET: ${escapeHtml(audit.city || 'United States')}</div>
+        <div>AUDIT ID: ${escapeHtml(audit.id)}</div>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">${isEs ? 'Preparación IA' : 'AI Readiness Score'}</div>
+        <div class="kpi-val">${scan.readinessScore}/100</div>
+        <div class="kpi-note">${isEs ? 'Schema, bots y entidad' : 'Crawlers, schema & entity'}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Lighthouse SEO</div>
+        <div class="kpi-val">${lh.seoScore != null ? `${lh.seoScore}/100` : 'N/A'}</div>
+        <div class="kpi-note">${lh.isCrawlable === false ? 'Blocked from indexing' : 'Indexable & crawlable'}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">${isEs ? 'Velocidad Móvil' : 'Mobile Speed'}</div>
+        <div class="kpi-val">${lh.performanceScore != null ? `${lh.performanceScore}/100` : 'N/A'}</div>
+        <div class="kpi-note">${escapeHtml(lh.lcpDisplay ? `LCP: ${lh.lcpDisplay}` : 'Google PageSpeed v5')}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">${isEs ? 'Menciones en IA' : 'AI Brand Mentions'}</div>
+        <div class="kpi-val">${ai.namedCount ?? 0}/${ai.totalQuestions ?? 3}</div>
+        <div class="kpi-note">${isEs ? `Citas web: ${ai.citedCount ?? 0}/${ai.totalQuestions ?? 3}` : `Domain cited: ${ai.citedCount ?? 0}/${ai.totalQuestions ?? 3}`}</div>
+      </div>
+    </div>
+
+    <div class="meta-summary">
+      <p><strong>${isEs ? 'Título detectado:' : 'Detected Title Tag:'}</strong> ${escapeHtml(scan.title || '—')}</p>
+      <p><strong>${isEs ? 'Meta descripción:' : 'Meta Description:'}</strong> ${escapeHtml(scan.metaDescription || '—')}</p>
+      <p><strong>${isEs ? 'Encabezado H1:' : 'Primary H1:'}</strong> ${escapeHtml((scan.h1s || []).join(' | ') || '—')}</p>
+    </div>
+
+    ${
+      gapsList.length > 0
+        ? `<div class="gaps-box">
+            <h4>${isEs ? 'Brechas Técnicas Prioritarias' : 'Priority Technical Gaps Detected'}</h4>
+            <ul>${gapsList.map((g: string) => `<li>${escapeHtml(g)}</li>`).join('')}</ul>
+          </div>`
+        : ''
+    }
+
+    <div class="sec-title">01 · ${isEs ? 'Señales Estructuradas y Rastreadores de IA' : 'Technical AEO Signals & AI Crawler Access (robots.txt)'}</div>
+    <div class="two-col">
+      <div class="box">
+        <h3>${isEs ? 'Datos Estructurados y Señales' : 'Structured Data & Site Signals'}</h3>
+        <table class="data-table">
+          ${signalRows
+            .map(
+              (r) => `<tr>
+                <td>${escapeHtml(r.name)}</td>
+                <td class="val ${r.ok ? 'ok' : 'miss'}">${escapeHtml(r.status)}</td>
+              </tr>`
+            )
+            .join('')}
+        </table>
+      </div>
+      <div class="box">
+        <h3>${isEs ? 'Acceso de Rastreadores IA' : 'AI Search Crawlers (robots.txt)'}</h3>
+        <table class="data-table">
+          ${botRows
+            .map(
+              (r: any) => `<tr>
+                <td>${escapeHtml(r.name)}</td>
+                <td class="val ${r.ok ? 'ok' : 'miss'}">${escapeHtml(r.status)}</td>
+              </tr>`
+            )
+            .join('')}
+        </table>
+      </div>
+    </div>
+
+    <div class="sec-title">02 · Google PageSpeed Insights &amp; Core Web Vitals (Mobile)</div>
+    <div class="two-col">
+      <div class="box">
+        <h3>${isEs ? 'Métricas de Rendimiento y Core Web Vitals' : 'Lighthouse Scores & Core Web Vitals'}</h3>
+        <table class="data-table">
+          ${cwvRows
+            .map(
+              (r) => `<tr>
+                <td>${escapeHtml(r.name)}</td>
+                <td class="val">${escapeHtml(r.val)}</td>
+              </tr>`
+            )
+            .join('')}
+        </table>
+      </div>
+      <div class="box">
+        <h3>${isEs ? 'Oportunidades y Diagnósticos Lighthouse' : 'Lighthouse Opportunities & Diagnostics'}</h3>
+        <table class="data-table">
+          ${
+            diagList.length > 0
+              ? diagList
+                  .map(
+                    (d: any) => `<tr>
+                      <td>${escapeHtml(d.title)}${d.displayValue ? ` <span style="color:#526c71">(${escapeHtml(d.displayValue)})</span>` : ''}</td>
+                      <td class="val ${d.score >= 50 ? 'warn' : 'miss'}">${d.score}/100</td>
+                    </tr>`
+                  )
+                  .join('')
+              : `<tr><td>${isEs ? 'Sin cuellos de botella críticos detectados.' : 'No critical bottlenecks flagged in primary checks.'}</td><td class="val ok">PASS</td></tr>`
+          }
+        </table>
+      </div>
+    </div>
+
+    <div class="sec-title">03 · ${isEs ? 'Preguntas de Compra Sin Marca y Respuestas de IA' : 'Unbranded Buyer Questions & Live AI Visibility'}</div>
+    <div class="meta-summary">
+      <p><strong>${isEs ? 'Competidores nombrados en su lugar:' : 'Competitors Named Instead:'}</strong> ${escapeHtml((ai.competitorsSummary || []).join(', ') || 'None')}</p>
+      <p><strong>${isEs ? 'Dominios y fuentes citadas:' : 'Reference Domains Cited:'}</strong> ${escapeHtml((ai.topSourceDomains || []).join(' · ') || 'None')}</p>
+    </div>
+
+    ${runs
+      .map(
+        (r: any, idx: number) => `<div class="run-card">
+          <div class="run-head">
+            <div class="run-q">Q0${idx + 1}. ${escapeHtml(r.question)}</div>
+            <span class="badge ${r.brandNamed ? 'ok' : 'miss'}">${
+              r.brandNamed ? (isEs ? 'TE NOMBRA' : 'NAMED') : isEs ? 'NO TE NOMBRA' : 'NOT NAMED'
+            }</span>
+          </div>
+          <div class="run-ans">${escapeHtml(r.answerExcerpt)}</div>
+          <div class="run-foot">
+            <strong>${isEs ? 'Competidores:' : 'Named instead:'}</strong> ${escapeHtml((r.competitorsNamed || []).join(', ') || '—')}
+            &nbsp;|&nbsp;
+            <strong>${isEs ? 'Fuentes:' : 'Sources:'}</strong> ${escapeHtml(
+              (r.sourcesCited || []).map((s: any) => s.title || s.domain).join(', ') || '—'
+            )}
+          </div>
+        </div>`
+      )
+      .join('')}
+
+    <div class="footer-cta">
+      <div>
+        <h4>${isEs ? 'Auditoría Completa AEO / GEO de 15 Preguntas ($99 USD)' : 'Full 15-Question Multi-Engine AEO / GEO Audit ($99 USD)'}</h4>
+        <p>${
+          isEs
+            ? '12–15 preguntas sin marca × 3 repeticiones en ChatGPT, Gemini, Google AI Overviews y Google AI Mode + plan de acción priorizado.'
+            : '12–15 unbranded buyer questions × 3 runs across ChatGPT, Gemini, Google AI Overviews & Google AI Mode + prioritized fix roadmap.'
+        }</p>
+      </div>
+      <div class="meta-right">sondri.ai/ai-audit</div>
+    </div>
+  </div>
+  <script>
+    window.addEventListener('load', function () {
+      setTimeout(function () { window.print(); }, 250);
+    });
+  <\/script>
+</body>
+</html>`;
+
+    const win = window.open('', '_blank');
+    if (win) {
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+    }
+  }
+
+  document.getElementById('btnDownloadPdf')?.addEventListener('click', () => {
+    if (currentAudit) {
+      openAuditPdfReport(currentAudit, currentLang);
+    }
+  });
+
+  // Handle $99 Full Audit Stripe Checkout
+  function syncEmailAuditLink(audit: any) {
+    const emailLink = document.getElementById('auditEmailDomainLink') as HTMLAnchorElement | null;
+    if (!emailLink || !audit) return;
+    const dom = audit.domain || audit.url || '';
+    const score = typeof audit.readinessScore === 'number' ? `${audit.readinessScore}/100` : '';
+    const isEs = currentLang === 'es';
+    const subj = isEs
+      ? `Revisión Sondri Watch para ${dom || 'mi sitio web'}`
+      : `Sondri Watch review for ${dom || 'my website'}`;
+    const body = isEs
+      ? `Hola equipo Sondri,\n\nAcabo de revisar ${dom} en Sondri Watch${score ? ` (puntaje ${score})` : ''} y me gustaría conversar sobre los siguientes pasos.\n`
+      : `Hi Sondri team,\n\nI just scanned ${dom} on Sondri Watch${score ? ` (score ${score})` : ''} and would like to walk through next steps.\n`;
+    emailLink.href = `mailto:sales@sondri.ai?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+  }
+
+  document.getElementById('btnBuyFullAudit')?.addEventListener('click', async () => {
+    const name = (document.getElementById('leadName') as HTMLInputElement)?.value.trim() || '';
+    const email = (document.getElementById('leadEmail') as HTMLInputElement)?.value.trim() || '';
+    const phone = (document.getElementById('leadPhone') as HTMLInputElement)?.value.trim() || '';
+    const cityVal = (document.getElementById('auditCity') as HTMLInputElement)?.value.trim() || '';
+    const serviceVal = (document.getElementById('auditService') as HTMLInputElement)?.value.trim() || '';
+    const domainVal = currentAudit?.domain || (document.getElementById('auditUrl') as HTMLInputElement)?.value.trim() || '';
+
+    if (document.getElementById('watchCheckoutDialog')) {
+      window.dispatchEvent(
+        new CustomEvent('sondri:open-checkout', {
+          detail: {
+            sku: 'aeo_full_audit',
+            prefill: {
+              audit_id: currentAudit?.id || '',
+              name,
+              email,
+              phone,
+              domain: domainVal,
+              city: currentAudit?.city || cityVal,
+              service: currentAudit?.service || serviceVal,
+            },
+          },
+        })
+      );
+      return;
+    }
+
+    if (!currentAudit) return;
+    const btn = document.getElementById('btnBuyFullAudit') as HTMLButtonElement;
+    const spanText = btn.querySelector('[data-audit-i18n="buyBtn"]');
+
+    btn.disabled = true;
+    if (spanText) spanText.textContent = I18N[currentLang].buyBtnLoading;
+
+    try {
+      const res = await fetch(`${WORKER_BASE}/create-checkout-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'aeo_full_audit',
+          client_name: name || undefined,
+          client_email: email || undefined,
+          client_phone: phone || undefined,
+          audit_id: currentAudit.id,
+          domain: currentAudit.domain,
+          city: currentAudit.city,
+          service: currentAudit.service,
+          lang: currentLang,
+          success_url: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}&type=aeo_audit`,
+          cancel_url: window.location.href,
+        }),
+      });
+
+      const json = await res.json();
+      if (json.success && json.data?.checkout_url) {
+        window.location.href = json.data.checkout_url;
+      } else {
+        alert(json.error?.message || 'Unable to start Stripe Checkout');
+        btn.disabled = false;
+        if (spanText) spanText.textContent = I18N[currentLang].buyBtn;
+      }
+    } catch (err: any) {
+      alert(err.message || 'Connection error reaching Stripe Checkout');
+      btn.disabled = false;
+      if (spanText) spanText.textContent = I18N[currentLang].buyBtn;
+    }
+  });
+
+  // Pre-fill from query params if linked from another page
+  (function initFromQuery() {
+    const q = new URLSearchParams(window.location.search);
+    const qUrl = q.get('url');
+    const qName = q.get('name');
+    const qEmail = q.get('email');
+    const qPhone = q.get('phone');
+    const qCity = q.get('city');
+    const qService = q.get('service');
+
+    const urlInp = document.getElementById('auditUrl') as HTMLInputElement | null;
+    const nameInp = document.getElementById('leadName') as HTMLInputElement | null;
+    const emailInp = document.getElementById('leadEmail') as HTMLInputElement | null;
+    const phoneInp = document.getElementById('leadPhone') as HTMLInputElement | null;
+    const cityInp = document.getElementById('auditCity') as HTMLInputElement | null;
+    const serviceInp = document.getElementById('auditService') as HTMLInputElement | null;
+
+    if (qUrl && urlInp) urlInp.value = qUrl;
+    if (qName && nameInp) nameInp.value = qName;
+    if (qEmail && emailInp) emailInp.value = qEmail;
+    if (qPhone && phoneInp) phoneInp.value = qPhone;
+    if (qCity && cityInp) cityInp.value = qCity;
+    if (qService && serviceInp) serviceInp.value = qService;
+
+    if (qUrl && qName && qEmail && qPhone) {
+      const form = document.getElementById('formAuditIntake') as HTMLFormElement | null;
+      form?.requestSubmit();
+    }
+  })();
+</script>
+
+<style>
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-24);
+    margin-bottom: var(--s-48);
+  }
+
+  .back-link {
+    text-decoration: none;
+    color: var(--pale);
+  }
+  .back-link:hover {
+    color: var(--gold);
+  }
+
+  .lang-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+  }
+
+  .lang-btn {
+    background: transparent;
+    border: 0;
+    color: var(--pale);
+    font: 12px/1 var(--mono);
+    padding: 10px 14px;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  .lang-btn.active {
+    background: var(--gold);
+    color: var(--teal);
+    font-weight: 600;
+  }
+
+  .intake-form {
+    border-top: 1px solid var(--line);
+    padding-top: var(--s-48);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-32);
+  }
+
+  .intake-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--s-32);
+    row-gap: var(--s-24);
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-08);
+  }
+
+  .form-input {
+    background: var(--teal-deep);
+    border: 1px solid var(--line);
+    color: var(--white);
+    font-family: var(--sans);
+    font-size: 16px;
+    padding: 16px 18px;
+    width: 100%;
+  }
+
+  .form-input:focus {
+    outline: 2px solid var(--gold);
+    outline-offset: 1px;
+    border-color: var(--gold);
+  }
+
+  .light-input {
+    background: var(--white);
+    color: var(--teal);
+    border-color: var(--teal);
+  }
+
+  .intake-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--s-32);
+    flex-wrap: wrap;
+    padding-top: var(--s-08);
+  }
+
+  .error-banner {
+    border-top: 1px solid #ef4444;
+    padding-top: var(--s-16);
+    color: #fca5a5;
+    font-size: 15px;
+  }
+
+  /* KPI columns (matches Problem.astro rhythm) */
+  .kpi-row > * {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-24);
+    min-height: 240px;
+  }
+
+  .k-idx {
+    color: var(--text-hi);
+  }
+
+  .k-idx::before {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 10px;
+    vertical-align: 1px;
+    background: var(--dot);
+  }
+
+  .n {
+    font-size: clamp(52px, 5.5vw, 80px);
+    color: var(--accent);
+    margin-top: auto;
+  }
+
+  .detail-cols {
+    margin-top: var(--s-64);
+  }
+
+  .detail-heading {
+    margin-bottom: var(--s-24);
+  }
+
+  :global(.signal-row) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-16);
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 15px;
+    color: var(--text-hi);
+  }
+
+  :global(.sig-status) {
+    font-weight: 600;
+  }
+  :global(.sig-status.ok) {
+    color: #0d9488;
+  }
+  :global(.sig-status.opt) {
+    color: var(--steel);
+  }
+  :global(.sig-status.miss) {
+    color: #dc2626;
+  }
+
+  .gaps-wrap {
+    margin-top: var(--s-32);
+  }
+
+  .gaps-heading {
+    color: var(--text-hi);
+    margin-bottom: var(--s-16);
+  }
+
+  .gaps-list {
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--pale);
+  }
+
+  .summary-lists {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+    margin-top: auto;
+  }
+
+  .strong-text {
+    color: var(--text-hi);
+    font-size: 15px;
+    margin-top: 4px;
+  }
+
+  /* Unbranded Prompt Runs Ledger */
+  .runs-ledger {
+    margin-top: var(--s-64);
+    border-top: 1px solid var(--line);
+  }
+
+  :global(.run-row) {
+    padding: var(--s-32) 0;
+    border-bottom: 1px solid var(--line-soft);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+  }
+
+  :global(.run-top) {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-24);
+  }
+
+  :global(.run-q) {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-16);
+  }
+
+  :global(.run-excerpt) {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--pale);
+    max-width: 72ch;
+  }
+
+  :global(.run-meta) {
+    color: var(--text-hi);
+  }
+
+  .report-head-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s-24);
+  }
+
+  .btn-ghost-dark {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text-hi);
+    font: 12px/1 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 14px 20px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .btn-ghost-dark:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .method-note {
+    margin-top: var(--s-40);
+    max-width: 72ch;
+  }
+
+  /* Section 4: $99 Upgrade Ledger */
+  .upgrade-ledger {
+    margin-bottom: var(--s-64);
+  }
+
+  .ledger-list {
+    margin-top: var(--s-24);
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--pale);
+  }
+
+  .highlight-list {
+    color: var(--white);
+  }
+
+  .checkout-bar {
+    border-top: 1px solid var(--line);
+    padding-top: var(--s-48);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--s-48);
+    flex-wrap: wrap;
+  }
+
+  .price-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+    max-width: 48ch;
+  }
+
+  .price-kpi {
+    font-size: clamp(56px, 6vw, 84px);
+    color: var(--gold);
+  }
+
+  .price-kpi .cur {
+    font-family: var(--mono);
+    font-size: 20px;
+    color: var(--white);
+  }
+
+  .checkout-action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s-16);
+  }
+
+  .audit-talk-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    margin-top: 4px;
+  }
+
+  .audit-talk-link {
+    color: var(--pale);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(253, 179, 67, 0.55);
+    padding-bottom: 2px;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .audit-talk-link:hover {
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+
+  @media (max-width: 960px) {
+    .intake-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

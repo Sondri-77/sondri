@@ -1,0 +1,329 @@
+---
+import type { Lang } from '../../i18n';
+import WatchShell from './WatchShell.astro';
+import WatchHeroBg from './WatchHeroBg.astro';
+import { BOOK_HREF } from '../../data';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const isEs = lang === 'es';
+const prefix = isEs ? '/es/watch' : '/watch';
+
+const alternates = {
+  en: '/watch/partners/',
+  es: '/es/watch/partners/',
+};
+---
+
+<WatchShell
+  title={isEs ? 'Programa Marca Blanca para Agencias — Sondri Watch' : 'Agency White-Label & Wholesale Program — Sondri Watch'}
+  description={isEs
+    ? 'Agencias web, diseño y SEO: ofrece auditorías AEO marca blanca ($149) y monitoreo mensual ($79/cliente/mes) sin construir infraestructura.'
+    : 'For web, design, and local SEO agencies: offer white-label AEO audits ($149 wholesale) and monthly client Watch monitoring ($79/client/mo).'}
+  lang={lang}
+  activeTab="partners"
+  alternates={alternates}
+>
+  <section class="section section-pad on-dark partners-hero watch-banner-edge" data-watch-hero>
+    <WatchHeroBg variant="banner" />
+    <div class="wrap">
+      <div class="sec-head" data-watch-reveal>
+        <div>
+          <span class="label gold-kicker">/ {isEs ? 'CANAL MAYORISTA · MARCA BLANCA AGENCIAS' : 'WHOLESALE AGENCY PARTNER PROGRAM'}</span>
+          <h1 class="h2">
+            {isEs ? 'Vende auditorías y monitoreo AEO bajo tu marca en 48 horas' : 'Add a profitable AEO audit & recurring Watch offer without building the stack'}<span class="gdot">.</span>
+          </h1>
+        </div>
+        <div class="intro">
+          <p class="lede">
+            {isEs
+              ? 'Diseñado para agencias web, de diseño y SEO en Chile y EE.UU. cuyos clientes preguntan por ChatGPT y Google AI. Tú conservas al cliente y fijas tu precio de venta; Sondri ejecuta el motor en blanco.'
+              : 'Built for web studios, design shops, and local SEO agencies whose clients are asking why ChatGPT recommends their competitors. Keep the client relationship and your markup—Sondri runs the engine.'}
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-pad on-dark">
+    <div class="wrap">
+      <!-- Wholesale Pricing Ledger -->
+      <div class="cards-3" data-watch-reveal>
+        <article class="p-card">
+          <span class="label">WHOLESALE AUDIT</span>
+          <h2 class="h5">{isEs ? 'Auditoría Inicial Marca Blanca' : 'White-Label Initial Audit'}</h2>
+          <p class="price"><span class="n">$149</span> <span class="label">USD / audit</span></p>
+          <p class="body-s p-copy">
+            {isEs
+              ? 'Auditoría completa en 4 motores (EN/ES), capturas, mapa de competidores y lista de correcciones lista para tu cliente.'
+              : 'Full 4-engine logged-out audit, competitor share matrix, schema check & executive PDF ready to rebrand for your client.'}
+          </p>
+          <button type="button" class="btn btn-gold p-btn" data-watch-checkout="agency_pilot_audit">
+            <span data-btn-label>{isEs ? 'Pedir Auditoría Piloto ($149)' : 'Order Pilot Audit ($149)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+
+        <article class="p-card">
+          <span class="label">POST-FIX VERIFICATION</span>
+          <h2 class="h5">{isEs ? 'Re-Auditoría Comparativa' : 'Verification Re-Audit'}</h2>
+          <p class="price"><span class="n">$99</span> <span class="label">USD / re-audit</span></p>
+          <p class="body-s p-copy">
+            {isEs
+              ? 'Vuelve a correr los mismos prompts tras implementar tus cambios web o schema para demostrar el salto antes/después.'
+              : 'Re-run the identical frozen prompt wave after your team ships site/schema updates to prove before-and-after lift.'}
+          </p>
+          <button type="button" class="btn btn-outline-light p-btn" data-watch-checkout="agency_reaudit">
+            <span data-btn-label>{isEs ? 'Solicitar Re-Auditoría ($99)' : 'Order Re-Audit ($99)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+
+        <article class="p-card featured">
+          <span class="label gold-kicker">RECURRING WHOLESALE · WATCH FEED</span>
+          <h2 class="h5">{isEs ? 'Monitoreo Mensual por Cliente' : 'Monthly Client Monitoring'}</h2>
+          <p class="price"><span class="n">$79</span> <span class="label">USD / client / mo</span></p>
+          <p class="body-s p-copy">
+            {isEs
+              ? 'Corridas semanales en 4 motores + reporte mensual marca blanca para tu cuenta. Retiene al cliente sobre tu retainer actual.'
+              : 'Weekly 4-engine runs + clean monthly white-label PDF & web report feed so you anchor recurring client retainers.'}
+          </p>
+          <button type="button" class="btn btn-gold p-btn" data-watch-checkout="watch_agency_client">
+            <span data-btn-label>{isEs ? 'Activar Cupo Cliente ($79/mes)' : 'Add Client Slot ($79/mo)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+      </div>
+
+      <!-- Interactive Agency Margin Calculator -->
+      <div class="calc-card" data-watch-reveal>
+        <div class="calc-head">
+          <div>
+            <span class="label gold-kicker">/ {isEs ? 'CALCULADORA DE MARGEN PARA TU AGENCIA' : 'AGENCY RESALE MARGIN CALCULATOR'}</span>
+            <h2 class="h4">{isEs ? 'Proyección mensual según cuentas activas' : 'Model your recurring agency margin'}</h2>
+            <p class="body-s calc-sub">
+              {isEs
+                ? 'Referencia de mercado (GEORaiser / Unitrux): las agencias revenden auditorías AEO entre US$597 y US$2.500 y monitoreo desde US$249/mes.'
+                : 'Market benchmark (GEORaiser / Unitrux): agencies typically resell AEO audits at $597–$1,500 and monthly monitoring retainers at $249–$499/mo.'}
+            </p>
+          </div>
+          <a href={BOOK_HREF} class="btn btn-outline-light">
+            {isEs ? 'Pedir Acuerdo Piloto 1-Página' : 'Request 1-Page Partner Terms'} →
+          </a>
+        </div>
+
+        <div class="calc-controls">
+          <div class="ctrl">
+            <label for="calcClients" class="label">
+              {isEs ? 'Clientes activos en monitoreo:' : 'Active monitored clients:'} <strong id="calcClientsVal">5</strong>
+            </label>
+            <input type="range" id="calcClients" min="1" max="30" value="5" />
+          </div>
+          <div class="ctrl">
+            <label for="calcResale" class="label">
+              {isEs ? 'Tu precio mensual al cliente (USD):' : 'Your monthly client price (USD):'} <strong id="calcResaleVal">$299</strong>
+            </label>
+            <input type="range" id="calcResale" min="149" max="699" step="25" value="299" />
+          </div>
+        </div>
+
+        <div class="rule-cols cols-3 calc-out">
+          <div>
+            <span class="label">{isEs ? 'INGRESO MENSUAL RECURRENTE' : 'GROSS MONTHLY REVENUE'}</span>
+            <p class="n out-kpi" id="calcGross">$1,495</p>
+          </div>
+          <div>
+            <span class="label">{isEs ? 'COSTO MAYORISTA SONDRI ($79/CLI)' : 'SONDRI WHOLESALE ($79/CLIENT)'}</span>
+            <p class="n out-kpi muted-val" id="calcCost">$395</p>
+          </div>
+          <div>
+            <span class="label">{isEs ? 'MARGEN NETO PARA TU AGENCIA' : 'NET RECURRING AGENCY PROFIT'}</span>
+            <p class="n out-kpi gold-val" id="calcNet">$1,100/mo</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="back-row">
+        <a href={`${prefix}/`} class="label back-link">← {isEs ? 'Volver a Sondri Watch' : 'Back to Sondri Watch Overview'}</a>
+      </div>
+    </div>
+  </section>
+</WatchShell>
+
+<script>
+  const clientsInput = document.getElementById('calcClients') as HTMLInputElement | null;
+  const resaleInput = document.getElementById('calcResale') as HTMLInputElement | null;
+  const clientsVal = document.getElementById('calcClientsVal');
+  const resaleVal = document.getElementById('calcResaleVal');
+  const grossEl = document.getElementById('calcGross');
+  const costEl = document.getElementById('calcCost');
+  const netEl = document.getElementById('calcNet');
+
+  function updateMargin() {
+    const n = Number(clientsInput?.value || 5);
+    const price = Number(resaleInput?.value || 299);
+    const gross = n * price;
+    const cost = n * 79;
+    const net = gross - cost;
+    if (clientsVal) clientsVal.textContent = String(n);
+    if (resaleVal) resaleVal.textContent = `$${price}`;
+    if (grossEl) grossEl.textContent = `$${gross.toLocaleString()}`;
+    if (costEl) costEl.textContent = `$${cost.toLocaleString()}`;
+    if (netEl) netEl.textContent = `$${net.toLocaleString()}/mo`;
+  }
+
+  clientsInput?.addEventListener('input', updateMargin);
+  resaleInput?.addEventListener('input', updateMargin);
+  updateMargin();
+</script>
+
+<style>
+  .partners-hero .sec-head {
+    margin-bottom: 0;
+  }
+
+  .gold-kicker {
+    color: var(--gold);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .cards-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-24);
+    margin-bottom: var(--s-48);
+  }
+
+  .p-card {
+    background: rgba(3, 25, 25, 0.92);
+    border: 1px solid var(--line);
+    padding: var(--s-32);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+  }
+
+  .p-card.featured {
+    border-color: var(--gold);
+    box-shadow: 8px 8px 0 var(--gold);
+  }
+
+  .price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .price .n {
+    font-size: 46px;
+    color: var(--gold);
+  }
+
+  .p-copy {
+    color: var(--pale);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .p-btn {
+    margin-top: auto;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .btn-outline-light {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--white);
+  }
+  .btn-outline-light:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .calc-card {
+    background: rgba(3, 25, 25, 0.94);
+    border: 1px solid var(--line);
+    padding: var(--s-40);
+  }
+
+  .calc-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--s-24);
+    flex-wrap: wrap;
+    padding-bottom: var(--s-24);
+    border-bottom: 1px solid var(--line-soft);
+    margin-bottom: var(--s-32);
+  }
+
+  .calc-sub {
+    color: var(--pale);
+    margin-top: 8px;
+    max-width: 62ch;
+  }
+
+  .calc-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-32);
+    margin-bottom: var(--s-32);
+  }
+
+  .ctrl {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ctrl strong {
+    color: var(--gold);
+    font-size: 16px;
+  }
+
+  .ctrl input[type='range'] {
+    width: 100%;
+    accent-color: var(--gold);
+  }
+
+  .calc-out {
+    padding-top: var(--s-24);
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .out-kpi {
+    font-size: 40px;
+    margin-top: 8px;
+    color: var(--white);
+  }
+
+  .muted-val {
+    color: var(--pale);
+  }
+
+  .gold-val {
+    color: var(--gold);
+  }
+
+  .back-row {
+    margin-top: var(--s-32);
+  }
+
+  .back-link {
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  @media (max-width: 960px) {
+    .cards-3,
+    .calc-controls {
+      grid-template-columns: 1fr;
+    }
+
+    .calc-card {
+      padding: var(--s-24);
+    }
+  }
+</style>

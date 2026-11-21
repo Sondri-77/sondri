@@ -1,0 +1,110 @@
+---
+interface Props {
+  variant?: 'hero' | 'banner';
+  posY?: number;
+}
+
+const { variant = 'hero', posY } = Astro.props;
+const resolvedPosY = posY ?? (variant === 'banner' ? 0.22 : 0.5);
+---
+
+<div class:list={['watch-hero-bg', `is-${variant}`]} aria-hidden="true">
+  <img
+    data-dither-src
+    data-dither-pos-y={String(resolvedPosY)}
+    src="/img/hero-watch-observatory.jpg"
+    alt=""
+    width="1200"
+    height="669"
+    fetchpriority="high"
+  />
+  <canvas data-dither></canvas>
+  <div class="watch-hero-noise"></div>
+  <div class="watch-hero-veil"></div>
+</div>
+
+<style>
+  :global(.watch-body .section.on-dark[data-watch-hero]) {
+    position: relative;
+    overflow: hidden;
+    background: var(--teal-deep);
+  }
+
+  :global([data-watch-hero] > .wrap) {
+    position: relative;
+    z-index: 2;
+  }
+
+  :global([data-watch-hero].watch-banner-edge) {
+    border-bottom: 1px solid var(--line);
+  }
+
+  :global([data-watch-hero] .btn-outline-light) {
+    background: rgba(3, 25, 25, 0.48);
+    backdrop-filter: blur(4px);
+  }
+
+  .watch-hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .watch-hero-bg img {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 1px;
+    height: 1px;
+  }
+
+  .watch-hero-bg canvas {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    display: block;
+  }
+
+  .watch-hero-noise {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .watch-hero-veil {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .watch-hero-bg.is-hero .watch-hero-veil {
+    background:
+      linear-gradient(90deg, rgba(3, 25, 25, 0.54) 0%, rgba(3, 25, 25, 0.16) 48%, rgba(3, 25, 25, 0.22) 100%),
+      linear-gradient(180deg, rgba(3, 25, 25, 0.4) 0%, rgba(3, 25, 25, 0.02) 34%, rgba(3, 25, 25, 0.6) 100%);
+  }
+
+  .watch-hero-bg.is-banner .watch-hero-veil {
+    background:
+      linear-gradient(90deg, rgba(3, 25, 25, 0.68) 0%, rgba(3, 25, 25, 0.4) 48%, rgba(3, 25, 25, 0.14) 100%),
+      linear-gradient(180deg, rgba(3, 25, 25, 0.36) 0%, rgba(3, 25, 25, 0.04) 45%, rgba(3, 25, 25, 0.62) 100%);
+  }
+
+  @media print {
+    .watch-hero-bg {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  import { initHeroFx } from '../../scripts/hero-fx';
+
+  document.querySelectorAll<HTMLElement>('[data-watch-hero]').forEach((el) => {
+    initHeroFx(el);
+  });
+</script>

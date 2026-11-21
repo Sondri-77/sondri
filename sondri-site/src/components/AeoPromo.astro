@@ -1,0 +1,184 @@
+---
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const prefix = lang === 'es' ? '/es/watch' : '/watch';
+---
+
+<section class="section section-pad on-dark" id="ai-audit">
+  <div class="wrap">
+    <div class="watch-eyebrow">
+      <span class="label gold-pill">SONDRI WATCH · watch.sondri.ai</span>
+      <span class="label muted-kicker">
+        <span class="i18n-en">AI Search &amp; Answer-Engine Visibility</span>
+        <span class="i18n-es">Visibilidad en ChatGPT, Gemini y Google AI</span>
+      </span>
+    </div>
+
+    <div class="sec-head">
+      <div>
+        <h2 class="h2">
+          <span class="i18n-en">Does AI name your business when a buyer asks<span class="gdot">?</span></span>
+          <span class="i18n-es">¿La IA nombra a su empresa cuando un cliente pregunta<span class="gdot">?</span></span>
+        </h2>
+      </div>
+      <div class="intro">
+        <p class="lede">
+          <span class="i18n-en">
+            On <strong>sondri.ai</strong> we build custom internal software and AI automation. Through <strong>Sondri Watch</strong> (watch.sondri.ai), we measure whether ChatGPT, Gemini, and Google AI recommend you externally—and ship the monthly schema, listing, and FAQ fixes.
+          </span>
+          <span class="i18n-es">
+            En <strong>sondri.ai</strong> desarrollamos software e IA a medida. Con <strong>Sondri Watch</strong> (watch.sondri.ai) medimos si ChatGPT, Gemini y la IA de Google lo recomiendan ante sus clientes y ejecutamos las correcciones cada mes.
+          </span>
+        </p>
+      </div>
+    </div>
+
+    <div class="rule-cols cols-3 pillars">
+      <div data-reveal>
+        <p class="label p-idx">
+          <span class="i18n-en">01 · Free AI Visibility Score</span>
+          <span class="i18n-es">01 · Diagnóstico Gratis (0–100)</span>
+        </p>
+        <p class="n kpi">01</p>
+        <p class="body-s">
+          <span class="i18n-en">Test 3 buyer prompts live alongside OAI-SearchBot, Googlebot, JSON-LD schema, and full Google PageSpeed CWV health—with an instant PDF download.</span>
+          <span class="i18n-es">Pruebe 3 preguntas de compra en vivo junto a rastreadores IA, schema JSON-LD y métricas completas de Google PageSpeed con informe PDF al instante.</span>
+        </p>
+      </div>
+
+      <div data-reveal style="transition-delay:80ms">
+        <p class="label p-idx">
+          <span class="i18n-en">02 · Sprints &amp; Industry Packs</span>
+          <span class="i18n-es">02 · Sprints y Packs Verticales</span>
+        </p>
+        <p class="n kpi">02</p>
+        <p class="body-s">
+          <span class="i18n-en">Start with a $99 15-question multi-engine baseline, claim your business in OpenAI &amp; Bing ($249), or deploy done-for-you schema &amp; vertical packs ($349–$499).</span>
+          <span class="i18n-es">Comience con la auditoría de 15 preguntas ($99), reclame OpenAI y Bing ($249) o implemente packs por industria para clínicas, estudios y Shopify ($349–$499).</span>
+        </p>
+      </div>
+
+      <div data-reveal style="transition-delay:160ms">
+        <p class="label p-idx">
+          <span class="i18n-en">03 · Sondri Watch ($149–$399/mo)</span>
+          <span class="i18n-es">03 · Monitoreo Watch ($149–$399/mes)</span>
+        </p>
+        <p class="n kpi">03</p>
+        <p class="body-s">
+          <span class="i18n-en">Weekly 4-engine prompt tracking across 25 or 75 frozen buyer prompts, live monthly competitor reports, and 1 implemented AEO fix shipped every month.</span>
+          <span class="i18n-es">Seguimiento semanal en 4 motores de IA (25 o 75 prompts fijos), reporte mensual de competidores y 1 corrección técnica implementada cada mes.</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="cta-bar">
+      <a class="btn btn-gold" href={prefix}>
+        <span class="i18n-en">Launch Sondri Watch &amp; Free Score</span>
+        <span class="i18n-es">Ir a Sondri Watch y Score Gratis</span>
+        <span class="arr">→</span>
+      </a>
+      <a class="btn btn-outline-light" href={`${prefix}/sample-report/`}>
+        <span class="i18n-en">View Sample Monthly Report</span>
+        <span class="i18n-es">Ver Reporte Mensual de Ejemplo</span>
+      </a>
+      <a class="label watch-partner-link" href={`${prefix}/partners/`}>
+        <span class="i18n-en">Agencies: white-label options →</span>
+        <span class="i18n-es">Agencias: programa marca blanca →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .i18n-es {
+    display: none;
+  }
+  :global(html[lang='es']) .i18n-en {
+    display: none;
+  }
+  :global(html[lang='es']) .i18n-es {
+    display: inline;
+  }
+
+  .watch-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--s-16);
+    flex-wrap: wrap;
+    margin-bottom: var(--s-24);
+  }
+
+  .gold-pill {
+    background: var(--gold);
+    color: var(--teal);
+    padding: 5px 10px;
+    font-weight: 700;
+  }
+
+  .muted-kicker {
+    color: var(--steel);
+  }
+
+  .pillars > * {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-24);
+    min-height: 240px;
+  }
+
+  .p-idx {
+    color: var(--text-hi);
+  }
+
+  .p-idx::before {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 10px;
+    vertical-align: 1px;
+    background: var(--gold);
+  }
+
+  .n {
+    font-size: clamp(48px, 5vw, 72px);
+    color: var(--gold);
+    margin-top: auto;
+  }
+
+  .body-s {
+    max-width: 36ch;
+    color: var(--pale);
+    font-size: 15px;
+    line-height: 22px;
+  }
+
+  .cta-bar {
+    padding-top: var(--s-64);
+    display: flex;
+    align-items: center;
+    gap: var(--s-24);
+    flex-wrap: wrap;
+  }
+
+  .btn-outline-light {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--white);
+  }
+  .btn-outline-light:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .watch-partner-link {
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid var(--gold);
+  }
+</style>

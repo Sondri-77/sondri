@@ -8,5 +8,20 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 # Shared Secret Key for authorizing Worker API calls from curl/admin script
 API_KEY=sondri_dev_secret_key_123
 
-# Optional: Discord Webhook URL for payment alerts
+# Optional: Discord Webhook URL for payment & AEO lead alerts
 DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
+
+# Optional: Google Sheets Apps Script Webhook URL
+GOOGLE_SHEETS_WEBHOOK_URL=https://script.google.com/macros/s/.../exec
+
+# Google AI Studio Gemini API Key (for AEO Mini Audit prompt extraction & Google Search grounding)
+GEMINI_API_KEY=AIzaSy...
+
+# Optional: Google Cloud API Key for higher PageSpeed Insights / Lighthouse quota
+PAGESPEED_API_KEY=
+
+# Optional: Cloudflare Turnstile Secret Key for bot protection on live AI checks
+TURNSTILE_SECRET_KEY=
+
+# Optional: Max live AI visibility audits per UTC day before graceful fallback (default: 50)
+DAILY_AUDIT_CAP=50

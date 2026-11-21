@@ -1,0 +1,949 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+
+<Base
+  title="Watch Billing & Subscriptions — Sondri"
+  description="Internal operational dashboard for Sondri Watch orders, abandoned checkouts, customers, and active subscriptions."
+  noindex
+  hideChrome
+>
+  <header class="admin-topbar on-dark">
+    <div class="admin-topbar-in">
+      <div class="topbar-brand">
+        <a href="/watch/" class="topbar-home" aria-label="Return to Sondri Watch">
+          <img src="/brand/florexa-white-gold.svg" alt="Sondri" width="952" height="367" class="topbar-logo" />
+        </a>
+        <span class="topbar-sep" aria-hidden="true">/</span>
+        <span class="topbar-scope">WATCH ADMIN</span>
+      </div>
+
+      <div class="topbar-session">
+        <span id="adminSessionPill" class="session-pill">
+          <span class="session-dot" aria-hidden="true"></span>
+          <span id="adminSessionText">Checking session…</span>
+        </span>
+        <a
+          id="btnSignOutAdmin"
+          href="/cdn-cgi/access/logout"
+          class="btn btn-outline-light signout-btn"
+          hidden
+        >
+          Sign out <span class="arr" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <section class="section on-dark admin-section">
+    <div class="wrap">
+      <div class="admin-head">
+        <h1 class="h2 admin-title">Watch Billing &amp; Subscriptions<span class="gdot">.</span></h1>
+        <p class="body-s admin-sub">
+          Protected by Cloudflare Access &amp; same-origin Worker proxy over Cloudflare D1 (<code>customers</code>, <code>orders</code>, <code>subscriptions</code>).
+        </p>
+      </div>
+
+      <div id="adminErrorBanner" class="error-banner" role="alert" hidden>
+        <div class="error-copy">
+          <strong class="error-title" id="adminErrorTitle">Unable to load billing data</strong>
+          <p class="body-s error-msg" id="adminErrorMsg"></p>
+        </div>
+        <button type="button" id="btnRetryAdmin" class="btn btn-gold btn-sm">Retry ↻</button>
+      </div>
+
+      <!-- Dashboard Workspace -->
+      <div id="adminWorkspace">
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <span class="label kpi-l">Paid Revenue</span>
+            <strong class="kpi-v" id="kpiRevenue">—</strong>
+          </div>
+          <div class="kpi-card">
+            <span class="label kpi-l">Paid Orders</span>
+            <strong class="kpi-v" id="kpiPaidOrders">—</strong>
+          </div>
+          <div class="kpi-card">
+            <span class="label kpi-l">Active Subscriptions / MRR</span>
+            <strong class="kpi-v" id="kpiMrr">—</strong>
+          </div>
+          <div class="kpi-card">
+            <span class="label kpi-l">Abandoned / Started</span>
+            <strong class="kpi-v warn" id="kpiAbandoned">—</strong>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="tab-bar" role="tablist" aria-label="Billing views">
+            <button type="button" role="tab" aria-selected="true" class="tab-btn is-active" data-admin-tab="orders">Orders</button>
+            <button type="button" role="tab" aria-selected="false" class="tab-btn" data-admin-tab="subscriptions">Subscriptions</button>
+            <button type="button" role="tab" aria-selected="false" class="tab-btn" data-admin-tab="customers">Customers</button>
+          </div>
+
+          <div class="filter-bar">
+            <select id="adminStatusFilter" class="admin-select" aria-label="Filter by status">
+              <option value="">All statuses</option>
+              <option value="paid">Paid</option>
+              <option value="expired">Expired / Abandoned</option>
+              <option value="checkout_started">Checkout Started</option>
+              <option value="refunded">Refunded</option>
+            </select>
+            <input
+              type="search"
+              id="adminSearchInput"
+              class="admin-input admin-search"
+              placeholder="Search email, name, domain, SKU…"
+              aria-label="Search records"
+            />
+            <button type="button" id="btnRefreshAdmin" class="btn btn-outline-light btn-sm">Refresh ↻</button>
+            <button type="button" id="btnExportCsv" class="btn btn-outline-light btn-sm">Export CSV ↓</button>
+          </div>
+        </div>
+
+        <!-- Orders View -->
+        <div id="viewOrders">
+          <div tabindex="0" role="region" aria-labelledby="ordersCaption" class="table-wrapper">
+            <table class="data-table orders-table">
+              <caption id="ordersCaption" class="visually-hidden">Orders and checkout intake records</caption>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Customer</th>
+                  <th>Offer SKU</th>
+                  <th>Domain &amp; Scope</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Docs</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTbody">
+                <tr><td colspan="7" class="empty-cell">Loading orders…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Subscriptions View -->
+        <div id="viewSubscriptions" hidden>
+          <div tabindex="0" role="region" aria-labelledby="subsCaption" class="table-wrapper">
+            <table class="data-table subs-table">
+              <caption id="subsCaption" class="visually-hidden">Active and historical recurring subscriptions</caption>
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Plan / SKU</th>
+                  <th>Domain</th>
+                  <th>MRR</th>
+                  <th>Status</th>
+                  <th>Current Period End</th>
+                  <th>Billing Portal</th>
+                </tr>
+              </thead>
+              <tbody id="subsTbody">
+                <tr><td colspan="7" class="empty-cell">Loading subscriptions…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Customers View -->
+        <div id="viewCustomers" hidden>
+          <div tabindex="0" role="region" aria-labelledby="custCaption" class="table-wrapper">
+            <table class="data-table cust-table">
+              <caption id="custCaption" class="visually-hidden">Unique customers and lifetime spend</caption>
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Name &amp; Phone</th>
+                  <th>Primary Domain</th>
+                  <th>Market / Service</th>
+                  <th>Paid Orders</th>
+                  <th>Active Subs</th>
+                  <th>Total Spent</th>
+                </tr>
+              </thead>
+              <tbody id="customersTbody">
+                <tr><td colspan="7" class="empty-cell">Loading customers…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <p id="adminStatusNote" class="body-s status-note">Connecting to same-origin /api/admin proxy…</p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const API_PREFIX = '/api/admin';
+
+  const sessionText = document.getElementById('adminSessionText') as HTMLElement;
+  const signOutLink = document.getElementById('btnSignOutAdmin') as HTMLAnchorElement;
+  const errorBanner = document.getElementById('adminErrorBanner') as HTMLElement;
+  const errorTitle = document.getElementById('adminErrorTitle') as HTMLElement;
+  const errorMsg = document.getElementById('adminErrorMsg') as HTMLElement;
+  const statusFilter = document.getElementById('adminStatusFilter') as HTMLSelectElement;
+  const searchInput = document.getElementById('adminSearchInput') as HTMLInputElement;
+  const statusNote = document.getElementById('adminStatusNote') as HTMLElement;
+
+  let activeTab: 'orders' | 'subscriptions' | 'customers' = 'orders';
+  let latestOrders: any[] = [];
+  let latestSubs: any[] = [];
+  let latestCustomers: any[] = [];
+
+  function esc(val: any): string {
+    return String(val ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function fmtMoney(cents: number | null | undefined, cur = 'usd'): string {
+    if (typeof cents !== 'number') return '—';
+    return `$${(cents / 100).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} ${cur.toUpperCase()}`;
+  }
+
+  function fmtDate(iso?: string | null): string {
+    if (!iso) return '—';
+    try {
+      return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    } catch {
+      return iso.slice(0, 10);
+    }
+  }
+
+  function statusBadge(st: string): string {
+    const clean = st.toLowerCase();
+    let cls = 'st-neutral';
+    if (clean === 'paid' || clean === 'active') cls = 'st-ok';
+    else if (clean === 'expired' || clean === 'checkout_started' || clean === 'past_due') cls = 'st-warn';
+    else if (clean === 'refunded' || clean === 'canceled' || clean === 'failed') cls = 'st-bad';
+    return `<span class="st-pill ${cls}">${esc(st)}</span>`;
+  }
+
+  async function apiFetch(path: string, init?: RequestInit) {
+    const res = await fetch(`${API_PREFIX}${path}`, {
+      ...init,
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(init?.headers || {}),
+      },
+    });
+    const text = await res.text();
+    let json: any = null;
+    try {
+      json = JSON.parse(text);
+    } catch {
+      /* non-json response */
+    }
+    if (!res.ok || !json?.success) {
+      const err = new Error(json?.error?.message || `HTTP ${res.status}`);
+      (err as any).code = json?.error?.code || `HTTP_${res.status}`;
+      throw err;
+    }
+    return json.data;
+  }
+
+  function renderTables() {
+    const ordersBody = document.getElementById('ordersTbody')!;
+    const subsBody = document.getElementById('subsTbody')!;
+    const custBody = document.getElementById('customersTbody')!;
+
+    ordersBody.innerHTML =
+      latestOrders.length === 0
+        ? `<tr><td colspan="7" class="empty-cell">No orders match your current filter.</td></tr>`
+        : latestOrders
+            .map((o) => {
+              const market = [o.city, o.service].filter(Boolean).join(' · ');
+              const docs =
+                [
+                  o.receipt_url
+                    ? `<a href="${esc(o.receipt_url)}" target="_blank" rel="noopener" class="doc-link">Receipt</a>`
+                    : '',
+                  o.invoice_url
+                    ? `<a href="${esc(o.invoice_url)}" target="_blank" rel="noopener" class="doc-link">Invoice</a>`
+                    : '',
+                ]
+                  .filter(Boolean)
+                  .join(' · ') || '—';
+              return `<tr>
+                <th scope="row">${esc(fmtDate(o.created_at))}</th>
+                <td><strong>${esc(o.customer_name || 'Client')}</strong><br><span class="sub-cell">${esc(o.customer_email)}${o.customer_phone ? ` · ${esc(o.customer_phone)}` : ''}</span></td>
+                <td><code>${esc(o.offer_sku)}</code><br><span class="sub-cell">${esc(o.order_type)}</span></td>
+                <td>${o.domain ? `<strong>${esc(o.domain)}</strong>` : '<span class="sub-cell">No domain yet</span>'}${market ? `<br><span class="sub-cell">${esc(market)}</span>` : ''}${o.notes ? `<br><span class="sub-cell">“${esc(o.notes)}”</span>` : ''}</td>
+                <td>${esc(fmtMoney(o.amount_cents, o.currency))}</td>
+                <td>${statusBadge(o.status)}</td>
+                <td>${docs}</td>
+              </tr>`;
+            })
+            .join('');
+
+    subsBody.innerHTML =
+      latestSubs.length === 0
+        ? `<tr><td colspan="7" class="empty-cell">No subscriptions recorded yet.</td></tr>`
+        : latestSubs
+            .map(
+              (s) => `<tr>
+                <th scope="row"><strong>${esc(s.customer_name || s.customer_email || 'Client')}</strong><br><span class="sub-cell">${esc(s.customer_email)}</span></th>
+                <td><code>${esc(s.offer_sku || 'subscription')}</code></td>
+                <td>${esc(s.domain || '—')}</td>
+                <td>${esc(fmtMoney(s.amount_cents, s.currency))}/${esc(s.interval || 'mo')}</td>
+                <td>${statusBadge(s.status)}${s.cancel_at_period_end ? ' <span class="sub-cell">(cancels eop)</span>' : ''}</td>
+                <td>${esc(fmtDate(s.current_period_end))}</td>
+                <td><button type="button" class="portal-btn label" data-portal-cust="${esc(s.stripe_customer_id)}">Copy Portal Link</button></td>
+              </tr>`
+            )
+            .join('');
+
+    custBody.innerHTML =
+      latestCustomers.length === 0
+        ? `<tr><td colspan="7" class="empty-cell">No customers recorded yet.</td></tr>`
+        : latestCustomers
+            .map(
+              (c) => `<tr>
+                <th scope="row">${esc(c.email)}</th>
+                <td><strong>${esc(c.name || '—')}</strong>${c.phone ? `<br><span class="sub-cell">${esc(c.phone)}</span>` : ''}</td>
+                <td>${esc(c.primary_domain || '—')}</td>
+                <td>${esc([c.city, c.service].filter(Boolean).join(' · ') || '—')}</td>
+                <td>${esc(c.paid_orders_count)} / ${esc(c.orders_count)}</td>
+                <td>${esc(c.active_subscriptions_count)}</td>
+                <td><strong>${esc(fmtMoney(c.total_paid_cents))}</strong></td>
+              </tr>`
+            )
+            .join('');
+
+    document.querySelectorAll<HTMLButtonElement>('[data-portal-cust]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const custId = btn.getAttribute('data-portal-cust');
+        if (!custId) return;
+        const prev = btn.textContent || '';
+        btn.disabled = true;
+        btn.textContent = 'Generating…';
+        try {
+          const data = await apiFetch(`/customers/${encodeURIComponent(custId)}/portal`, {
+            method: 'POST',
+            body: JSON.stringify({ return_url: `${window.location.origin}/watch/` }),
+          });
+          if (data.portal_url) {
+            if (navigator.clipboard?.writeText) {
+              await navigator.clipboard.writeText(data.portal_url);
+              btn.textContent = 'Copied ✓';
+            } else {
+              window.open(data.portal_url, '_blank', 'noopener');
+              btn.textContent = 'Opened ✓';
+            }
+          }
+        } catch (err: any) {
+          btn.textContent = err?.message || 'Error';
+        }
+        window.setTimeout(() => {
+          btn.disabled = false;
+          btn.textContent = prev;
+        }, 2500);
+      });
+    });
+  }
+
+  async function loadSessionInfo() {
+    try {
+      const me = await apiFetch('/me');
+      if (me?.mode === 'cloudflare_access') {
+        sessionText.textContent = me.email || 'Cloudflare Access';
+        signOutLink.hidden = false;
+      } else {
+        sessionText.textContent = 'Local dev proxy';
+        signOutLink.hidden = true;
+      }
+    } catch {
+      sessionText.textContent = 'Session pending';
+      signOutLink.hidden = true;
+    }
+  }
+
+  async function loadDashboard() {
+    errorBanner.hidden = true;
+    const status = statusFilter.value;
+    const q = searchInput.value.trim();
+    const qs = (extra: Record<string, string>) => {
+      const p = new URLSearchParams();
+      Object.entries(extra).forEach(([k, v]) => {
+        if (v) p.set(k, v);
+      });
+      const str = p.toString();
+      return str ? `?${str}` : '';
+    };
+
+    try {
+      const [ordData, subData, custData] = await Promise.all([
+        apiFetch(`/orders${qs({ status: activeTab === 'orders' ? status : '', q, limit: '200' })}`),
+        apiFetch(`/subscriptions${qs({ status: activeTab === 'subscriptions' ? status : '', q, limit: '200' })}`),
+        apiFetch(`/customers${qs({ q, limit: '200' })}`),
+      ]);
+
+      latestOrders = ordData.orders || [];
+      latestSubs = subData.subscriptions || [];
+      latestCustomers = custData.customers || [];
+      const m = ordData.metrics || {};
+
+      document.getElementById('kpiRevenue')!.textContent = fmtMoney(m.total_paid_cents || 0);
+      document.getElementById('kpiPaidOrders')!.textContent = String(m.paid_orders_count || 0);
+      document.getElementById('kpiMrr')!.textContent = `${m.active_subscriptions_count || 0} · ${fmtMoney(m.active_mrr_cents || 0)}/mo`;
+      document.getElementById('kpiAbandoned')!.textContent = String(m.abandoned_count || 0);
+
+      renderTables();
+      statusNote.textContent = `Loaded ${latestOrders.length} orders, ${latestSubs.length} subscriptions, and ${latestCustomers.length} customers via /api/admin proxy.`;
+    } catch (err: any) {
+      const code = err?.code || '';
+      errorTitle.textContent =
+        code === 'LOCAL_WORKER_OFFLINE'
+          ? 'Local billing-worker is not running'
+          : 'Unable to load billing data';
+      errorMsg.textContent = err?.message || 'Unable to reach billing backend through /api/admin.';
+      errorBanner.hidden = false;
+
+      document.getElementById('ordersTbody')!.innerHTML =
+        '<tr><td colspan="7" class="empty-cell">No data loaded yet.</td></tr>';
+      document.getElementById('subsTbody')!.innerHTML =
+        '<tr><td colspan="7" class="empty-cell">No data loaded yet.</td></tr>';
+      document.getElementById('customersTbody')!.innerHTML =
+        '<tr><td colspan="7" class="empty-cell">No data loaded yet.</td></tr>';
+      statusNote.textContent = 'Waiting for billing proxy connection.';
+    }
+  }
+
+  document.getElementById('btnRefreshAdmin')?.addEventListener('click', loadDashboard);
+  document.getElementById('btnRetryAdmin')?.addEventListener('click', async () => {
+    await loadSessionInfo();
+    await loadDashboard();
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-admin-tab]').forEach((tabBtn) => {
+    tabBtn.addEventListener('click', () => {
+      activeTab = (tabBtn.getAttribute('data-admin-tab') as any) || 'orders';
+      document.querySelectorAll<HTMLButtonElement>('[data-admin-tab]').forEach((b) => {
+        const isCurrent = b === tabBtn;
+        b.classList.toggle('is-active', isCurrent);
+        b.setAttribute('aria-selected', String(isCurrent));
+      });
+      document.getElementById('viewOrders')!.hidden = activeTab !== 'orders';
+      document.getElementById('viewSubscriptions')!.hidden = activeTab !== 'subscriptions';
+      document.getElementById('viewCustomers')!.hidden = activeTab !== 'customers';
+
+      statusFilter.innerHTML =
+        activeTab === 'orders'
+          ? '<option value="">All statuses</option><option value="paid">Paid</option><option value="expired">Expired / Abandoned</option><option value="checkout_started">Checkout Started</option><option value="refunded">Refunded</option>'
+          : activeTab === 'subscriptions'
+            ? '<option value="">All statuses</option><option value="active">Active</option><option value="past_due">Past Due</option><option value="canceled">Canceled</option>'
+            : '<option value="">All customers</option>';
+      statusFilter.disabled = activeTab === 'customers';
+      loadDashboard();
+    });
+  });
+
+  let searchDebounce: number | undefined;
+  statusFilter.addEventListener('change', loadDashboard);
+  searchInput.addEventListener('input', () => {
+    window.clearTimeout(searchDebounce);
+    searchDebounce = window.setTimeout(loadDashboard, 250);
+  });
+
+  document.getElementById('btnExportCsv')?.addEventListener('click', () => {
+    const rows =
+      activeTab === 'orders' ? latestOrders : activeTab === 'subscriptions' ? latestSubs : latestCustomers;
+    if (!rows.length) return;
+    const keys = Object.keys(rows[0]);
+    const csv = [
+      keys.join(','),
+      ...rows.map((r) => keys.map((k) => `"${String(r[k] ?? '').replace(/"/g, '""')}"`).join(',')),
+    ].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `sondri-watch-${activeTab}-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  Promise.all([loadSessionInfo(), loadDashboard()]);
+</script>
+
+<style is:global>
+  .visually-hidden:where(:not(:focus-within, :active)) {
+    position: absolute !important;
+    clip-path: inset(50%) !important;
+    overflow: hidden !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: -1px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    white-space: nowrap !important;
+  }
+</style>
+
+<style>
+  [hidden] {
+    display: none !important;
+  }
+
+  .admin-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: var(--teal-deep);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  }
+
+  .admin-topbar-in {
+    max-width: var(--wrap);
+    margin-inline: auto;
+    padding: 14px var(--pad-x);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+  }
+
+  .topbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .topbar-home {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .topbar-home:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 4px;
+  }
+
+  .topbar-logo {
+    height: 24px;
+    width: auto;
+    display: block;
+  }
+
+  .topbar-sep {
+    color: rgba(255, 255, 255, 0.36);
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+
+  .topbar-scope {
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .topbar-session {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .session-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border: 1px solid rgba(94, 234, 212, 0.35);
+    background: rgba(94, 234, 212, 0.08);
+    color: #99f6e4;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    line-height: 1;
+    letter-spacing: 0.03em;
+  }
+
+  .session-dot {
+    width: 6px;
+    height: 6px;
+    background: #5eead4;
+    flex-shrink: 0;
+  }
+
+  .signout-btn {
+    padding: 8px 14px;
+    font-size: 11.5px;
+    line-height: 14px;
+  }
+
+  .admin-section {
+    min-height: calc(100vh - 58px);
+    padding-block: var(--s-48) var(--s-64);
+  }
+
+  .admin-head {
+    margin-bottom: var(--s-32);
+  }
+
+  .admin-title {
+    margin-bottom: 8px;
+  }
+
+  .admin-sub {
+    color: #b4ccca;
+    max-width: 66ch;
+    margin: 0;
+  }
+
+  .btn-outline-light {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--white);
+  }
+
+  .btn-outline-light:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .btn-outline-light:focus-visible,
+  .tab-btn:focus-visible,
+  .admin-input:focus-visible,
+  .admin-select:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  .btn-sm {
+    min-height: 42px;
+    padding: 10px 14px;
+    font-size: 11.5px;
+    line-height: 16px;
+    white-space: nowrap;
+  }
+
+  .error-banner:not([hidden]) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--s-16);
+    padding: 16px 20px;
+    margin-bottom: var(--s-24);
+    background: var(--teal-deep);
+    border: 1px solid rgba(253, 179, 67, 0.55);
+  }
+
+  .error-copy {
+    min-width: 0;
+  }
+
+  .error-title {
+    display: block;
+    color: var(--gold);
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  .error-msg {
+    color: #e4efed;
+    margin: 0;
+  }
+
+  .admin-input,
+  .admin-select {
+    height: 42px;
+    background: var(--teal-deep);
+    border: 1px solid var(--line);
+    color: var(--white);
+    font-family: var(--sans);
+    font-size: 13.5px;
+    padding: 9px 12px;
+  }
+
+  .admin-select {
+    flex: 0 1 190px;
+    min-width: 165px;
+  }
+
+  .admin-search {
+    flex: 1 1 220px;
+    min-width: 200px;
+    max-width: 280px;
+  }
+
+  .admin-input::placeholder {
+    color: #88aaa7;
+    opacity: 1;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-16);
+    margin-bottom: var(--s-32);
+  }
+
+  .kpi-card {
+    background: var(--teal-deep);
+    border: 1px solid var(--line);
+    padding: var(--s-24);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .kpi-l {
+    color: #b4ccca;
+  }
+
+  .kpi-v {
+    font-size: clamp(22px, 2.5vw, 30px);
+    color: var(--white);
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .kpi-v.warn {
+    color: var(--gold);
+  }
+
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px var(--s-16);
+    margin-bottom: var(--s-24);
+  }
+
+  .tab-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    min-height: 42px;
+    background: var(--teal-deep);
+    border: 1px solid var(--line);
+    color: #c9dad7;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    cursor: pointer;
+  }
+
+  .tab-btn.is-active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--teal);
+    font-weight: 700;
+  }
+
+  .filter-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  /* Responsive Table (modern-web-guidance pattern) */
+  .table-wrapper {
+    overflow: auto;
+    max-inline-size: 100%;
+    max-block-size: min(560px, 75vh);
+    container-type: inline-size;
+    border: 1px solid var(--line);
+    background: var(--teal-deep);
+    scrollbar-color: rgba(253, 179, 67, 0.45) var(--teal-deep);
+    scrollbar-width: thin;
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13.5px;
+    text-align: left;
+  }
+
+  .data-table thead {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 2;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+    color: var(--white);
+  }
+
+  .data-table thead th {
+    background: var(--teal);
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+
+  .data-table tbody th {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: 1;
+    background: var(--teal-deep);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  :global(.sub-cell) {
+    color: #b4ccca;
+    font-size: 12px;
+  }
+
+  :global(.doc-link) {
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(253, 179, 67, 0.5);
+  }
+
+  :global(.portal-btn) {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--gold);
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  :global(.st-pill) {
+    display: inline-block;
+    padding: 3px 7px;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    border: 1px solid currentColor;
+  }
+
+  :global(.st-ok) { color: #5eead4; }
+  :global(.st-warn) { color: var(--gold); }
+  :global(.st-bad) { color: #fca5a5; }
+  :global(.st-neutral) { color: var(--pale); }
+
+  :global(.empty-cell) {
+    text-align: center;
+    padding: var(--s-32) !important;
+    color: #b4ccca !important;
+  }
+
+  .orders-table {
+    --label-2: "Customer";
+    --label-3: "Offer SKU";
+    --label-4: "Domain & Scope";
+    --label-5: "Amount";
+    --label-6: "Status";
+    --label-7: "Docs";
+  }
+
+  .subs-table {
+    --label-2: "Plan";
+    --label-3: "Domain";
+    --label-4: "MRR";
+    --label-5: "Status";
+    --label-6: "Period End";
+    --label-7: "Portal";
+  }
+
+  .cust-table {
+    --label-2: "Name";
+    --label-3: "Domain";
+    --label-4: "Market";
+    --label-5: "Orders";
+    --label-6: "Active Subs";
+    --label-7: "Spent";
+  }
+
+  @container (width < 680px) {
+    .data-table,
+    .data-table thead,
+    .data-table tbody,
+    .data-table tr,
+    .data-table th,
+    .data-table td {
+      display: block;
+    }
+
+    .data-table thead {
+      display: none;
+    }
+
+    .data-table tr {
+      margin-block-end: 16px;
+      border-bottom: 2px solid var(--line);
+    }
+
+    .data-table tbody th {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 2;
+      background: var(--teal);
+      color: var(--gold);
+    }
+
+    .data-table td::before {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      text-transform: uppercase;
+      color: #b4ccca;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .data-table td:nth-child(2)::before { content: var(--label-2) ": "; }
+    .data-table td:nth-child(3)::before { content: var(--label-3) ": "; }
+    .data-table td:nth-child(4)::before { content: var(--label-4) ": "; }
+    .data-table td:nth-child(5)::before { content: var(--label-5) ": "; }
+    .data-table td:nth-child(6)::before { content: var(--label-6) ": "; }
+    .data-table td:nth-child(7)::before { content: var(--label-7) ": "; }
+  }
+
+  .status-note {
+    color: #b4ccca;
+    margin-top: var(--s-16);
+  }
+
+  @media (max-width: 960px) {
+    .kpi-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .filter-bar {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .kpi-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .admin-select,
+    .admin-search {
+      flex: 1 1 100%;
+      max-width: none;
+    }
+  }
+</style>

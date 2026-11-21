@@ -1,0 +1,534 @@
+---
+import type { Lang } from '../../i18n';
+import WatchShell from './WatchShell.astro';
+import WatchHeroBg from './WatchHeroBg.astro';
+import { getWatchGuides, type WatchGuideEntry } from '../../data/watch-content';
+
+interface Props {
+  lang?: Lang;
+  slug: string;
+}
+
+const { lang = 'en', slug } = Astro.props;
+const isEs = lang === 'es';
+const prefix = isEs ? '/es/watch' : '/watch';
+const allGuides = getWatchGuides(lang);
+const guide: WatchGuideEntry =
+  allGuides.find((g) => g.slug === slug) || allGuides[0];
+
+const alternates = {
+  en: `/watch/guides/${guide.slug}/`,
+  es: `/es/watch/guides/${guide.slug}/`,
+};
+
+const siteUrl = Astro.site ? Astro.site.origin : 'https://sondri.ai';
+const pageUrl = `${siteUrl}${prefix}/guides/${guide.slug}/`;
+
+const jsonLdGraph = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Article',
+      '@id': `${pageUrl}#article`,
+      headline: guide.title,
+      description: guide.heroSummary,
+      url: pageUrl,
+      author: {
+        '@type': 'Organization',
+        name: 'Sondri',
+        url: 'https://sondri.ai',
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Sondri Watch',
+        url: 'https://watch.sondri.ai',
+      },
+      inLanguage: isEs ? 'es' : 'en',
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: guide.faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: f.a,
+        },
+      })),
+    },
+  ],
+};
+
+const relatedGuides = allGuides.filter((g) => g.slug !== guide.slug).slice(0, 4);
+---
+
+<WatchShell
+  title={`${guide.title} — Sondri Watch Guide | watch.sondri.ai`}
+  description={guide.heroSummary}
+  lang={lang}
+  activeTab="guides"
+  alternates={alternates}
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLdGraph)} />
+
+  <!-- GUIDE HERO (on-dark) -->
+  <section class="section section-pad on-dark gd-hero watch-banner-edge" data-watch-hero>
+    <WatchHeroBg variant="banner" />
+    <div class="wrap">
+      <nav class="gd-crumb label" aria-label="Breadcrumb">
+        <a href={`${prefix}/`}>{isEs ? 'Inicio Watch' : 'Watch Overview'}</a>
+        <span aria-hidden="true">/</span>
+        <a href={`${prefix}/guides/`}>{isEs ? 'Guías' : 'Guides'}</a>
+        <span aria-hidden="true">/</span>
+        <span class="crumb-cur">{guide.readTime}</span>
+      </nav>
+
+      <div class="gd-hero-split">
+        <div>
+          <span class="label gold-pill">SONDRI WATCH GUIDE · {guide.readTime.toUpperCase()}</span>
+          <h1 class="h1 gd-h1">{guide.title}<span class="gdot">.</span></h1>
+          <p class="lede gd-lede">{guide.heroSummary}</p>
+        </div>
+
+        <aside class="takeaway-box">
+          <span class="label tk-kicker">{isEs ? 'PUNTOS CLAVE' : 'KEY TAKEAWAYS'}</span>
+          <ul class="tk-list">
+            {guide.keyTakeaways.map((tk) => (
+              <li>{tk}</li>
+            ))}
+          </ul>
+          <a href={`${prefix}/#free-check`} class="btn btn-gold tk-btn">
+            {isEs ? 'Probar Test Gratis (3 Preguntas)' : 'Run Free 3-Question Check'} <span class="arr">→</span>
+          </a>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLAIN-ENGLISH SECTIONS + CHECKLIST (on-paper) -->
+  <section class="section section-pad on-paper">
+    <div class="wrap">
+      <div class="gd-body-grid">
+        <div class="gd-articles">
+          {guide.sections.map((sec, idx) => (
+            <article class="gd-sec-block">
+              <span class="label sec-num">0{idx + 1}</span>
+              <h2 class="h4 gd-sec-h">{sec.heading}</h2>
+              <p class="body gd-sec-p">{sec.body}</p>
+            </article>
+          ))}
+        </div>
+
+        <aside class="gd-check-aside">
+          <span class="label chk-kicker">{guide.checklistTitle}</span>
+          <ul class="chk-list">
+            {guide.checklistItems.map((ci) => (
+              <li>{ci}</li>
+            ))}
+          </ul>
+          <div class="chk-actions">
+            <button type="button" class="btn btn-gold chk-btn" data-watch-checkout="aeo_full_audit">
+              <span data-btn-label>{isEs ? 'Solicitar Auditoría 15 Preguntas ($99)' : 'Order Full 15-Question Audit ($99)'}</span> <span class="arr">→</span>
+            </button>
+            <a href={`${prefix}/pricing/`} class="label chk-link">
+              {isEs ? 'Ver planes Watch y Sitios Web →' : 'See Watch plans & websites →'}
+            </a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- GUIDE FAQ (on-off) -->
+  <section class="section section-pad on-off">
+    <div class="wrap">
+      <div class="faq-grid">
+        <div>
+          <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> FAQ</span>
+          <h2 class="h2">
+            {isEs ? (
+              <>Dudas sobre <em class="serif-em">esta guía.</em></>
+            ) : (
+              <>Quick <em class="serif-em">answers.</em></>
+            )}
+          </h2>
+        </div>
+
+        <div class="faq-list">
+          {guide.faqs.map((item, idx) => (
+            <div class="faq-item">
+              <button
+                type="button"
+                class="faq-trigger"
+                data-gd-faq={String(idx)}
+                aria-expanded="false"
+                aria-controls={`gd-faq-ans-${idx}`}
+              >
+                <span class="faq-q">{item.q}</span>
+                <span class="faq-plus" aria-hidden="true">+</span>
+              </button>
+              <div class="faq-panel" id={`gd-faq-ans-${idx}`} hidden>
+                <p class="body-s faq-a">{item.a}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MORE GUIDES (on-dark) -->
+  <section class="section section-pad on-dark">
+    <div class="wrap">
+      <div class="rel-head">
+        <span class="label gold-pill">{isEs ? 'MÁS GUÍAS EN LENGUAJE CLARO' : 'MORE PLAIN-ENGLISH GUIDES'}</span>
+        <a href={`${prefix}/guides/`} class="label text-link">
+          {isEs ? 'Ver las 8 guías →' : 'View all 8 guides →'}
+        </a>
+      </div>
+
+      <div class="rel-grid">
+        {relatedGuides.map((rg) => (
+          <a href={`${prefix}/guides/${rg.slug}/`} class="rel-card">
+            <span class="label rel-rt">{rg.readTime}</span>
+            <h3 class="h5">{rg.title}</h3>
+            <p class="body-s rel-desc">{rg.cardDesc}</p>
+            <span class="label rel-cta">{isEs ? 'Leer guía →' : 'Read the guide →'}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</WatchShell>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-gd-faq]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const idx = btn.getAttribute('data-gd-faq');
+      const panel = document.getElementById(`gd-faq-ans-${idx}`);
+      const isOpen = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!isOpen));
+      btn.closest('.faq-item')?.classList.toggle('is-open', !isOpen);
+      if (panel) panel.hidden = isOpen;
+    });
+  });
+</script>
+
+<style>
+  .gd-hero {
+    padding-top: var(--s-40);
+    padding-bottom: var(--s-64);
+  }
+
+  .gd-crumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: var(--s-24);
+    color: var(--steel);
+  }
+
+  .gd-crumb a {
+    color: var(--pale);
+    text-decoration: none;
+  }
+
+  .gd-crumb a:hover,
+  .crumb-cur {
+    color: var(--gold);
+  }
+
+  .gd-hero-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: var(--s-40);
+    align-items: start;
+  }
+
+  .gold-pill {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--teal);
+    padding: 5px 10px;
+    font-weight: 700;
+    margin-bottom: var(--s-16);
+  }
+
+  .gd-h1 {
+    font-size: clamp(34px, 4.2vw, 54px);
+    line-height: 1.06;
+    margin-bottom: var(--s-16);
+  }
+
+  .gd-lede {
+    max-width: 52ch;
+  }
+
+  .takeaway-box {
+    background: rgba(3, 25, 25, 0.94);
+    border: 1px solid var(--line);
+    box-shadow: 8px 8px 0 var(--gold);
+    padding: var(--s-24);
+  }
+
+  .tk-kicker {
+    display: block;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+
+  .tk-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: var(--white);
+    font-size: 14.5px;
+    line-height: 1.45;
+    margin-bottom: var(--s-20);
+  }
+
+  .tk-list li::before {
+    content: '■ ';
+    color: var(--gold);
+    font-size: 10px;
+  }
+
+  .tk-btn {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .gd-body-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+    gap: var(--s-48);
+    align-items: start;
+  }
+
+  .gd-articles {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-32);
+  }
+
+  .gd-sec-block {
+    background: var(--white);
+    border: 1px solid var(--line);
+    box-shadow: 5px 5px 0 var(--teal);
+    padding: var(--s-24);
+  }
+
+  .sec-num {
+    display: block;
+    color: var(--gold-2);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .gd-sec-h {
+    color: var(--teal);
+    margin-bottom: 10px;
+  }
+
+  .gd-sec-p {
+    color: var(--pale);
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  .gd-check-aside {
+    background: var(--teal);
+    color: var(--white);
+    padding: var(--s-24);
+    border: 1px solid var(--teal);
+    box-shadow: 8px 8px 0 var(--gold-2);
+    position: sticky;
+    top: 100px;
+  }
+
+  .chk-kicker {
+    display: block;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+
+  .chk-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 14.5px;
+    line-height: 1.45;
+    margin-bottom: var(--s-24);
+  }
+
+  .chk-list li::before {
+    content: '✓ ';
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  .chk-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .chk-btn {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .chk-link {
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid var(--gold);
+    align-self: flex-start;
+  }
+
+  .dot-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--steel);
+    margin-bottom: 12px;
+  }
+
+  .dot-gold {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold-2);
+    display: inline-block;
+  }
+
+  .faq-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+    gap: var(--s-48);
+    align-items: start;
+  }
+
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .faq-item {
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .faq-trigger {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    padding: 18px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    text-align: left;
+    cursor: pointer;
+    color: var(--teal);
+  }
+
+  .faq-q {
+    font-size: 17.5px;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .faq-plus {
+    font-size: 22px;
+    font-family: var(--mono);
+    color: var(--teal-mid);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .faq-item.is-open .faq-plus {
+    transform: rotate(45deg);
+    color: var(--gold-2);
+  }
+
+  .faq-panel {
+    padding-bottom: 18px;
+  }
+
+  .faq-a {
+    color: var(--pale);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .rel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: var(--s-24);
+  }
+
+  .text-link {
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid var(--gold);
+  }
+
+  .rel-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .rel-card {
+    background: rgba(3, 25, 25, 0.9);
+    border: 1px solid var(--line-soft);
+    padding: 20px;
+    text-decoration: none;
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: border-color 0.2s ease;
+  }
+
+  .rel-card:hover {
+    border-color: var(--gold);
+  }
+
+  .rel-rt {
+    color: var(--steel);
+    font-size: 10px;
+  }
+
+  .rel-desc {
+    color: var(--pale);
+    font-size: 13.5px;
+    line-height: 1.45;
+  }
+
+  .rel-cta {
+    margin-top: auto;
+    padding-top: 8px;
+    color: var(--gold);
+    font-size: 11px;
+  }
+
+  @media (max-width: 960px) {
+    .gd-hero-split,
+    .gd-body-grid,
+    .faq-grid,
+    .rel-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .gd-check-aside {
+      position: static;
+    }
+  }
+</style>

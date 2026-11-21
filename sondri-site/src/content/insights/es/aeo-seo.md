@@ -76,4 +76,4 @@ Las reservas en plataformas cuestan lo mismo siempre. La visibilidad propia func
 
 En destinos muy demandados esto es urgente: cuando sube la demanda, las plataformas cobran su porcentaje sobre todo el volumen. Los operadores que construyen su propia visibilidad se quedan con ese margen.
 
-Si opera tours o experiencias turísticas y quiere saber cómo aparece hoy frente a buscadores y asistentes de IA, con gusto lo revisamos.
+Si quiere comprobar hoy cómo aparece su negocio frente a ChatGPT, Gemini y Google AI, haga una prueba gratuita de 60 segundos o explore nuestros planes de visibilidad IA y sitios web en **[Sondri Watch (`/es/watch/`)](/es/watch/)**.

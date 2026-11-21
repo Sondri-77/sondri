@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import { BOOK_HREF, CONTACT_EMAIL } from '../data';
 ---
 
 <Base
@@ -14,12 +15,31 @@ import Base from '../layouts/Base.astro';
           <span class="chip"><span class="gdot">■</span> Payment confirmed</span>
         </div>
 
-        <h1 class="h2 success-title">Thank you for your payment<span class="gdot">.</span></h1>
+        <h1 class="h2 success-title" id="successTitle">Thank you for your payment<span class="gdot">.</span></h1>
 
-        <p class="lede success-lede">
+        <p class="lede success-lede" id="successLede">
           Your payment has been successfully processed by Stripe. A confirmation email with your
           tax invoice and receipt has been dispatched to your email address.
         </p>
+
+        <dl id="orderSummaryBox" class="summary-box" hidden>
+          <div class="summary-row">
+            <dt class="label">Order</dt>
+            <dd id="sumOffer">—</dd>
+          </div>
+          <div class="summary-row" id="sumDomainRow" hidden>
+            <dt class="label">Website / Domain</dt>
+            <dd id="sumDomain">—</dd>
+          </div>
+          <div class="summary-row">
+            <dt class="label">Billing Email</dt>
+            <dd id="sumEmail">—</dd>
+          </div>
+          <div class="summary-row">
+            <dt class="label">Amount Paid</dt>
+            <dd id="sumAmount">—</dd>
+          </div>
+        </dl>
 
         <div id="downloadsContainer" class="action-wrapper" style="display: none;">
           <a id="btnReceipt" href="#" target="_blank" rel="noopener" class="btn btn-gold btn-full">
@@ -27,9 +47,27 @@ import Base from '../layouts/Base.astro';
           </a>
         </div>
 
-        <div class="back-link">
-          <a href="/" class="btn">← Return to homepage</a>
+        <div class="next-steps">
+          <span class="label next-kicker">What happens next</span>
+          <ul class="next-list">
+            <li>Stripe dispatches your Sondri-branded receipt &amp; PDF invoice to your email.</li>
+            <li>Our team reviews your domain, market, and notes stored with your order.</li>
+            <li>Want to walk through goals or grant access live? Book a quick 15-min kickoff below.</li>
+          </ul>
         </div>
+
+        <div class="actions-foot">
+          <a href={BOOK_HREF} class="btn btn-outline-light">
+            Book 15-min Kickoff Call <span class="arr">→</span>
+          </a>
+          <a id="btnReturnHome" href="/watch/" class="btn btn-outline-light">
+            ← Return to Sondri Watch
+          </a>
+        </div>
+
+        <p class="body-s support-note">
+          Need to update billing details or have questions? Email <a href={`mailto:${CONTACT_EMAIL}`} class="mail-inline">{CONTACT_EMAIL}</a>.
+        </p>
       </div>
     </div>
   </section>
@@ -43,18 +81,80 @@ import Base from '../layouts/Base.astro';
   async function loadTransactionDocs() {
     const urlParams = new URLSearchParams(window.location.search);
     const sessionId = urlParams.get('session_id');
+    const checkoutType = urlParams.get('type');
+    const returnLink = document.getElementById('btnReturnHome') as HTMLAnchorElement | null;
+
+    const isWatchType =
+      checkoutType === 'aeo_audit' ||
+      checkoutType === 'aeo_full_audit' ||
+      Boolean(
+        checkoutType &&
+          (checkoutType.startsWith('watch_') ||
+            checkoutType.startsWith('website_') ||
+            ['listings_sprint', 'clinicas_pack', 'law_pack', 'shopify_check', 'fix_sprint', 'agency_pilot_audit', 'agency_reaudit', 'portfolio_snapshot'].includes(checkoutType))
+      );
+
+    if (returnLink && !isWatchType) {
+      returnLink.href = '/';
+      returnLink.textContent = '← Return to homepage';
+    }
+
+    if (checkoutType === 'aeo_audit' || checkoutType === 'aeo_full_audit') {
+      const ledeEl = document.getElementById('successLede');
+      if (ledeEl) {
+        ledeEl.textContent =
+          'Your $99 Full AEO / GEO Audit is confirmed. We have queued your 12–15 unbranded buyer questions across ChatGPT, Gemini, Google AI Overviews, and Google AI Mode (3 runs per engine) and will email your full report and prioritized fix list.';
+      }
+    } else if (isWatchType) {
+      const ledeEl = document.getElementById('successLede');
+      if (ledeEl) {
+        ledeEl.textContent =
+          'Your Sondri Watch order is confirmed. Our team has saved your contact, domain, and project scope details and will follow up with your onboarding schedule.';
+      }
+    }
 
     if (!sessionId) return;
 
     try {
-      const res = await fetch(`${WORKER_BASE}/checkout-session/${sessionId}`);
+      const res = await fetch(`${WORKER_BASE}/checkout-session/${encodeURIComponent(sessionId)}`);
       const json = await res.json();
 
       if (json.success && json.data) {
-        const { receipt_url, invoice_url, invoice_pdf } = json.data;
+        const {
+          receipt_url,
+          invoice_url,
+          invoice_pdf,
+          description,
+          offer_sku,
+          domain,
+          customer_email,
+          amount_total,
+          currency,
+        } = json.data;
+
+        const summaryBox = document.getElementById('orderSummaryBox');
+        const sumOffer = document.getElementById('sumOffer');
+        const sumDomainRow = document.getElementById('sumDomainRow');
+        const sumDomain = document.getElementById('sumDomain');
+        const sumEmail = document.getElementById('sumEmail');
+        const sumAmount = document.getElementById('sumAmount');
+
+        if (summaryBox && sumOffer && sumEmail && sumAmount) {
+          sumOffer.textContent = description || offer_sku || 'Sondri Order';
+          if (domain && sumDomainRow && sumDomain) {
+            sumDomain.textContent = domain;
+            sumDomainRow.hidden = false;
+          }
+          sumEmail.textContent = customer_email || '—';
+          sumAmount.textContent =
+            typeof amount_total === 'number'
+              ? `$${(amount_total / 100).toFixed(2)} ${(currency || 'usd').toUpperCase()}`
+              : '—';
+          summaryBox.hidden = false;
+        }
+
         const container = document.getElementById('downloadsContainer');
         const btnReceipt = document.getElementById('btnReceipt') as HTMLAnchorElement;
-
         const targetUrl = receipt_url || invoice_url || invoice_pdf;
 
         if (targetUrl && btnReceipt && container) {
@@ -82,17 +182,17 @@ import Base from '../layouts/Base.astro';
   }
 
   .success-card {
-    max-width: 640px;
+    max-width: 660px;
     margin: 0 auto;
     padding: var(--s-48);
     background: var(--teal-deep);
     border: 1px solid var(--line);
     box-shadow: 10px 10px 0 var(--gold);
-    text-align: center;
+    text-align: left;
   }
 
   .status-chip {
-    margin-bottom: var(--s-24);
+    margin-bottom: var(--s-16);
   }
 
   .success-title {
@@ -100,8 +200,45 @@ import Base from '../layouts/Base.astro';
   }
 
   .success-lede {
-    margin-bottom: var(--s-32);
+    margin-bottom: var(--s-24);
     color: var(--pale);
+  }
+
+  .summary-box:not([hidden]) {
+    border: 1px solid var(--line-soft);
+    background: rgba(255, 255, 255, 0.03);
+    padding: 16px 20px;
+    margin: 0 0 var(--s-24);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--s-16);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 8px;
+  }
+
+  .summary-row:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .summary-row dt {
+    color: #b4ccca;
+    flex-shrink: 0;
+  }
+
+  .summary-row dd {
+    margin: 0;
+    color: var(--white);
+    font-weight: 500;
+    text-align: right;
+    word-break: break-word;
   }
 
   .action-wrapper {
@@ -113,13 +250,72 @@ import Base from '../layouts/Base.astro';
     justify-content: center;
   }
 
-  .back-link {
-    margin-top: var(--s-24);
+  .next-steps {
+    padding: 16px 20px;
+    border: 1px solid rgba(253, 179, 67, 0.38);
+    background: rgba(253, 179, 67, 0.06);
+    margin-bottom: var(--s-24);
+  }
+
+  .next-kicker {
+    display: block;
+    color: var(--gold);
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  .next-list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--pale);
+    font-size: 14px;
+    line-height: 1.55;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .actions-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: var(--s-16);
+  }
+
+  .btn-outline-light {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--white);
+  }
+
+  .btn-outline-light:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .support-note {
+    color: #b4ccca;
+    margin: 0;
+  }
+
+  .mail-inline {
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(253, 179, 67, 0.5);
   }
 
   @media (max-width: 640px) {
     .success-card {
       padding: var(--s-32) var(--s-16);
+    }
+
+    .summary-row {
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .summary-row dd {
+      text-align: left;
     }
   }
 </style>

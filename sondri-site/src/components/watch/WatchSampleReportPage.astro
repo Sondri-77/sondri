@@ -1,0 +1,423 @@
+---
+import type { Lang } from '../../i18n';
+import WatchShell from './WatchShell.astro';
+import WatchHeroBg from './WatchHeroBg.astro';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const isEs = lang === 'es';
+const prefix = isEs ? '/es/watch' : '/watch';
+
+const alternates = {
+  en: '/watch/sample-report/',
+  es: '/es/watch/sample-report/',
+};
+
+const promptRows = [
+  {
+    q: isEs
+      ? '“¿Cuál es la mejor clínica dental con especialistas en implantes en Las Condes?”'
+      : '“Which dental clinic is best for single-tooth implants in Las Condes?”',
+    chatgpt: '#3 (+2)',
+    gemini: '#2 (+1)',
+    aio: 'Cited',
+    competitors: 'Clínica NW, DentArt, Mora Pavic',
+  },
+  {
+    q: isEs
+      ? '“Clínicas con rehabilitación oral e imagenología 3D en Santiago oriente”'
+      : '“Clinics offering 3D CBCT diagnostics and oral rehabilitation in east Santiago”',
+    chatgpt: '#1 (NEW)',
+    gemini: '#1 (+3)',
+    aio: 'Cited',
+    competitors: 'Clínica SADES, DentArt',
+  },
+  {
+    q: isEs
+      ? '“Precio promedio corona sobre implante y opciones de financiamiento dental”'
+      : '“Transparent implant crown pricing and financing plans for local patients”',
+    chatgpt: 'Not named',
+    gemini: '#4 (NEW)',
+    aio: 'Not cited',
+    competitors: 'Norden Dental, Clínica Alemana',
+  },
+  {
+    q: isEs
+      ? '“Urgencia dental sábado cerca de metro Escuela Militar”'
+      : '“Weekend emergency dental clinic near Metro Escuela Militar”',
+    chatgpt: '#2 (+1)',
+    gemini: '#2 (Stable)',
+    aio: 'Cited',
+    competitors: 'Clínica NW, RedSalud',
+  },
+];
+---
+
+<WatchShell
+  title={isEs ? 'Reporte Mensual de Ejemplo — Sondri Watch | watch.sondri.ai' : 'Sample Monthly Watch Report — Sondri Watch | watch.sondri.ai'}
+  description={isEs
+    ? 'Así se ve el entregable mensual de Sondri Watch: 25 o 75 prompts fijos corridos semanalmente en 4 motores de IA + PDF ejecutivo y 1 mejora implementada.'
+    : 'Preview the actual monthly Sondri Watch deliverable: frozen prompt tracking across 4 engines, competitor named-share, and the monthly shipped fix.'}
+  lang={lang}
+  activeTab="sample"
+  alternates={alternates}
+>
+  <section class="section section-pad on-dark sample-hero watch-banner-edge" data-watch-hero>
+    <WatchHeroBg variant="banner" />
+    <div class="wrap">
+      <div class="report-banner" data-watch-reveal>
+        <div>
+          <span class="label gold-tag">/ {isEs ? 'ENTREGABLE MENSUAL DE MUESTRA · WATCH LOCAL ($149/MES)' : 'SAMPLE MONTHLY DELIVERABLE · WATCH LOCAL ($149/MO)'}</span>
+          <h1 class="h2 rpt-title">
+            {isEs ? 'Clínica Ejemplo Santiago — Reporte Ciclo #04' : 'Apex Dental Studio — Monthly Watch Wave #04'}<span class="gdot">.</span>
+          </h1>
+          <p class="body-s rpt-meta">
+            {isEs
+              ? '25 prompts fijos × 4 motores × 4 corridas semanales (400 evaluaciones sin sesión) · Período: 01–30 Nov 2026'
+              : '25 frozen buyer prompts × 4 engines × 4 weekly runs (400 logged-out checks) · Cycle: Nov 01–30, 2026'}
+          </p>
+        </div>
+
+        <div class="rpt-actions">
+          <button type="button" class="btn btn-outline-light" onclick="window.print()">
+            {isEs ? 'Imprimir / Guardar PDF' : 'Print / Save PDF'} ↓
+          </button>
+          <button type="button" class="btn btn-gold" data-watch-checkout="watch_local">
+            <span data-btn-label>{isEs ? 'Contratar Watch Local ($149/mes)' : 'Start Watch Local ($149/mo)'}</span> <span class="arr">→</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-pad on-dark">
+    <div class="wrap">
+      <!-- 4 Executive KPI Cards -->
+      <div class="kpi-4" data-watch-reveal>
+        <div class="kpi-box">
+          <span class="label">{isEs ? 'CUOTA NOMBRADA TOTAL' : 'OVERALL NAMED-SHARE'}</span>
+          <p class="n kpi-big">48%</p>
+          <p class="label delta-up">▲ +19% vs Month 01</p>
+        </div>
+        <div class="kpi-box">
+          <span class="label">{isEs ? 'DOMINIO CITADO COMO FUENTE' : 'DOMAIN CITED IN SOURCES'}</span>
+          <p class="n kpi-big">14/25</p>
+          <p class="label delta-up">▲ +7 prompts cited</p>
+        </div>
+        <div class="kpi-box">
+          <span class="label">{isEs ? 'EXACTITUD DE DATOS IA' : 'FACTUAL ACCURACY'}</span>
+          <p class="n kpi-big">100%</p>
+          <p class="label">Address, hours &amp; specialties match</p>
+        </div>
+        <div class="kpi-box">
+          <span class="label">{isEs ? 'MEJORA IMPLEMENTADA ESTE MES' : 'SHIPPED FIX THIS CYCLE'}</span>
+          <p class="h5 shipped-name">Dentist + FAQPage JSON-LD &amp; Bing AI Hub</p>
+          <p class="label delta-up">■ DEPLOYED NOV 12</p>
+        </div>
+      </div>
+
+      <!-- Engine Share Comparison -->
+      <div class="paper-sheet on-paper" data-watch-reveal>
+        <div class="sheet-sec">
+          <h2 class="h5 sheet-heading">01 / {isEs ? 'Desglose por Motor de IA (Corridas Semanales)' : 'Engine-by-Engine Named Share (4 Weekly Waves)'}</h2>
+          <div class="eng-grid">
+            <div class="eng-stat">
+              <div class="eng-top"><span class="label">ChatGPT (Logged Out)</span><span class="label">52% (+20%)</span></div>
+              <div class="eng-track"><div class="eng-bar" data-bar-fill="52" style="width: 52%"></div></div>
+            </div>
+            <div class="eng-stat">
+              <div class="eng-top"><span class="label">Google Gemini (Web Grounded)</span><span class="label">60% (+24%)</span></div>
+              <div class="eng-track"><div class="eng-bar" data-bar-fill="60" style="width: 60%"></div></div>
+            </div>
+            <div class="eng-stat">
+              <div class="eng-top"><span class="label">Google AI Overviews</span><span class="label">44% (+16%)</span></div>
+              <div class="eng-track"><div class="eng-bar" data-bar-fill="44" style="width: 44%"></div></div>
+            </div>
+            <div class="eng-stat">
+              <div class="eng-top"><span class="label">Google AI Mode</span><span class="label">36% (+16%)</span></div>
+              <div class="eng-track"><div class="eng-bar" data-bar-fill="36" style="width: 36%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sheet-sec">
+          <h2 class="h5 sheet-heading">02 / {isEs ? 'Muestra de Prompts Fijos y Posición Competitiva' : 'Frozen Buyer Prompt Ledger (Selected Rows)'}</h2>
+          <div class="table-scroll">
+            <table class="rpt-table">
+              <thead>
+                <tr>
+                  <th>{isEs ? 'Pregunta Sin Marca' : 'Unbranded Buyer Prompt'}</th>
+                  <th>ChatGPT</th>
+                  <th>Gemini</th>
+                  <th>AI Overviews</th>
+                  <th>{isEs ? 'Competidores Nombrados' : 'Co-Named Competitors'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {promptRows.map((row) => (
+                  <tr>
+                    <td><strong>{row.q}</strong></td>
+                    <td><span class="label">{row.chatgpt}</span></td>
+                    <td><span class="label">{row.gemini}</span></td>
+                    <td><span class="label">{row.aio}</span></td>
+                    <td>{row.competitors}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="sheet-sec fix-summary-sec">
+          <h2 class="h5 sheet-heading">03 / {isEs ? 'Implementación Realizada Este Mes + Siguiente Paso' : 'Fix Shipped This Month & Next Cycle Scope'}</h2>
+          <div class="two-diff">
+            <div class="diff-card ok-card">
+              <span class="label">✓ {isEs ? 'DESPLEGADO EL 12 DE NOVIEMBRE' : 'SHIPPED THIS CYCLE (NOV 12)'}</span>
+              <p class="body-s">
+                {isEs
+                  ? 'Se publicó bloque FAQPage (8 preguntas de implantes y financiamiento) en /tratamientos/implantes/, se validó JSON-LD Dentist + LocalBusiness y se sincronizó horario/especialidades en OpenAI Business Hub y Bing AI Performance.'
+                  : 'Deployed FAQPage schema (8 implant & financing Q&As) on /treatments/implants/, aligned LocalBusiness + Dentist JSON-LD, and verified OpenAI Business Hub + Bing AI Performance.'}
+              </p>
+            </div>
+            <div class="diff-card next-card">
+              <span class="label">→ {isEs ? 'COLA PARA CICLO #05 (DICIEMBRE)' : 'QUEUED FOR NEXT MONTH (CYCLE #05)'}</span>
+              <p class="body-s">
+                {isEs
+                  ? 'Crear tabla comparativa transparente de aranceles e Isapres para capturar el prompt #03 (“precio promedio corona sobre implante”), donde hoy la IA no cita el dominio.'
+                  : 'Publish transparent pricing & insurance FAQ block to win Prompt #03 (“transparent implant crown pricing”), currently missed by ChatGPT and AI Overviews.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-cta">
+        <a href={`${prefix}/#free-check`} class="btn btn-outline-light">
+          ← {isEs ? 'Medir tu propio sitio gratis' : 'Run your own free 3-prompt check'}
+        </a>
+        <a href={`${prefix}/playbooks/`} class="btn btn-gold">
+          {isEs ? 'Ver Packs por Industria' : 'Browse Industry Packs'} <span class="arr">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</WatchShell>
+
+<style>
+  .report-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--s-32);
+    flex-wrap: wrap;
+  }
+
+  .gold-tag {
+    color: var(--gold);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .rpt-title {
+    margin-bottom: 8px;
+  }
+
+  .rpt-meta {
+    color: var(--pale);
+  }
+
+  .rpt-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-outline-light {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--white);
+  }
+  .btn-outline-light:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .kpi-4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-16);
+    margin-bottom: var(--s-32);
+  }
+
+  .kpi-box {
+    background: rgba(3, 25, 25, 0.92);
+    border: 1px solid var(--line);
+    padding: var(--s-24);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .kpi-big {
+    font-size: 44px;
+    color: var(--gold);
+  }
+
+  .delta-up {
+    color: #5eead4;
+  }
+
+  .shipped-name {
+    color: var(--white);
+    font-size: 16px;
+  }
+
+  .paper-sheet {
+    /* Reset light paper tokens inside .on-dark section so the sample sheet reads like an actual printed AEO deliverable */
+    --surface: var(--white);
+    --text-hi: var(--teal);
+    --pale: var(--teal-mid);
+    --steel: var(--muted);
+    --line: var(--teal);
+    --line-soft: rgba(8, 31, 31, 0.16);
+    background: var(--white);
+    color: var(--teal);
+    border: 1px solid var(--teal);
+    box-shadow: 10px 10px 0 var(--gold);
+    padding: var(--s-40);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-40);
+  }
+
+  .sheet-heading {
+    color: var(--teal);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--teal);
+    margin-bottom: var(--s-24);
+  }
+
+  .eng-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-24);
+  }
+
+  .eng-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .eng-top {
+    display: flex;
+    justify-content: space-between;
+    color: var(--teal);
+  }
+
+  .eng-top .label {
+    color: var(--teal);
+  }
+
+  .eng-track {
+    height: 10px;
+    background: rgba(8, 31, 31, 0.1);
+    border: 1px solid rgba(8, 31, 31, 0.18);
+  }
+
+  .eng-bar {
+    height: 100%;
+    background: var(--teal);
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  .rpt-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .rpt-table th,
+  .rpt-table td {
+    text-align: left;
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--teal);
+  }
+
+  .rpt-table th {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .two-diff {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-24);
+  }
+
+  .diff-card {
+    padding: var(--s-24);
+    border: 1px solid rgba(8, 31, 31, 0.22);
+    background: var(--off);
+    color: var(--teal);
+  }
+
+  .diff-card p {
+    color: var(--teal-mid);
+  }
+
+  .ok-card {
+    border-left: 4px solid #0d9488;
+  }
+
+  .next-card {
+    border-left: 4px solid var(--gold-2);
+  }
+
+  .diff-card .label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+
+  .bottom-cta {
+    margin-top: var(--s-40);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--s-16);
+  }
+
+  @media (max-width: 960px) {
+    .kpi-4,
+    .eng-grid,
+    .two-diff {
+      grid-template-columns: 1fr;
+    }
+
+    .paper-sheet {
+      padding: var(--s-24);
+    }
+  }
+
+  @media print {
+    .watch-header,
+    .watch-ann,
+    .watch-footer,
+    .watch-mobile-bar,
+    .rpt-actions,
+    .bottom-cta,
+    #watch-topo-canvas {
+      display: none !important;
+    }
+  }
+</style>

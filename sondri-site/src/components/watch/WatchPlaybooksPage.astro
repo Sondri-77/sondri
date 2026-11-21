@@ -1,0 +1,834 @@
+---
+import type { Lang } from '../../i18n';
+import WatchShell from './WatchShell.astro';
+import { getWatchGuides } from '../../data/watch-content';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const isEs = lang === 'es';
+const prefix = isEs ? '/es/watch' : '/watch';
+const guidesList = getWatchGuides(lang);
+
+const alternates = {
+  en: '/watch/playbooks/',
+  es: '/es/watch/playbooks/',
+};
+
+const playbooks = [
+  {
+    id: 'clinicas',
+    badge: isEs ? 'BET ACTIVA · CHILE' : 'ACTIVE CHILE PACK',
+    title: 'Pack Clínicas Chile',
+    subtitle: isEs ? 'Dental, Estética y Kinesiología (Santiago & Valparaíso)' : 'Dental, Aesthetic & Physical Therapy Clinics (Chile)',
+    price: '$349',
+    priceNote: isEs ? 'USD pago único · Seguimiento Watch Local $149/mes' : 'USD one-time · Optional Watch Local $149/mo',
+    sku: 'clinicas_pack',
+    followupSku: 'watch_local',
+    followupLabel: isEs ? 'Añadir Watch Local ($149/mes)' : 'Add Watch Local ($149/mo)',
+    liveCaseKicker: isEs ? 'VERIFICACIÓN EN VIVO · LAS CONDES' : 'REAL LIVE CHECK · LAS CONDES, CL',
+    liveCasePrompt: '“¿Cuál es la mejor clínica dental en Las Condes?”',
+    liveCaseResult: isEs
+      ? 'ChatGPT (país CL) nombró a Clínica NW, DentArt, Clínica Beladent, Mora Pavic y Clínica SADES en ese orden. La mayoría de clínicas fuera de esa lista carecía de schema Dentist y fichas claras por tratamiento.'
+      : 'ChatGPT (CL region) named Clínica NW, DentArt, Clínica Beladent, Mora Pavic, and Clínica SADES in exact rank order. Clinics missing structured Dentist JSON-LD & treatment FAQ pages did not appear.',
+    deliverables: isEs
+      ? [
+          'Benchmark de 30 prompts locales (10 comunas × 3 tratamientos clave)',
+          'Implementación de JSON-LD Dentist / MedicalBusiness + FAQPage por tratamiento',
+          'Reclamación y sincronización en Google Business Profile, Bing, Apple y ChatGPT Hub',
+          'Comparativa de citaciones y lista de directorios médicos faltantes',
+        ]
+      : [
+          '30-prompt local treatment benchmark (10 comunas × 3 core treatments)',
+          'Dentist / MedicalBusiness + treatment FAQPage JSON-LD schema implementation',
+          'Entity alignment across Google Business Profile, Bing AI, Apple & OpenAI Hub',
+          'Competitor named-share matrix + medical directory citation roadmap',
+        ],
+    samplePrompts: [
+      '¿Cuál es la mejor clínica dental en Las Condes para implantes?',
+      'Clínica estética con certificación sanitaria en Providencia',
+      'Kinesiología deportiva con reembolso Isapre en Viña del Mar',
+    ],
+    schemaSnippet: `{
+  "@type": ["Dentist", "MedicalBusiness"],
+  "name": "Clínica Ejemplo",
+  "medicalSpecialty": ["Implantology", "Orthodontics"],
+  "areaServed": ["Las Condes", "Providencia"]
+}`,
+  },
+  {
+    id: 'legal',
+    badge: isEs ? 'US & CHILE · POR ÁREA DE PRÁCTICA' : 'US & CHILE · PRACTICE AREA PACK',
+    title: 'Law Firm Pack',
+    subtitle: isEs ? 'Estudios Jurídicos (Familia, Laboral, Corporativo, Inmobiliario)' : 'Small & Mid-Size Law Firms by Practice Area',
+    price: '$499',
+    priceNote: isEs ? 'USD auditoría única · Conversión natural a Watch Pro $399/mes' : 'USD one-time audit · Pairs with Watch Pro $399/mo',
+    sku: 'law_pack',
+    followupSku: 'watch_pro',
+    followupLabel: isEs ? 'Iniciar Watch Pro ($399/mes)' : 'Start Watch Pro ($399/mo)',
+    liveCaseKicker: isEs ? 'VERIFICACIÓN EN VIVO · PROVIDENCIA, CL' : 'REAL LIVE CHECK · LEGAL SHORTLIST',
+    liveCasePrompt: '“Abogados de familia recomendados en Providencia”',
+    liveCaseResult: isEs
+      ? 'ChatGPT nombró a 5 estudios específicos (G&B Abogados, Abogados de Confianza, Lex Family, L&H Abogados, Serrano & Cía), dejando fuera a firmas competidoras sin páginas claras de área ni schema LegalService.'
+      : 'ChatGPT named 5 specific firms while skipping neighboring practices that lacked practice-area FAQ pages, attorney credential markup, and LegalService schema.',
+    deliverables: isEs
+      ? [
+          'Auditoría en 4 motores por área de práctica (hasta 4 áreas clave)',
+          'Revisión de exactitud biográfica y de honorarios/alcance en IA',
+          'Implementación de schema LegalService + Attorney + FAQPage',
+          'Mapa de directorios jurídicos y fuentes citadas por ChatGPT y Gemini',
+        ]
+      : [
+          '4-engine buyer prompt audit segmented by practice area (up to 4 areas)',
+          'Hallucination & accuracy check on attorney bios, jurisdictions & focus areas',
+          'LegalService + Attorney + FAQPage JSON-LD deployment blueprint',
+          'Legal directory & third-party citation map (Chambers, Avvo, Justia, local guides)',
+        ],
+    samplePrompts: [
+      'Who are the most trusted SaaS commercial contract lawyers in Austin, TX?',
+      'Mejores abogados de derecho de familia con experiencia en mediación',
+      'Which boutique employment law firm advises Series A startups on equity compliance?',
+    ],
+    schemaSnippet: `{
+  "@type": "LegalService",
+  "name": "Example Partners LLP",
+  "knowsAbout": ["Commercial Litigation", "Employment Law"],
+  "areaServed": ["Texas", "Delaware"]
+}`,
+  },
+  {
+    id: 'shopify',
+    badge: isEs ? 'ECOMMERCE & CHECKOUT AGÉNTICO' : 'AGENTIC COMMERCE READINESS',
+    title: 'Shopify Agentic Readiness',
+    subtitle: isEs ? 'Marcas Shopify (EE.UU., Canadá y Australia) y Agencias Ecommerce' : 'US, Canadian & Australian Shopify Brands + Ecommerce Agencies',
+    price: '$499',
+    priceNote: isEs ? 'USD diagnóstico único · Watch Commerce opcional $299/mes' : 'USD one-time check · Optional Watch Commerce $299/mo',
+    sku: 'shopify_check',
+    followupSku: 'watch_commerce',
+    followupLabel: isEs ? 'Añadir Watch Commerce ($299/mes)' : 'Add Watch Commerce ($299/mo)',
+    liveCaseKicker: isEs ? 'ESTÁNDARES ACP (CHATGPT) & UCP (GOOGLE)' : 'CHATGPT ACP & GOOGLE UCP CHECKOUT',
+    liveCasePrompt: '“Best waterproof leather boots under $250 with 2-day US shipping”',
+    liveCaseResult: isEs
+      ? 'Las marcas con feed Product/Offer limpio, disponibilidad en tiempo real y políticas de devolución en schema son elegibles para descubrimiento y compra directa vía agentes.'
+      : 'ChatGPT shopping (ACP) and Google UCP agentic checkout skip SKUs that omit Offer shippingDetails, hasMerchantReturnPolicy, GTIN/MPN, or real-time inventory flags.',
+    deliverables: isEs
+      ? [
+          'Auditoría completa de Product, Offer, AggregateRating y ShippingDetails JSON-LD',
+          'Verificación de requisitos OpenAI Merchant / ACP y Google UCP Checkout',
+          'Pruebas de 20 prompts de descubrimiento de producto por categoría y precio',
+          'Checklist de correcciones en Liquid/Hydrogen para tu equipo o nuestro Fix Sprint',
+        ]
+      : [
+          'Full audit of Product, Offer, AggregateRating & ShippingDetails JSON-LD',
+          'OpenAI Merchant / ACP & Google UCP agentic checkout eligibility verification',
+          '20 high-intent category & price-bracket discovery prompt runs across 4 engines',
+          'Prioritized Shopify Liquid / Hydrogen fix spec ready for immediate deployment',
+        ],
+    samplePrompts: [
+      'Best organic cotton weighted blanket under $180 with free returns',
+      'Compare durable carry-on hardshell suitcases under $300 recommended by buyers',
+      'Which Shopify stores ship cold-pressed olive oil gift sets within 48 hours?',
+    ],
+    schemaSnippet: `{
+  "@type": "Product",
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "hasMerchantReturnPolicy": { "@type": "MerchantReturnPolicy" }
+  }
+}`,
+  },
+];
+
+const gates = [
+  {
+    num: '01',
+    name: isEs ? 'Rastreadores e Infraestructura' : 'AI Crawler & Speed Gate',
+    checks: ['OAI-SearchBot', 'Googlebot', 'PerplexityBot', 'Mobile TTFB & LCP'],
+    why: isEs
+      ? 'Si robots.txt bloquea bots de búsqueda IA o tu móvil tarda >4s, nunca entras al índice en vivo.'
+      : 'If robots.txt blocks AI search bots or mobile TTFB stalls, your site is filtered out before retrieval begins.',
+    fixCode: `User-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /`,
+    fixTitle: isEs ? 'Fix que implementamos: robots.txt + optimización LCP' : 'Fix we ship: Clean AI crawler policy & LCP tuning',
+  },
+  {
+    num: '02',
+    name: isEs ? 'Grafo de Entidad y Schema' : 'Entity & Schema Gate',
+    checks: ['Organization / LocalBusiness', 'FAQPage JSON-LD', 'Service Schema', 'NAP Consistency'],
+    why: isEs
+      ? 'Los LLM extraen hechos verificables del JSON-LD y encabezados claros, no de texto comercial vago.'
+      : 'LLMs extract verifiable facts from JSON-LD and clean answer-ready headings—not vague marketing copy.',
+    fixCode: `"@type": ["Dentist", "LocalBusiness"],\n"areaServed": "Austin, TX",\n"hasOfferCatalog": { ... }`,
+    fixTitle: isEs ? 'Fix que implementamos: Schema específico de industria' : 'Fix we ship: Validated LocalBusiness + FAQPage schema',
+  },
+  {
+    num: '03',
+    name: isEs ? 'Directorios Oficiales de IA' : 'Official AI Listings Gate',
+    checks: ['OpenAI Business Hub', 'Bing AI Performance', 'Apple Business Connect', 'Google Business Profile'],
+    why: isEs
+      ? 'ChatGPT, Bing y Apple cruzan datos directamente desde perfiles comerciales verificados.'
+      : 'ChatGPT (Business Hub), Bing AI Performance, and Apple Business cross-check verified entity listings directly.',
+    fixCode: `OpenAI Business Hub: CLAIMED\nBing Webmaster AI: VERIFIED\nGBP Categories: ALIGNED`,
+    fixTitle: isEs ? 'Fix que implementamos: AI Listings Sprint ($249)' : 'Fix we ship: AI Listings Sprint ($249 one-time)',
+  },
+  {
+    num: '04',
+    name: isEs ? 'Citas y Cuota Semanal' : 'Citation & Weekly Answer Share',
+    checks: ['ChatGPT (3x runs)', 'Gemini (Web Grounded)', 'Google AI Overviews', 'Google AI Mode'],
+    why: isEs
+      ? 'Una marca sin citas externas ni seguimiento semanal pierde menciones silenciosamente cuando los modelos se actualizan.'
+      : 'Without external citation building and weekly multi-engine tracking, silent model updates push competitors ahead.',
+    fixCode: `Wave #04 Delta: +34% Named Share\nMonthly Shipped Fix: Service FAQ Cluster #2`,
+    fixTitle: isEs ? 'Fix que implementamos: Sondri Watch ($149–$399/mo)' : 'Fix we ship: Sondri Watch weekly runner + fixes/mo',
+  },
+];
+---
+
+<WatchShell
+  title={isEs ? 'Guías Técnicas, Sprints y Packs — Sondri Watch | watch.sondri.ai' : 'Technical Reads, Fix Sprints & Playbooks — Sondri Watch | watch.sondri.ai'}
+  description={isEs
+    ? 'Guía técnica de los 4 filtros IA, Sprints de pago único ($249–$499) y Packs especializados por industria.'
+    : 'Deep-dive technical read on the 4 AI answer gates, one-time implementation sprints ($249–$499), and vertical playbooks.'}
+  lang={lang}
+  activeTab="playbooks"
+  alternates={alternates}
+>
+  <!-- SECTION 1: TECHNICAL DEEP-DIVE READ ("Why AI skips great businesses across 4 gates") -->
+  <section class="section section-pad on-paper" id="technical-read">
+    <div class="wrap">
+      <div class="sec-head" data-watch-reveal>
+        <div>
+          <span class="label kicker-paper">/ {isEs ? 'LECTURA TÉCNICA EN PROFUNDIDAD' : 'TECHNICAL DEEP-DIVE READ'}</span>
+          <h1 class="h2">
+            {isEs ? (
+              <>Por qué la IA omite negocios excelentes en <em class="serif-em">4 filtros técnicos.</em></>
+            ) : (
+              <>Why AI skips great businesses across <em class="serif-em">4 measurable gates.</em></>
+            )}
+          </h1>
+        </div>
+        <div class="intro">
+          <p class="lede">
+            {isEs
+              ? 'Los motores de respuesta filtran candidatos en secuencia antes de escribir una sola palabra. Si fallas un filtro, un competidor inferior con mejor estructura técnica gana la terna.'
+              : 'Answer engines filter candidates sequentially before writing a single word. Miss any one gate and a weaker competitor with cleaner structure wins the shortlist.'}
+          </p>
+        </div>
+      </div>
+
+      <div class="gates-grid">
+        {gates.map((g, idx) => (
+          <article class="gate-card" data-gate-step>
+            <div class="gate-top">
+              <span class="n gate-num">{g.num}</span>
+              <span class="label gate-arrow">{idx < 3 ? 'NEXT GATE →' : 'ANSWERED ✓'}</span>
+            </div>
+            <h2 class="h5">{g.name}</h2>
+            <p class="body-s gate-why">{g.why}</p>
+            <div class="gate-chips">
+              {g.checks.map((chk) => (
+                <span class="chip">{chk}</span>
+              ))}
+            </div>
+            <div class="gate-fix-box">
+              <p class="label fix-head">{g.fixTitle}</p>
+              <pre class="fix-code"><code>{g.fixCode}</code></pre>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: ONE-TIME IMPLEMENTATION SPRINTS ($249 / $499) -->
+  <section class="section section-pad on-off" id="sprints">
+    <div class="wrap">
+      <div class="sec-head" data-watch-reveal>
+        <div>
+          <span class="label kicker-paper">/ {isEs ? 'SPRINTS ÚNICOS LLAVE EN MANO' : 'ONE-TIME FIX SPRINTS'}</span>
+          <h2 class="h2">
+            {isEs ? (
+              <>¿Prefieres un <em class="serif-em">sprint técnico único</em> sin mensualidad?</>
+            ) : (
+              <>Rather start with a <em class="serif-em">one-time fix sprint</em>?</>
+            )}
+          </h2>
+        </div>
+        <div class="intro">
+          <p class="lede">
+            {isEs
+              ? 'Nuestros ingenieros reclaman tus perfiles oficiales IA o programan y publican todo el schema JSON-LD y páginas FAQ directamente en tu web.'
+              : 'No retainer needed. Have our team claim your official AI listings or ship your full JSON-LD schema and answer-ready FAQ pages in one focused sprint.'}
+          </p>
+        </div>
+      </div>
+
+      <div class="sprints-2" data-watch-reveal>
+        <article class="sprint-card">
+          <span class="label sprint-tag">{isEs ? 'MÁS RÁPIDO EN DESPEGAR' : 'FASTEST QUICK WIN'}</span>
+          <h3 class="h4">AI Listings Sprint</h3>
+          <p class="sprint-price"><span class="n">$249</span> <span class="label">USD one-time</span></p>
+          <p class="body-s sprint-copy">
+            {isEs
+              ? 'Reclamamos y alineamos tu empresa en OpenAI Business Hub (ChatGPT), Bing AI Performance, Apple Business Connect y Google Business Profile.'
+              : 'Done-for-you claim and entity synchronization across OpenAI Business Hub (ChatGPT), Bing AI Performance, Apple Business Connect & GBP.'}
+          </p>
+          <button type="button" class="btn btn-gold" data-watch-checkout="listings_sprint">
+            <span data-btn-label>{isEs ? 'Ordenar Listings Sprint ($249)' : 'Book Listings Sprint ($249)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+
+        <article class="sprint-card is-featured">
+          <span class="label sprint-tag">{isEs ? 'IMPLEMENTACIÓN EN PRODUCCIÓN' : 'DONE-FOR-YOU ENGINEERING'}</span>
+          <h3 class="h4">Done-For-You Fix Sprint</h3>
+          <p class="sprint-price"><span class="n">$499</span> <span class="label">USD one-time</span></p>
+          <p class="body-s sprint-copy">
+            {isEs
+              ? 'Programamos y desplegamos schema Organization/LocalBusiness & FAQPage, robots.txt para bots IA, llms.txt y bloques de servicio citables en tu web.'
+              : 'Our engineers write and deploy validated Organization/LocalBusiness & FAQPage schema, clean AI crawler rules, llms.txt, and service FAQs on your stack.'}
+          </p>
+          <button type="button" class="btn btn-gold" data-watch-checkout="fix_sprint">
+            <span data-btn-label>{isEs ? 'Ordenar Fix Sprint ($499)' : 'Book Fix Sprint ($499)'}</span> <span class="arr">→</span>
+          </button>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: VERTICAL INDUSTRY PLAYBOOKS -->
+  <section class="section section-pad on-dark" id="industry-packs">
+    <div class="wrap">
+      <div class="sec-head" data-watch-reveal>
+        <div>
+          <span class="label kicker">/ {isEs ? 'PLAYBOOKS VERTICALES' : 'VERTICAL PLAYBOOKS'}</span>
+          <h2 class="h2">
+            {isEs ? 'Packs diseñados para las preguntas exactas de tu industria' : 'Industry playbooks built around how your buyers actually ask AI'}<span class="gdot">.</span>
+          </h2>
+        </div>
+        <div class="intro">
+          <p class="lede">
+            {isEs
+              ? 'Una clínica dental en Las Condes, un estudio jurídico en EE.UU. y una marca Shopify no compiten con las mismas preguntas ni con el mismo schema JSON-LD. Elige tu playbook para ver los prompts reales, casos en vivo y entregables.'
+              : 'A dental clinic, a law firm, and a Shopify store do not get cited for the same reasons. Pick a playbook below to inspect real live-check benchmarks, buyer prompts, schema blueprints, and direct ordering.'}
+          </p>
+        </div>
+      </div>
+
+      <!-- Vertical Playbook Selector Tabs -->
+      <div class="pb-tabs" role="tablist">
+        {playbooks.map((pb, i) => (
+          <button
+            type="button"
+            role="tab"
+            class:list={['pb-tab', 'label', i === 0 && 'is-active']}
+            data-pb-btn={pb.id}
+            aria-selected={i === 0 ? 'true' : 'false'}
+          >
+            <span>{pb.title}</span>
+            <span class="pb-price">{pb.price}</span>
+          </button>
+        ))}
+      </div>
+
+      <!-- Playbook Content Panes -->
+      {playbooks.map((pb, i) => (
+        <article class="pb-card" data-pb-pane={pb.id} style={i === 0 ? '' : 'display: none;'}>
+          <div class="pb-head">
+            <div>
+              <span class="label gold-badge">{pb.badge}</span>
+              <h2 class="h3 pb-title">{pb.title}</h2>
+              <p class="body-s pb-sub">{pb.subtitle}</p>
+            </div>
+            <div class="pb-buy-box">
+              <p class="n pb-big-price">{pb.price}</p>
+              <p class="label">{pb.priceNote}</p>
+              <div class="pb-btn-stack">
+                <button type="button" class="btn btn-gold" data-watch-checkout={pb.sku}>
+                  <span data-btn-label>{isEs ? `Ordenar ${pb.title} (${pb.price})` : `Order ${pb.title} (${pb.price})`}</span> <span class="arr">→</span>
+                </button>
+                <button type="button" class="btn btn-outline-light" data-watch-checkout={pb.followupSku}>
+                  <span data-btn-label>{pb.followupLabel}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="pb-grid">
+            <div class="pb-col">
+              <div class="live-box">
+                <span class="label live-kicker">▲ {pb.liveCaseKicker}</span>
+                <p class="live-q">{pb.liveCasePrompt}</p>
+                <p class="body-s live-res">{pb.liveCaseResult}</p>
+              </div>
+
+              <div class="deliv-box">
+                <span class="label box-head">{isEs ? 'QUÉ INCLUYE ESTE PACK' : 'WHAT IS INCLUDED'}</span>
+                <ul class="pb-list">
+                  {pb.deliverables.map((d) => <li>{d}</li>)}
+                </ul>
+              </div>
+            </div>
+
+            <div class="pb-col">
+              <div class="prompts-box">
+                <span class="label box-head">{isEs ? 'EJEMPLOS DE PROMPTS DEL BENCHMARK' : 'SAMPLE BENCHMARK PROMPTS TESTED'}</span>
+                <ol class="prompt-ol">
+                  {pb.samplePrompts.map((pr) => <li>{pr}</li>)}
+                </ol>
+              </div>
+
+              <div class="schema-box">
+                <span class="label box-head">{isEs ? 'BLUEPRINT JSON-LD QUE DESPLEGAMOS' : 'TARGET JSON-LD SCHEMA BLUEPRINT'}</span>
+                <pre class="schema-pre"><code>{pb.schemaSnippet}</code></pre>
+              </div>
+            </div>
+          </div>
+        </article>
+      ))}
+
+      <div class="bottom-nav-cta">
+        <a href={`${prefix}/#free-check`} class="btn btn-outline-light">
+          ← {isEs ? 'Probar el Score Gratis primero' : 'Run Free 3-Prompt Score first'}
+        </a>
+        <a href={`${prefix}/sample-report/`} class="btn btn-gold">
+          {isEs ? 'Ver Reporte Mensual de Ejemplo' : 'Inspect Sample Monthly Watch Report'} <span class="arr">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: PLAIN-ENGLISH GUIDES -->
+  <section class="section section-pad on-paper" id="guides">
+    <div class="wrap">
+      <div class="sec-head" data-watch-reveal>
+        <div>
+          <span class="label kicker-paper">/ {isEs ? 'GUÍAS EN LENGUAJE CLARO' : 'PLAIN-ENGLISH GUIDES'}</span>
+          <h2 class="h2">
+            {isEs ? (
+              <>Guías claras sobre <em class="serif-em">búsqueda en IA.</em></>
+            ) : (
+              <>Plain-English guides <em class="serif-em">to AI search.</em></>
+            )}
+          </h2>
+        </div>
+        <div class="intro">
+          <p class="lede">
+            {isEs
+              ? 'Escritas por ingenieros de Sondri sin siglas innecesarias.'
+              : 'Written cleanly without jargon so decision-makers understand every step.'}
+          </p>
+        </div>
+      </div>
+
+      <div class="pb-guides-4" data-watch-reveal>
+        {guidesList.map((g) => (
+          <a href={`${prefix}/guides/${g.slug}/`} class="pb-guide-card">
+            <span class="label pb-gd-rt">{g.readTime}</span>
+            <h3 class="h5 pb-gd-title">{g.title}</h3>
+            <p class="body-s pb-gd-desc">{g.cardDesc}</p>
+            <span class="label pb-gd-link">{isEs ? 'Leer guía →' : 'Read the guide →'}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</WatchShell>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-pb-btn]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-pb-btn');
+      document.querySelectorAll<HTMLButtonElement>('[data-pb-btn]').forEach((b) => {
+        const active = b.getAttribute('data-pb-btn') === id;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-selected', String(active));
+      });
+      document.querySelectorAll<HTMLElement>('[data-pb-pane]').forEach((pane) => {
+        pane.style.display = pane.getAttribute('data-pb-pane') === id ? 'block' : 'none';
+      });
+    });
+  });
+</script>
+
+<style>
+  .kicker {
+    display: block;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  .kicker-paper {
+    display: block;
+    color: var(--teal-mid);
+    margin-bottom: 10px;
+  }
+
+  /* Deep-Dive 4-Gate Pipeline */
+  .gates-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-24);
+  }
+
+  .gate-card {
+    border: 1px solid var(--line);
+    background: var(--white);
+    padding: var(--s-32);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+    box-shadow: 6px 6px 0 var(--teal);
+  }
+
+  .gate-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line-soft);
+    padding-bottom: 10px;
+  }
+
+  .gate-num {
+    font-size: 38px;
+    color: var(--gold-2);
+  }
+
+  .gate-arrow {
+    color: var(--steel);
+  }
+
+  .gate-why {
+    color: var(--pale);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .gate-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .gate-fix-box {
+    margin-top: auto;
+    background: var(--off);
+    border-left: 3px solid var(--teal);
+    padding: 12px 14px;
+  }
+
+  .fix-head {
+    color: var(--teal);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .fix-code {
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--teal-mid);
+    overflow-x: auto;
+  }
+
+  /* One-Time Sprints */
+  .sprints-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-24);
+  }
+
+  .sprint-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    padding: var(--s-32);
+    box-shadow: 6px 6px 0 var(--teal);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .sprint-card.is-featured {
+    border-color: var(--gold-2);
+    box-shadow: 8px 8px 0 var(--gold-2);
+  }
+
+  .sprint-tag {
+    color: var(--teal-mid);
+  }
+
+  .sprint-price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .sprint-price .n {
+    font-size: 46px;
+    color: var(--teal);
+  }
+
+  .sprint-copy {
+    color: var(--pale);
+    font-size: 15px;
+    line-height: 1.55;
+    margin-bottom: 8px;
+  }
+
+  .sprint-card .btn {
+    margin-top: auto;
+  }
+
+  .pb-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: var(--s-32);
+  }
+
+  .pb-tab {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    background: rgba(3, 25, 25, 0.85);
+    border: 1px solid var(--line);
+    color: var(--pale);
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .pb-tab.is-active {
+    background: var(--gold);
+    color: var(--teal);
+    border-color: var(--gold);
+    font-weight: 700;
+  }
+
+  .pb-price {
+    font-size: 16px;
+  }
+
+  .pb-card {
+    background: rgba(3, 25, 25, 0.94);
+    border: 1px solid var(--line);
+    box-shadow: 10px 10px 0 var(--gold);
+    padding: var(--s-40);
+  }
+
+  .pb-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: var(--s-32);
+    padding-bottom: var(--s-32);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: var(--s-32);
+    align-items: start;
+  }
+
+  .gold-badge {
+    display: inline-block;
+    background: rgba(253, 179, 67, 0.16);
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 4px 10px;
+    margin-bottom: 12px;
+  }
+
+  .pb-title {
+    margin-bottom: 8px;
+  }
+
+  .pb-sub {
+    color: var(--pale);
+    font-size: 16px;
+  }
+
+  .pb-buy-box {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line-soft);
+    padding: var(--s-24);
+  }
+
+  .pb-big-price {
+    font-size: 52px;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .pb-btn-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: var(--s-16);
+  }
+
+  .btn-outline-light {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--white);
+  }
+  .btn-outline-light:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .pb-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-32);
+  }
+
+  .pb-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-24);
+  }
+
+  .live-box {
+    border-left: 4px solid var(--gold);
+    background: rgba(253, 179, 67, 0.07);
+    padding: 18px 20px;
+  }
+
+  .live-kicker {
+    display: block;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .live-q {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  .live-res {
+    color: var(--pale);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .box-head {
+    display: block;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+
+  .pb-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: var(--white);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .pb-list li::before {
+    content: '■ ';
+    color: var(--gold);
+    font-size: 10px;
+  }
+
+  .prompt-ol {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: var(--pale);
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .schema-box {
+    border: 1px solid var(--line-soft);
+    background: rgba(8, 31, 31, 0.8);
+    padding: 18px;
+  }
+
+  .schema-pre {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #c9dad7;
+    overflow-x: auto;
+  }
+
+  .bottom-nav-cta {
+    margin-top: var(--s-40);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--s-16);
+  }
+
+  .pb-guides-4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .pb-guide-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    box-shadow: 4px 4px 0 var(--teal);
+    padding: 20px;
+    text-decoration: none;
+    color: var(--teal);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .pb-guide-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 0 var(--gold-2);
+  }
+
+  .pb-gd-rt {
+    color: var(--steel);
+    font-size: 10px;
+  }
+
+  .pb-gd-title {
+    color: var(--teal);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .pb-gd-desc {
+    color: var(--pale);
+    font-size: 13.5px;
+    line-height: 1.45;
+  }
+
+  .pb-gd-link {
+    margin-top: auto;
+    padding-top: 6px;
+    color: var(--teal);
+    font-weight: 700;
+  }
+
+  @media (max-width: 960px) {
+    .gates-grid,
+    .sprints-2,
+    .pb-guides-4,
+    .pb-tabs,
+    .pb-head,
+    .pb-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .pb-card {
+      padding: var(--s-24);
+    }
+  }
+</style>

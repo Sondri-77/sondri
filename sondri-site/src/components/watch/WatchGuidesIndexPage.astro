@@ -1,0 +1,382 @@
+---
+import type { Lang } from '../../i18n';
+import WatchShell from './WatchShell.astro';
+import WatchHeroBg from './WatchHeroBg.astro';
+import { getWatchGuides } from '../../data/watch-content';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const isEs = lang === 'es';
+const prefix = isEs ? '/es/watch' : '/watch';
+const guidesList = getWatchGuides(lang);
+
+const alternates = {
+  en: '/watch/guides/',
+  es: '/es/watch/guides/',
+};
+
+const gates = [
+  {
+    num: '01',
+    name: isEs ? 'Rastreadores e Infraestructura' : 'AI Crawler & Speed Gate',
+    checks: ['OAI-SearchBot', 'Googlebot', 'PerplexityBot', 'Mobile TTFB & LCP'],
+    why: isEs
+      ? 'Si robots.txt bloquea bots de búsqueda IA o tu móvil tarda >4s, nunca entras al índice en vivo.'
+      : 'If robots.txt blocks AI search bots or mobile TTFB stalls, your site is filtered out before retrieval begins.',
+    fixCode: `User-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /`,
+    fixTitle: isEs ? 'Requisito: robots.txt + optimización LCP' : 'Requirement: Open AI crawler policy & LCP tuning',
+  },
+  {
+    num: '02',
+    name: isEs ? 'Grafo de Entidad y Schema' : 'Entity & Schema Gate',
+    checks: ['Organization / LocalBusiness', 'FAQPage JSON-LD', 'Service Schema', 'NAP Consistency'],
+    why: isEs
+      ? 'Los LLM extraen hechos verificables del JSON-LD y encabezados claros, no de texto comercial vago.'
+      : 'LLMs extract verifiable facts from JSON-LD and clean answer-ready headings—not vague marketing copy.',
+    fixCode: `"@type": ["Dentist", "LocalBusiness"],\n"areaServed": "Austin, TX",\n"hasOfferCatalog": { ... }`,
+    fixTitle: isEs ? 'Requisito: Schema específico de industria' : 'Requirement: Validated LocalBusiness + FAQPage schema',
+  },
+  {
+    num: '03',
+    name: isEs ? 'Directorios Oficiales de IA' : 'Official AI Listings Gate',
+    checks: ['OpenAI Business Hub', 'Bing AI Performance', 'Apple Business Connect', 'Google Business Profile'],
+    why: isEs
+      ? 'ChatGPT, Bing y Apple cruzan datos directamente desde perfiles comerciales verificados.'
+      : 'ChatGPT (Business Hub), Bing AI Performance, and Apple Business cross-check verified entity listings directly.',
+    fixCode: `OpenAI Business Hub: CLAIMED\nBing Webmaster AI: VERIFIED\nGBP Categories: ALIGNED`,
+    fixTitle: isEs ? 'Solución: AI Listings Sprint ($249)' : 'Solution: AI Listings Sprint ($249 one-time)',
+  },
+  {
+    num: '04',
+    name: isEs ? 'Citas y Cuota Semanal' : 'Citation & Weekly Answer Share',
+    checks: ['ChatGPT (3x runs)', 'Gemini (Web Grounded)', 'Google AI Overviews', 'Google AI Mode'],
+    why: isEs
+      ? 'Una marca sin citas externas ni seguimiento semanal pierde menciones silenciosamente cuando los modelos se actualizan.'
+      : 'Without external citation building and weekly multi-engine tracking, silent model updates push competitors ahead.',
+    fixCode: `Wave #04 Delta: +34% Named Share\nMonthly Shipped Fix: Service FAQ Cluster #2`,
+    fixTitle: isEs ? 'Solución: Sondri Watch ($149–$399/mes)' : 'Solution: Sondri Watch weekly runner + fixes/mo',
+  },
+];
+---
+
+<WatchShell
+  title={isEs ? 'Guías Claras y Lecturas Técnicas — Sondri Watch' : 'Plain-English AI Search Guides & Technical Reads — Sondri Watch'}
+  description={isEs
+    ? '8 guías claras sobre AEO, GEO, ChatGPT SEO y costos en 2026, más la lectura técnica profunda de los 4 filtros IA.'
+    : '8 plain-English guides to AI visibility, AEO vs GEO vs SEO, measuring ChatGPT answers, and 2026 pricing—plus our 4-Gate technical engineering read.'}
+  lang={lang}
+  activeTab="guides"
+  alternates={alternates}
+>
+  <!-- HERO (on-dark) -->
+  <section class="section section-pad on-dark gd-idx-hero watch-banner-edge" data-watch-hero>
+    <WatchHeroBg variant="banner" />
+    <div class="wrap">
+      <span class="label gold-pill">{isEs ? 'GUÍAS Y LECTURAS TÉCNICAS' : 'GUIDES & TECHNICAL READS'}</span>
+      <div class="gd-idx-head">
+        <h1 class="h1">
+          {isEs ? (
+            <>Guías claras sobre <em class="serif-em">búsqueda en IA.</em></>
+          ) : (
+            <>Plain-English guides <em class="serif-em">to AI search.</em></>
+          )}
+        </h1>
+        <p class="lede">
+          {isEs
+            ? 'Por el equipo de ingeniería de Sondri, explicando qué funciona hoy en ChatGPT, Gemini y Google AI sin siglas innecesarias.'
+            : 'Written by Sondri engineers—explaining how ChatGPT, Gemini, and Google AI choose businesses, without hype or jargon.'}
+        </p>
+      </div>
+      <div class="gd-actions">
+        <a href={`${prefix}/#free-check`} class="btn btn-gold">
+          {isEs ? 'Probar Test Gratis (3 Preguntas)' : 'Test Your Website Free'} <span class="arr">→</span>
+        </a>
+        <a href={`${prefix}/services/`} class="btn btn-outline-light">
+          {isEs ? 'Ver Servicios Especialistas' : 'Explore Specialist Services'}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 PLAIN-ENGLISH GUIDES GRID (on-paper) -->
+  <section class="section section-pad on-paper">
+    <div class="wrap">
+      <div class="sec-intro">
+        <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? '8 GUÍAS ESENCIALES' : '8 PLAIN-ENGLISH GUIDES'}</span>
+        <h2 class="h2">
+          {isEs ? (
+            <>Respuestas directas para <em class="serif-em">decisores.</em></>
+          ) : (
+            <>Straight answers for <em class="serif-em">decision-makers.</em></>
+          )}
+        </h2>
+      </div>
+
+      <div class="guides-grid-4">
+        {guidesList.map((g) => (
+          <a href={`${prefix}/guides/${g.slug}/`} class="guide-card">
+            <div class="spec-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="8" y1="13" x2="16" y2="13" />
+                <line x1="8" y1="17" x2="13" y2="17" />
+              </svg>
+            </div>
+            <span class="label rt-pill">{g.readTime}</span>
+            <h3 class="h5 guide-title">{g.title}</h3>
+            <p class="body-s guide-desc">{g.cardDesc}</p>
+            <span class="label spec-link">{isEs ? 'Leer guía →' : 'Read the guide →'}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- TECHNICAL DEEP-DIVE READ: THE 4 MEASURABLE GATES (on-off) -->
+  <section class="section section-pad on-off" id="technical-read">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? 'LECTURA TÉCNICA EN PROFUNDIDAD' : 'TECHNICAL DEEP-DIVE'}</span>
+          <h2 class="h2">
+            {isEs ? (
+              <>Por qué la IA omite negocios excelentes en <em class="serif-em">4 filtros técnicos.</em></>
+            ) : (
+              <>Why AI skips great businesses across <em class="serif-em">4 measurable gates.</em></>
+            )}
+          </h2>
+        </div>
+        <div class="intro">
+          <p class="lede">
+            {isEs
+              ? 'Los motores de respuesta filtran sitios en secuencia. Falla un filtro y la competencia toma tu lugar.'
+              : 'Answer engines filter domains sequentially before writing a single word. Miss one gate and competitors win the shortlist.'}
+          </p>
+        </div>
+      </div>
+
+      <div class="gates-grid">
+        {gates.map((g, idx) => (
+          <article class="gate-card" data-gate-step>
+            <div class="gate-top">
+              <span class="n gate-num">{g.num}</span>
+              <span class="label gate-arrow">{idx < 3 ? 'NEXT GATE →' : 'ANSWERED ✓'}</span>
+            </div>
+            <h3 class="h5">{g.name}</h3>
+            <p class="body-s gate-why">{g.why}</p>
+            <div class="gate-chips">
+              {g.checks.map((chk) => (
+                <span class="chip">{chk}</span>
+              ))}
+            </div>
+            <div class="gate-fix-box">
+              <p class="label fix-head">{g.fixTitle}</p>
+              <pre class="fix-code"><code>{g.fixCode}</code></pre>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</WatchShell>
+
+<style>
+  .section-pad {
+    padding-block: clamp(72px, 8vw, 112px);
+  }
+
+  .gd-idx-hero {
+    padding-top: var(--s-48);
+  }
+
+  .gold-pill {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--teal);
+    padding: 5px 10px;
+    font-weight: 700;
+    margin-bottom: var(--s-20);
+  }
+
+  .gd-idx-head {
+    max-width: 70ch;
+    margin-bottom: var(--s-24);
+  }
+
+  .gd-idx-head h1 {
+    margin-bottom: var(--s-16);
+  }
+
+  .gd-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .btn-outline-light {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--white);
+  }
+  .btn-outline-light:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .sec-intro {
+    margin-bottom: var(--s-40);
+  }
+
+  .dot-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--steel);
+    margin-bottom: 10px;
+  }
+
+  .dot-gold {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold-2);
+    display: inline-block;
+  }
+
+  .guides-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .guide-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    padding: 24px;
+    text-decoration: none;
+    color: var(--teal);
+    box-shadow: 5px 5px 0 var(--teal);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .guide-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 7px 7px 0 var(--gold-2);
+  }
+
+  .spec-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(253, 179, 67, 0.18);
+    border: 1px solid rgba(210, 132, 16, 0.35);
+    color: var(--teal);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .rt-pill {
+    color: var(--steel);
+    font-size: 10px;
+  }
+
+  .guide-title {
+    color: var(--teal);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .guide-desc {
+    color: var(--pale);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .spec-link {
+    margin-top: auto;
+    padding-top: 8px;
+    color: var(--teal);
+    font-weight: 700;
+  }
+
+  .gates-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-24);
+  }
+
+  .gate-card {
+    border: 1px solid var(--line);
+    background: var(--white);
+    padding: var(--s-32);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+    box-shadow: 6px 6px 0 var(--teal);
+  }
+
+  .gate-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line-soft);
+    padding-bottom: 10px;
+  }
+
+  .gate-num {
+    font-size: 38px;
+    color: var(--gold-2);
+  }
+
+  .gate-arrow {
+    color: var(--steel);
+  }
+
+  .gate-why {
+    color: var(--pale);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .gate-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .gate-fix-box {
+    margin-top: auto;
+    background: var(--off);
+    border-left: 3px solid var(--teal);
+    padding: 12px 14px;
+  }
+
+  .fix-head {
+    color: var(--teal);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .fix-code {
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--teal-mid);
+    overflow-x: auto;
+  }
+
+  @media (max-width: 960px) {
+    .guides-grid-4,
+    .gates-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

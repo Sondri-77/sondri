@@ -1,0 +1,592 @@
+---
+import type { Lang } from '../../i18n';
+import WatchShell from './WatchShell.astro';
+import WatchHeroBg from './WatchHeroBg.astro';
+import { getWatchServices, type WatchServiceEntry } from '../../data/watch-content';
+
+interface Props {
+  lang?: Lang;
+  slug: string;
+}
+
+const { lang = 'en', slug } = Astro.props;
+const isEs = lang === 'es';
+const prefix = isEs ? '/es/watch' : '/watch';
+const allServices = getWatchServices(lang);
+const service: WatchServiceEntry =
+  allServices.find((s) => s.slug === slug) || allServices[0];
+
+const alternates = {
+  en: `/watch/services/${service.slug}/`,
+  es: `/es/watch/services/${service.slug}/`,
+};
+
+const siteUrl = Astro.site ? Astro.site.origin : 'https://sondri.ai';
+const pageUrl = `${siteUrl}${prefix}/services/${service.slug}/`;
+
+const jsonLdGraph = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${pageUrl}#service`,
+      name: service.title,
+      serviceType: service.shortTitle,
+      description: service.summary,
+      url: pageUrl,
+      provider: {
+        '@type': 'Organization',
+        name: 'Sondri',
+        url: 'https://sondri.ai',
+        email: 'hello@sondri.ai',
+      },
+      areaServed: ['United States', 'Chile', 'Latin America'],
+      inLanguage: isEs ? 'es' : 'en',
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: service.faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: f.a,
+        },
+      })),
+    },
+  ],
+};
+
+const siblingServices = allServices.filter((s) => s.slug !== service.slug);
+---
+
+<WatchShell
+  title={`${service.title} — Sondri Watch | watch.sondri.ai`}
+  description={service.summary}
+  lang={lang}
+  activeTab="services"
+  alternates={alternates}
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLdGraph)} />
+
+  <!-- HERO (on-dark) -->
+  <section class="section section-pad on-dark srv-hero watch-banner-edge" data-watch-hero>
+    <WatchHeroBg variant="banner" />
+    <div class="wrap">
+      <nav class="srv-crumb label" aria-label="Breadcrumb">
+        <a href={`${prefix}/`}>{isEs ? 'Inicio Watch' : 'Watch Overview'}</a>
+        <span aria-hidden="true">/</span>
+        <a href={`${prefix}/services/`}>{isEs ? 'Servicios' : 'Services'}</a>
+        <span aria-hidden="true">/</span>
+        <span class="crumb-cur">{service.shortTitle}</span>
+      </nav>
+
+      <div class="srv-hero-grid">
+        <div>
+          <span class="label gold-pill">{service.pillar} · SONDRI WATCH</span>
+          <h1 class="h1 srv-h1">
+            {service.headline} <em class="serif-em">{service.headlineAccent}</em>
+          </h1>
+          <p class="lede srv-lede">{service.summary}</p>
+          <div class="srv-ctas">
+            <button type="button" class="btn btn-gold" data-watch-checkout={service.primarySku}>
+              <span data-btn-label>{service.primaryCtaText}</span> <span class="arr">→</span>
+            </button>
+            <button type="button" class="btn btn-outline-light" data-watch-checkout={service.secondarySku}>
+              <span data-btn-label>{service.secondaryCtaText}</span>
+            </button>
+            <a class="label text-link" href={`${prefix}/#free-check`}>
+              {isEs ? 'Probar Test Gratis (3 preguntas) →' : 'Run Free 3-Question Check →'}
+            </a>
+          </div>
+        </div>
+
+        <div class="srv-blueprint-card">
+          <span class="label bp-kicker">{service.codeTitle}</span>
+          <pre class="srv-code"><code>{service.codeSnippet}</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT WE SHIP & WEBSITE TIERS (on-paper) -->
+  <section class="section section-pad on-paper">
+    <div class="wrap">
+      <div class="sec-head" data-watch-reveal>
+        <div>
+          <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? 'ENTREGABLES TÉCNICOS' : 'WHAT WE SHIP'}</span>
+          <h2 class="h2">
+            {isEs ? (
+              <>Implementación directa, <em class="serif-em">sin humo.</em></>
+            ) : (
+              <>Engineered and shipped, <em class="serif-em">not just advised.</em></>
+            )}
+          </h2>
+        </div>
+      </div>
+
+      <div class="ship-2x2">
+        {service.whatWeShip.map((item, idx) => (
+          <article class="ship-card" data-bento-card>
+            <span class="label ship-num">0{idx + 1}</span>
+            <p class="ship-text">{item}</p>
+          </article>
+        ))}
+      </div>
+
+      {service.slug === 'websites' && (
+        <div class="web-tiers-block">
+          <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> {isEs ? 'PAQUETES WEB ANSWER-READY' : 'WEBSITE PACKAGES · FROM $390'}</span>
+          <div class="web-cards-3">
+            <article class="web-tier-card">
+              <span class="label wt-tag">QUICK FIX</span>
+              <h3 class="h5">{isEs ? 'Optimización sobre tu Sitio Actual' : 'Upgrade Your Existing Site'}</h3>
+              <p class="price-n"><span class="n">$390</span> <span class="label">USD one-time</span></p>
+              <p class="body-s wt-copy">
+                {isEs
+                  ? 'Velocidad Core Web Vitals, robots.txt, llms.txt, schema JSON-LD validado y 1 bloque de respuesta FAQ.'
+                  : 'Speed tuning, clean AI crawler rules, llms.txt, validated Service/FAQ schema, and 1 answer-ready block.'}
+              </p>
+              <button type="button" class="btn btn-gold" data-watch-checkout="website_quick_fix">
+                <span data-btn-label>{isEs ? 'Ordenar Quick Fix ($390)' : 'Order Quick Fix ($390)'}</span> <span class="arr">→</span>
+              </button>
+            </article>
+
+            <article class="web-tier-card is-feat">
+              <span class="label wt-tag">{isEs ? '5 PÁGINAS · MÁS ELEGIDO' : '5 PAGES · MOST POPULAR'}</span>
+              <h3 class="h5">{isEs ? 'Sitio Web Answer-Ready 5 Páginas' : '5-Page Answer-Ready Website'}</h3>
+              <p class="price-n"><span class="n">$690</span> <span class="label">USD one-time</span></p>
+              <p class="body-s wt-copy">
+                {isEs
+                  ? 'Inicio, Servicios, Hub FAQ, Quiénes Somos y Contacto diseñados para conversión y citación en IA (95+ Lighthouse).'
+                  : 'Home, Services, FAQ Hub, About & Contact built from scratch for speed, conversions, and AI citations.'}
+              </p>
+              <button type="button" class="btn btn-gold" data-watch-checkout="website_5page">
+                <span data-btn-label>{isEs ? 'Ordenar Sitio 5 Págs ($690)' : 'Order 5-Page Site ($690)'}</span> <span class="arr">→</span>
+              </button>
+            </article>
+
+            <article class="web-tier-card">
+              <span class="label wt-tag">10 PAGES · CUSTOM GROWTH</span>
+              <h3 class="h5">{isEs ? 'Sitio Custom de Crecimiento 10 Páginas' : '10-Page Custom Growth Website'}</h3>
+              <p class="price-n"><span class="n">$1,190</span> <span class="label">USD one-time</span></p>
+              <p class="body-s wt-copy">
+                {isEs
+                  ? 'Páginas dedicadas por especialidad/ciudad, comparativas AEO, schema completo y alta en OpenAI, Bing y GBP.'
+                  : 'Dedicated service/location pages, comparison blocks, full schema graph & OpenAI/Bing/GBP sync.'}
+              </p>
+              <button type="button" class="btn btn-outline-dark" data-watch-checkout="website_10page">
+                <span data-btn-label>{isEs ? 'Ordenar Sitio 10 Págs ($1,190)' : 'Order 10-Page Site ($1,190)'}</span> <span class="arr">→</span>
+              </button>
+            </article>
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- SERVICE FAQ ACCORDION WITH FAQPAGE JSON-LD (on-off) -->
+  <section class="section section-pad on-off">
+    <div class="wrap">
+      <div class="faq-grid">
+        <div class="faq-sticky">
+          <span class="label dot-kicker"><span class="dot-gold" aria-hidden="true"></span> SERVICE FAQ</span>
+          <h2 class="h2">
+            {isEs ? (
+              <>Preguntas sobre <em class="serif-em">{service.shortTitle}.</em></>
+            ) : (
+              <>Questions about <em class="serif-em">{service.shortTitle}.</em></>
+            )}
+          </h2>
+        </div>
+
+        <div class="faq-list">
+          {service.faqs.map((item, idx) => (
+            <div class="faq-item">
+              <button
+                type="button"
+                class="faq-trigger"
+                data-srv-faq={String(idx)}
+                aria-expanded="false"
+                aria-controls={`srv-faq-ans-${idx}`}
+              >
+                <span class="faq-q">{item.q}</span>
+                <span class="faq-plus" aria-hidden="true">+</span>
+              </button>
+              <div class="faq-panel" id={`srv-faq-ans-${idx}`} hidden>
+                <p class="body-s faq-a">{item.a}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SIBLING SPECIALIST SERVICES (on-dark) -->
+  <section class="section section-pad on-dark">
+    <div class="wrap">
+      <div class="sib-head">
+        <span class="label gold-pill">{isEs ? 'OTROS SERVICIOS ESPECIALISTAS' : 'EXPLORE ALL SPECIALIST SERVICES'}</span>
+        <a href={`${prefix}/pricing/`} class="label text-link">
+          {isEs ? 'Ver planes Watch completos →' : 'Compare all Watch plans →'}
+        </a>
+      </div>
+
+      <div class="sib-grid">
+        {siblingServices.map((sib) => (
+          <a href={`${prefix}/services/${sib.slug}/`} class="sib-card">
+            <span class="label sib-pillar">{sib.pillar}</span>
+            <h3 class="h5">{sib.shortTitle}</h3>
+            <p class="body-s sib-desc">{sib.cardDesc}</p>
+            <span class="label sib-cta">{sib.ctaLabel}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</WatchShell>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-srv-faq]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const idx = btn.getAttribute('data-srv-faq');
+      const panel = document.getElementById(`srv-faq-ans-${idx}`);
+      const isOpen = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!isOpen));
+      btn.closest('.faq-item')?.classList.toggle('is-open', !isOpen);
+      if (panel) panel.hidden = isOpen;
+    });
+  });
+</script>
+
+<style>
+  .srv-hero {
+    padding-top: var(--s-40);
+    padding-bottom: var(--s-64);
+  }
+
+  .srv-crumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: var(--s-24);
+    color: var(--steel);
+  }
+
+  .srv-crumb a {
+    color: var(--pale);
+    text-decoration: none;
+  }
+
+  .srv-crumb a:hover {
+    color: var(--gold);
+  }
+
+  .crumb-cur {
+    color: var(--gold);
+  }
+
+  .srv-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+    gap: var(--s-40);
+    align-items: center;
+  }
+
+  .gold-pill {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--teal);
+    padding: 5px 10px;
+    font-weight: 700;
+    margin-bottom: var(--s-16);
+  }
+
+  .srv-h1 {
+    font-size: clamp(36px, 4.4vw, 56px);
+    line-height: 1.05;
+    margin-bottom: var(--s-20);
+  }
+
+  .srv-lede {
+    max-width: 52ch;
+    margin-bottom: var(--s-24);
+  }
+
+  .srv-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 18px;
+  }
+
+  .btn-outline-light {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--white);
+  }
+  .btn-outline-light:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .btn-outline-dark {
+    background: transparent;
+    border: 1px solid var(--teal);
+    color: var(--teal);
+  }
+  .btn-outline-dark:hover {
+    background: var(--teal);
+    color: var(--white);
+  }
+
+  .text-link {
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid var(--gold);
+  }
+
+  .srv-blueprint-card {
+    background: rgba(3, 25, 25, 0.94);
+    border: 1px solid var(--line);
+    box-shadow: 8px 8px 0 var(--gold);
+    padding: var(--s-24);
+  }
+
+  .bp-kicker {
+    display: block;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+
+  .srv-code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #d6e4e2;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .dot-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--steel);
+    margin-bottom: 12px;
+  }
+
+  .dot-gold {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold-2);
+    display: inline-block;
+  }
+
+  .ship-2x2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-20);
+  }
+
+  .ship-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    box-shadow: 5px 5px 0 var(--teal);
+    padding: var(--s-24);
+  }
+
+  .ship-num {
+    display: block;
+    color: var(--gold-2);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .ship-text {
+    color: var(--teal);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .web-tiers-block {
+    margin-top: var(--s-48);
+  }
+
+  .web-cards-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-24);
+  }
+
+  .web-tier-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    box-shadow: 6px 6px 0 var(--teal);
+    padding: var(--s-24);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .web-tier-card.is-feat {
+    border-color: var(--gold-2);
+    box-shadow: 8px 8px 0 var(--gold-2);
+  }
+
+  .wt-tag {
+    color: var(--teal-mid);
+  }
+
+  .price-n .n {
+    font-size: 40px;
+    color: var(--teal);
+  }
+
+  .wt-copy {
+    color: var(--pale);
+    font-size: 14.5px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .web-tier-card .btn {
+    margin-top: auto;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .faq-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+    gap: var(--s-48);
+    align-items: start;
+  }
+
+  .faq-sticky {
+    position: sticky;
+    top: 100px;
+  }
+
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .faq-item {
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .faq-trigger {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    padding: 18px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    text-align: left;
+    cursor: pointer;
+    color: var(--teal);
+  }
+
+  .faq-q {
+    font-size: 17.5px;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .faq-plus {
+    font-size: 22px;
+    font-family: var(--mono);
+    color: var(--teal-mid);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .faq-item.is-open .faq-plus {
+    transform: rotate(45deg);
+    color: var(--gold-2);
+  }
+
+  .faq-panel {
+    padding-bottom: 18px;
+  }
+
+  .faq-a {
+    color: var(--pale);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .sib-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: var(--s-24);
+  }
+
+  .sib-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .sib-card {
+    background: rgba(3, 25, 25, 0.9);
+    border: 1px solid var(--line-soft);
+    padding: 20px;
+    text-decoration: none;
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .sib-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
+
+  .sib-pillar {
+    color: var(--steel);
+    font-size: 10px;
+  }
+
+  .sib-desc {
+    color: var(--pale);
+    font-size: 13.5px;
+    line-height: 1.45;
+  }
+
+  .sib-cta {
+    margin-top: auto;
+    padding-top: 8px;
+    color: var(--gold);
+    font-size: 11px;
+  }
+
+  @media (max-width: 960px) {
+    .srv-hero-grid,
+    .ship-2x2,
+    .web-cards-3,
+    .faq-grid,
+    .sib-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .faq-sticky {
+      position: static;
+    }
+  }
+</style>

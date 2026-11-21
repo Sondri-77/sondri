@@ -1,22 +1,102 @@
 name: Deploy to Cloudflare Workers
 
-# Auto-deploy the Astro site to Cloudflare Workers on every push to main
-# that touches the site. Manual runs are also allowed from the Actions tab.
+# Auto-deploy sondri-site and/or billing-worker to Cloudflare Workers on pushes
+# to main that touch either package. Manual runs are allowed from the Actions tab.
 on:
   push:
     branches: [main]
     paths:
       - 'sondri-site/**'
+      - 'billing-worker/**'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
+    inputs:
+      target:
+        description: 'Which Worker(s) to deploy'
+        type: choice
+        default: all
+        options:
+          - all
+          - site
+          - billing
+      apply_d1_migrations:
+        description: 'Apply pending remote D1 migrations (requires D1 Edit permission on CLOUDFLARE_API_TOKEN)'
+        type: boolean
+        default: false
 
-# Prevent overlapping deploys; a newer push cancels an in-flight one.
+# Queue overlapping deploys instead of cancelling mid-deploy so back-to-back
+# pushes touching different packages never drop a deploy or interrupt Wrangler.
 concurrency:
   group: deploy-cloudflare
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  changes:
+    name: Detect changed packages
+    runs-on: ubuntu-latest
+    outputs:
+      site: ${{ steps.detect.outputs.site }}
+      billing: ${{ steps.detect.outputs.billing }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed paths
+        id: detect
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+          DISPATCH_TARGET: ${{ inputs.target }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            case "$DISPATCH_TARGET" in
+              site)
+                echo "site=true" >> "$GITHUB_OUTPUT"
+                echo "billing=false" >> "$GITHUB_OUTPUT"
+                ;;
+              billing)
+                echo "site=false" >> "$GITHUB_OUTPUT"
+                echo "billing=true" >> "$GITHUB_OUTPUT"
+                ;;
+              *)
+                echo "site=true" >> "$GITHUB_OUTPUT"
+                echo "billing=true" >> "$GITHUB_OUTPUT"
+                ;;
+            esac
+            exit 0
+          fi
+
+          if [ -z "$BEFORE_SHA" ] || [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "${BEFORE_SHA}^{commit}" 2>/dev/null; then
+            echo "site=true" >> "$GITHUB_OUTPUT"
+            echo "billing=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          CHANGED=$(git diff --name-only "$BEFORE_SHA" "$AFTER_SHA")
+          echo "Changed files:"
+          echo "$CHANGED"
+
+          SITE="false"
+          BILLING="false"
+
+          if echo "$CHANGED" | grep -Eq '^(sondri-site/|\.github/workflows/deploy\.yml$)'; then
+            SITE="true"
+          fi
+          if echo "$CHANGED" | grep -Eq '^(billing-worker/|\.github/workflows/deploy\.yml$)'; then
+            BILLING="true"
+          fi
+
+          echo "site=$SITE" >> "$GITHUB_OUTPUT"
+          echo "billing=$BILLING" >> "$GITHUB_OUTPUT"
+
+  deploy-site:
+    name: Deploy sondri-site
+    needs: changes
+    if: needs.changes.outputs.site == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -43,4 +123,45 @@ jobs:
           # bundled v3 — v3 doesn't understand the static-assets config.
           wranglerVersion: '4.26.0'
           # account_id is read from wrangler.jsonc; command deploys ./dist
+          command: deploy
+
+  deploy-billing:
+    name: Deploy billing-worker
+    needs: changes
+    if: needs.changes.outputs.billing == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: billing-worker
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck & Test
+        run: |
+          bun run typecheck
+          bun run test
+
+      - name: Apply remote D1 migrations (optional manual dispatch)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.apply_d1_migrations }}
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: billing-worker
+          wranglerVersion: '4.26.0'
+          command: d1 migrations apply sondri-audits --remote
+
+      - name: Deploy billing-worker to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: billing-worker
+          wranglerVersion: '4.26.0'
+          # account_id & D1 binding are read from wrangler.toml; Worker secrets stay untouched.
           command: deploy

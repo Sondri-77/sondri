@@ -5,11 +5,23 @@ import { handleCreateCharge } from './routes/charges';
 import { handleCreateInvoice, handleListInvoices } from './routes/invoices';
 import { handleStripeWebhook } from './routes/webhooks';
 import { handleCreateCheckoutSession, handleGetCheckoutSession } from './routes/checkout';
+import {
+  handleAdminCustomers,
+  handleAdminOrders,
+  handleAdminSubscriptions,
+  handleCreatePortalSession,
+} from './routes/admin';
+import {
+  handleAuditAiVisibility,
+  handleAuditLighthouse,
+  handleAuditScan,
+  handleGetAudit,
+} from './routes/audit';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-API-Key',
+  'Access-Control-Allow-Headers': 'Content-Type',
 };
 
 function withCors(response: Response): Response {
@@ -22,6 +34,21 @@ function withCors(response: Response): Response {
     statusText: response.statusText,
     headers: newHeaders,
   });
+}
+
+async function timingSafeEqual(a: string, b: string): Promise<boolean> {
+  const encoder = new TextEncoder();
+  const [hashA, hashB] = await Promise.all([
+    crypto.subtle.digest('SHA-256', encoder.encode(a)),
+    crypto.subtle.digest('SHA-256', encoder.encode(b)),
+  ]);
+  const bytesA = new Uint8Array(hashA);
+  const bytesB = new Uint8Array(hashB);
+  let diff = 0;
+  for (let i = 0; i < bytesA.length; i++) {
+    diff |= bytesA[i] ^ bytesB[i];
+  }
+  return diff === 0;
 }
 
 export default {
@@ -40,7 +67,7 @@ export default {
 
     // 1. Webhook Route (No X-API-Key required, verified by Stripe-Signature)
     if (path === '/webhooks/stripe' && method === 'POST') {
-      return handleStripeWebhook(request, env);
+      return handleStripeWebhook(request, env, ctx);
     }
 
     // 2. Public Website Checkout Route (No X-API-Key required)
@@ -56,14 +83,41 @@ export default {
       return withCors(resp);
     }
 
-    // 3. Authentication Check for Admin API Endpoints
+    // 4. Public AEO Mini Audit Routes (No X-API-Key required; protected by rate limits & daily circuit breaker)
+    if (path === '/audit/scan' && method === 'POST') {
+      const resp = await handleAuditScan(request, env);
+      return withCors(resp);
+    }
+
+    if (path === '/audit/lighthouse' && method === 'GET') {
+      const resp = await handleAuditLighthouse(request, env);
+      return withCors(resp);
+    }
+
+    if (path === '/audit/ai-visibility' && method === 'POST') {
+      const resp = await handleAuditAiVisibility(request, env, ctx);
+      return withCors(resp);
+    }
+
+    if (path.startsWith('/audit/') && method === 'GET') {
+      const auditId = path.replace('/audit/', '');
+      const resp = await handleGetAudit(request, env, auditId);
+      return withCors(resp);
+    }
+
+    // 5. Authentication Check for Server-to-Server Admin API Endpoints (no browser CORS)
+    if (!env.API_KEY?.trim()) {
+      return Response.json(
+        { success: false, error: { code: 'API_KEY_NOT_CONFIGURED', message: 'Worker API_KEY secret is not configured.' } },
+        { status: 503 }
+      );
+    }
+
     const apiKeyHeader = request.headers.get('X-API-Key');
-    if (!apiKeyHeader || apiKeyHeader !== env.API_KEY) {
-      return withCors(
-        Response.json(
-          { success: false, error: { code: 'UNAUTHORIZED', message: 'Invalid or missing X-API-Key header' } },
-          { status: 401 }
-        )
+    if (!apiKeyHeader || !(await timingSafeEqual(apiKeyHeader, env.API_KEY))) {
+      return Response.json(
+        { success: false, error: { code: 'UNAUTHORIZED', message: 'Invalid or missing X-API-Key header' } },
+        { status: 401 }
       );
     }
 
@@ -71,8 +125,16 @@ export default {
     let response: Response;
 
     // 3. API Router
+    // GET /admin/orders | /admin/subscriptions | /admin/customers
+    if (path === '/admin/orders' && method === 'GET') {
+      response = await handleAdminOrders(request, env);
+    } else if (path === '/admin/subscriptions' && method === 'GET') {
+      response = await handleAdminSubscriptions(request, env);
+    } else if (path === '/admin/customers' && method === 'GET') {
+      response = await handleAdminCustomers(request, env);
+    }
     // POST /customers
-    if (path === '/customers' && method === 'POST') {
+    else if (path === '/customers' && method === 'POST') {
       response = await handleCreateCustomer(request, env);
     } else {
       // Match /customers/:id and its sub-resources
@@ -85,6 +147,10 @@ export default {
         // GET /customers/:id
         if (subPath === '' && method === 'GET') {
           response = await handleGetCustomer(customerId, env);
+        }
+        // POST /customers/:id/portal
+        else if (subPath === '/portal' && method === 'POST') {
+          response = await handleCreatePortalSession(customerId, request, env);
         }
         // POST /customers/:id/subscription
         else if (subPath === '/subscription' && method === 'POST') {
@@ -115,7 +181,7 @@ export default {
       }
     }
 
-    return withCors(response);
+    return response;
   },
 };
 
