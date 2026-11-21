@@ -306,7 +306,10 @@ const navItems = [
 
         <div class="watch-f-bottom">
           <span class="label">&copy; {new Date().getFullYear()} Sondri · watch.sondri.ai</span>
-          <span class="label">{isEs ? 'Monitoreo EN/ES · 4 Motores de IA' : 'Bilingual EN/ES · ChatGPT, Gemini, AI Overviews & AI Mode'}</span>
+          <div class="watch-f-bottom-meta">
+            <span class="label">{isEs ? 'Monitoreo EN/ES · 4 Motores de IA' : 'Bilingual EN/ES · ChatGPT, Gemini, AI Overviews & AI Mode'}</span>
+            <a class="label watch-team-link" href="/admin/watch/" rel="nofollow">{isEs ? 'Equipo' : 'Team'}</a>
+          </div>
         </div>
       </div>
     </footer>
@@ -821,6 +824,24 @@ const navItems = [
     flex-wrap: wrap;
     gap: var(--s-16);
     color: var(--steel);
+  }
+
+  .watch-f-bottom-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+  }
+
+  .watch-team-link {
+    color: var(--steel);
+    text-decoration: none;
+    transition: color 0.15s linear;
+  }
+
+  .watch-team-link:hover,
+  .watch-team-link:focus-visible {
+    color: var(--gold);
   }
 
   .watch-mobile-bar {
