@@ -29,6 +29,8 @@ interface Props {
   hideChrome?: boolean;
   /** Omit canonical URL (used on 404). */
   omitCanonical?: boolean;
+  /** Override canonical path (used when aliasing /audit/ -> /ai-audit/). */
+  canonicalPath?: string;
   ogType?: 'website' | 'article';
   publishedTime?: string;
   modifiedTime?: string;
@@ -46,6 +48,7 @@ const {
   noindex = false,
   hideChrome = false,
   omitCanonical = false,
+  canonicalPath,
   ogType = 'website',
   publishedTime,
   modifiedTime,
@@ -54,7 +57,7 @@ const {
 
 const t = copy[lang];
 const siteUrl = Astro.site ? Astro.site.origin : 'https://sondri.ai';
-const canonical = new URL(Astro.url.pathname, siteUrl);
+const canonical = new URL(canonicalPath ?? Astro.url.pathname, siteUrl);
 const ogImage = new URL('/og.png', siteUrl);
 const logoUrl = new URL('/brand/avatars/sondri-avatar-512.png', siteUrl);
 const mdHref = mdPath ? new URL(mdPath, siteUrl) : undefined;

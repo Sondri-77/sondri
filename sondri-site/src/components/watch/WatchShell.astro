@@ -23,6 +23,20 @@ const isEs = lang === 'es';
 const prefix = isEs ? '/es/watch' : '/watch';
 const siteUrl = Astro.site ? Astro.site.origin : 'https://sondri.ai';
 const canonical = new URL(Astro.url.pathname, siteUrl);
+const cleanWatchPath =
+  Astro.url.pathname.replace(/\/index\.html$/, '').replace(/\/+$/, '') || '/';
+const watchIndexPaths = new Set([
+  '/watch',
+  '/es/watch',
+  '/watch/services',
+  '/es/watch/services',
+  '/watch/guides',
+  '/es/watch/guides',
+]);
+const mdPath = watchIndexPaths.has(cleanWatchPath)
+  ? `${cleanWatchPath}/index.md`
+  : `${cleanWatchPath}.md`;
+const mdHref = new URL(mdPath, siteUrl).href;
 
 const navItems = [
   { id: 'overview', href: `${prefix}/`, label: isEs ? 'Resumen' : 'Overview' },
@@ -52,8 +66,13 @@ const navItems = [
       <>
         <link rel="alternate" hreflang="en" href={new URL(alternates.en, siteUrl).href} />
         <link rel="alternate" hreflang="es" href={new URL(alternates.es, siteUrl).href} />
+        <link rel="alternate" hreflang="x-default" href={new URL(alternates.en, siteUrl).href} />
       </>
     )}
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="text/plain" title="Sondri LLMs Context" href="/llms.txt" />
+    <link rel="ai-catalog" href="/.well-known/ai-catalog.json" />
+    <link rel="alternate" type="text/markdown" href={mdHref} />
     <meta name="theme-color" content="#081f1f" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -66,6 +85,7 @@ const navItems = [
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
     <meta property="og:image" content={`${siteUrl}/og.png`} />
     <slot name="head" />
   </head>

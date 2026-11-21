@@ -68,6 +68,7 @@ export const footerCols = [
       { label: 'How it works', href: '#how' },
       { label: 'What we build', href: '#features' },
       { label: 'Solutions', href: '#solutions' },
+      { label: 'Sondri Watch', href: '/watch/' },
       { label: 'Insights', href: '/insights/' },
     ],
   },

@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { BOOK_HREF, CONTACT_EMAIL } from '../../data';
 import { getPosts, slugOf as postSlug } from '../../lib/insights';
 import { getSolutions, slugOf as solSlug } from '../../lib/solutions';
+import { getWatchMarkdownMirrorPaths } from '../../lib/watch-markdown';
 
 export const GET: APIRoute = async ({ site }) => {
   const origin = site ? site.origin : 'https://sondri.ai';
@@ -16,7 +17,7 @@ export const GET: APIRoute = async ({ site }) => {
     version: '1.0',
     name: 'Sondri',
     description:
-      'Custom software, workflow automation, and practical AI integration built into the systems small and midsize companies already run.',
+      'Custom software, workflow automation, practical AI integration, and Sondri Watch AI search visibility (AEO/GEO) & Answer-Ready websites.',
     url: origin,
     contact: {
       email: CONTACT_EMAIL,
@@ -38,6 +39,7 @@ export const GET: APIRoute = async ({ site }) => {
       ...esSolutions.map((s) => `${origin}/es/solutions/${solSlug(s)}.md`),
       ...enPosts.map((p) => `${origin}/insights/${postSlug(p)}.md`),
       ...esPosts.map((p) => `${origin}/es/insights/${postSlug(p)}.md`),
+      ...getWatchMarkdownMirrorPaths(origin),
     ],
   };
 

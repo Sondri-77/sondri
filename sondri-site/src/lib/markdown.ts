@@ -1,9 +1,23 @@
 import type { CollectionEntry } from 'astro:content';
 import { BOOK_HREF, CONTACT_EMAIL, CTA_PRIMARY } from '../data';
+import { getWatchGuides, getWatchServices } from '../data/watch-content';
 import { copy, type Lang } from '../i18n';
 import { money, weeklyCost, yearlyCost } from './cost';
 import { slugOf as postSlug } from './insights';
 import { localizedAreaName, localizedIndustryName, slugOf as solSlug } from './solutions';
+import {
+  renderAiAuditMarkdown,
+  renderWatchGuideDetailMarkdown,
+  renderWatchGuidesIndexMarkdown,
+  renderWatchLlmsSection,
+  renderWatchOverviewMarkdown,
+  renderWatchPartnersMarkdown,
+  renderWatchPlaybooksMarkdown,
+  renderWatchPricingMarkdown,
+  renderWatchSampleReportMarkdown,
+  renderWatchServiceDetailMarkdown,
+  renderWatchServicesIndexMarkdown,
+} from './watch-markdown';
 
 const mdResponse = (body: string, status = 200) =>
   new Response(body, {
@@ -380,13 +394,15 @@ export function renderLlmsTxt(
     '',
     `- [Homepage (EN)](${origin}/): Overview, 0 -> 1 -> n framework, capabilities, comparison table, and FAQs ([Markdown](${origin}/index.md))`,
     `- [Homepage (ES)](${origin}/es/): Versión completa en español ([Markdown](${origin}/es/index.md))`,
+    `- [Free AI Visibility Mini Audit](${origin}/ai-audit/): Instant robots.txt, JSON-LD, Lighthouse & 3-prompt check ([Markdown](${origin}/ai-audit.md))`,
     `- [Insights (EN)](${origin}/insights/): Engineering write-ups of shipped systems ([Markdown](${origin}/insights/index.md))`,
     `- [Insights (ES)](${origin}/es/insights/): Artículos técnicos en español ([Markdown](${origin}/es/insights/index.md))`,
     `- [Privacy Policy (EN)](${origin}/privacy/): Data handling, scheduling, and client-environment policy ([Markdown](${origin}/privacy.md))`,
     `- [Privacy Policy (ES)](${origin}/es/privacy/): Política de privacidad ([Markdown](${origin}/es/privacy.md))`,
     `- [AI Catalog](${origin}/.well-known/ai-catalog.json): Machine-readable index of agent resources`,
-    `- [Full Context Bundle](${origin}/llms-full.txt): Complete site, solutions, and articles in one Markdown file`,
+    `- [Full Context Bundle](${origin}/llms-full.txt): Complete site, solutions, Watch catalog, and articles in one Markdown file`,
     '',
+    ...renderWatchLlmsSection(origin),
     '## Solutions (EN)',
     '',
     ...enSolutions.map(
@@ -450,6 +466,40 @@ export function renderLlmsFullTxt(
     '---',
     '',
     renderPrivacyMarkdown(origin, 'en'),
+    '---',
+    '',
+    renderAiAuditMarkdown(origin),
+    '---',
+    '',
+    renderWatchOverviewMarkdown(origin, 'en'),
+    '---',
+    '',
+    renderWatchPricingMarkdown(origin, 'en'),
+    '---',
+    '',
+    renderWatchServicesIndexMarkdown(origin, 'en'),
+    ...getWatchServices('en').flatMap((s) => [
+      '---',
+      '',
+      renderWatchServiceDetailMarkdown(origin, s, 'en'),
+    ]),
+    '---',
+    '',
+    renderWatchGuidesIndexMarkdown(origin, 'en'),
+    ...getWatchGuides('en').flatMap((g) => [
+      '---',
+      '',
+      renderWatchGuideDetailMarkdown(origin, g, 'en'),
+    ]),
+    '---',
+    '',
+    renderWatchPlaybooksMarkdown(origin, 'en'),
+    '---',
+    '',
+    renderWatchPartnersMarkdown(origin, 'en'),
+    '---',
+    '',
+    renderWatchSampleReportMarkdown(origin, 'en'),
     ...(esSolutions.length || esPosts.length
       ? [
           '---',
@@ -462,5 +512,27 @@ export function renderLlmsFullTxt(
           renderPrivacyMarkdown(origin, 'es'),
         ]
       : []),
+    '---',
+    '',
+    renderWatchOverviewMarkdown(origin, 'es'),
+    '---',
+    '',
+    renderWatchPricingMarkdown(origin, 'es'),
+    '---',
+    '',
+    renderWatchServicesIndexMarkdown(origin, 'es'),
+    ...getWatchServices('es').flatMap((s) => [
+      '---',
+      '',
+      renderWatchServiceDetailMarkdown(origin, s, 'es'),
+    ]),
+    '---',
+    '',
+    renderWatchGuidesIndexMarkdown(origin, 'es'),
+    ...getWatchGuides('es').flatMap((g) => [
+      '---',
+      '',
+      renderWatchGuideDetailMarkdown(origin, g, 'es'),
+    ]),
   ].join('\n');
 }
